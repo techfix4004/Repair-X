@@ -22,7 +22,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "docker:dev": "docker-compose up -d",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:prod": "docker-compose up -d",
     "deploy": "bash deploy.sh",
     "automation:full": "npm run quality:check && npm run visual:test",
     "deploy:production": "tsx scripts/production-deployment-orchestrator.ts --env=production --branch=main --no-mock --strict-prod",

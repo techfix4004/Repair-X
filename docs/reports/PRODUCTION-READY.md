@@ -27,7 +27,7 @@
 - **Features**: Complete business logic for Customer/Technician/Admin roles
 
 ### Production Infrastructure ✅ READY
-- **Docker**: Production docker-compose.prod.yml configured
+- **Docker**: Production docker-compose.yml configured
 - **Database**: PostgreSQL with health checks and data persistence
 - **Cache**: Redis configuration for performance optimization
 - **Web Server**: Nginx reverse proxy configuration
@@ -55,7 +55,7 @@
 ./deploy.sh --environment production
 
 # Docker production stack
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose up -d
 ```
 
 ### Mobile App Builds

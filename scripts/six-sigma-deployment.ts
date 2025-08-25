@@ -588,10 +588,8 @@ echo "RepairX deployed successfully with Build ID: \$BUILD_ID" | mail -s "Repair
 
 echo "✅ RepairX production deployment complete!"`;
 
-    writeFileSync(join(this.projectRoot, 'deploy-production.sh'), deploymentScript);
-    execSync(`chmod +x ${join(this.projectRoot, 'deploy-production.sh')}`);
-    
-    console.log('  ✅ Created production deployment script');
+    // Note: Using existing production deploy.sh script
+    console.log('  ✅ Using existing production deployment script (deploy.sh)');
   }
 
   private async generateFinalAssessment(): Promise<void> {
