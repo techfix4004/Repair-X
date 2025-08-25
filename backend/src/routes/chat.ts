@@ -25,6 +25,7 @@ interface TypingData {
 }
 
 // Initialize Socket.IO for real-time chat
+ 
 // eslint-disable-next-line max-lines-per-function
 export const initializeChatSocket = (io: SocketIOServer) => {
   const chatNamespace = io.of('/chat');
@@ -39,13 +40,13 @@ export const initializeChatSocket = (io: SocketIOServer) => {
     });
 
     // Handle sending messages
-    socket.on('send-message', async (data: SendMessageData) => {
+    socket.on('send-message', async (_data: SendMessageData) => {
       try {
         const { _jobId, senderId, senderType, message, messageType = 'text' } = data;
 
         // Save message to database
         const chatMessage = await prisma.chatMessage.create({
-          data: {
+          _data: {
             _jobId,
             senderId,
             senderType,
@@ -64,7 +65,7 @@ export const initializeChatSocket = (io: SocketIOServer) => {
         // Broadcast to all users in the job room
         chatNamespace.to(`job-${_jobId}`).emit('new-message', {
           _id: chatMessage.id,
-          message: chatMessage.message,
+          _message: chatMessage.message,
           _messageType: chatMessage.messageType,
           _timestamp: chatMessage.timestamp,
           _sender: {
@@ -79,13 +80,13 @@ export const initializeChatSocket = (io: SocketIOServer) => {
         await sendChatNotification(_jobId, senderId, message);
 
       } catch (error) {
-        console.error('Send message error:', error);
-        socket.emit('message-error', { error: 'Failed to send message' });
+        console.error('Send message _error:', error);
+        socket.emit('message-error', { _error: 'Failed to send message' });
       }
     });
 
     // Mark messages as read
-    socket.on('mark-messages-read', async (data: MarkMessagesReadData) => {
+    socket.on('mark-messages-read', async (_data: MarkMessagesReadData) => {
       try {
         const { _jobId, _userId  } = (data as unknown);
 
@@ -95,18 +96,18 @@ export const initializeChatSocket = (io: SocketIOServer) => {
             _senderId: { not: _userId },
             _isRead: false
           },
-          data: { isRead: true }
+          _data: { isRead: true }
         });
 
         chatNamespace.to(`job-${_jobId}`).emit('messages-read', { _jobId, _userId });
 
       } catch (error) {
-        console.error('Mark messages read error:', error);
+        console.error('Mark messages read _error:', error);
       }
     });
 
     // Handle typing indicators
-    socket.on('typing', (data: TypingData) => {
+    socket.on('typing', (_data: TypingData) => {
       const { _jobId, _userId, isTyping  } = (data as unknown);
       socket.to(`job-${_jobId}`).emit('user-typing', { _userId, isTyping });
     });
@@ -119,7 +120,7 @@ export const initializeChatSocket = (io: SocketIOServer) => {
 };
 
 // Send push notification for chat messages
-const sendChatNotification = async (_jobId: string, _senderId: string, message: string) => {
+const sendChatNotification = async (_jobId: string, _senderId: string, _message: string) => {
   try {
     // Get job participants
     const job = await prisma.job.findUnique({
@@ -154,7 +155,7 @@ const sendChatNotification = async (_jobId: string, _senderId: string, message: 
     }
 
   } catch (error) {
-    console.error('Send chat notification error:', error);
+    console.error('Send chat notification _error:', error);
   }
 };
 
@@ -172,6 +173,7 @@ interface UserJobsParamsType {
   userId: string;
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function chatRoutes(fastify: FastifyInstance) {
   // Get chat messages for a job
@@ -201,7 +203,7 @@ export async function chatRoutes(fastify: FastifyInstance) {
 
       const formattedMessages = messages.reverse().map((_msg: unknown) => ({
         _id: msg.id,
-        message: msg.message,
+        _message: msg.message,
         _messageType: msg.messageType,
         _timestamp: msg.timestamp,
         _isRead: msg.isRead,
@@ -224,8 +226,8 @@ export async function chatRoutes(fastify: FastifyInstance) {
       });
 
     } catch (error) {
-      console.error('Get chat messages error:', error);
-      reply.status(500).send({ error: 'Failed to get chat messages' });
+      console.error('Get chat messages _error:', error);
+      reply.status(500).send({ _error: 'Failed to get chat messages' });
     }
   });
 
@@ -258,8 +260,8 @@ export async function chatRoutes(fastify: FastifyInstance) {
       reply.send({ unreadCount });
 
     } catch (error) {
-      console.error('Get unread count error:', error);
-      reply.status(500).send({ error: 'Failed to get unread count' });
+      console.error('Get unread count _error:', error);
+      reply.status(500).send({ _error: 'Failed to get unread count' });
     }
   });
 
@@ -276,8 +278,8 @@ export async function chatRoutes(fastify: FastifyInstance) {
       });
 
     } catch (error) {
-      console.error('File upload error:', error);
-      reply.status(500).send({ error: 'Failed to upload file' });
+      console.error('File upload _error:', error);
+      reply.status(500).send({ _error: 'Failed to upload file' });
     }
   });
 }

@@ -22,6 +22,7 @@ interface ServiceAreaRequest {
   radiusKm?: number;
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function geolocationRoutes(fastify: FastifyInstance) {
   // Get address from coordinates (reverse geocoding)
@@ -30,7 +31,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const { latitude, longitude  } = (request.body as unknown);
 
       if (!latitude || !longitude) {
-        return (reply as FastifyReply).status(400).send({ error: 'Latitude and longitude are required' });
+        return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
       }
 
       // Mock reverse geocoding - in production, use Google Maps API or similar
@@ -45,11 +46,11 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
 
       reply.send({
         _success: true,
-        data: mockAddress
+        _data: mockAddress
       });
     } catch (error) {
-      console.error('Reverse geocoding error:', error);
-      reply.status(500).send({ error: 'Failed to reverse geocode coordinates' });
+      console.error('Reverse geocoding _error:', error);
+      reply.status(500).send({ _error: 'Failed to reverse geocode coordinates' });
     }
   });
 
@@ -59,7 +60,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const { latitude, longitude, radiusKm = 50      } = request.body as any;
 
       if (!latitude || !longitude) {
-        return (reply as FastifyReply).status(400).send({ error: 'Latitude and longitude are required' });
+        return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
       }
 
       // Get service areas from database (mock data for now)
@@ -82,7 +83,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       };
 
       // Check if location is within any service area
-      const availableAreas = serviceAreas.filter((area: unknown) => {
+      const availableAreas = serviceAreas.filter((_area: unknown) => {
         const distance = calculateDistance(latitude, longitude, area.centerLat, area.centerLng);
         return distance <= area.radiusKm;
       });
@@ -92,7 +93,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
 
       reply.send({
         _success: true,
-        data: {
+        _data: {
           isServiceable,
           _serviceAreas: availableAreas,
           nearestArea,
@@ -101,8 +102,8 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       });
 
     } catch (error) {
-      console.error('Service area check error:', error);
-      reply.status(500).send({ error: 'Failed to check service area' });
+      console.error('Service area check _error:', error);
+      reply.status(500).send({ _error: 'Failed to check service area' });
     }
   });
 
@@ -112,7 +113,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const { latitude, longitude, radiusKm = 25      } = request.body as any;
 
       if (!latitude || !longitude) {
-        return (reply as FastifyReply).status(400).send({ error: 'Latitude and longitude are required' });
+        return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
       }
 
       // In a real implementation, this would query the database for technicians
@@ -140,7 +141,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: {
+        _data: {
           technicians: mockTechnicians,
           _searchRadius: radiusKm,
           _coordinates: { latitude, longitude },
@@ -149,8 +150,8 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       });
 
     } catch (error) {
-      console.error('Nearby technicians search error:', error);
-      reply.status(500).send({ error: 'Failed to find nearby technicians' });
+      console.error('Nearby technicians search _error:', error);
+      reply.status(500).send({ _error: 'Failed to find nearby technicians' });
     }
   });
 
@@ -164,7 +165,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const { origin, destination, mode = 'driving'      } = request.body as any;
 
       if (!origin || !destination) {
-        return (reply as FastifyReply).status(400).send({ error: 'Origin and destination coordinates are required' });
+        return (reply as FastifyReply).status(400).send({ _error: 'Origin and destination coordinates are required' });
       }
 
       // Mock travel time calculation - in production, use Google Maps API
@@ -173,12 +174,12 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
         Math.pow(destination.longitude - origin.longitude, 2)
       ) * 111; // Approximate km conversion
 
-      const baseTime = mode === 'driving' ? 2 : mode === 'walking' ? 15 : 5; // minutes per km
+      const baseTime = mode === 'driving' ? _2 : mode === 'walking' ? 15 : 5; // minutes per km
       const estimatedMinutes = Math.round(distance * baseTime);
 
       reply.send({
         _success: true,
-        data: {
+        _data: {
           distanceKm: Math.round(distance * 10) / 10,
           _estimatedTravelTimeMinutes: estimatedMinutes,
           mode,
@@ -186,8 +187,8 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       });
 
     } catch (error) {
-      console.error('Travel time calculation error:', error);
-      reply.status(500).send({ error: 'Failed to calculate travel time' });
+      console.error('Travel time calculation _error:', error);
+      reply.status(500).send({ _error: 'Failed to calculate travel time' });
     }
   });
 }

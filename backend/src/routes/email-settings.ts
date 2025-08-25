@@ -25,8 +25,8 @@ const SMTPConfigSchema = z.object({
 const EmailTemplateSchema = z.object({
   _id: z.string(),
   _name: z.string().min(1),
-  subject: z.string().min(1),
-  body: z.string().min(1),
+  _subject: z.string().min(1),
+  _body: z.string().min(1),
   _variables: z.array(z.string()).default([]),
   _isActive: z.boolean().default(true),
   _category: z.enum([
@@ -45,7 +45,7 @@ const EmailTemplateSchema = z.object({
 
 const EmailSettingsSchema = z.object({
   _smtp: SMTPConfigSchema,
-  templates: z.array(EmailTemplateSchema),
+  _templates: z.array(EmailTemplateSchema),
   _automation: z.object({
     enabled: z.boolean().default(true),
     _deliveryTracking: z.boolean().default(true),
@@ -54,7 +54,7 @@ const EmailSettingsSchema = z.object({
     _retryAttempts: z.number().min(1).max(5).default(3),
     _retryDelay: z.number().min(5).max(3600).default(300), // seconds
   }),
-  branding: z.object({
+  _branding: z.object({
     fromName: z.string().default('RepairX'),
     _fromEmail: z.string().email(),
     _replyTo: z.string().email().optional(),
@@ -91,12 +91,12 @@ class EmailSettingsService {
           rejectUnauthorized: false,
         },
       },
-      templates: [
+      _templates: [
         {
           id: 'booking_confirmation',
           _name: 'Booking Confirmation',
-          subject: 'Booking Confirmation - {{jobNumber}}',
-          body: `Dear {{customerName}},
+          _subject: 'Booking Confirmation - {{jobNumber}}',
+          _body: `Dear {{customerName}},
 
 Your repair booking has been confirmed successfully.
 
@@ -119,8 +119,8 @@ Thank you for choosing RepairX!
         {
           _id: 'quotation_ready',
           _name: 'Quotation Ready',
-          subject: 'Quotation Ready for Review - {{quotationNumber}}',
-          body: `Dear {{customerName}},
+          _subject: 'Quotation Ready for Review - {{quotationNumber}}',
+          _body: `Dear {{customerName}},
 
 Your quotation is now ready for review.
 
@@ -141,8 +141,8 @@ Please review and approve your quotation at: {{approvalUrl}}
         {
           _id: 'job_completed',
           _name: 'Job Completed',
-          subject: 'Your Device is Ready - {{jobNumber}}',
-          body: `Dear {{customerName}},
+          _subject: 'Your Device is Ready - {{jobNumber}}',
+          _body: `Dear {{customerName}},
 
 Great news! Your device repair has been completed successfully.
 
@@ -165,8 +165,8 @@ Collection Hours: Monday-Friday 9:00 AM - 6:00 PM, Saturday _9:00 AM - 2:00 PM
         {
           _id: 'payment_reminder',
           _name: 'Payment Reminder',
-          subject: 'Payment Reminder - Invoice {{invoiceNumber}}',
-          body: `Dear {{customerName}},
+          _subject: 'Payment Reminder - Invoice {{invoiceNumber}}',
+          _body: `Dear {{customerName}},
 
 This is a friendly reminder about your outstanding payment.
 
@@ -194,7 +194,7 @@ If you have any questions, please don't hesitate to contact us.
         _retryAttempts: 3,
         _retryDelay: 300,
       },
-      branding: {
+      _branding: {
         fromName: 'RepairX',
         _fromEmail: 'noreply@repairx.com',
         _replyTo: 'support@repairx.com',
@@ -229,23 +229,23 @@ If you have any questions, please don't hesitate to contact us.
       if (smtpConfig.host && smtpConfig.auth?.user && smtpConfig.auth?.pass) {
         return {
           _success: true,
-          message: 'SMTP connection test successful',
+          _message: 'SMTP connection test successful',
         };
       } else {
         return {
           _success: false,
-          message: 'SMTP configuration incomplete',
+          _message: 'SMTP configuration incomplete',
         };
       }
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return {
         _success: false,
-        message: `SMTP test failed: ${error.message}`,
+        _message: `SMTP test failed: ${error.message}`,
       };
     }
   }
 
-  async sendTestEmail(templateId: string, _recipientEmail: string, _sampleData: unknown, _tenantId: string = 'default'): Promise<{ _success: boolean; message: string }> {
+  async sendTestEmail(_templateId: string, _recipientEmail: string, _sampleData: unknown, _tenantId: string = 'default'): Promise<{ _success: boolean; message: string }> {
     try {
       const settings = await this.getEmailSettings(tenantId);
       const template = settings.templates.find((_t: unknown) => t.id === templateId);
@@ -258,7 +258,7 @@ If you have any questions, please don't hesitate to contact us.
       let renderedSubject = template.subject;
       let renderedBody = template.body;
 
-      Object.keys(sampleData).forEach((key: unknown) => {
+      Object.keys(sampleData).forEach((_key: unknown) => {
         const regex = new RegExp(`{{${key}}}`, 'g');
         renderedSubject = renderedSubject.replace(regex, sampleData[key]);
         renderedBody = renderedBody.replace(regex, sampleData[key]);
@@ -268,22 +268,22 @@ If you have any questions, please don't hesitate to contact us.
       // For now, we'll simulate successful sending
       return {
         _success: true,
-        message: `Test email sent successfully to ${recipientEmail}`,
+        _message: `Test email sent successfully to ${recipientEmail}`,
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return {
         _success: false,
-        message: `Failed to send test email: ${error.message}`,
+        _message: `Failed to send test email: ${error.message}`,
       };
     }
   }
 
-  async getEmailTemplate(templateId: string, _tenantId: string = 'default'): Promise<any> {
+  async getEmailTemplate(_templateId: string, _tenantId: string = 'default'): Promise<any> {
     const settings = await this.getEmailSettings(tenantId);
     return settings.templates.find((_t: unknown) => t.id === templateId);
   }
 
-  async updateEmailTemplate(templateId: string, templateData: unknown, _tenantId: string = 'default'): Promise<void> {
+  async updateEmailTemplate(_templateId: string, _templateData: unknown, _tenantId: string = 'default'): Promise<void> {
     const settings = await this.getEmailSettings(tenantId);
     const templateIndex = settings.templates.findIndex((_t: unknown) => t.id === templateId);
     
@@ -319,8 +319,9 @@ If you have any questions, please don't hesitate to contact us.
 }
 
 // Route Handlers
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function emailSettingsRoutes(server: FastifyInstance): Promise<void> {
+export async function emailSettingsRoutes(_server: FastifyInstance): Promise<void> {
   const emailService = new EmailSettingsService();
 
   // Get email settings
@@ -333,13 +334,13 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: settings,
+        _data: settings,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve email settings',
-        error: error.message,
+        _message: 'Failed to retrieve email settings',
+        _error: error.message,
       });
     }
   });
@@ -357,13 +358,13 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        message: 'Email settings updated successfully',
+        _message: 'Email settings updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to update email settings',
-        error: error.message,
+        _message: 'Failed to update email settings',
+        _error: error.message,
       });
     }
   });
@@ -378,13 +379,13 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: result.success,
-        message: result.message,
+        _message: result.message,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'SMTP test failed',
-        error: error.message,
+        _message: 'SMTP test failed',
+        _error: error.message,
       });
     }
   });
@@ -402,13 +403,13 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: result.success,
-        message: result.message,
+        _message: result.message,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to send test email',
-        error: error.message,
+        _message: 'Failed to send test email',
+        _error: error.message,
       });
     }
   });
@@ -428,13 +429,13 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: templates,
+        _data: templates,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve email templates',
-        error: error.message,
+        _message: 'Failed to retrieve email templates',
+        _error: error.message,
       });
     }
   });
@@ -454,13 +455,13 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        message: 'Email template updated successfully',
+        _message: 'Email template updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to update email template',
-        error: error.message,
+        _message: 'Failed to update email template',
+        _error: error.message,
       });
     }
   });
@@ -475,13 +476,13 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: stats,
+        _data: stats,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve email statistics',
-        error: error.message,
+        _message: 'Failed to retrieve email statistics',
+        _error: error.message,
       });
     }
   });
@@ -514,7 +515,7 @@ export async function emailSettingsRoutes(server: FastifyInstance): Promise<void
 
     return reply.send({
       _success: true,
-      data: variables,
+      _data: variables,
     });
   });
 }

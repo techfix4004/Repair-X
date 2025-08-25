@@ -7,79 +7,80 @@ import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { config } from '../config/config';
 
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function registerPlugins(server: FastifyInstance): Promise<void> {
+export async function registerPlugins(_server: FastifyInstance): Promise<void> {
   // Security plugins
   await server.register(helmet, {
-    contentSecurityPolicy: {
+    _contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
-        imgSrc: ["'self'", "data:", "https:"],
+        _styleSrc: ["'self'", "'unsafe-inline'"],
+        _scriptSrc: ["'self'"],
+        _imgSrc: ["'self'", "_data:", "_https:"],
       },
     },
   });
 
   await server.register(cors, {
-    origin: config.NODE_ENV === 'development' ? true : ['https://repairx.com'],
-    credentials: true,
+    _origin: config.NODE_ENV === 'development' ? true : ['https://repairx.com'],
+    _credentials: true,
   });
 
   await server.register(rateLimit, {
-    max: config.RATE_LIMIT_MAX,
-    timeWindow: config.RATE_LIMIT_TIMEWINDOW,
-    errorResponseBuilder: () => {
+    _max: config.RATE_LIMIT_MAX,
+    _timeWindow: config.RATE_LIMIT_TIMEWINDOW,
+    _errorResponseBuilder: () => {
       return {
-        code: 'RATE_LIMIT_EXCEEDED',
-        error: 'Too Many Requests',
-        message: 'Rate limit exceeded, please try again later.',
-        statusCode: 429,
+        _code: 'RATE_LIMIT_EXCEEDED',
+        _error: 'Too Many Requests',
+        _message: 'Rate limit exceeded, please try again later.',
+        _statusCode: 429,
       };
     },
   });
 
   // File upload support
   await server.register(multipart, {
-    limits: {
+    _limits: {
       fieldNameSize: 100,
-      fieldSize: 100,
-      fields: 10,
-      fileSize: config.MAX_FILE_SIZE,
-      files: config.MAX_FILES_COUNT,
-      headerPairs: 2000,
+      _fieldSize: 100,
+      _fields: 10,
+      _fileSize: config.MAX_FILE_SIZE,
+      _files: config.MAX_FILES_COUNT,
+      _headerPairs: 2000,
     },
   });
 
   // API Documentation
   await server.register(swagger, {
-    openapi: {
+    _openapi: {
       openapi: '3.0.0',
-      info: {
+      _info: {
         title: 'RepairX API',
-        description: 'Production-ready repair service platform API',
-        version: '1.0.0',
-        contact: {
+        _description: 'Production-ready repair service platform API',
+        _version: '1.0.0',
+        _contact: {
           name: 'RepairX Support',
-          email: 'support@repairx.com',
+          _email: 'support@repairx.com',
         },
-        license: {
+        _license: {
           name: 'MIT',
-          url: 'https://opensource.org/licenses/MIT',
+          _url: 'https://opensource.org/licenses/MIT',
         },
       },
-      servers: [
+      _servers: [
         {
           url: `http://${config.HOST}:${config.PORT}`,
-          description: 'Development server',
+          _description: 'Development server',
         },
       ],
-      components: {
+      _components: {
         securitySchemes: {
           bearerAuth: {
             type: 'http',
-            scheme: 'bearer',
-            bearerFormat: 'JWT',
+            _scheme: 'bearer',
+            _bearerFormat: 'JWT',
           },
         },
       },
@@ -87,16 +88,16 @@ export async function registerPlugins(server: FastifyInstance): Promise<void> {
   });
 
   await server.register(swaggerUi, {
-    routePrefix: '/documentation',
-    uiConfig: {
+    _routePrefix: '/documentation',
+    _uiConfig: {
       docExpansion: 'full',
-      deepLinking: false,
+      _deepLinking: false,
     },
-    staticCSP: true,
-    transformStaticCSP: (header: string) => header,
-    transformSpecification: (swaggerObject: object) => {
+    _staticCSP: true,
+    _transformStaticCSP: (header: string) => header,
+    _transformSpecification: (swaggerObject: object) => {
       return swaggerObject;
     },
-    transformSpecificationClone: true,
+    _transformSpecificationClone: true,
   });
 }

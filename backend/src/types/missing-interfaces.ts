@@ -1,7 +1,7 @@
 
 // Missing interface definitions for RepairX platform
 export interface CustomerIntervention {
-  id: string;
+  _id: string;
   customerId: string;
   category: string;
   trigger: string;
@@ -59,7 +59,7 @@ export interface AppStoreOptimization {
 }
 
 export interface ABTest {
-  id: string;
+  _id: string;
   name: string;
   type: 'icon' | 'screenshot' | 'description' | 'keyword';
   status: 'draft' | 'running' | 'completed' | 'paused';

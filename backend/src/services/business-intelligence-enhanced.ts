@@ -2,59 +2,59 @@
 export class EnhancedBusinessIntelligence {
   async generateExecutiveDashboard(): Promise<any> {
     return {
-      kpiMetrics: {
+      _kpiMetrics: {
         revenue: {
           current: 156789.45,
-          growth: '+12.3%',
-          target: 175000,
-          trend: 'up'
+          _growth: '+12.3%',
+          _target: 175000,
+          _trend: 'up'
         },
-        customerSatisfaction: {
+        _customerSatisfaction: {
           current: 4.7,
-          growth: '+0.2',
-          target: 4.5,
-          trend: 'up'
+          _growth: '+0.2',
+          _target: 4.5,
+          _trend: 'up'
         },
-        operationalEfficiency: {
+        _operationalEfficiency: {
           current: 89.3,
-          growth: '+5.1%',
-          target: 90,
-          trend: 'up'
+          _growth: '+5.1%',
+          _target: 90,
+          _trend: 'up'
         },
-        marketShare: {
+        _marketShare: {
           current: 23.7,
-          growth: '+1.8%',
-          target: 25,
-          trend: 'up'
+          _growth: '+1.8%',
+          _target: 25,
+          _trend: 'up'
         }
       },
-      predictiveAnalytics: {
+      _predictiveAnalytics: {
         demandForecast: {
           nextMonth: '+15% increase expected',
-          seasonalTrends: 'Summer peak beginning',
-          recommendations: [
+          _seasonalTrends: 'Summer peak beginning',
+          _recommendations: [
             'Increase technician availability',
             'Stock seasonal parts inventory',
             'Prepare marketing campaigns'
           ]
         },
-        riskAnalysis: {
+        _riskAnalysis: {
           level: 'low',
-          factors: [
+          _factors: [
             'Supply chain stability: 95%',
-            'Staff retention: 92%', 
-            'Customer retention: 94%'
+            'Staff _retention: 92%', 
+            'Customer _retention: 94%'
           ]
         }
       },
-      competitiveIntelligence: {
+      _competitiveIntelligence: {
         marketPosition: 'Leading in customer satisfaction',
-        advantages: [
+        _advantages: [
           'AI-powered job matching',
           'Six Sigma quality processes',
           'Comprehensive mobile platform'
         ],
-        opportunities: [
+        _opportunities: [
           'Enterprise market expansion',
           'Franchise model scaling',
           'IoT integration services'
@@ -65,28 +65,28 @@ export class EnhancedBusinessIntelligence {
 
   async generateCustomerInsights(): Promise<any> {
     return {
-      segmentation: {
-        premium: { count: 234, revenue: 67890, satisfaction: 4.9 },
-        standard: { count: 1456, revenue: 123456, satisfaction: 4.6 },
-        basic: { count: 2789, revenue: 89012, satisfaction: 4.4 }
+      _segmentation: {
+        premium: { count: 234, _revenue: 67890, _satisfaction: 4.9 },
+        _standard: { count: 1456, _revenue: 123456, _satisfaction: 4.6 },
+        _basic: { count: 2789, _revenue: 89012, _satisfaction: 4.4 }
       },
-      behaviorAnalysis: {
+      _behaviorAnalysis: {
         repeatCustomers: 78.2,
-        referralRate: 34.5,
-        averageJobValue: 287.45,
-        preferredChannels: {
+        _referralRate: 34.5,
+        _averageJobValue: 287.45,
+        _preferredChannels: {
           mobile: 67,
-          web: 28,
-          phone: 5
+          _web: 28,
+          _phone: 5
         }
       },
-      retentionInsights: {
+      _retentionInsights: {
         riskFactors: [
           'Service delays > 2 days',
           'Price sensitivity in basic segment',
           'Competition in electronics repair'
         ],
-        improvementActions: [
+        _improvementActions: [
           'Implement priority scheduling',
           'Value-based pricing strategy',
           'Specialized electronics expertise'
@@ -97,24 +97,24 @@ export class EnhancedBusinessIntelligence {
 
   async generateOperationalInsights(): Promise<any> {
     return {
-      efficiency: {
+      _efficiency: {
         utilizationRate: 87.3,
-        averageJobTime: 4.2,
-        firstTimeFixRate: 89.1,
-        reworkRate: 2.3
+        _averageJobTime: 4.2,
+        _firstTimeFixRate: 89.1,
+        _reworkRate: 2.3
       },
-      resourceOptimization: {
+      _resourceOptimization: {
         technicianWorkload: 'balanced',
-        inventoryTurnover: 6.7,
-        facilityCapacity: 82.1
+        _inventoryTurnover: 6.7,
+        _facilityCapacity: 82.1
       },
-      processImprovement: {
+      _processImprovement: {
         bottlenecks: [
           'Parts ordering delays',
           'Complex diagnostic time',
           'Customer approval wait times'
         ],
-        solutions: [
+        _solutions: [
           'Automated supplier integration',
           'AI diagnostic assistance',
           'Mobile approval system'

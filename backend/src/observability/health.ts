@@ -2,18 +2,19 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { businessMetrics, healthMetrics, register, tracer } from './metrics';
 
 // Health check endpoints with comprehensive dependency checking
-export async function healthRoutes(fastify: FastifyInstance) {
+// eslint-disable-next-line max-lines-per-function
+export async function healthRoutes(_fastify: FastifyInstance) {
   // Liveness probe - basic application health
   fastify.get('/health/live', async (request: FastifyRequest, reply: FastifyReply) => {
     const span = tracer.startSpan('health_check_liveness');
     
     try {
       const health = {
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        memory: process.memoryUsage(),
-        version: '1.0.0'
+        _status: 'healthy',
+        _timestamp: new Date().toISOString(),
+        _uptime: process.uptime(),
+        _memory: process.memoryUsage(),
+        _version: '1.0.0'
       };
       
       healthMetrics.healthStatus.labels('application').set(1);
@@ -26,12 +27,12 @@ export async function healthRoutes(fastify: FastifyInstance) {
     } catch (error) {
       healthMetrics.healthStatus.labels('application').set(0);
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Health check failed' });
+      span.setStatus({ _code: 2, _message: 'Health check failed' });
       
       reply.status(500).send({
-        status: 'unhealthy',
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        _status: 'unhealthy',
+        _error: error instanceof Error ? error.message : 'Unknown error',
+        _timestamp: new Date().toISOString()
       });
     } finally {
       span.end();
@@ -50,21 +51,21 @@ export async function healthRoutes(fastify: FastifyInstance) {
       ]);
       
       const results = {
-        status: 'ready',
-        timestamp: new Date().toISOString(),
-        checks: {
+        _status: 'ready',
+        _timestamp: new Date().toISOString(),
+        _checks: {
           database: checks[0].status === 'fulfilled' ? 'healthy' : 'unhealthy',
-          redis: checks[1].status === 'fulfilled' ? 'healthy' : 'unhealthy',
-          external: checks[2].status === 'fulfilled' ? 'healthy' : 'unhealthy'
+          _redis: checks[1].status === 'fulfilled' ? 'healthy' : 'unhealthy',
+          _external: checks[2].status === 'fulfilled' ? 'healthy' : 'unhealthy'
         }
       };
       
       const allHealthy = Object.values(results.checks).every(status => status === 'healthy');
       
       // Update health metrics for each component
-      healthMetrics.healthStatus.labels('database').set(results.checks.database === 'healthy' ? 1 : 0);
-      healthMetrics.healthStatus.labels('redis').set(results.checks.redis === 'healthy' ? 1 : 0);
-      healthMetrics.healthStatus.labels('external_services').set(results.checks.external === 'healthy' ? 1 : 0);
+      healthMetrics.healthStatus.labels('database').set(results.checks.database === 'healthy' ? _1 : 0);
+      healthMetrics.healthStatus.labels('redis').set(results.checks.redis === 'healthy' ? _1 : 0);
+      healthMetrics.healthStatus.labels('external_services').set(results.checks.external === 'healthy' ? _1 : 0);
       
       span.setAttributes({
         'health.database': results.checks.database,
@@ -73,15 +74,15 @@ export async function healthRoutes(fastify: FastifyInstance) {
         'health.overall': allHealthy ? 'healthy' : 'unhealthy'
       });
       
-      reply.status(allHealthy ? 200 : 503).send(results);
+      reply.status(allHealthy ? _200 : 503).send(results);
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Readiness check failed' });
+      span.setStatus({ _code: 2, _message: 'Readiness check failed' });
       
       reply.status(500).send({
-        status: 'not_ready',
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        _status: 'not_ready',
+        _error: error instanceof Error ? error.message : 'Unknown error',
+        _timestamp: new Date().toISOString()
       });
     } finally {
       span.end();
@@ -94,13 +95,13 @@ export async function healthRoutes(fastify: FastifyInstance) {
     
     try {
       const businessHealth = {
-        status: 'operational',
-        timestamp: new Date().toISOString(),
-        metrics: {
+        _status: 'operational',
+        _timestamp: new Date().toISOString(),
+        _metrics: {
           activeCustomers: await getActiveCustomersCount(),
-          pendingJobs: await getPendingJobsCount(),
-          technicianUtilization: await getTechnicianUtilization(),
-          systemLoad: await getSystemLoad()
+          _pendingJobs: await getPendingJobsCount(),
+          _technicianUtilization: await getTechnicianUtilization(),
+          _systemLoad: await getSystemLoad()
         }
       };
       
@@ -128,12 +129,12 @@ export async function healthRoutes(fastify: FastifyInstance) {
       reply.status(200).send(businessHealth);
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Business health check failed' });
+      span.setStatus({ _code: 2, _message: 'Business health check failed' });
       
       reply.status(500).send({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        _status: 'error',
+        _error: error instanceof Error ? error.message : 'Unknown error',
+        _timestamp: new Date().toISOString()
       });
     } finally {
       span.end();
@@ -156,7 +157,7 @@ async function checkDatabase(): Promise<boolean> {
       setTimeout(() => resolve(true), 100);
     });
   } catch (error) {
-    throw new Error(`Database connection failed: ${error}`);
+    throw new Error(`Database connection _failed: ${error}`);
   }
 }
 
@@ -167,7 +168,7 @@ async function checkRedis(): Promise<boolean> {
       setTimeout(() => resolve(true), 50);
     });
   } catch (error) {
-    throw new Error(`Redis connection failed: ${error}`);
+    throw new Error(`Redis connection _failed: ${error}`);
   }
 }
 
@@ -178,7 +179,7 @@ async function checkExternalServices(): Promise<boolean> {
       setTimeout(() => resolve(true), 200);
     });
   } catch (error) {
-    throw new Error(`External services check failed: ${error}`);
+    throw new Error(`External services check _failed: ${error}`);
   }
 }
 

@@ -3,12 +3,15 @@
  * Tests the 12-state workflow system as specified in requirements
  */
 
-/* eslint-disable no-undef */
+ 
+/// <reference types="jest" />
+ 
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
 import Fastify, { FastifyInstance } from 'fastify';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('Job Sheet Lifecycle API Tests', () => {
   let app: FastifyInstance;
@@ -33,11 +36,11 @@ describe('Job Sheet Lifecycle API Tests', () => {
     // Mock job sheet routes
     app.post('/api/v1/jobs', async (request, reply: unknown) => {
       return reply.code(201).send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           jobId: `job_${Date.now()}`,
           _state: 'CREATED',
-          customerId: 'cust_123',
+          _customerId: 'cust_123',
           _technicianId: null,
           _device: 'iPhone 13',
           _issue: 'Screen replacement',
@@ -45,7 +48,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
           _estimatedCost: 250,
           _createdAt: new Date().toISOString()
         },
-        message: 'Job sheet created successfully'
+        _message: 'Job sheet created successfully'
       });
     });
 
@@ -55,14 +58,14 @@ describe('Job Sheet Lifecycle API Tests', () => {
       
       if (!jobStates.includes(state)) {
         return reply.code(400).send({
-          success: false,
-          error: 'Invalid job state'
+          _success: false,
+          _error: 'Invalid job state'
         });
       }
 
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           _jobId,
           _previousState: 'CREATED',
           _newState: state,
@@ -70,14 +73,14 @@ describe('Job Sheet Lifecycle API Tests', () => {
           _updatedAt: new Date().toISOString(),
           _automatedTransition: true
         },
-        message: `Job state updated to ${state}`
+        _message: `Job state updated to ${state}`
       });
     });
 
     app.get('/api/v1/jobs/:_jobId/workflow', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           availableStates: jobStates,
           _currentState: 'CREATED',
           _nextPossibleStates: ['IN_DIAGNOSIS', 'CANCELLED'],
@@ -92,8 +95,8 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     app.post('/api/v1/jobs/:_jobId/quality-check', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           qualityScore: 98.5,
           _checklistItems: [
             { item: 'Functionality Test', _status: 'passed' },
@@ -102,9 +105,9 @@ describe('Job Sheet Lifecycle API Tests', () => {
             { _item: 'Documentation Complete', _status: 'passed' }
           ],
           _sixSigmaCompliant: true,
-          approvedBy: 'supervisor_123'
+          _approvedBy: 'supervisor_123'
         },
-        message: 'Quality check completed successfully'
+        _message: 'Quality check completed successfully'
       });
     });
 
@@ -117,7 +120,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
   test('POST /api/v1/jobs - should create job sheet in CREATED state', async () => {
     const _jobData = {
-      customerId: 'cust_123',
+      _customerId: 'cust_123',
       _device: 'iPhone 13',
       _issue: 'Screen replacement',
       _priority: 'medium'
@@ -125,8 +128,8 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/jobs',
-      payload: _jobData
+      _url: '/api/v1/jobs',
+      _payload: _jobData
     });
 
     expect(response.statusCode).toBe(201);
@@ -134,7 +137,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     expect(body.success).toBe(true);
     expect(body.data?.state).toBe('CREATED');
     expect(body.data?.device).toBe('iPhone 13');
-    expect(body.data?._jobId).toMatch(/^job_\d+$/);
+    expect(body.data?.jobId).toMatch(/^job_\d+$/);
   });
 
   test('PUT /api/v1/jobs/:_jobId/state - should transition job state', async () => {
@@ -146,15 +149,15 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'PUT',
-      url: `/api/v1/jobs/${_jobId}/state`,
-      payload: stateUpdate
+      _url: `/api/v1/jobs/${_jobId}/state`,
+      _payload: stateUpdate
     });
 
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.payload);
     expect(body.success).toBe(true);
     expect(body.data?.newState).toBe('IN_DIAGNOSIS');
-    expect(body.data?._jobId).toBe(_jobId);
+    expect(body.data?.jobId).toBe(_jobId);
     expect(body.data?.automatedTransition).toBe(true);
   });
 
@@ -166,8 +169,8 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'PUT',
-      url: `/api/v1/jobs/${_jobId}/state`,
-      payload: invalidState
+      _url: `/api/v1/jobs/${_jobId}/state`,
+      _payload: invalidState
     });
 
     expect(response.statusCode).toBe(400);
@@ -178,8 +181,8 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
   test('GET /api/v1/jobs/:_jobId/workflow - should return workflow configuration', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/jobs/job_123/workflow'
+      _method: 'GET',
+      _url: '/api/v1/jobs/job_123/workflow'
     });
 
     expect(response.statusCode).toBe(200);
@@ -200,8 +203,8 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/jobs/job_123/quality-check',
-      payload: qualityData
+      _url: '/api/v1/jobs/job_123/quality-check',
+      _payload: qualityData
     });
 
     expect(response.statusCode).toBe(200);
@@ -215,9 +218,9 @@ describe('Job Sheet Lifecycle API Tests', () => {
   test('All 12 job states should be supported', async () => {
     for (const state of jobStates) {
       const response = await app.inject({
-        method: 'PUT',
-        url: '/api/v1/jobs/job_123/state',
-        payload: { state }
+        _method: 'PUT',
+        _url: '/api/v1/jobs/job_123/state',
+        _payload: { state }
       });
 
       expect(response.statusCode).toBe(200);

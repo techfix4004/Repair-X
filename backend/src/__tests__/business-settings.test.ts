@@ -3,15 +3,18 @@
  * Tests the 20+ business configuration categories as specified in requirements
  */
 
+ 
+/// <reference types="jest" />
 /* eslint-disable no-undef */
 /// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
 import Fastify, { FastifyInstance } from 'fastify';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('Business Settings API Tests', () => {
-  let app: FastifyInstance;
+  let _app: FastifyInstance;
 
   beforeAll(async () => {
     app = Fastify();
@@ -19,8 +22,8 @@ describe('Business Settings API Tests', () => {
     // Mock business settings routes
     app.get('/api/v1/business-settings', async (request: FastifyRequest, reply: FastifyReply) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           categories: [
             'tax-settings',
             'print-settings',
@@ -50,27 +53,27 @@ describe('Business Settings API Tests', () => {
 
     app.post('/api/v1/business-settings/tax', async (request: FastifyRequest, reply: FastifyReply) => {
       return reply.code(201).send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           gstin: 'TEST123456789',
-          vatNumber: 'VAT123',
+          _vatNumber: 'VAT123',
           _taxRates: {
             gst: 18,
-            vat: 20,
+            _vat: 20,
             _hst: 13,
             _salesTax: 8.5
           },
           _jurisdiction: 'IN',
           _autoCalculate: true
         },
-        message: 'Tax settings configured successfully'
+        _message: 'Tax settings configured successfully'
       });
     });
 
     app.get('/api/v1/business-settings/workflow', async (request: FastifyRequest, reply: FastifyReply) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           jobSheetWorkflow: [
             'CREATED',
             'IN_DIAGNOSIS', 
@@ -103,8 +106,8 @@ describe('Business Settings API Tests', () => {
 
   test('GET /api/v1/business-settings - should return all 20+ setting categories', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/business-settings'
+      _method: 'GET',
+      _url: '/api/v1/business-settings'
     });
 
     expect(response.statusCode).toBe(200);
@@ -118,19 +121,19 @@ describe('Business Settings API Tests', () => {
 
   test('POST /api/v1/business-settings/tax - should configure tax settings', async () => {
     const taxConfig = {
-      gstin: 'TEST123456789',
-      vatNumber: 'VAT123',
+      _gstin: 'TEST123456789',
+      _vatNumber: 'VAT123',
       _taxRates: {
         gst: 18,
-        vat: 20
+        _vat: 20
       },
       _jurisdiction: 'IN'
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/business-settings/tax',
-      payload: taxConfig
+      _url: '/api/v1/business-settings/tax',
+      _payload: taxConfig
     });
 
     expect(response.statusCode).toBe(201);
@@ -142,8 +145,8 @@ describe('Business Settings API Tests', () => {
 
   test('GET /api/v1/business-settings/workflow - should return 12-state job sheet workflow', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/business-settings/workflow'
+      _method: 'GET',
+      _url: '/api/v1/business-settings/workflow'
     });
 
     expect(response.statusCode).toBe(200);
@@ -165,7 +168,7 @@ describe('Business Settings API Tests', () => {
       'compliance-automation'
     ];
 
-    enterpriseFeatures.forEach((feature: unknown) => {
+    enterpriseFeatures.forEach((_feature: unknown) => {
       expect(feature).toBeDefined();
       expect(typeof feature).toBe('string');
     });

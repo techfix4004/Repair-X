@@ -206,7 +206,7 @@ export function RegisterForm({ defaultRole = 'CUSTOMER' }: RegisterFormProps) {
       await register({
         firstName: formData.firstName,
         lastName: formData.lastName,
-        email: formData.email,
+        _email: formData.email,
         phone: formData.phone,
         password: formData.password,
         role: formData.role,

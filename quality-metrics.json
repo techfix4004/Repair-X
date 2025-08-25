@@ -1,0 +1,48 @@
+{
+  "buildId": "17209405959",
+  "timestamp": "2025-08-25T12:56:22.906Z",
+  "defectRate": 2378,
+  "processCapabilityCp": 0.0014297729184188394,
+  "processCapabilityCpk": 0.0014297729184188394,
+  "cycleTime": 0,
+  "csat": 0,
+  "nps": 0,
+  "codeQuality": {
+    "coverage": 0,
+    "lintingIssues": 2378,
+    "securityVulnerabilities": 0,
+    "codeComplexity": 0,
+    "duplicateCode": 0
+  },
+  "buildMetrics": {
+    "buildTime": 36.326,
+    "testExecutionTime": 0,
+    "deploymentTime": 0,
+    "success": true
+  },
+  "complianceStatus": {
+    "gdpr": true,
+    "ccpa": true,
+    "pciDss": false,
+    "gst": false,
+    "sixSigma": false
+  },
+  "rootCauseAnalysis": [
+    {
+      "issue": "2378 linting violations detected",
+      "category": "Code Quality",
+      "severity": "HIGH",
+      "rootCause": "Inconsistent coding standards and insufficient pre-commit hooks",
+      "preventiveAction": "Implement stricter ESLint rules and automated code formatting",
+      "status": "OPEN"
+    },
+    {
+      "issue": "Test coverage below 80% (0%)",
+      "category": "Testing",
+      "severity": "MEDIUM",
+      "rootCause": "Insufficient test-driven development practices",
+      "preventiveAction": "Mandate minimum coverage thresholds and enforce TDD",
+      "status": "OPEN"
+    }
+  ]
+}

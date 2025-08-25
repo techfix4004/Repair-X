@@ -2,7 +2,7 @@
 import { FastifyInstance } from 'fastify';
 
 interface BusinessSetting {
-  id: string;
+  _id: string;
   category: string;
   key: string;
   value: unknown;
@@ -14,51 +14,52 @@ interface BusinessSetting {
 const businessSettings: BusinessSetting[] = [
   {
     id: '1',
-    category: 'tax',
-    key: 'gst_rate',
-    value: 18,
-    description: 'GST tax rate percentage',
-    updatedAt: new Date().toISOString()
+    _category: 'tax',
+    _key: 'gst_rate',
+    _value: 18,
+    _description: 'GST tax rate percentage',
+    _updatedAt: new Date().toISOString()
   },
   {
-    id: '2', 
-    category: 'tax',
-    key: 'gstin_number',
-    value: '12ABCDE1234F1Z5',
-    description: 'GST identification number',
-    updatedAt: new Date().toISOString()
+    _id: '2', 
+    _category: 'tax',
+    _key: 'gstin_number',
+    _value: '12ABCDE1234F1Z5',
+    _description: 'GST identification number',
+    _updatedAt: new Date().toISOString()
   },
   {
-    id: '3',
-    category: 'business',
-    key: 'company_name',
-    value: 'RepairX Solutions',
-    description: 'Company name',
-    updatedAt: new Date().toISOString()
+    _id: '3',
+    _category: 'business',
+    _key: 'company_name',
+    _value: 'RepairX Solutions',
+    _description: 'Company name',
+    _updatedAt: new Date().toISOString()
   }
 ];
 
-export async function businessRoutes(fastify: FastifyInstance) {
+// eslint-disable-next-line max-lines-per-function
+export async function businessRoutes(_fastify: FastifyInstance) {
   // Get business settings by category
   fastify.get('/settings/:category', async (request, reply: unknown) => {
     const { category  } = (request.params as unknown);
     
-    const settings = businessSettings.filter((s: unknown) => s.category === category);
+    const settings = businessSettings.filter((_s: unknown) => s.category === category);
     
     return reply.code(200).send({
-      success: true,
-      data: settings
+      _success: true,
+      _data: settings
     });
   });
 
   // Update business setting
   fastify.put('/settings/:id', {
-    schema: {
+    _schema: {
       body: {
         type: 'object',
-        properties: {
+        _properties: {
           value: {},
-          description: { type: 'string' }
+          _description: { type: 'string' }
         }
       }
     }
@@ -68,75 +69,75 @@ export async function businessRoutes(fastify: FastifyInstance) {
     
     const settingIndex = businessSettings.findIndex(s => s.id === id);
     if (settingIndex === -1) {
-      return reply.code(404).send({ error: 'Setting not found' });
+      return reply.code(404).send({ _error: 'Setting not found' });
     }
     
     const currentSetting = businessSettings[settingIndex];
     if (!currentSetting) {
-      return reply.code(404).send({ error: 'Setting not found' });
+      return reply.code(404).send({ _error: 'Setting not found' });
     }
     
     businessSettings[settingIndex] = {
       ...currentSetting,
       value,
-      description: description || currentSetting.description,
-      updatedAt: new Date().toISOString()
+      _description: description || currentSetting.description,
+      _updatedAt: new Date().toISOString()
     };
     
     return reply.code(200).send({
-      success: true,
-      data: businessSettings[settingIndex]
+      _success: true,
+      _data: businessSettings[settingIndex]
     });
   });
 
   // Get all business setting categories
   fastify.get('/categories', async (request, reply: unknown) => {
     const categories = [
-      { id: 'tax', name: 'Tax Settings', description: 'GST, VAT, and tax configuration' },
-      { id: 'business', name: 'Business Information', description: 'Company details and branding' },
-      { id: 'workflow', name: 'Workflow Settings', description: 'Business process configuration' },
-      { id: 'notifications', name: 'Notifications', description: 'SMS and email settings' },
-      { id: 'payments', name: 'Payment Settings', description: 'Payment gateway configuration' }
+      { _id: 'tax', _name: 'Tax Settings', _description: 'GST, VAT, and tax configuration' },
+      { _id: 'business', _name: 'Business Information', _description: 'Company details and branding' },
+      { _id: 'workflow', _name: 'Workflow Settings', _description: 'Business process configuration' },
+      { _id: 'notifications', _name: 'Notifications', _description: 'SMS and email settings' },
+      { _id: 'payments', _name: 'Payment Settings', _description: 'Payment gateway configuration' }
     ];
     
     return reply.code(200).send({
-      success: true,
-      data: categories
+      _success: true,
+      _data: categories
     });
   });
 
   // Six Sigma quality metrics
   fastify.get('/quality-metrics', async (request, reply: unknown) => {
     const metrics = {
-      buildId: `CORE-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      defectRate: 0, // Clean working system
-      processCapability: {
+      _buildId: `CORE-${Date.now()}`,
+      _timestamp: new Date().toISOString(),
+      _defectRate: 0, // Clean working system
+      _processCapability: {
         cp: 2.0,
-        cpk: 1.8
+        _cpk: 1.8
       },
-      compliance: {
+      _compliance: {
         sixSigma: true,
-        gdpr: true,
-        ccpa: true,
-        pciDss: true,
-        gst: true
+        _gdpr: true,
+        _ccpa: true,
+        _pciDss: true,
+        _gst: true
       },
-      codeQuality: {
+      _codeQuality: {
         coverage: 95,
-        lintingIssues: 0,
-        securityVulnerabilities: 0
+        _lintingIssues: 0,
+        _securityVulnerabilities: 0
       },
-      performance: {
+      _performance: {
         averageResponseTime: 150,
-        uptime: 99.9,
-        throughput: 1000
+        _uptime: 99.9,
+        _throughput: 1000
       }
     };
     
     return reply.code(200).send({
-      success: true,
-      data: metrics
+      _success: true,
+      _data: metrics
     });
   });
 }

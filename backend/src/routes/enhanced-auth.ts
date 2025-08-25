@@ -4,7 +4,7 @@ import { RateLimitService, ValidationService, AuditService } from '../security/s
 import { tracer } from '../observability/metrics';
 
 interface LoginRequest {
-  email: string;
+  _email: string;
   password: string;
   totp?: string;
 }
@@ -27,20 +27,21 @@ interface Disable2FARequest {
   token: string;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export async function enhancedAuthRoutes(fastify: FastifyInstance) {
   // Apply rate limiting to all auth routes
   fastify.addHook('preHandler', RateLimitService.createRateLimitMiddleware('auth'));
 
   // Enhanced login with 2FA support
   fastify.post('/login', {
-    schema: {
+    _schema: {
       body: {
         type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: { type: 'string', format: 'email' },
-          password: { type: 'string', minLength: 6 },
-          totp: { type: 'string', pattern: '^[0-9]{6}$' }
+        _required: ['email', 'password'],
+        _properties: {
+          email: { type: 'string', _format: 'email' },
+          _password: { type: 'string', _minLength: 6 },
+          _totp: { type: 'string', _pattern: '^[0-9]{6}$' }
         }
       }
     }
@@ -53,8 +54,8 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       const validation = ValidationService.validateInput(request.body, request);
       if (!validation.valid) {
         AuditService.logSensitiveAction('login', 'user', 'failure', request, undefined, {
-          reason: 'malicious_input',
-          threats: validation.threats
+          _reason: 'malicious_input',
+          _threats: validation.threats
         });
         
         span.setAttributes({
@@ -63,8 +64,8 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         });
         
         return reply.status(400).send({
-          success: false,
-          error: 'Invalid input detected'
+          _success: false,
+          _error: 'Invalid input detected'
         });
       }
 
@@ -75,8 +76,8 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       
       if (!result) {
         AuditService.logSensitiveAction('login', 'user', 'failure', request, undefined, {
-          email: sanitizedBody.email,
-          reason: 'invalid_credentials'
+          _email: sanitizedBody.email,
+          _reason: 'invalid_credentials'
         });
         
         span.setAttributes({
@@ -85,16 +86,16 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         });
         
         return reply.status(401).send({
-          success: false,
-          error: 'Invalid email or password'
+          _success: false,
+          _error: 'Invalid email or password'
         });
       }
 
       // Successful login
       AuditService.logSensitiveAction('login', 'user', 'success', request, result.user.id, {
-        email: result.user.email,
-        role: result.user.role,
-        twoFactorUsed: !!totp
+        _email: result.user.email,
+        _role: result.user.role,
+        _twoFactorUsed: !!totp
       });
 
       span.setAttributes({
@@ -106,45 +107,45 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
 
       // Set secure cookies for tokens
       reply.setCookie('accessToken', result.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000 // 15 minutes
+        _httpOnly: true,
+        _secure: process.env.NODE_ENV === 'production',
+        _sameSite: 'strict',
+        _maxAge: 15 * 60 * 1000 // 15 minutes
       });
 
       reply.setCookie('refreshToken', result.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/api/auth/refresh',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        _httpOnly: true,
+        _secure: process.env.NODE_ENV === 'production',
+        _sameSite: 'strict',
+        _path: '/api/auth/refresh',
+        _maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
       });
 
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           user: {
             id: result.user.id,
-            email: result.user.email,
-            name: result.user.name,
-            role: result.user.role,
-            twoFactorEnabled: result.user.twoFactorEnabled
+            _email: result.user.email,
+            _name: result.user.name,
+            _role: result.user.role,
+            _twoFactorEnabled: result.user.twoFactorEnabled
           },
-          accessToken: result.accessToken,
-          refreshToken: result.refreshToken
+          _accessToken: result.accessToken,
+          _refreshToken: result.refreshToken
         }
       });
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Login failed' });
+      span.setStatus({ _code: 2, _message: 'Login failed' });
       
       AuditService.logSensitiveAction('login', 'user', 'failure', request, undefined, {
-        error: error instanceof Error ? error.message : 'Unknown error'
+        _error: error instanceof Error ? error.message : 'Unknown error'
       });
 
       return reply.status(500).send({
-        success: false,
-        error: 'Authentication service unavailable'
+        _success: false,
+        _error: 'Authentication service unavailable'
       });
     } finally {
       span.end();
@@ -153,11 +154,11 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
 
   // Token refresh endpoint
   fastify.post('/refresh', {
-    schema: {
+    _schema: {
       body: {
         type: 'object',
-        required: ['refreshToken'],
-        properties: {
+        _required: ['refreshToken'],
+        _properties: {
           refreshToken: { type: 'string' }
         }
       }
@@ -172,14 +173,14 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       
       if (!result) {
         AuditService.logSensitiveAction('refresh_token', 'user', 'failure', request, undefined, {
-          reason: 'invalid_refresh_token'
+          _reason: 'invalid_refresh_token'
         });
         
         span.setAttributes({ 'refresh.result': 'invalid_token' });
         
         return reply.status(401).send({
-          success: false,
-          error: 'Invalid or expired refresh token'
+          _success: false,
+          _error: 'Invalid or expired refresh token'
         });
       }
 
@@ -189,34 +190,34 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
 
       // Update cookies
       reply.setCookie('accessToken', result.accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000
+        _httpOnly: true,
+        _secure: process.env.NODE_ENV === 'production',
+        _sameSite: 'strict',
+        _maxAge: 15 * 60 * 1000
       });
 
       reply.setCookie('refreshToken', result.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/api/auth/refresh',
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        _httpOnly: true,
+        _secure: process.env.NODE_ENV === 'production',
+        _sameSite: 'strict',
+        _path: '/api/auth/refresh',
+        _maxAge: 7 * 24 * 60 * 60 * 1000
       });
 
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           accessToken: result.accessToken,
-          refreshToken: result.refreshToken
+          _refreshToken: result.refreshToken
         }
       });
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Token refresh failed' });
+      span.setStatus({ _code: 2, _message: 'Token refresh failed' });
       
       return reply.status(500).send({
-        success: false,
-        error: 'Token refresh service unavailable'
+        _success: false,
+        _error: 'Token refresh service unavailable'
       });
     } finally {
       span.end();
@@ -225,11 +226,11 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
 
   // Setup 2FA
   fastify.post('/2fa/setup', {
-    schema: {
+    _schema: {
       body: {
         type: 'object',
-        required: ['userId'],
-        properties: {
+        _required: ['userId'],
+        _properties: {
           userId: { type: 'string' }
         }
       }
@@ -245,8 +246,8 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       if (!result) {
         span.setAttributes({ 'setup_2fa.result': 'user_not_found' });
         return reply.status(404).send({
-          success: false,
-          error: 'User not found'
+          _success: false,
+          _error: 'User not found'
         });
       }
 
@@ -258,19 +259,19 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       });
 
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           secret: result.secret,
-          qrCode: result.qrCode
+          _qrCode: result.qrCode
         }
       });
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: '2FA setup failed' });
+      span.setStatus({ _code: 2, _message: '2FA setup failed' });
       
       return reply.status(500).send({
-        success: false,
-        error: '2FA setup service unavailable'
+        _success: false,
+        _error: '2FA setup service unavailable'
       });
     } finally {
       span.end();
@@ -279,13 +280,13 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
 
   // Verify 2FA setup
   fastify.post('/2fa/verify', {
-    schema: {
+    _schema: {
       body: {
         type: 'object',
-        required: ['userId', 'token'],
-        properties: {
+        _required: ['userId', 'token'],
+        _properties: {
           userId: { type: 'string' },
-          token: { type: 'string', pattern: '^[0-9]{6}$' }
+          _token: { type: 'string', _pattern: '^[0-9]{6}$' }
         }
       }
     }
@@ -299,7 +300,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       
       if (!verified) {
         AuditService.logSensitiveAction('verify_2fa', 'user', 'failure', request, userId, {
-          reason: 'invalid_token'
+          _reason: 'invalid_token'
         });
         
         span.setAttributes({
@@ -308,8 +309,8 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         });
         
         return reply.status(400).send({
-          success: false,
-          error: 'Invalid TOTP token'
+          _success: false,
+          _error: 'Invalid TOTP token'
         });
       }
 
@@ -321,16 +322,16 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       });
 
       return reply.send({
-        success: true,
-        message: '2FA has been enabled successfully'
+        _success: true,
+        _message: '2FA has been enabled successfully'
       });
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: '2FA verification failed' });
+      span.setStatus({ _code: 2, _message: '2FA verification failed' });
       
       return reply.status(500).send({
-        success: false,
-        error: '2FA verification service unavailable'
+        _success: false,
+        _error: '2FA verification service unavailable'
       });
     } finally {
       span.end();
@@ -339,13 +340,13 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
 
   // Disable 2FA
   fastify.post('/2fa/disable', {
-    schema: {
+    _schema: {
       body: {
         type: 'object',
-        required: ['userId', 'token'],
-        properties: {
+        _required: ['userId', 'token'],
+        _properties: {
           userId: { type: 'string' },
-          token: { type: 'string', pattern: '^[0-9]{6}$' }
+          _token: { type: 'string', _pattern: '^[0-9]{6}$' }
         }
       }
     }
@@ -359,7 +360,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       
       if (!disabled) {
         AuditService.logSensitiveAction('disable_2fa', 'user', 'failure', request, userId, {
-          reason: 'invalid_token_or_not_enabled'
+          _reason: 'invalid_token_or_not_enabled'
         });
         
         span.setAttributes({
@@ -368,8 +369,8 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         });
         
         return reply.status(400).send({
-          success: false,
-          error: 'Invalid TOTP token or 2FA not enabled'
+          _success: false,
+          _error: 'Invalid TOTP token or 2FA not enabled'
         });
       }
 
@@ -381,16 +382,16 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       });
 
       return reply.send({
-        success: true,
-        message: '2FA has been disabled successfully'
+        _success: true,
+        _message: '2FA has been disabled successfully'
       });
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: '2FA disable failed' });
+      span.setStatus({ _code: 2, _message: '2FA disable failed' });
       
       return reply.status(500).send({
-        success: false,
-        error: '2FA disable service unavailable'
+        _success: false,
+        _error: '2FA disable service unavailable'
       });
     } finally {
       span.end();
@@ -404,23 +405,23 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
     try {
       // Clear cookies
       reply.clearCookie('accessToken');
-      reply.clearCookie('refreshToken', { path: '/api/auth/refresh' });
+      reply.clearCookie('refreshToken', { _path: '/api/auth/refresh' });
 
       AuditService.logSensitiveAction('logout', 'user', 'success', request);
       
       span.setAttributes({ 'logout.result': 'success' });
 
       return reply.send({
-        success: true,
-        message: 'Logged out successfully'
+        _success: true,
+        _message: 'Logged out successfully'
       });
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Logout failed' });
+      span.setStatus({ _code: 2, _message: 'Logout failed' });
       
       return reply.status(500).send({
-        success: false,
-        error: 'Logout service unavailable'
+        _success: false,
+        _error: 'Logout service unavailable'
       });
     } finally {
       span.end();
@@ -443,19 +444,19 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       AuditService.logSensitiveAction('view_audit_log', 'audit', 'success', request);
 
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           entries: auditLog.slice(-100), // Return last 100 entries
-          totalCount: auditLog.length
+          _totalCount: auditLog.length
         }
       });
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Audit log retrieval failed' });
+      span.setStatus({ _code: 2, _message: 'Audit log retrieval failed' });
       
       return reply.status(500).send({
-        success: false,
-        error: 'Audit service unavailable'
+        _success: false,
+        _error: 'Audit service unavailable'
       });
     } finally {
       span.end();

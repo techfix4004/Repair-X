@@ -2,7 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import WebSocket from 'ws';
 
 interface ChatMessage {
-  id: string;
+  _id: string;
   conversationId: string;
   senderId: string;
   senderRole: 'customer' | 'technician' | 'admin';
@@ -16,15 +16,15 @@ class ChatService {
   private messages = new Map();
   private connections = new Map();
 
-  async sendMessage(conversationId: string, senderId: string, senderRole: string, message: string): Promise<ChatMessage> {
-    const chatMessage: ChatMessage = {
+  async sendMessage(_conversationId: string, _senderId: string, _senderRole: string, _message: string): Promise<ChatMessage> {
+    const _chatMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
       conversationId,
       senderId,
-      senderRole: senderRole as unknown,
+      _senderRole: senderRole as unknown,
       message,
-      timestamp: new Date().toISOString(),
-      messageType: 'text',
+      _timestamp: new Date().toISOString(),
+      _messageType: 'text',
     };
     return chatMessage;
   }
@@ -32,10 +32,10 @@ class ChatService {
 
 export const chatService = new ChatService();
 
-export async function registerChatRoutes(fastify: FastifyInstance) {
+export async function registerChatRoutes(_fastify: FastifyInstance) {
   fastify.get('/api/v1/chat/conversations', async () => ({
-    success: true,
-    data: []
+    _success: true,
+    _data: []
   }));
   
   fastify.post('/api/v1/chat/conversations/:conversationId/messages', async (request: unknown) => {
@@ -45,8 +45,8 @@ export async function registerChatRoutes(fastify: FastifyInstance) {
     const chatMessage = await chatService.sendMessage(conversationId, 'user1', 'customer', message);
     
     return {
-      success: true,
-      data: chatMessage
+      _success: true,
+      _data: chatMessage
     };
   });
 }

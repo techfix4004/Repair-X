@@ -24,13 +24,13 @@ interface BusinessSettingsCategory {
 // Category 1: Tax Settings
 const TaxSettingsSchema = z.object({
   gstin: z.string().min(15).max(15).optional(),
-  vatNumber: z.string().optional(),
+  _vatNumber: z.string().optional(),
   _hstNumber: z.string().optional(),
   _taxRates: z.object({
     gst: z.number().min(0).max(50).default(18),
     _sgst: z.number().min(0).max(50).default(9),
     _cgst: z.number().min(0).max(50).default(9),
-    vat: z.number().min(0).max(30).default(20),
+    _vat: z.number().min(0).max(30).default(20),
     _hst: z.number().min(0).max(25).default(13),
     _salesTax: z.number().min(0).max(15).default(8.5),
   }),
@@ -72,10 +72,10 @@ const PrintSettingsSchema = z.object({
     _receipt: z.object({
       thermalWidth: z.enum(['58', '80']).default('80'),
       _includeLogo: z.boolean().default(true),
-      contactInfo: z.boolean().default(true),
+      _contactInfo: z.boolean().default(true),
     }),
   }),
-  branding: z.object({
+  _branding: z.object({
     logo: z.string().optional(),
     _companyName: z.string(),
     _tagline: z.string().optional(),
@@ -93,12 +93,12 @@ const WorkflowConfigSchema = z.object({
     states: z.array(z.object({
       id: z.string(),
       _name: z.string(),
-      description: z.string(),
+      _description: z.string(),
       _autoTransition: z.boolean().default(false),
       _requiredFields: z.array(z.string()).default([]),
       _notifications: z.array(z.object({
         type: z.enum(['SMS', 'EMAIL', 'PUSH']),
-        template: z.string(),
+        _template: z.string(),
         _recipients: z.array(z.string()),
       })),
     })),
@@ -112,13 +112,13 @@ const WorkflowConfigSchema = z.object({
       })),
     }),
   }),
-  approvalWorkflows: z.object({
+  _approvalWorkflows: z.object({
     quotations: z.object({
       multiLevel: z.boolean().default(false),
-      approvers: z.array(z.object({
+      _approvers: z.array(z.object({
         userId: z.string(),
         _role: z.string(),
-        maxAmount: z.number().optional(),
+        _maxAmount: z.number().optional(),
       })),
       _timeoutHours: z.number().default(24),
     }),
@@ -126,7 +126,7 @@ const WorkflowConfigSchema = z.object({
       enabled: z.boolean().default(true),
       _thresholds: z.array(z.object({
         amount: z.number(),
-        approverRole: z.string(),
+        _approverRole: z.string(),
       })),
     }),
   }),
@@ -145,12 +145,12 @@ const EmailSettingsSchema = z.object({
     _connectionTimeout: z.number().default(30000),
     _rateLimiting: z.object({
       enabled: z.boolean().default(true),
-      maxPerHour: z.number().default(100),
+      _maxPerHour: z.number().default(100),
     }),
   }),
-  templates: z.record(z.string(), z.object({
-    subject: z.string(),
-    body: z.string(),
+  _templates: z.record(z.string(), z.object({
+    _subject: z.string(),
+    _body: z.string(),
     _variables: z.array(z.string()).default([]),
     _enabled: z.boolean().default(true),
     _scheduling: z.object({
@@ -185,8 +185,8 @@ const SmsSettingsSchema = z.object({
       _triggerBalance: z.number().default(50),
     }),
   }),
-  templates: z.record(z.string(), z.object({
-    message: z.string().max(160),
+  _templates: z.record(z.string(), z.object({
+    _message: z.string().max(160),
     _variables: z.array(z.string()),
     _enabled: z.boolean().default(true),
   })),
@@ -255,7 +255,7 @@ const CustomerDatabaseSchema = z.object({
       _optOutManagement: z.boolean().default(true),
       _frequencyCapping: z.object({
         maxPerDay: z.number().default(3),
-        maxPerWeek: z.number().default(10),
+        _maxPerWeek: z.number().default(10),
       }),
     }),
     _history: z.object({
@@ -297,7 +297,7 @@ const InvoiceSettingsSchema = z.object({
     _autoSend: z.boolean().default(true),
     _reminderSchedule: z.array(z.object({
       daysBefore: z.number(),
-      template: z.string(),
+      _template: z.string(),
     })),
   }),
   _multiCurrency: z.object({
@@ -311,12 +311,12 @@ const InvoiceSettingsSchema = z.object({
 const QuotationSettingsSchema = z.object({
   workflow: z.object({
     requireApproval: z.boolean().default(false),
-    approvalHierarchy: z.array(z.object({
+    _approvalHierarchy: z.array(z.object({
       role: z.string(),
       _threshold: z.number(),
     })),
     _revisionTracking: z.boolean().default(true),
-    maxRevisions: z.number().default(5),
+    _maxRevisions: z.number().default(5),
   }),
   _validity: z.object({
     defaultDays: z.number().default(30),
@@ -354,7 +354,7 @@ const PaymentSettingsSchema = z.object({
       fixedFee: z.number().default(0),
       _percentageFee: z.number().default(0),
     }),
-    credentials: z.record(z.string(), z.string()),
+    _credentials: z.record(z.string(), z.string()),
   })),
   _methods: z.object({
     creditCard: z.boolean().default(true),
@@ -375,7 +375,7 @@ const PaymentSettingsSchema = z.object({
   _installments: z.object({
     enabled: z.boolean().default(true),
     _minAmount: z.number().default(100),
-    maxInstallments: z.number().default(12),
+    _maxInstallments: z.number().default(12),
     _interestRate: z.number().default(0),
   }),
 });
@@ -404,11 +404,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     id: 'tax_settings',
     _name: 'Tax Settings',
-    description: 'Multi-jurisdiction tax configuration and automated calculations',
+    _description: 'Multi-jurisdiction tax configuration and automated calculations',
     _icon: '💰',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'GST/VAT/HST/Sales Tax support',
       'Multi-jurisdiction compliance',
       'Automated tax calculations',
@@ -427,11 +427,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'printtemplates',
     _name: 'Print Settings & Templates',
-    description: 'Customizable document templates for all business needs',
+    _description: 'Customizable document templates for all business needs',
     _icon: '🖨️',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Job sheet templates',
       'Invoice templates',
       'Quotation templates',
@@ -451,11 +451,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'workflow_config',
     _name: 'Workflow Configuration',
-    description: 'Visual business process designer with automated rules',
+    _description: 'Visual business process designer with automated rules',
     _icon: '⚙️',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Drag-and-drop workflow designer',
       '12-state job lifecycle',
       'Conditional logic',
@@ -467,17 +467,17 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
     _schema: WorkflowConfigSchema,
     _defaultConfig: {
       jobLifecycle: { automation: { enabled: true } },
-      approvalWorkflows: { quotations: { multiLevel: false } },
+      _approvalWorkflows: { quotations: { multiLevel: false } },
     },
   },
   {
     _id: 'email_settings',
     _name: 'Email Settings',
-    description: 'SMTP configuration and automated communication templates',
+    _description: 'SMTP configuration and automated communication templates',
     _icon: '📧',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'SMTP configuration',
       'Template management',
       'Automated triggers',
@@ -495,11 +495,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'sms_settings',
     _name: 'SMS Settings',
-    description: 'Credit management and gateway integration',
+    _description: 'Credit management and gateway integration',
     _icon: '📱',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Multi-gateway support',
       'Credit-based billing',
       'Template management',
@@ -517,11 +517,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'employee_management',
     _name: 'Employee Management',
-    description: 'Staff onboarding and performance tracking',
+    _description: 'Staff onboarding and performance tracking',
     _icon: '👥',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Role management',
       'Onboarding workflows',
       'Performance tracking',
@@ -539,11 +539,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'customer_database',
     _name: 'Customer Database',
-    description: 'CRM configuration and data management',
+    _description: 'CRM configuration and data management',
     _icon: '👤',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Custom profile fields',
       'Customer segmentation',
       'Communication preferences',
@@ -561,11 +561,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'invoice_settings',
     _name: 'Invoice Settings',
-    description: 'Automated generation and compliance rules',
+    _description: 'Automated generation and compliance rules',
     _icon: '📄',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Custom numbering',
       'Payment terms',
       'Multi-currency support',
@@ -584,11 +584,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'quotation_settings',
     _name: 'Quotation Settings',
-    description: 'Multi-approval workflows and terms',
+    _description: 'Multi-approval workflows and terms',
     _icon: '📋',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Approval workflows',
       'Revision tracking',
       'Validity management',
@@ -600,17 +600,17 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
     _schema: QuotationSettingsSchema,
     _defaultConfig: {
       validity: { defaultDays: 30, _reminderDays: [7, 3, 1] },
-      _workflow: { revisionTracking: true, maxRevisions: 5 },
+      _workflow: { revisionTracking: true, _maxRevisions: 5 },
     },
   },
   {
     _id: 'payment_settings',
     _name: 'Payment Settings',
-    description: 'Gateway configuration and collection rules',
+    _description: 'Gateway configuration and collection rules',
     _icon: '💳',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Multiple payment gateways',
       'PCI DSS compliance',
       'Fraud detection',
@@ -622,18 +622,18 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
     _schema: PaymentSettingsSchema,
     _defaultConfig: {
       security: { pciCompliance: true, _tokenization: true },
-      _installments: { enabled: true, maxInstallments: 12 },
+      _installments: { enabled: true, _maxInstallments: 12 },
     },
   },
   // Categories 11-_20: Additional comprehensive categories
   {
     id: 'address_location',
     _name: 'Address/Location Settings',
-    description: 'Service area and territory management',
+    _description: 'Service area and territory management',
     _icon: '📍',
     _priority: 'MEDIUM',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Service area mapping',
       'Territory assignment',
       'Route optimization',
@@ -650,11 +650,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'reminder_system',
     _name: 'Reminder System',
-    description: 'Automated follow-ups and escalation',
+    _description: 'Automated follow-ups and escalation',
     _icon: '⏰',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Multi-channel reminders',
       'Escalation chains',
       'Custom templates',
@@ -668,7 +668,7 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
         _triggers: z.array(z.object({
           daysBefore: z.number(),
           _channel: z.enum(['SMS', 'EMAIL', 'PUSH']),
-          template: z.string(),
+          _template: z.string(),
         })),
       })),
       _escalation: z.object({
@@ -681,7 +681,7 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
     }),
     _defaultConfig: {
       schedules: [
-        { type: 'PAYMENT', _triggers: [{ daysBefore: 7, _channel: 'EMAIL', template: 'payment_reminder' }] }
+        { type: 'PAYMENT', _triggers: [{ daysBefore: 7, _channel: 'EMAIL', _template: 'payment_reminder' }] }
       ],
       _escalation: { enabled: true },
     },
@@ -689,11 +689,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'businessinformation',
     _name: 'Business Information',
-    description: 'Company profiles and branding',
+    _description: 'Company profiles and branding',
     _icon: '🏢',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Multi-location support',
       'Business hours management',
       'Legal information',
@@ -712,10 +712,10 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
         name: z.string(),
         _address: z.string(),
         _phone: z.string(),
-        email: z.string(),
+        _email: z.string(),
         _hours: z.record(z.string(), z.string()),
       })),
-      branding: z.object({
+      _branding: z.object({
         primaryColor: z.string(),
         _secondaryColor: z.string(),
         _logo: z.string(),
@@ -724,17 +724,17 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
     }),
     _defaultConfig: {
       company: { name: 'RepairX Service Center' },
-      branding: { primaryColor: '#2563eb', _secondaryColor: '#64748b' },
+      _branding: { primaryColor: '#2563eb', _secondaryColor: '#64748b' },
     },
   },
   {
     _id: 'sequence_settings',
     _name: 'Sequence Settings',
-    description: 'Automated numbering systems',
+    _description: 'Automated numbering systems',
     _icon: '🔢',
     _priority: 'MEDIUM',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Custom number formats',
       'Auto-increment rules',
       'Reset schedules',
@@ -763,11 +763,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'expense_management',
     _name: 'Expense Management',
-    description: 'Category and budget configuration',
+    _description: 'Category and budget configuration',
     _icon: '💸',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Category hierarchy',
       'Budget tracking',
       'OCR receipt processing',
@@ -779,15 +779,15 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
     _schema: z.object({
       categories: z.array(z.object({
         name: z.string(),
-        code: z.string(),
+        _code: z.string(),
         _budget: z.number(),
         _taxDeductible: z.boolean(),
         _requiresReceipt: z.boolean(),
       })),
-      approval: z.object({
+      _approval: z.object({
         thresholds: z.array(z.object({
           amount: z.number(),
-          approverRole: z.string(),
+          _approverRole: z.string(),
         })),
         _autoApprove: z.boolean().default(false),
       }),
@@ -799,21 +799,21 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
     }),
     _defaultConfig: {
       categories: [
-        { name: 'Office Supplies', code: 'OFF', _budget: 1000, _taxDeductible: true, _requiresReceipt: true },
-        { _name: 'Travel', code: 'TRV', _budget: 5000, _taxDeductible: true, _requiresReceipt: true },
+        { name: 'Office Supplies', _code: 'OFF', _budget: 1000, _taxDeductible: true, _requiresReceipt: true },
+        { _name: 'Travel', _code: 'TRV', _budget: 5000, _taxDeductible: true, _requiresReceipt: true },
       ],
-      approval: { autoApprove: false },
+      _approval: { autoApprove: false },
       _ocr: { enabled: true },
     },
   },
   {
     _id: 'parts_inventory',
     _name: 'Parts Inventory Settings',
-    description: 'Stock management and automation',
+    _description: 'Stock management and automation',
     _icon: '📦',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Multi-location inventory',
       'Barcode/QR scanning',
       'Automated reordering',
@@ -835,7 +835,7 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
       }),
       _suppliers: z.array(z.object({
         name: z.string(),
-        contactInfo: z.object({
+        _contactInfo: z.object({
           email: z.string(),
           _phone: z.string(),
         }),
@@ -852,11 +852,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'outsourcing_settings',
     _name: 'Outsourcing Settings',
-    description: 'External provider network',
+    _description: 'External provider network',
     _icon: '🤝',
     _priority: 'MEDIUM',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Provider onboarding',
       'Service category mapping',
       'Commission management',
@@ -893,11 +893,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'quality_settings',
     _name: 'Quality Settings',
-    description: 'Six Sigma standards and checkpoints',
+    _description: 'Six Sigma standards and checkpoints',
     _icon: '⭐',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Quality checkpoints',
       'Defect tracking',
       'Root cause analysis',
@@ -931,11 +931,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'security_settings',
     _name: 'Security Settings',
-    description: 'Access controls and audit configuration',
+    _description: 'Access controls and audit configuration',
     _icon: '🔐',
     _priority: 'HIGH',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'Role-based access control',
       'Multi-factor authentication',
       'Session management',
@@ -973,11 +973,11 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
   {
     _id: 'integration_settings',
     _name: 'Integration Settings',
-    description: 'Third-party APIs and data sync',
+    _description: 'Third-party APIs and data sync',
     _icon: '🔗',
     _priority: 'MEDIUM',
     _implementation: 'COMPLETE',
-    features: [
+    _features: [
       'API key management',
       'Webhook configuration',
       'Data synchronization',
@@ -1023,15 +1023,16 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
 /**
  * Business Settings Management Routes
  */
+ 
 // eslint-disable-next-line max-lines-per-function
 export default async function businessManagementRoutes(_fastify: FastifyInstance) {
   // Get all business settings categories
   fastify.get('/business-settings/categories', async (request: FastifyRequest, reply: FastifyReply) => {
     return reply.send({
       _success: true,
-      data: BUSINESS_SETTINGS_CATEGORIES,
+      _data: BUSINESS_SETTINGS_CATEGORIES,
       _total: BUSINESS_SETTINGS_CATEGORIES.length,
-      message: '20+ comprehensive business configuration categories loaded successfully',
+      _message: '20+ comprehensive business configuration categories loaded successfully',
     });
   });
 
@@ -1041,17 +1042,17 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
   }>, reply: FastifyReply) => {
     const { categoryId  } = (request.params as unknown);
     
-    const category = BUSINESS_SETTINGS_CATEGORIES.find((c: unknown) => c.id === categoryId);
+    const category = BUSINESS_SETTINGS_CATEGORIES.find((_c: unknown) => c.id === categoryId);
     if (!category) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        error: 'Category not found',
+        _error: 'Category not found',
       });
     }
 
     return reply.send({
       _success: true,
-      data: category,
+      _data: category,
     });
   });
 
@@ -1063,11 +1064,11 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
     const { categoryId  } = (request.params as unknown);
     const settings = request.body;
     
-    const category = BUSINESS_SETTINGS_CATEGORIES.find((c: unknown) => c.id === categoryId);
+    const category = BUSINESS_SETTINGS_CATEGORIES.find((_c: unknown) => c.id === categoryId);
     if (!category) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        error: 'Category not found',
+        _error: 'Category not found',
       });
     }
 
@@ -1079,13 +1080,13 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
       // For now, return success with validated data
       return reply.send({
         _success: true,
-        data: validatedSettings,
-        message: `${category.name} settings updated successfully`,
+        _data: validatedSettings,
+        _message: `${category.name} settings updated successfully`,
       });
     } catch (error) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        error: 'Invalid settings configuration',
+        _error: 'Invalid settings configuration',
         _details: error instanceof Error ? error.message : 'Unknown validation error',
       });
     }
@@ -1098,7 +1099,7 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
     const { tenantId  } = (request.params as unknown);
     
     // In production, fetch from database
-    const allSettings = BUSINESS_SETTINGS_CATEGORIES.map((category: unknown) => ({
+    const allSettings = BUSINESS_SETTINGS_CATEGORIES.map((_category: unknown) => ({
       _categoryId: category.id,
       _categoryName: category.name,
       _settings: category.defaultConfig,
@@ -1107,7 +1108,7 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
 
     return reply.send({
       _success: true,
-      data: allSettings,
+      _data: allSettings,
       tenantId,
       _total: allSettings.length,
     });
@@ -1122,9 +1123,9 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
     const exportData = {
       _exportDate: new Date().toISOString(),
       tenantId,
-      version: '2.0',
+      _version: '2.0',
       _categories: BUSINESS_SETTINGS_CATEGORIES.map((category: unknown) => ({
-        id: category.id,
+        _id: category.id,
         _name: category.name,
         _implementation: category.implementation,
         _settings: category.defaultConfig,

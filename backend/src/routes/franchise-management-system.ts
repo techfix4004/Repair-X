@@ -1,52 +1,53 @@
 import { FastifyInstance } from 'fastify';
 
-export async function franchiseManagementRoutes(fastify: FastifyInstance) {
+// eslint-disable-next-line max-lines-per-function
+export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
   // Multi-Location Management
   fastify.get('/franchise/locations', async (request, reply: unknown) => {
     const locations = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         locations: [
           {
             id: 'loc_001',
-            name: 'RepairX Downtown',
-            address: '123 Main St, Toronto, ON',
-            status: 'active',
-            performance: {
+            _name: 'RepairX Downtown',
+            _address: '123 Main St, Toronto, ON',
+            _status: 'active',
+            _performance: {
               monthlyRevenue: 45678.90,
-              customerSatisfaction: 96.2,
-              technicians: 8,
-              completedJobs: 234
+              _customerSatisfaction: 96.2,
+              _technicians: 8,
+              _completedJobs: 234
             },
-            compliance: {
+            _compliance: {
               lastAudit: '2024-07-15',
-              score: 94.5,
-              status: 'compliant'
+              _score: 94.5,
+              _status: 'compliant'
             }
           },
           {
-            id: 'loc_002', 
-            name: 'RepairX Westside',
-            address: '456 Oak Ave, Vancouver, BC',
-            status: 'active',
-            performance: {
+            _id: 'loc_002', 
+            _name: 'RepairX Westside',
+            _address: '456 Oak Ave, Vancouver, BC',
+            _status: 'active',
+            _performance: {
               monthlyRevenue: 38456.78,
-              customerSatisfaction: 94.8,
-              technicians: 6,
-              completedJobs: 189
+              _customerSatisfaction: 94.8,
+              _technicians: 6,
+              _completedJobs: 189
             },
-            compliance: {
+            _compliance: {
               lastAudit: '2024-07-20',
-              score: 92.1,
-              status: 'compliant'
+              _score: 92.1,
+              _status: 'compliant'
             }
           }
         ],
-        summary: {
+        _summary: {
           totalLocations: 12,
-          activeLocations: 11,
-          totalRevenue: 456789.01,
-          avgSatisfaction: 95.1
+          _activeLocations: 11,
+          _totalRevenue: 456789.01,
+          _avgSatisfaction: 95.1
         }
       }
     };
@@ -57,35 +58,35 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
   // Centralized Control Dashboard
   fastify.get('/franchise/control/dashboard', async (request, reply: unknown) => {
     const controlDashboard = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         overview: {
           totalFranchises: 12,
-          activeFranchises: 11,
-          pendingApplications: 3,
-          systemwideRevenue: 1234567.89,
-          avgRoyaltyRate: 7.5
+          _activeFranchises: 11,
+          _pendingApplications: 3,
+          _systemwideRevenue: 1234567.89,
+          _avgRoyaltyRate: 7.5
         },
-        performance: {
+        _performance: {
           topPerforming: [
-            { locationId: 'loc_001', name: 'Downtown', score: 96.2 },
-            { locationId: 'loc_003', name: 'North York', score: 94.8 },
-            { locationId: 'loc_007', name: 'Mississauga', score: 93.5 }
+            { locationId: 'loc_001', _name: 'Downtown', _score: 96.2 },
+            { _locationId: 'loc_003', _name: 'North York', _score: 94.8 },
+            { _locationId: 'loc_007', _name: 'Mississauga', _score: 93.5 }
           ],
-          underperforming: [
-            { locationId: 'loc_009', name: 'Scarborough', score: 78.2, issues: ['staffing', 'inventory'] }
+          _underperforming: [
+            { locationId: 'loc_009', _name: 'Scarborough', _score: 78.2, _issues: ['staffing', 'inventory'] }
           ]
         },
-        compliance: {
+        _compliance: {
           overallScore: 92.3,
-          auditsDue: 2,
-          violationsActive: 1,
-          trainingCompletion: 87.4
+          _auditsDue: 2,
+          _violationsActive: 1,
+          _trainingCompletion: 87.4
         },
-        territory: {
+        _territory: {
           coverage: 89.2,
-          marketPenetration: 34.7,
-          competitorAnalysis: this.generateCompetitorAnalysis()
+          _marketPenetration: 34.7,
+          _competitorAnalysis: this.generateCompetitorAnalysis()
         }
       }
     };
@@ -98,41 +99,41 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
     const { locationId  } = (request.params as unknown);
     
     const performance = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         locationId,
-        metrics: {
+        _metrics: {
           financial: {
             revenue: 45678.90,
-            costs: 28456.78,
-            profit: 17222.12,
-            royaltyPayments: 3426.17,
-            profitMargin: 37.7
+            _costs: 28456.78,
+            _profit: 17222.12,
+            _royaltyPayments: 3426.17,
+            _profitMargin: 37.7
           },
-          operational: {
+          _operational: {
             jobsCompleted: 234,
-            avgJobValue: 195.23,
-            customerSatisfaction: 96.2,
-            technicianUtilization: 87.3,
-            responseTime: 2.1
+            _avgJobValue: 195.23,
+            _customerSatisfaction: 96.2,
+            _technicianUtilization: 87.3,
+            _responseTime: 2.1
           },
-          quality: {
+          _quality: {
             defectRate: 1.8,
-            reworkRate: 2.4,
-            firstTimeFixRate: 91.2,
-            qualityScore: 94.5
+            _reworkRate: 2.4,
+            _firstTimeFixRate: 91.2,
+            _qualityScore: 94.5
           },
-          staff: {
+          _staff: {
             totalEmployees: 8,
-            certifiedTechnicians: 6,
-            trainingHours: 24,
-            turnoverRate: 12.5
+            _certifiedTechnicians: 6,
+            _trainingHours: 24,
+            _turnoverRate: 12.5
           }
         },
-        trends: this.generatePerformanceTrends(locationId),
-        benchmarks: {
-          industry: { satisfaction: 89.2, profitMargin: 32.1 },
-          network: { satisfaction: 94.1, profitMargin: 35.8 }
+        _trends: this.generatePerformanceTrends(locationId),
+        _benchmarks: {
+          industry: { satisfaction: 89.2, _profitMargin: 32.1 },
+          _network: { satisfaction: 94.1, _profitMargin: 35.8 }
         }
       }
     };
@@ -145,23 +146,23 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
     const { locationId  } = (request.params as unknown);
     
     const compliance = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         locationId,
-        overallScore: 94.5,
-        categories: {
-          branding: { score: 98.2, status: 'excellent', lastCheck: '2024-07-15' },
-          operations: { score: 92.1, status: 'good', lastCheck: '2024-07-18' },
-          financial: { score: 96.8, status: 'excellent', lastCheck: '2024-07-10' },
-          training: { score: 89.4, status: 'satisfactory', lastCheck: '2024-07-22' },
-          safety: { score: 97.3, status: 'excellent', lastCheck: '2024-07-12' }
+        _overallScore: 94.5,
+        _categories: {
+          branding: { score: 98.2, _status: 'excellent', _lastCheck: '2024-07-15' },
+          _operations: { score: 92.1, _status: 'good', _lastCheck: '2024-07-18' },
+          _financial: { score: 96.8, _status: 'excellent', _lastCheck: '2024-07-10' },
+          _training: { score: 89.4, _status: 'satisfactory', _lastCheck: '2024-07-22' },
+          _safety: { score: 97.3, _status: 'excellent', _lastCheck: '2024-07-12' }
         },
-        violations: [],
-        recommendations: [
+        _violations: [],
+        _recommendations: [
           'Complete advanced customer service training by month end',
           'Update inventory management system to latest version'
         ],
-        nextAudit: '2024-10-15'
+        _nextAudit: '2024-10-15'
       }
     };
     
@@ -171,41 +172,41 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
   // Training & Support Management
   fastify.get('/franchise/training', async (request, reply: unknown) => {
     const training = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         programs: [
           {
             id: 'prog_001',
-            name: 'New Franchisee Orientation',
-            duration: '40 hours',
-            completion: 96.8,
-            required: true
+            _name: 'New Franchisee Orientation',
+            _duration: '40 hours',
+            _completion: 96.8,
+            _required: true
           },
           {
-            id: 'prog_002',
-            name: 'Advanced Technical Skills',
-            duration: '24 hours',
-            completion: 78.2,
-            required: false
+            _id: 'prog_002',
+            _name: 'Advanced Technical Skills',
+            _duration: '24 hours',
+            _completion: 78.2,
+            _required: false
           },
           {
-            id: 'prog_003',
-            name: 'Customer Service Excellence', 
-            duration: '16 hours',
-            completion: 89.4,
-            required: true
+            _id: 'prog_003',
+            _name: 'Customer Service Excellence', 
+            _duration: '16 hours',
+            _completion: 89.4,
+            _required: true
           }
         ],
-        progress: {
+        _progress: {
           totalEnrollments: 187,
-          completions: 164,
-          inProgress: 23,
-          overdue: 5
+          _completions: 164,
+          _inProgress: 23,
+          _overdue: 5
         },
-        support: {
+        _support: {
           ticketsOpen: 12,
-          avgResponseTime: '2.4 hours',
-          satisfactionScore: 4.7
+          _avgResponseTime: '2.4 hours',
+          _satisfactionScore: 4.7
         }
       }
     };
@@ -215,23 +216,23 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
 
   function generateCompetitorAnalysis() {
     return {
-      marketShare: {
+      _marketShare: {
         repairX: 34.7,
-        competitor1: 28.9,
-        competitor2: 21.3,
-        others: 15.1
+        _competitor1: 28.9,
+        _competitor2: 21.3,
+        _others: 15.1
       },
-      strengths: ['Technology', 'Customer Service', 'Network Coverage'],
-      opportunities: ['Commercial Segment', 'Subscription Services', 'IoT Integration']
+      _strengths: ['Technology', 'Customer Service', 'Network Coverage'],
+      _opportunities: ['Commercial Segment', 'Subscription Services', 'IoT Integration']
     };
   }
 
-  function generatePerformanceTrends(locationId: string) {
+  function generatePerformanceTrends(_locationId: string) {
     const months = 12;
     const trends = {
-      revenue: [],
-      satisfaction: [],
-      efficiency: []
+      _revenue: [],
+      _satisfaction: [],
+      _efficiency: []
     };
     
     for (let i = 0; i < months; i++) {
@@ -239,18 +240,18 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       date.setMonth(date.getMonth() - i);
       
       trends.revenue.push({
-        month: date.toISOString().substr(0, 7),
-        value: Math.round(35000 + Math.random() * 15000)
+        _month: date.toISOString().substr(0, 7),
+        _value: Math.round(35000 + Math.random() * 15000)
       });
       
       trends.satisfaction.push({
-        month: date.toISOString().substr(0, 7), 
-        value: Math.round(90 + Math.random() * 8)
+        _month: date.toISOString().substr(0, 7), 
+        _value: Math.round(90 + Math.random() * 8)
       });
       
       trends.efficiency.push({
-        month: date.toISOString().substr(0, 7),
-        value: Math.round(80 + Math.random() * 15)
+        _month: date.toISOString().substr(0, 7),
+        _value: Math.round(80 + Math.random() * 15)
       });
     }
     

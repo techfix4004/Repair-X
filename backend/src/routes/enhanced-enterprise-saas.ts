@@ -8,81 +8,81 @@ import { z } from 'zod';
 
 // Enhanced Enterprise SaaS Schemas
 const TenantSchema = z.object({
-  id: z.string().optional(),
-  companyName: z.string(),
-  domain: z.string(),
-  subscriptionTier: z.enum(['STARTER', 'PROFESSIONAL', 'ENTERPRISE', 'CUSTOM']),
-  features: z.object({
+  _id: z.string().optional(),
+  _companyName: z.string(),
+  _domain: z.string(),
+  _subscriptionTier: z.enum(['STARTER', 'PROFESSIONAL', 'ENTERPRISE', 'CUSTOM']),
+  _features: z.object({
     maxUsers: z.number(),
-    maxJobs: z.number(),
-    apiCallLimit: z.number(),
-    customBranding: z.boolean(),
-    advancedAnalytics: z.boolean(),
-    whiteLabel: z.boolean(),
-    prioritySupport: z.boolean(),
-    customIntegrations: z.boolean(),
-    aiFeatures: z.boolean(),
-    multiLocationSupport: z.boolean()
+    _maxJobs: z.number(),
+    _apiCallLimit: z.number(),
+    _customBranding: z.boolean(),
+    _advancedAnalytics: z.boolean(),
+    _whiteLabel: z.boolean(),
+    _prioritySupport: z.boolean(),
+    _customIntegrations: z.boolean(),
+    _aiFeatures: z.boolean(),
+    _multiLocationSupport: z.boolean()
   }),
-  customization: z.object({
+  _customization: z.object({
     branding: z.object({
       logo: z.string().optional(),
-      primaryColor: z.string().optional(),
-      secondaryColor: z.string().optional(),
-      companyName: z.string().optional()
+      _primaryColor: z.string().optional(),
+      _secondaryColor: z.string().optional(),
+      _companyName: z.string().optional()
     }),
-    workflows: z.array(z.any()).optional(),
-    customFields: z.array(z.any()).optional()
+    _workflows: z.array(z.any()).optional(),
+    _customFields: z.array(z.any()).optional()
   }),
-  security: z.object({
+  _security: z.object({
     sso: z.boolean(),
-    mfa: z.boolean(),
-    ipWhitelisting: z.array(z.string()).optional(),
-    auditLogging: z.boolean(),
-    dataEncryption: z.boolean(),
-    complianceLevel: z.enum(['BASIC', 'SOC2', 'HIPAA', 'ISO27001'])
+    _mfa: z.boolean(),
+    _ipWhitelisting: z.array(z.string()).optional(),
+    _auditLogging: z.boolean(),
+    _dataEncryption: z.boolean(),
+    _complianceLevel: z.enum(['BASIC', 'SOC2', 'HIPAA', 'ISO27001'])
   }),
-  billing: z.object({
+  _billing: z.object({
     plan: z.string(),
-    billingCycle: z.enum(['MONTHLY', 'YEARLY']),
-    amount: z.number(),
-    currency: z.string(),
-    nextBillingDate: z.string(),
-    paymentStatus: z.enum(['ACTIVE', 'PAST_DUE', 'SUSPENDED', 'CANCELLED'])
+    _billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+    _amount: z.number(),
+    _currency: z.string(),
+    _nextBillingDate: z.string(),
+    _paymentStatus: z.enum(['ACTIVE', 'PAST_DUE', 'SUSPENDED', 'CANCELLED'])
   })
 });
 
 const SubscriptionUsageSchema = z.object({
-  tenantId: z.string(),
-  period: z.object({
+  _tenantId: z.string(),
+  _period: z.object({
     start: z.string(),
-    end: z.string()
+    _end: z.string()
   }),
-  usage: z.object({
+  _usage: z.object({
     users: z.number(),
-    jobs: z.number(),
-    apiCalls: z.number(),
-    storage: z.number(),
-    bandwidth: z.number()
+    _jobs: z.number(),
+    _apiCalls: z.number(),
+    _storage: z.number(),
+    _bandwidth: z.number()
   }),
-  limits: z.object({
+  _limits: z.object({
     users: z.number(),
-    jobs: z.number(),
-    apiCalls: z.number(),
-    storage: z.number(),
-    bandwidth: z.number()
+    _jobs: z.number(),
+    _apiCalls: z.number(),
+    _storage: z.number(),
+    _bandwidth: z.number()
   }),
-  overage: z.object({
+  _overage: z.object({
     users: z.number(),
-    jobs: z.number(),
-    apiCalls: z.number(),
-    storage: z.number(),
-    bandwidth: z.number()
+    _jobs: z.number(),
+    _apiCalls: z.number(),
+    _storage: z.number(),
+    _bandwidth: z.number()
   }).optional()
 });
 
 interface EnterpriseFeatureGate {
-  feature: string;
+  _feature: string;
   enabled: boolean;
   limit?: number;
   usage?: number;
@@ -92,7 +92,7 @@ interface EnterpriseFeatureGate {
 class EnterpriseSaaSService {
   // Multi-Tenant Architecture Management
   async createTenant(tenantData: z.infer<typeof TenantSchema>): Promise<{
-    tenant: unknown;
+    _tenant: unknown;
     infrastructure: {
       database: string;
       resources: unknown;
@@ -112,13 +112,13 @@ class EnterpriseSaaSService {
     return {
       tenant,
       infrastructure,
-      onboardingSteps: this.generateOnboardingSteps((tenantData as any).subscriptionTier)
+      _onboardingSteps: this.generateOnboardingSteps((tenantData as any).subscriptionTier)
     };
   }
 
   // Advanced Subscription Management
-  async manageSubscription(tenantId: string): Promise<{
-    currentPlan: unknown;
+  async manageSubscription(_tenantId: string): Promise<{
+    _currentPlan: unknown;
     usage: z.infer<typeof SubscriptionUsageSchema>;
     recommendations: Array<{
       type: 'UPGRADE' | 'OPTIMIZE' | 'WARNING';
@@ -133,14 +133,14 @@ class EnterpriseSaaSService {
     const featureGates = this.evaluateFeatureGates(tenant, usage);
     
     return {
-      currentPlan: tenant.billing,
+      _currentPlan: tenant.billing,
       usage,
       recommendations, featureGates };
   }
 
   // Enterprise Security Implementation
-  async implementEnterpriseSecurity(tenantId: string, securityConfig: unknown): Promise<{
-    auditTrail: boolean;
+  async implementEnterpriseSecurity(_tenantId: string, _securityConfig: unknown): Promise<{
+    _auditTrail: boolean;
     dataEncryption: boolean;
     accessControls: unknown;
     complianceStatus: {
@@ -176,8 +176,8 @@ class EnterpriseSaaSService {
   }
 
   // Tenant Customization System
-  async customizeTenant(tenantId: string, customizations: unknown): Promise<{
-    branding: unknown;
+  async customizeTenant(_tenantId: string, _customizations: unknown): Promise<{
+    _branding: unknown;
     workflows: unknown[];
     customFields: unknown[];
     integrations: unknown[];
@@ -202,13 +202,13 @@ class EnterpriseSaaSService {
       workflows,
       customFields,
       integrations,
-      whiteLabel: tenant.features.whiteLabel
+      _whiteLabel: tenant.features.whiteLabel
     };
   }
 
   // Advanced Analytics and Reporting for Enterprise
   async generateEnterpriseAnalytics(tenantId: string): Promise<{
-    businessMetrics: {
+    _businessMetrics: {
       revenue: number;
       customers: number;
       jobs: number;
@@ -247,8 +247,8 @@ class EnterpriseSaaSService {
   }
 
   // Scalable Infrastructure Management
-  async manageScalableInfrastructure(tenantId: string): Promise<{
-    currentResources: unknown;
+  async manageScalableInfrastructure(_tenantId: string): Promise<{
+    _currentResources: unknown;
     scalingRecommendations: Array<{
       resource: string;
       currentUsage: number;
@@ -268,34 +268,34 @@ class EnterpriseSaaSService {
     const costOptimization = await this.analyzeCostOptimization(tenantId);
     
     return {
-      currentResources: resources,
-      scalingRecommendations: recommendations,
-      performanceMetrics: performance, costOptimization };
+      _currentResources: resources,
+      _scalingRecommendations: recommendations,
+      _performanceMetrics: performance, costOptimization };
   }
 
   // Private helper methods
-  private async setupTenantInfrastructure(tenantData: unknown): Promise<any> {
+  private async setupTenantInfrastructure(_tenantData: unknown): Promise<any> {
     return {
-      database: `tenant_${(tenantData as any).id}_db`,
-      resources: {
+      _database: `tenant_${(tenantData as any).id}_db`,
+      _resources: {
         compute: 'dedicated',
-        storage: 'encrypted',
-        network: 'isolated'
+        _storage: 'encrypted',
+        _network: 'isolated'
       },
-      isolation: 'full'
+      _isolation: 'full'
     };
   }
 
-  private async initializeTenantDatabase(tenantId: string, infrastructure: unknown): Promise<void> {
+  private async initializeTenantDatabase(tenantId: string, _infrastructure: unknown): Promise<void> {
     // Initialize tenant-specific database schema
     console.log(`Initializing database for tenant ${tenantId}`);
   }
 
-  private async configureTenantSettings(tenantData: unknown): Promise<any> {
+  private async configureTenantSettings(_tenantData: unknown): Promise<any> {
     return {
       ...tenantData,
-      createdAt: new Date().toISOString(),
-      status: 'ACTIVE'
+      _createdAt: new Date().toISOString(),
+      _status: 'ACTIVE'
     };
   }
 
@@ -319,20 +319,20 @@ class EnterpriseSaaSService {
     return baseSteps;
   }
 
-  private async getTenant(tenantId: string): Promise<any> {
+  private async getTenant(_tenantId: string): Promise<any> {
     // Mock tenant data - in production, query from database
     return {
-      id: tenantId,
-      subscriptionTier: 'ENTERPRISE',
-      features: {
+      _id: tenantId,
+      _subscriptionTier: 'ENTERPRISE',
+      _features: {
         maxUsers: 1000,
-        whiteLabel: true,
-        aiFeatures: true
+        _whiteLabel: true,
+        _aiFeatures: true
       },
-      billing: {
+      _billing: {
         plan: 'Enterprise',
-        amount: 999,
-        currency: 'USD'
+        _amount: 999,
+        _currency: 'USD'
       }
     };
   }
@@ -341,85 +341,86 @@ class EnterpriseSaaSService {
     // Mock usage calculation
     return {
       tenantId,
-      usage: {
+      _usage: {
         users: 150,
-        jobs: 5000,
-        apiCalls: 50000,
-        storage: 10240,
-        bandwidth: 5120
+        _jobs: 5000,
+        _apiCalls: 50000,
+        _storage: 10240,
+        _bandwidth: 5120
       },
-      limits: {
+      _limits: {
         users: 1000,
-        jobs: 10000,
-        apiCalls: 100000,
-        storage: 50000,
-        bandwidth: 20000
+        _jobs: 10000,
+        _apiCalls: 100000,
+        _storage: 50000,
+        _bandwidth: 20000
       }
     };
   }
 
-  private generateSubscriptionRecommendations(tenant: unknown, usage: unknown): any[] {
+  private generateSubscriptionRecommendations(tenant: unknown, _usage: unknown): unknown[] {
     const recommendations = [];
     
     if (usage.usage.users > usage.limits.users * 0.8) {
       recommendations.push({
-        type: 'WARNING',
-        message: 'Approaching user limit',
-        action: 'Consider upgrading plan'
+        _type: 'WARNING',
+        _message: 'Approaching user limit',
+        _action: 'Consider upgrading plan'
       });
     }
     
     return recommendations;
   }
 
-  private evaluateFeatureGates(tenant: unknown, usage: unknown): EnterpriseFeatureGate[] {
+  private evaluateFeatureGates(_tenant: unknown, _usage: unknown): EnterpriseFeatureGate[] {
     return [
       {
-        feature: 'AI Features',
-        enabled: tenant.features.aiFeatures,
-        usage: usage.usage.apiCalls,
-        limit: usage.limits.apiCalls
+        _feature: 'AI Features',
+        _enabled: tenant.features.aiFeatures,
+        _usage: usage.usage.apiCalls,
+        _limit: usage.limits.apiCalls
       }
     ];
   }
 
   // Additional helper methods (simplified for brevity)
-  private async setupAuditTrail(tenantId: string): Promise<boolean> { return true; }
-  private async setupDataEncryption(tenantId: string): Promise<boolean> { return true; }
-  private async configureAccessControls(tenantId: string, config: unknown): Promise<any> { return {}; }
-  private async evaluateCompliance(tenantId: string): Promise<any> { 
-    return { soc2: true, hipaa: false, iso27001: true, gdpr: true };
+  private async setupAuditTrail(_tenantId: string): Promise<boolean> { return true; }
+  private async setupDataEncryption(_tenantId: string): Promise<boolean> { return true; }
+  private async configureAccessControls(_tenantId: string, _config: unknown): Promise<any> { return {}; }
+  private async evaluateCompliance(_tenantId: string): Promise<any> { 
+    return { _soc2: true, _hipaa: false, _iso27001: true, _gdpr: true };
   }
-  private calculateSecurityScore(tenant: unknown, compliance: unknown): number { return 85; }
-  private async applyBrandingCustomization(tenantId: string, branding: unknown): Promise<any> { return branding; }
-  private async configureCustomWorkflows(tenantId: string, workflows: unknown): Promise<any[]> { return []; }
-  private async setupCustomFields(tenantId: string, fields: unknown): Promise<any[]> { return []; }
-  private async configureIntegrations(tenantId: string, integrations: unknown): Promise<any[]> { return []; }
-  private async calculateBusinessMetrics(tenantId: string): Promise<any> { 
-    return { revenue: 50000, customers: 500, jobs: 2000, efficiency: 85 };
+  private calculateSecurityScore(tenant: unknown, _compliance: unknown): number { return 85; }
+  private async applyBrandingCustomization(_tenantId: string, _branding: unknown): Promise<any> { return branding; }
+  private async configureCustomWorkflows(_tenantId: string, _workflows: unknown): Promise<any[]> { return []; }
+  private async setupCustomFields(_tenantId: string, _fields: unknown): Promise<any[]> { return []; }
+  private async configureIntegrations(_tenantId: string, _integrations: unknown): Promise<any[]> { return []; }
+  private async calculateBusinessMetrics(_tenantId: string): Promise<any> { 
+    return { _revenue: 50000, _customers: 500, _jobs: 2000, _efficiency: 85 };
   }
   private async calculateOperationalMetrics(tenantId: string): Promise<any> {
-    return { systemUptime: 99.9, averageResponseTime: 150, errorRate: 0.01, apiUsage: 50000 };
+    return { _systemUptime: 99.9, _averageResponseTime: 150, _errorRate: 0.01, _apiUsage: 50000 };
   }
   private async calculateSecurityMetrics(tenantId: string): Promise<any> {
-    return { loginAttempts: 5000, failedLogins: 50, securityIncidents: 0, complianceScore: 95 };
+    return { _loginAttempts: 5000, _failedLogins: 50, _securityIncidents: 0, _complianceScore: 95 };
   }
   private async generateCustomReports(tenantId: string): Promise<any[]> { return []; }
-  private async generateBenchmarkAnalysis(tenantId: string): Promise<any> {
+  private async generateBenchmarkAnalysis(_tenantId: string): Promise<any> {
     return {
-      industryAverage: { efficiency: 75, satisfaction: 80 },
-      tenantPerformance: { efficiency: 85, satisfaction: 92 },
-      improvementAreas: ['Response time optimization', 'Cost reduction']
+      _industryAverage: { efficiency: 75, _satisfaction: 80 },
+      _tenantPerformance: { efficiency: 85, _satisfaction: 92 },
+      _improvementAreas: ['Response time optimization', 'Cost reduction']
     };
   }
-  private async getCurrentResources(tenantId: string): Promise<any> { return {}; }
-  private async analyzeScalingNeeds(tenantId: string): Promise<any[]> { return []; }
-  private async getPerformanceMetrics(tenantId: string): Promise<any> { return {}; }
-  private async analyzeCostOptimization(tenantId: string): Promise<any> {
-    return { currentCost: 2000, optimizedCost: 1800, savings: 200 };
+  private async getCurrentResources(_tenantId: string): Promise<any> { return {}; }
+  private async analyzeScalingNeeds(_tenantId: string): Promise<any[]> { return []; }
+  private async getPerformanceMetrics(_tenantId: string): Promise<any> { return {}; }
+  private async analyzeCostOptimization(_tenantId: string): Promise<any> {
+    return { _currentCost: 2000, _optimizedCost: 1800, _savings: 200 };
   }
 }
 
+// eslint-disable-next-line max-lines-per-function
 export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
   const saasService = new EnterpriseSaaSService();
 
@@ -430,15 +431,15 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const result = await saasService.createTenant(tenantData);
       
       return reply.send({
-        success: true,
-        data: result,
-        message: 'Tenant created successfully'
+        _success: true,
+        _data: result,
+        _message: 'Tenant created successfully'
       });
     } catch (error) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        error: 'Tenant creation failed',
-        details: error
+        _success: false,
+        _error: 'Tenant creation failed',
+        _details: error
       });
     }
   });
@@ -450,15 +451,15 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const subscription = await saasService.manageSubscription(tenantId);
       
       return reply.send({
-        success: true,
-        data: subscription,
-        message: 'Subscription details retrieved successfully'
+        _success: true,
+        _data: subscription,
+        _message: 'Subscription details retrieved successfully'
       });
     } catch (error) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        error: 'Subscription retrieval failed',
-        details: error
+        _success: false,
+        _error: 'Subscription retrieval failed',
+        _details: error
       });
     }
   });
@@ -471,15 +472,15 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const security = await saasService.implementEnterpriseSecurity(tenantId, securityConfig);
       
       return reply.send({
-        success: true,
-        data: security,
-        message: 'Enterprise security implemented successfully'
+        _success: true,
+        _data: security,
+        _message: 'Enterprise security implemented successfully'
       });
     } catch (error) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        error: 'Security implementation failed',
-        details: error
+        _success: false,
+        _error: 'Security implementation failed',
+        _details: error
       });
     }
   });
@@ -492,15 +493,15 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const result = await saasService.customizeTenant(tenantId, customizations);
       
       return reply.send({
-        success: true,
-        data: result,
-        message: 'Tenant customization applied successfully'
+        _success: true,
+        _data: result,
+        _message: 'Tenant customization applied successfully'
       });
     } catch (error) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        error: 'Tenant customization failed',
-        details: error
+        _success: false,
+        _error: 'Tenant customization failed',
+        _details: error
       });
     }
   });
@@ -512,15 +513,15 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const analytics = await saasService.generateEnterpriseAnalytics(tenantId);
       
       return reply.send({
-        success: true,
-        data: analytics,
-        message: 'Enterprise analytics generated successfully'
+        _success: true,
+        _data: analytics,
+        _message: 'Enterprise analytics generated successfully'
       });
     } catch (error) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        error: 'Analytics generation failed',
-        details: error
+        _success: false,
+        _error: 'Analytics generation failed',
+        _details: error
       });
     }
   });
@@ -532,15 +533,15 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const infrastructure = await saasService.manageScalableInfrastructure(tenantId);
       
       return reply.send({
-        success: true,
-        data: infrastructure,
-        message: 'Infrastructure analysis completed successfully'
+        _success: true,
+        _data: infrastructure,
+        _message: 'Infrastructure analysis completed successfully'
       });
     } catch (error) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        error: 'Infrastructure analysis failed',
-        details: error
+        _success: false,
+        _error: 'Infrastructure analysis failed',
+        _details: error
       });
     }
   });

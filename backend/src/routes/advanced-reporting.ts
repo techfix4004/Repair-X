@@ -54,6 +54,7 @@ interface ExecutiveDashboard {
   }>;
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Executive Dashboard - Real-time KPI monitoring
@@ -62,11 +63,11 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       const _dashboard: ExecutiveDashboard = {
         summary: {
           totalRevenue: 284750.50,
-          totalJobs: 1247,
-          activeCustomers: 834,
-          customerSatisfaction: 4.7,
-          averageJobValue: 228.35,
-          conversionRate: 73.2
+          _totalJobs: 1247,
+          _activeCustomers: 834,
+          _customerSatisfaction: 4.7,
+          _averageJobValue: 228.35,
+          _conversionRate: 73.2
         },
         _kpis: [
           {
@@ -154,21 +155,21 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
           {
             id: 'alert_1',
             _type: 'warning',
-            message: 'Technician John Smith has high utilization (95%) - consider workload redistribution',
+            _message: 'Technician John Smith has high utilization (95%) - consider workload redistribution',
             _timestamp: new Date().toISOString(),
             _resolved: false
           },
           {
             _id: 'alert_2',
             _type: 'critical',
-            message: 'Parts inventory for iPhone screens below threshold (5 units remaining)',
+            _message: 'Parts inventory for iPhone screens below threshold (5 units remaining)',
             _timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
             _resolved: false
           },
           {
             _id: 'alert_3',
             _type: 'info',
-            message: 'Customer satisfaction increased by 2.3% this week',
+            _message: 'Customer satisfaction increased by 2.3% this week',
             _timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
             _resolved: true
           }
@@ -177,14 +178,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: _dashboard,
+        _data: _dashboard,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to fetch executive dashboard',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to fetch executive dashboard',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -242,14 +243,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: financialReport,
+        _data: financialReport,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to generate financial performance report',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to generate financial performance report',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -305,14 +306,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: customerAnalytics,
+        _data: customerAnalytics,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to generate customer analytics report',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to generate customer analytics report',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -365,14 +366,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: operationalReport,
+        _data: operationalReport,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to generate operational performance report',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to generate operational performance report',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -381,7 +382,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   fastify.post('/api/v1/reports/custom', async (request, reply: unknown) => {
     try {
       const { reportType, filters, fields, groupBy, chartType } = (request.body as {
-        reportType: string;
+        _reportType: string;
         filters: ReportFilter;
         fields: string[];
         groupBy?: string;
@@ -390,11 +391,11 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       // Mock custom report generation
       const customReport = {
-        id: `report_${Date.now()}`,
+        _id: `report_${Date.now()}`,
         _type: reportType,
         _generated: new Date().toISOString(),
         _filters: filters,
-        data: Array.from({ length: 20 }, (_, i) => ({
+        _data: Array.from({ length: 20 }, (_, i) => ({
           _id: i + 1,
           _date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           _value1: Math.round(Math.random() * 1000),
@@ -405,7 +406,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         _summary: {
           totalRecords: 20,
           _averageValue: 456.78,
-          maxValue: 987,
+          _maxValue: 987,
           _minValue: 23
         },
         _charts: chartType ? {
@@ -421,14 +422,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: customReport,
+        _data: customReport,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to generate custom report',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to generate custom report',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -437,14 +438,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   fastify.post('/api/v1/reports/export', async (request, reply: unknown) => {
     try {
       const { reportId, format, includeCharts } = (request.body as {
-        reportId: string;
+        _reportId: string;
         format: 'pdf' | 'excel' | 'csv';
         includeCharts?: boolean;
       });
 
       // Mock export process
       const exportResult = {
-        exportId: `export_${Date.now()}`,
+        _exportId: `export_${Date.now()}`,
         _reportId: reportId,
         _format: format,
         _status: 'processing',
@@ -461,14 +462,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       reply.send({
         _success: true,
-        data: exportResult,
-        message: 'Report export initiated successfully'
+        _data: exportResult,
+        _message: 'Report export initiated successfully'
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to initiate report export',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to initiate report export',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -477,7 +478,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   fastify.post('/api/v1/reports/_schedule', async (request, reply: unknown) => {
     try {
       const { reportType, _schedule, recipients, filters } = (request.body as {
-        reportType: string;
+        _reportType: string;
         _schedule: {
           frequency: 'daily' | 'weekly' | 'monthly';
           time: string;
@@ -489,9 +490,9 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       });
 
       const scheduledReport = {
-        id: `scheduled_${Date.now()}`,
+        _id: `scheduled_${Date.now()}`,
         _reportType: reportType,
-        _schedule: _schedule,
+        _schedule,
         _recipients: recipients,
         _filters: filters,
         _status: 'active',
@@ -502,14 +503,14 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: scheduledReport,
-        message: 'Report scheduled successfully'
+        _data: scheduledReport,
+        _message: 'Report scheduled successfully'
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to _schedule report',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to _schedule report',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -517,7 +518,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
 
 function calculateNextRun(_schedule: { frequency: string; time: string; dayOfWeek?: number; dayOfMonth?: number }): string {
   const now = new Date();
-  let nextRun = new Date(now);
+  const nextRun = new Date(now);
   
   const [hours, minutes] = _schedule.time.split(':').map(Number);
   nextRun.setHours(hours || 9, minutes || 0, 0, 0);

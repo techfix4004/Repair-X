@@ -3,12 +3,15 @@
  * Tests enterprise SMS automation with credit management
  */
 
-/* eslint-disable no-undef */
+ 
+/// <reference types="jest" />
+ 
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
 import Fastify, { FastifyInstance } from 'fastify';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('SMS Management API Tests', () => {
   let app: FastifyInstance;
@@ -22,31 +25,31 @@ describe('SMS Management API Tests', () => {
       
       if (!(smsData as any).recipient || !(smsData as any).message) {
         return reply.code(400).send({
-          success: false,
-          error: 'Recipient and message are required'
+          _success: false,
+          _error: 'Recipient and message are required'
         });
       }
 
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           messageId: `sms_${Date.now()}`,
-          recipient: (smsData as any).recipient,
-          message: (smsData as any).message,
+          _recipient: (smsData as any).recipient,
+          _message: (smsData as any).message,
           _status: 'sent',
           _credits: 1,
           _deliveryStatus: 'pending',
           _gateway: 'twilio',
           _sentAt: new Date().toISOString()
         },
-        message: 'SMS sent successfully'
+        _message: 'SMS sent successfully'
       });
     });
 
     app.get('/api/v1/sms/credits', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           available: 1250,
           _used: 750,
           _total: 2000,
@@ -63,23 +66,23 @@ describe('SMS Management API Tests', () => {
     app.post('/api/v1/sms/templates', async (request, reply: unknown) => {
       const templateData = request.body as any;
       return reply.code(201).send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           templateId: `tpl_${Date.now()}`,
-          name: (templateData as any).name,
+          _name: (templateData as any).name,
           _content: (templateData as any).content,
           _variables: (templateData as any).variables || [],
-          category: (templateData as any).category || 'general',
+          _category: (templateData as any).category || 'general',
           _active: true
         },
-        message: 'SMS template created successfully'
+        _message: 'SMS template created successfully'
       });
     });
 
     app.get('/api/v1/sms/delivery/:messageId', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           messageId: (request.params as any).messageId,
           _status: 'delivered',
           _deliveredAt: new Date().toISOString(),
@@ -99,15 +102,15 @@ describe('SMS Management API Tests', () => {
 
   test('POST /api/v1/sms/send - should send SMS successfully', async () => {
     const smsData = {
-      recipient: '+1234567890',
-      message: 'Your RepairX job is ready for pickup!',
-      jobId: 'job_123'
+      _recipient: '+1234567890',
+      _message: 'Your RepairX job is ready for pickup!',
+      _jobId: 'job_123'
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/sms/send',
-      payload: smsData
+      _url: '/api/v1/sms/send',
+      _payload: smsData
     });
 
     expect(response.statusCode).toBe(200);
@@ -122,13 +125,13 @@ describe('SMS Management API Tests', () => {
   test('POST /api/v1/sms/send - should reject invalid SMS data', async () => {
     const invalidData = {
       // Missing recipient and message
-      jobId: 'job_123'
+      _jobId: 'job_123'
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/sms/send',
-      payload: invalidData
+      _url: '/api/v1/sms/send',
+      _payload: invalidData
     });
 
     expect(response.statusCode).toBe(400);
@@ -139,8 +142,8 @@ describe('SMS Management API Tests', () => {
 
   test('GET /api/v1/sms/credits - should return SMS credit information', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/sms/credits'
+      _method: 'GET',
+      _url: '/api/v1/sms/credits'
     });
 
     expect(response.statusCode).toBe(200);
@@ -154,16 +157,16 @@ describe('SMS Management API Tests', () => {
 
   test('POST /api/v1/sms/templates - should create SMS template', async () => {
     const templateData = {
-      name: 'Job Completion',
+      _name: 'Job Completion',
       _content: 'Hi {customerName}, your {device} repair is complete! Job #{_jobId}',
       _variables: ['customerName', 'device', '_jobId'],
-      category: 'notifications'
+      _category: 'notifications'
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/sms/templates',
-      payload: templateData
+      _url: '/api/v1/sms/templates',
+      _payload: templateData
     });
 
     expect(response.statusCode).toBe(201);
@@ -178,8 +181,8 @@ describe('SMS Management API Tests', () => {
     const messageId = 'sms_123456789';
 
     const response = await app.inject({
-      method: 'GET',
-      url: `/api/v1/sms/delivery/${messageId}`
+      _method: 'GET',
+      _url: `/api/v1/sms/delivery/${messageId}`
     });
 
     expect(response.statusCode).toBe(200);
@@ -199,12 +202,12 @@ describe('SMS Management API Tests', () => {
 
     for (const state of jobStates) {
       const response = await app.inject({
-        method: 'POST',
-        url: '/api/v1/sms/send',
-        payload: {
+        _method: 'POST',
+        _url: '/api/v1/sms/send',
+        _payload: {
           recipient: '+1234567890',
-          message: `Your job status updated to: ${state}`,
-          type: 'status_update'
+          _message: `Your job status updated to: ${state}`,
+          _type: 'status_update'
         }
       });
 

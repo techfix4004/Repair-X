@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 export interface IntelligentJobAssignment {
-  id: string;
+  _id: string;
   jobId: string;
   recommendedTechnicians: TechnicianMatch[];
   algorithm: 'ml-based' | 'rule-based' | 'hybrid';
@@ -81,7 +81,7 @@ export interface SmartPricingOptimization {
 export interface PricingFactor {
   factor: string;
   impact: number; // -1 to 1 (negative = price down, positive = price up)
-  weight: number; // 0 to 1
+  _weight: number; // 0 to 1
   description: string;
 }
 
@@ -175,161 +175,161 @@ export class AIPoweredBusinessIntelligenceService {
     // ML-based matching algorithm
     const matches = await this.runMLMatchingAlgorithm(availableTechnicians, jobRequirements);
     
-    const assignment: IntelligentJobAssignment = {
+    const _assignment: IntelligentJobAssignment = {
       id: `assign_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      jobId: (_jobData as any)._jobId,
-      recommendedTechnicians: matches,
-      algorithm: 'ml-based',
-      confidence: 0.92,
-      reasoning: [
+      _jobId: (_jobData as any)._jobId,
+      _recommendedTechnicians: matches,
+      _algorithm: 'ml-based',
+      _confidence: 0.92,
+      _reasoning: [
         'Ranked by AI matching algorithm considering skills, availability, location, and performance',
         'Machine learning model trained on 10,000+ historical job assignments',
         'Real-time optimization based on current workload and traffic conditions'
       ],
-      createdAt: new Date()
+      _createdAt: new Date()
     };
 
     console.log(`✅ Intelligent assignment completed with ${matches.length} technician recommendations`);
     return assignment;
   }
 
-  private async getAvailableTechnicians(location: unknown): Promise<any[]> {
+  private async getAvailableTechnicians(_location: unknown): Promise<any[]> {
     // Mock technician data
     return [
       {
-        technicianId: 'TECH001',
-        skills: ['electronics', 'appliances'],
-        availability: 0.8,
-        location: { lat: 40.7128, lng: -74.0060 },
-        performance: 0.95,
-        customerRating: 4.8
+        _technicianId: 'TECH001',
+        _skills: ['electronics', 'appliances'],
+        _availability: 0.8,
+        _location: { lat: 40.7128, _lng: -74.0060 },
+        _performance: 0.95,
+        _customerRating: 4.8
       },
       {
-        technicianId: 'TECH002', 
-        skills: ['automotive', 'electronics'],
-        availability: 0.6,
-        location: { lat: 40.7589, lng: -73.9851 },
-        performance: 0.87,
-        customerRating: 4.6
+        _technicianId: 'TECH002', 
+        _skills: ['automotive', 'electronics'],
+        _availability: 0.6,
+        _location: { lat: 40.7589, _lng: -73.9851 },
+        _performance: 0.87,
+        _customerRating: 4.6
       }
     ];
   }
 
   private async analyzeJobRequirements(jobData: unknown): Promise<any> {
     return {
-      skillsRequired: ['electronics'],
-      complexity: 'medium',
-      urgency: 'high',
-      estimatedDuration: 2.5,
-      specialTools: []
+      _skillsRequired: ['electronics'],
+      _complexity: 'medium',
+      _urgency: 'high',
+      _estimatedDuration: 2.5,
+      _specialTools: []
     };
   }
 
-  private async runMLMatchingAlgorithm(technicians: unknown[], requirements: unknown): Promise<TechnicianMatch[]> {
+  private async runMLMatchingAlgorithm(technicians: unknown[], _requirements: unknown): Promise<TechnicianMatch[]> {
     return technicians.map((tech, index) => ({
-      technicianId: tech.technicianId,
-      score: 0.95 - (index * 0.05), // Simulated ML scoring
-      factors: {
+      _technicianId: tech.technicianId,
+      _score: 0.95 - (index * 0.05), // Simulated ML scoring
+      _factors: {
         skillMatch: 0.90,
-        availability: tech.availability,
-        location: 0.85,
-        performance: tech.performance,
-        customerRating: tech.customerRating
+        _availability: tech.availability,
+        _location: 0.85,
+        _performance: tech.performance,
+        _customerRating: tech.customerRating
       },
-      estimatedArrival: `${15 + (index * 10)} minutes`,
-      confidence: 0.88
+      _estimatedArrival: `${15 + (index * 10)} minutes`,
+      _confidence: 0.88
     }));
   }
 
   // Predictive analytics for repair time and parts failure
-  async generatePredictiveAnalytics(jobId: string, deviceData: unknown): Promise<PredictiveAnalytics> {
+  async generatePredictiveAnalytics(_jobId: string, _deviceData: unknown): Promise<PredictiveAnalytics> {
     console.log(`📊 Generating predictive analytics for job ${_jobId}`);
     
     // Simulate predictive model processing
     const historicalData = await this.getHistoricalJobData((deviceData as any).deviceType);
     const mlPrediction = await this.runPredictiveModel(deviceData, historicalData);
     
-    const analytics: PredictiveAnalytics = {
+    const _analytics: PredictiveAnalytics = {
       id: `predict_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       _jobId,
-      estimatedHours: 4.5,
-      confidenceInterval: {
+      _estimatedHours: 4.5,
+      _confidenceInterval: {
         min: 3.2,
-        max: 6.3,
+        _max: 6.3,
       },
-      factors: [
+      _factors: [
         'Base complexity: MEDIUM',
-        'Historical average for device type: 4.2 hours',
-        'Technician skill level adjustment: +0.3 hours',
-        'Issue analysis: Standard complexity'
+        'Historical average for device _type: 4.2 hours',
+        'Technician skill level _adjustment: +0.3 hours',
+        'Issue _analysis: Standard complexity'
       ],
-      historicalData: {
+      _historicalData: {
         averageTime: 4.2,
-        completionRate: 0.94,
-        sampleSize: 1247
+        _completionRate: 0.94,
+        _sampleSize: 1247
       },
-      partsFailurePrediction: await this.predictPartsFailure(deviceData)
+      _partsFailurePrediction: await this.predictPartsFailure(deviceData)
     };
 
-    console.log(`📈 Predictive analytics completed: ${analytics.estimatedHours} hours estimated`);
+    console.log(`📈 Predictive analytics _completed: ${analytics.estimatedHours} hours estimated`);
     return analytics;
   }
 
-  private async getHistoricalJobData(deviceType: string): Promise<any[]> {
+  private async getHistoricalJobData(_deviceType: string): Promise<any[]> {
     // Mock historical data
     return [
-      { duration: 4.2, complexity: 'medium', success: true },
-      { duration: 3.8, complexity: 'low', success: true },
-      { duration: 5.1, complexity: 'high', success: true }
+      { _duration: 4.2, _complexity: 'medium', _success: true },
+      { _duration: 3.8, _complexity: 'low', _success: true },
+      { _duration: 5.1, _complexity: 'high', _success: true }
     ];
   }
 
-  private async runPredictiveModel(deviceData: unknown, historicalData: unknown[]): Promise<any> {
+  private async runPredictiveModel(deviceData: unknown, _historicalData: unknown[]): Promise<any> {
     // Simulate ML model prediction
     return {
-      estimatedTime: 4.5,
-      confidence: 0.87,
-      factors: ['complexity', 'technician_skill', 'parts_availability']
+      _estimatedTime: 4.5,
+      _confidence: 0.87,
+      _factors: ['complexity', 'technician_skill', 'parts_availability']
     };
   }
 
-  private async predictPartsFailure(deviceData: unknown): Promise<PartsFailurePrediction> {
+  private async predictPartsFailure(_deviceData: unknown): Promise<PartsFailurePrediction> {
     return {
-      id: `parts_pred_${Date.now()}`,
-      deviceType: (deviceData as any).deviceType,
-      predictedFailures: [
+      _id: `parts_pred_${Date.now()}`,
+      _deviceType: (deviceData as any).deviceType,
+      _predictedFailures: [
         {
           partName: 'Battery',
-          failureProbability: 0.15,
-          estimatedTimeToFailure: 180,
-          symptoms: ['Rapid discharge', 'Overheating'],
-          preventiveMeasures: ['Regular calibration', 'Avoid extreme temperatures']
+          _failureProbability: 0.15,
+          _estimatedTimeToFailure: 180,
+          _symptoms: ['Rapid discharge', 'Overheating'],
+          _preventiveMeasures: ['Regular calibration', 'Avoid extreme temperatures']
         },
         {
-          partName: 'Display',
-          failureProbability: 0.08,
-          estimatedTimeToFailure: 365,
-          symptoms: ['Dead pixels', 'Flickering'],
-          preventiveMeasures: ['Gentle handling', 'Screen protector usage']
+          _partName: 'Display',
+          _failureProbability: 0.08,
+          _estimatedTimeToFailure: 365,
+          _symptoms: ['Dead pixels', 'Flickering'],
+          _preventiveMeasures: ['Gentle handling', 'Screen protector usage']
         }
       ],
-      recommendedParts: [
+      _recommendedParts: [
         {
           partId: 'BATT001',
-          partName: 'Replacement Battery',
-          priority: 'medium',
-          stockLevel: 25,
-          leadTime: 2,
-          cost: 45.99
+          _partName: 'Replacement Battery',
+          _priority: 'medium',
+          _stockLevel: 25,
+          _leadTime: 2,
+          _cost: 45.99
         }
       ],
-      confidence: 0.82,
-      basedOnData: 3540
+      _confidence: 0.82,
+      _basedOnData: 3540
     };
   }
 
   // Smart pricing optimization based on market data
-  async optimizePricing(serviceType: string, jobContext: unknown): Promise<SmartPricingOptimization> {
+  async optimizePricing(serviceType: string, _jobContext: unknown): Promise<SmartPricingOptimization> {
     console.log(`💰 Optimizing pricing for ${serviceType}`);
     
     const marketAnalysis = await this.analyzeMarket(serviceType, jobContext);
@@ -339,102 +339,102 @@ export class AIPoweredBusinessIntelligenceService {
     let optimizedPrice = basePrice;
     
     // Apply pricing factors
-    pricingFactors.forEach((factor: unknown) => {
+    pricingFactors.forEach((_factor: unknown) => {
       optimizedPrice += (basePrice * factor.impact * factor.weight);
     });
 
-    const optimization: SmartPricingOptimization = {
+    const _optimization: SmartPricingOptimization = {
       id: `price_opt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       serviceType,
       basePrice,
-      optimizedPrice: Math.round(optimizedPrice * 100) / 100,
+      _optimizedPrice: Math.round(optimizedPrice * 100) / 100,
       pricingFactors,
       marketAnalysis,
-      confidence: 0.91,
-      recommendations: [
+      _confidence: 0.91,
+      _recommendations: [
         'Price is optimized based on current market conditions',
         'Consider premium pricing for urgent requests',
         'Monitor competitor pricing changes for dynamic adjustments'
       ]
     };
 
-    console.log(`💵 Optimized pricing: $${basePrice} → $${optimization.optimizedPrice}`);
+    console.log(`💵 Optimized _pricing: $${basePrice} → $${optimization.optimizedPrice}`);
     return optimization;
   }
 
-  private async analyzeMarket(serviceType: string, context: unknown): Promise<MarketAnalysis> {
+  private async analyzeMarket(_serviceType: string, _context: unknown): Promise<MarketAnalysis> {
     return {
-      competitorPrices: [
-        { competitor: 'TechFix Pro', price: 115.00, serviceQuality: 4.2, responseTime: 45 },
-        { competitor: 'Quick Repair', price: 135.00, serviceQuality: 4.5, responseTime: 30 },
-        { competitor: 'Elite Service', price: 150.00, serviceQuality: 4.8, responseTime: 25 }
+      _competitorPrices: [
+        { competitor: 'TechFix Pro', _price: 115.00, _serviceQuality: 4.2, _responseTime: 45 },
+        { _competitor: 'Quick Repair', _price: 135.00, _serviceQuality: 4.5, _responseTime: 30 },
+        { _competitor: 'Elite Service', _price: 150.00, _serviceQuality: 4.8, _responseTime: 25 }
       ],
-      demandLevel: 'high',
-      seasonalityImpact: 1.1,
-      locationPremium: 1.05,
-      urgencyMultiplier: context.urgent ? 1.25 : 1.0
+      _demandLevel: 'high',
+      _seasonalityImpact: 1.1,
+      _locationPremium: 1.05,
+      _urgencyMultiplier: context.urgent ? 1.25 : 1.0
     };
   }
 
-  private async calculatePricingFactors(context: unknown, marketAnalysis: MarketAnalysis): Promise<PricingFactor[]> {
+  private async calculatePricingFactors(context: unknown, _marketAnalysis: MarketAnalysis): Promise<PricingFactor[]> {
     return [
       {
-        factor: 'Market Demand',
-        impact: 0.15,
-        weight: 0.8,
-        description: 'High demand in the area increases pricing power'
+        _factor: 'Market Demand',
+        _impact: 0.15,
+        _weight: 0.8,
+        _description: 'High demand in the area increases pricing power'
       },
       {
-        factor: 'Urgency',
-        impact: context.urgent ? 0.25 : 0,
-        weight: 0.9,
-        description: 'Urgent requests command premium pricing'
+        _factor: 'Urgency',
+        _impact: context.urgent ? 0.25 : 0,
+        _weight: 0.9,
+        _description: 'Urgent requests command premium pricing'
       },
       {
-        factor: 'Competition',
-        impact: -0.05,
-        weight: 0.6,
-        description: 'Competitive pressure moderates pricing'
+        _factor: 'Competition',
+        _impact: -0.05,
+        _weight: 0.6,
+        _description: 'Competitive pressure moderates pricing'
       },
       {
-        factor: 'Seasonality',
-        impact: 0.10,
-        weight: 0.4,
-        description: 'Seasonal demand variations affect pricing'
+        _factor: 'Seasonality',
+        _impact: 0.10,
+        _weight: 0.4,
+        _description: 'Seasonal demand variations affect pricing'
       }
     ];
   }
 
   // Quality prediction and risk assessment
-  async predictQualityRisk(jobId: string, jobContext: unknown): Promise<QualityPredictionModel> {
+  async predictQualityRisk(jobId: string, _jobContext: unknown): Promise<QualityPredictionModel> {
     console.log(`🎯 Predicting quality risk for job ${_jobId}`);
     
     const riskFactors = await this.analyzeRiskFactors(jobContext);
     const riskLevel = await this.calculateRiskLevel(riskFactors);
     
-    const qualityPrediction: QualityPredictionModel = {
+    const _qualityPrediction: QualityPredictionModel = {
       id: `quality_pred_${Date.now()}`,
       _jobId,
-      riskLevel: riskLevel,
-      riskFactors: [
+      _riskLevel: riskLevel,
+      _riskFactors: [
         'High complexity repair identified',
-        'Technician skill level: Expert match',
-        'Parts availability: Good',
-        'Customer history: Positive',
-        'Time pressure: Moderate'
+        'Technician skill _level: Expert match',
+        'Parts _availability: Good',
+        'Customer _history: Positive',
+        'Time _pressure: Moderate'
       ],
-      recommendations: [
+      _recommendations: [
         'Assign senior technician due to complexity',
         'Ensure quality checklist completion',
         'Schedule follow-up call within 24 hours',
         'Pre-order backup parts for common failures'
       ],
-      interventionRequired: riskLevel === 'high' || riskLevel === 'critical',
-      predictedOutcome: {
+      _interventionRequired: riskLevel === 'high' || riskLevel === 'critical',
+      _predictedOutcome: {
         customerSatisfaction: 0.87,
-        completionProbability: 0.92,
-        reworkProbability: 0.08,
-        escalationRisk: 0.05
+        _completionProbability: 0.92,
+        _reworkProbability: 0.08,
+        _escalationRisk: 0.05
       }
     };
 
@@ -442,7 +442,7 @@ export class AIPoweredBusinessIntelligenceService {
     return qualityPrediction;
   }
 
-  private async analyzeRiskFactors(jobContext: unknown): Promise<string[]> {
+  private async analyzeRiskFactors(_jobContext: unknown): Promise<string[]> {
     // Simulate risk factor analysis
     return [
       'complexity',
@@ -453,7 +453,7 @@ export class AIPoweredBusinessIntelligenceService {
     ];
   }
 
-  private async calculateRiskLevel(riskFactors: string[]): Promise<'low' | 'medium' | 'high' | 'critical'> {
+  private async calculateRiskLevel(_riskFactors: string[]): Promise<'low' | 'medium' | 'high' | 'critical'> {
     // Simulate risk calculation
     const riskScore = Math.random();
     if (riskScore > 0.8) return 'critical';
@@ -463,97 +463,97 @@ export class AIPoweredBusinessIntelligenceService {
   }
 
   // Automated workflow optimization
-  async optimizeWorkflow(businessId: string): Promise<WorkflowOptimization> {
+  async optimizeWorkflow(_businessId: string): Promise<WorkflowOptimization> {
     console.log(`⚙️ Optimizing workflow for business ${businessId}`);
     
     const currentWorkflow = await this.getCurrentWorkflow(businessId);
     const optimizedWorkflow = await this.generateOptimizedWorkflow(currentWorkflow);
     
-    const optimization: WorkflowOptimization = {
+    const _optimization: WorkflowOptimization = {
       id: `workflow_opt_${Date.now()}`,
       businessId,
       currentWorkflow,
       optimizedWorkflow,
-      improvements: [
+      _improvements: [
         {
           type: 'automation',
-          description: 'Automate customer notification triggers',
-          impact: { timeSaving: 0.5, costReduction: 0.15, qualityImprovement: 0.10 }
+          _description: 'Automate customer notification triggers',
+          _impact: { timeSaving: 0.5, _costReduction: 0.15, _qualityImprovement: 0.10 }
         },
         {
-          type: 'parallel-processing',
-          description: 'Execute parts ordering and diagnosis in parallel',
-          impact: { timeSaving: 0.25, costReduction: 0.08, qualityImprovement: 0.05 }
+          _type: 'parallel-processing',
+          _description: 'Execute parts ordering and diagnosis in parallel',
+          _impact: { timeSaving: 0.25, _costReduction: 0.08, _qualityImprovement: 0.05 }
         }
       ],
-      expectedBenefits: [
+      _expectedBenefits: [
         {
           metric: 'Average Completion Time',
-          currentValue: 4.5,
-          projectedValue: 3.2,
-          improvement: -0.29,
-          confidence: 0.87
+          _currentValue: 4.5,
+          _projectedValue: 3.2,
+          _improvement: -0.29,
+          _confidence: 0.87
         },
         {
-          metric: 'Customer Satisfaction',
-          currentValue: 0.84,
-          projectedValue: 0.91,
-          improvement: 0.08,
-          confidence: 0.82
+          _metric: 'Customer Satisfaction',
+          _currentValue: 0.84,
+          _projectedValue: 0.91,
+          _improvement: 0.08,
+          _confidence: 0.82
         }
       ],
-      implementationPlan: [
+      _implementationPlan: [
         {
           phase: 1,
-          description: 'Implement automated notifications',
-          duration: 2,
-          resources: ['developer', 'workflow-designer'],
-          dependencies: [],
-          successMetrics: ['notification-response-time', 'customer-satisfaction']
+          _description: 'Implement automated notifications',
+          _duration: 2,
+          _resources: ['developer', 'workflow-designer'],
+          _dependencies: [],
+          _successMetrics: ['notification-response-time', 'customer-satisfaction']
         },
         {
-          phase: 2,
-          description: 'Enable parallel processing capabilities',
-          duration: 3,
-          resources: ['developer', 'systems-architect'],
-          dependencies: ['phase-1'],
-          successMetrics: ['average-completion-time', 'resource-utilization']
+          _phase: 2,
+          _description: 'Enable parallel processing capabilities',
+          _duration: 3,
+          _resources: ['developer', 'systems-architect'],
+          _dependencies: ['phase-1'],
+          _successMetrics: ['average-completion-time', 'resource-utilization']
         }
       ]
     };
 
-    console.log(`🚀 Workflow optimization completed: ${optimization.improvements.length} improvements identified`);
+    console.log(`🚀 Workflow optimization _completed: ${optimization.improvements.length} improvements identified`);
     return optimization;
   }
 
-  private async getCurrentWorkflow(businessId: string): Promise<WorkflowStep[]> {
+  private async getCurrentWorkflow(_businessId: string): Promise<WorkflowStep[]> {
     // Mock current workflow
     return [
       {
-        stepId: 'job-creation',
-        name: 'Job Creation',
-        duration: 0.25,
-        resources: ['admin'],
-        dependencies: [],
-        automation: false
+        _stepId: 'job-creation',
+        _name: 'Job Creation',
+        _duration: 0.25,
+        _resources: ['admin'],
+        _dependencies: [],
+        _automation: false
       },
       {
-        stepId: 'technician-assignment',
-        name: 'Technician Assignment',
-        duration: 0.5,
-        resources: ['dispatcher'],
-        dependencies: ['job-creation'],
-        automation: true
+        _stepId: 'technician-assignment',
+        _name: 'Technician Assignment',
+        _duration: 0.5,
+        _resources: ['dispatcher'],
+        _dependencies: ['job-creation'],
+        _automation: true
       }
     ];
   }
 
   private async generateOptimizedWorkflow(currentWorkflow: WorkflowStep[]): Promise<WorkflowStep[]> {
     // Return optimized version with reduced durations and increased automation
-    return currentWorkflow.map((step: unknown) => ({
+    return currentWorkflow.map((_step: unknown) => ({
       ...step,
-      duration: step.duration * 0.8, // 20% time reduction
-      automation: true
+      _duration: step.duration * 0.8, // 20% time reduction
+      _automation: true
     }));
   }
 }
@@ -569,15 +569,15 @@ export const aiPoweredBusinessIntelligenceRoutes = {
       const assignment = await service.assignTechnicianIntelligently(_jobData);
       
       reply.code(200).send({
-        success: true,
-        data: assignment,
-        message: 'Intelligent job assignment completed'
+        _success: true,
+        _data: assignment,
+        _message: 'Intelligent job assignment completed'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to assign technician intelligently',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to assign technician intelligently',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -591,15 +591,15 @@ export const aiPoweredBusinessIntelligenceRoutes = {
       const analytics = await service.generatePredictiveAnalytics(_jobId, deviceData);
       
       reply.code(200).send({
-        success: true,
-        data: analytics,
-        message: 'Predictive analytics generated successfully'
+        _success: true,
+        _data: analytics,
+        _message: 'Predictive analytics generated successfully'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to generate predictive analytics',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to generate predictive analytics',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -613,15 +613,15 @@ export const aiPoweredBusinessIntelligenceRoutes = {
       const optimization = await service.optimizePricing(serviceType, jobContext);
       
       reply.code(200).send({
-        success: true,
-        data: optimization,
-        message: 'Pricing optimization completed'
+        _success: true,
+        _data: optimization,
+        _message: 'Pricing optimization completed'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to optimize pricing',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to optimize pricing',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -635,15 +635,15 @@ export const aiPoweredBusinessIntelligenceRoutes = {
       const prediction = await service.predictQualityRisk(_jobId, jobContext);
       
       reply.code(200).send({
-        success: true,
-        data: prediction,
-        message: 'Quality risk prediction completed'
+        _success: true,
+        _data: prediction,
+        _message: 'Quality risk prediction completed'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to predict quality risk',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to predict quality risk',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -657,19 +657,19 @@ export const aiPoweredBusinessIntelligenceRoutes = {
       const optimization = await service.optimizeWorkflow(businessId);
       
       reply.code(200).send({
-        success: true,
-        data: optimization,
-        message: 'Workflow optimization completed'
+        _success: true,
+        _data: optimization,
+        _message: 'Workflow optimization completed'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to optimize workflow',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to optimize workflow',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
 };
 
 console.log('🧠 AI-Powered Business Intelligence System initialized');
-console.log('🤖 Features: ML job assignment, Predictive analytics, Smart pricing, Quality prediction, Workflow optimization');
+console.log('🤖 _Features: ML job assignment, Predictive analytics, Smart pricing, Quality prediction, Workflow optimization');

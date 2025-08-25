@@ -13,7 +13,7 @@ export type JobSheetStatus =
   | 'CANCELLED'
 
 export interface DeviceFormData {
-  brand: string
+  _brand: string
   model: string
   serialNumber?: string
   yearManufactured?: number

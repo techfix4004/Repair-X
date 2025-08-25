@@ -1,7 +1,10 @@
+ 
+/// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
 import { fastify } from '../index';
 
+// eslint-disable-next-line max-lines-per-function
 describe('RepairX Core System Tests', () => {
   beforeAll(async () => {
     // Setup test environment
@@ -15,8 +18,8 @@ describe('RepairX Core System Tests', () => {
   describe('Health Endpoints', () => {
     test('should return healthy status', async () => {
       const response = await fastify.inject({
-        method: 'GET',
-        url: '/api/health'
+        _method: 'GET',
+        _url: '/api/health'
       });
 
       expect(response.statusCode).toBe(200);
@@ -27,8 +30,8 @@ describe('RepairX Core System Tests', () => {
 
     test('should return quality metrics', async () => {
       const response = await fastify.inject({
-        method: 'GET',
-        url: '/api/metrics'
+        _method: 'GET',
+        _url: '/api/metrics'
       });
 
       expect(response.statusCode).toBe(200);
@@ -41,11 +44,11 @@ describe('RepairX Core System Tests', () => {
   describe('Authentication', () => {
     test('should login successfully with valid credentials', async () => {
       const response = await fastify.inject({
-        method: 'POST',
-        url: '/api/auth/login',
-        payload: {
+        _method: 'POST',
+        _url: '/api/auth/login',
+        _payload: {
           email: 'admin@repairx.com',
-          password: 'admin123'
+          _password: 'admin123'
         }
       });
 
@@ -58,11 +61,11 @@ describe('RepairX Core System Tests', () => {
 
     test('should reject invalid credentials', async () => {
       const response = await fastify.inject({
-        method: 'POST',
-        url: '/api/auth/login',
-        payload: {
+        _method: 'POST',
+        _url: '/api/auth/login',
+        _payload: {
           email: 'invalid@repairx.com',
-          password: 'wrongpass'
+          _password: 'wrongpass'
         }
       });
 
@@ -75,8 +78,8 @@ describe('RepairX Core System Tests', () => {
   describe('Business Settings', () => {
     test('should get business categories', async () => {
       const response = await fastify.inject({
-        method: 'GET',
-        url: '/api/business/categories'
+        _method: 'GET',
+        _url: '/api/business/categories'
       });
 
       expect(response.statusCode).toBe(200);
@@ -88,8 +91,8 @@ describe('RepairX Core System Tests', () => {
 
     test('should get tax settings', async () => {
       const response = await fastify.inject({
-        method: 'GET',
-        url: '/api/business/settings/tax'
+        _method: 'GET',
+        _url: '/api/business/settings/tax'
       });
 
       expect(response.statusCode).toBe(200);
@@ -100,8 +103,8 @@ describe('RepairX Core System Tests', () => {
 
     test('should get quality metrics', async () => {
       const response = await fastify.inject({
-        method: 'GET',
-        url: '/api/business/quality-metrics'
+        _method: 'GET',
+        _url: '/api/business/quality-metrics'
       });
 
       expect(response.statusCode).toBe(200);

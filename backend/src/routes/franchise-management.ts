@@ -88,6 +88,7 @@ interface FranchiseAgreement {
   expiryDate?: string;
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function franchiseManagementRoutes(fastify: FastifyInstance) {
   // Get All Franchise Locations
@@ -97,7 +98,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         {
           id: 'loc_001',
           _name: 'RepairX Downtown',
-          code: 'RX-DT-001',
+          _code: 'RX-DT-001',
           _address: {
             street: '123 Main Street',
             _city: 'New York',
@@ -105,9 +106,9 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
             _zipCode: '10001',
             _country: 'USA'
           },
-          contact: {
+          _contact: {
             phone: '+1-555-0123',
-            email: 'downtown@repairx.com',
+            _email: 'downtown@repairx.com',
             _manager: 'John Smith'
           },
           _operatingHours: {
@@ -123,7 +124,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
           _franchisee: {
             id: 'fr_001',
             _name: 'Michael Johnson',
-            email: 'mjohnson@example.com',
+            _email: 'mjohnson@example.com',
             _phone: '+1-555-0124',
             _joinDate: '2023-01-15',
             _agreement: {
@@ -151,7 +152,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         {
           _id: 'loc_002',
           _name: 'RepairX Mall Plaza',
-          code: 'RX-MP-002',
+          _code: 'RX-MP-002',
           _address: {
             street: '456 Shopping Center Blvd',
             _city: 'Los Angeles',
@@ -159,9 +160,9 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
             _zipCode: '90210',
             _country: 'USA'
           },
-          contact: {
+          _contact: {
             phone: '+1-555-0125',
-            email: 'mallplaza@repairx.com',
+            _email: 'mallplaza@repairx.com',
             _manager: 'Sarah Davis'
           },
           _operatingHours: {
@@ -177,7 +178,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
           _franchisee: {
             id: 'fr_002',
             _name: 'Lisa Chen',
-            email: 'lchen@example.com',
+            _email: 'lchen@example.com',
             _phone: '+1-555-0126',
             _joinDate: '2023-03-20',
             _agreement: {
@@ -205,7 +206,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         {
           _id: 'loc_003',
           _name: 'RepairX Express',
-          code: 'RX-EX-003',
+          _code: 'RX-EX-003',
           _address: {
             street: '789 Business District',
             _city: 'Chicago',
@@ -213,9 +214,9 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
             _zipCode: '60601',
             _country: 'USA'
           },
-          contact: {
+          _contact: {
             phone: '+1-555-0127',
-            email: 'express@repairx.com',
+            _email: 'express@repairx.com',
             _manager: 'David Wilson'
           },
           _operatingHours: {
@@ -231,7 +232,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
           _franchisee: {
             id: 'fr_003',
             _name: 'Robert Martinez',
-            email: 'rmartinez@example.com',
+            _email: 'rmartinez@example.com',
             _phone: '+1-555-0128',
             _joinDate: '2025-07-01',
             _agreement: {
@@ -260,25 +261,25 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: {
-          locations: locations,
+        _data: {
+          locations,
           _total: locations.length,
           _summary: {
             _active: locations.filter((l: unknown) => l.status === 'active').length,
             _pending: locations.filter((l: unknown) => l.status === 'pending').length,
             _inactive: locations.filter((l: unknown) => l.status === 'inactive').length,
             _suspended: locations.filter((l: unknown) => l.status === 'suspended').length,
-            _totalRevenue: locations.reduce((sum: unknown, l: unknown) => sum + l.performance.revenue, 0),
-            _totalJobs: locations.reduce((sum: unknown, l: unknown) => sum + l.performance.jobs, 0),
-            _averageSatisfaction: locations.reduce((sum: unknown, l: unknown) => sum + l.performance.customerSatisfaction, 0) / locations.filter((l: unknown) => l.performance.customerSatisfaction > 0).length || 0
+            _totalRevenue: locations.reduce((sum: unknown, _l: unknown) => sum + l.performance.revenue, 0),
+            _totalJobs: locations.reduce((sum: unknown, _l: unknown) => sum + l.performance.jobs, 0),
+            _averageSatisfaction: locations.reduce((sum: unknown, _l: unknown) => sum + l.performance.customerSatisfaction, 0) / locations.filter((_l: unknown) => l.performance.customerSatisfaction > 0).length || 0
           }
         }
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to fetch franchise locations',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to fetch franchise locations',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -292,7 +293,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       const location = {
         _id: locationId,
         _name: 'RepairX Downtown',
-        code: 'RX-DT-001',
+        _code: 'RX-DT-001',
         // ... complete location data
         _detailedAnalytics: {
           _monthlyRevenue: Array.from({ length: 12 }, (_, i) => ({
@@ -327,13 +328,13 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: location
+        _data: location
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to fetch location details',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to fetch location details',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -346,13 +347,13 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       const _newLocation: FranchiseLocation = {
         id: `loc_${Date.now()}`,
         _name: (locationData as any).name || '',
-        code: `RX-${(locationData as any).name?.substring(0, 2).toUpperCase()}-${Date.now().toString().slice(-3)}`,
+        _code: `RX-${(locationData as any).name?.substring(0, 2).toUpperCase()}-${Date.now().toString().slice(-3)}`,
         _address: (locationData as any).address || {
-          street: '', _city: '', _state: '', _zipCode: '', _country: ''
+          _street: '', _city: '', _state: '', _zipCode: '', _country: ''
         },
-        contact: (locationData as any).contact || { phone: '', email: '', _manager: '' },
+        _contact: (locationData as any).contact || { _phone: '', _email: '', _manager: '' },
         _operatingHours: (locationData as any).operatingHours || {
-          monday: { open: '09:00', _close: '18:00', _closed: false },
+          _monday: { open: '09:00', _close: '18:00', _closed: false },
           _tuesday: { open: '09:00', _close: '18:00', _closed: false },
           _wednesday: { open: '09:00', _close: '18:00', _closed: false },
           _thursday: { open: '09:00', _close: '18:00', _closed: false },
@@ -362,7 +363,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         },
         _status: 'pending',
         _franchisee: (locationData as any).franchisee || {
-          id: '', _name: '', email: '', _phone: '', _joinDate: new Date().toISOString().substring(0, 10),
+          _id: '', _name: '', _email: '', _phone: '', _joinDate: new Date().toISOString().substring(0, 10),
           _agreement: { type: 'standard', _startDate: '', _endDate: '', _renewalDate: '' }
         },
         _performance: {
@@ -375,14 +376,14 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: newLocation,
-        message: 'Franchise location created successfully'
+        _data: newLocation,
+        _message: 'Franchise location created successfully'
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to create franchise location',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to create franchise location',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -422,7 +423,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
             id: 'alert_1',
             _type: 'compliance',
             _locationId: 'loc_002',
-            message: 'Brand standards compliance below 90% - requires attention',
+            _message: 'Brand standards compliance below 90% - requires attention',
             _priority: 'medium',
             _timestamp: new Date().toISOString()
           },
@@ -430,7 +431,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
             _id: 'alert_2',
             _type: 'performance',
             _locationId: 'loc_003',
-            message: 'New location training completion at 45% - on track for opening',
+            _message: 'New location training completion at 45% - on track for opening',
             _priority: 'info',
             _timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
           }
@@ -439,13 +440,13 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
 
       reply.send({
         _success: true,
-        data: dashboard
+        _data: dashboard
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to fetch franchise dashboard',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to fetch franchise dashboard',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -512,22 +513,22 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: {
-          agreements: agreements,
+        _data: {
+          agreements,
           _summary: {
             _active: agreements.filter((a: unknown) => a.status === 'active').length,
             _pending: agreements.filter((a: unknown) => a.status === 'pending').length,
             _expired: agreements.filter((a: unknown) => a.status === 'expired').length,
-            _totalInitialFees: agreements.reduce((sum: unknown, a: unknown) => sum + a.financial.initialFee, 0),
-            _averageRoyaltyRate: agreements.reduce((sum: unknown, a: unknown) => sum + a.financial.royaltyRate, 0) / agreements.length
+            _totalInitialFees: agreements.reduce((sum: unknown, _a: unknown) => sum + a.financial.initialFee, 0),
+            _averageRoyaltyRate: agreements.reduce((sum: unknown, _a: unknown) => sum + a.financial.royaltyRate, 0) / agreements.length
           }
         }
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to fetch franchise agreements',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to fetch franchise agreements',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -538,7 +539,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       const { locationId  } = (request.params as unknown);
 
       const complianceData = {
-        locationId: locationId,
+        _locationId: locationId,
         _currentStatus: {
           brandStandards: 94.5,
           _qualityScore: 91.2,
@@ -593,30 +594,30 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
           {
             type: 'audit',
             _date: '2025-12-15',
-            description: 'Semi-annual compliance audit'
+            _description: 'Semi-annual compliance audit'
           },
           {
             _type: 'training',
             _date: '2025-09-01',
-            description: 'Safety and Compliance module renewal'
+            _description: 'Safety and Compliance module renewal'
           },
           {
             _type: 'certification',
             _date: '2025-10-30',
-            description: 'Technical certification renewal for 3 technicians'
+            _description: 'Technical certification renewal for 3 technicians'
           }
         ]
       };
 
       reply.send({
         success: true,
-        data: complianceData
+        _data: complianceData
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to fetch compliance data',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to fetch compliance data',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -690,13 +691,13 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
 
       reply.send({
         _success: true,
-        data: territoryAnalysis
+        _data: territoryAnalysis
       });
     } catch (error) {
       reply.status(500).send({
         _success: false,
-        error: 'Failed to fetch territory analysis',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        _error: 'Failed to fetch territory analysis',
+        _message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });

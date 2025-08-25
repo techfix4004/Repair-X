@@ -1,8 +1,8 @@
 
 export interface User {
-  id: string;
+  _id: string;
   email: string;
-  _password?: string;
+  password?: string;
   name: string;
   role: string;
   createdAt?: Date;
@@ -15,12 +15,15 @@ export interface LaunchCampaign {
   status: 'planning' | 'active' | 'completed' | 'paused' | 'cancelled';
   channels: CampaignChannel[];
   objectives: CampaignObjective[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CampaignChannel {
   id: string;
   type: 'email' | 'sms' | 'social-media' | 'paid-ads' | 'pr' | 'content' | 'partnerships' | 'events';
   status: string;
+  config: unknown;
 }
 
 export interface CampaignObjective {
@@ -33,7 +36,22 @@ export interface CampaignObjective {
 export interface AppStoreOptimization {
   id: string;
   status: 'draft' | 'optimizing' | 'testing' | 'submitted' | 'live' | 'rejected';
-  metadata: unknown;
+  metadata: AppStoreMetadata;
+  screenshots: AppStoreScreenshot[];
+}
+
+export interface AppStoreMetadata {
+  title: string;
+  subtitle: string;
+  description: string;
+  keywords: string[];
+}
+
+export interface AppStoreScreenshot {
+  id: string;
+  url: string;
+  deviceType: string;
+  order: number;
 }
 
 export interface GuidelineCompliance {
@@ -41,6 +59,7 @@ export interface GuidelineCompliance {
   guideline: string;
   details: string;
   compliant: boolean;
+  lastChecked: Date;
 }
 
 export interface CustomerIntervention {
@@ -48,6 +67,11 @@ export interface CustomerIntervention {
   customerId: string;
   type: string;
   status: string;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  riskFactors: string[];
+  recommendations: string[];
+  interventionRequired: boolean;
+  createdAt: Date;
 }
 
 export interface SupportTicket {
@@ -57,17 +81,201 @@ export interface SupportTicket {
   description: string;
   type: 'technical' | 'billing' | 'general';
   status: string;
+  priority: 'low' | 'medium' | 'high';
+  createdAt: Date;
 }
 
 export interface SatisfactionSurvey {
   id: string;
   customerId: string;
   questions: SurveyQuestion[];
-  responses: unknown[];
+  responses: SurveyResponse[];
+  completedAt?: Date;
 }
 
 export interface SurveyQuestion {
   id: string;
   text: string;
+  type: 'rating' | 'text' | 'multiple-choice';
+  options?: string[];
+}
+
+export interface SurveyResponse {
+  questionId: string;
+  answer: unknown;
+}
+
+export interface BusinessIntelligence {
+  jobRecommendations: JobRecommendation[];
+  timeEstimation: TimeEstimation;
+  performanceAnalytics: PerformanceAnalytics;
+  realTimeDashboard: RealTimeDashboard;
+}
+
+export interface JobRecommendation {
+  technicianId: string;
+  score: number;
+  factors: RecommendationFactors;
+  estimatedArrival: string;
+  confidence: number;
+}
+
+export interface RecommendationFactors {
+  skillMatch: number;
+  availability: number;
+  location: number;
+  performance: number;
+  customerRating: number;
+}
+
+export interface TimeEstimation {
+  estimatedHours: number;
+  confidenceInterval: {
+    min: number;
+    max: number;
+  };
+  factors: string[];
+  historicalData: HistoricalData;
+}
+
+export interface HistoricalData {
+  averageTime: number;
+  completionRate: number;
+  sampleSize: number;
+}
+
+export interface PerformanceAnalytics {
+  revenueByDay: RevenueByDay[];
+  serviceCategories: ServiceCategory[];
+  technicianPerformance: TechnicianPerformance[];
+  predictions: BusinessPredictions;
+}
+
+export interface RevenueByDay {
+  date: string;
+  revenue: number;
+  jobs: number;
+}
+
+export interface ServiceCategory {
+  category: string;
+  count: number;
+  revenue: number;
+}
+
+export interface TechnicianPerformance {
+  technicianId: string;
+  name: string;
+  completedJobs: number;
+  avgRating: number;
+  revenue: number;
+}
+
+export interface BusinessPredictions {
+  nextMonthRevenue: number;
+  growthRate: number;
+  recommendedActions: string[];
+}
+
+export interface RealTimeDashboard {
+  liveStats: LiveStats;
+  recentActivity: RecentActivity[];
+  topPerformers: TopPerformer[];
+  alerts: SystemAlert[];
+  systemHealth: SystemHealth;
+}
+
+export interface LiveStats {
+  activeJobs: number;
+  onlineTechnicians: number;
+  todayRevenue: number;
+  todayJobs: number;
+  avgResponseTime: number;
+}
+
+export interface RecentActivity {
+  date: string;
+  revenue: number;
+  jobs: number;
+}
+
+export interface TopPerformer {
+  technicianId: string;
+  name: string;
+  score: number;
+}
+
+export interface SystemAlert {
+  id: string;
   type: string;
+  message: string;
+  severity: 'low' | 'medium' | 'high';
+}
+
+export interface SystemHealth {
+  status: string;
+  uptime: number;
+}
+
+export interface TaxSettings {
+  gstin: string;
+  vatNumber: string;
+  taxRates: TaxRates;
+  jurisdiction: string;
+}
+
+export interface TaxRates {
+  gst: number;
+  vat: number;
+}
+
+export interface Device {
+  id: string;
+  brand: string;
+  model: string;
+  category: string;
+  condition: string;
+  serialNumber: string;
+  customerId?: string;
+}
+
+export interface KeywordOptimization {
+  primaryKeywords: string[];
+  secondaryKeywords: string[];
+  competitorKeywords: string[];
+  keywordDensity: Record<string, number>;
+  _searchVolumeTargets: Record<string, number>;
+}
+
+export interface ABTest {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  variants: ABTestVariant[];
+  startDate: string;
+  endDate?: string;
+  confidence: number;
+  significanceLevel: number;
+  results?: ABTestResults;
+}
+
+export interface ABTestVariant {
+  id: string;
+  name: string;
+  traffic: number;
+  conversionRate?: number;
+}
+
+export interface ABTestResults {
+  winner: string;
+  confidence: number;
+  improvement: number;
+}
+
+export interface ComplianceStatus {
+  status: 'compliant' | 'non-compliant' | 'pending';
+  lastCheck: string;
+  issues: string[];
+  guidelines: GuidelineCompliance[];
 }

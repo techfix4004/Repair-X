@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 // Device management interfaces
 interface CreateDeviceRequest {
-  brand: string;
+  _brand: string;
   model: string;
   _serialNumber?: string;
   _yearManufactured?: number;
@@ -24,6 +24,7 @@ interface CreateDeviceRequest {
 //   _id: string;
 // }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Create a new device
@@ -34,13 +35,13 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
         _required: ['brand', 'model', 'category', 'condition'],
         _properties: {
           brand: { type: 'string' },
-          model: { type: 'string' },
-          serialNumber: { type: 'string' },
+          _model: { type: 'string' },
+          _serialNumber: { type: 'string' },
           _yearManufactured: { type: 'number' },
           _category: { type: 'string' },
           _subcategory: { type: 'string' },
           _color: { type: 'string' },
-          condition: { 
+          _condition: { 
             type: 'string', 
             _enum: ['EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED'] 
           },
@@ -55,12 +56,12 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       const customerId = (request as any).user?.id; // Assume user is attached from auth middleware
       
       if (!customerId) {
-        return (reply as FastifyReply).status(401).send({ error: 'Authentication required' });
+        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
       }
 
       const body = request.body;
       const device = await prisma.device.create({
-        data: {
+        _data: {
           ...body,
           customerId,
           _purchaseDate: body.purchaseDate ? new Date(body.purchaseDate) : undefined,
@@ -68,20 +69,20 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
         },
         _include: {
           customer: {
-            select: { id: true, _firstName: true, _lastName: true, email: true }
+            select: { id: true, _firstName: true, _lastName: true, _email: true }
           }
         }
       });
 
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: device,
-        message: 'Device registered successfully'
+        _data: device,
+        _message: 'Device registered successfully'
       });
     } catch (error) {
       server.log.error(error);
       return (reply as FastifyReply).status(500).send({ 
-        error: 'Failed to create device',
+        _error: 'Failed to create device',
         _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
@@ -93,7 +94,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       const customerId = request.user?.id;
       
       if (!customerId) {
-        return (reply as FastifyReply).status(401).send({ error: 'Authentication required' });
+        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
       }
 
       const devices = await prisma.device.findMany({
@@ -121,12 +122,12 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.send({
         _success: true,
-        data: devices,
+        _data: devices,
         _count: devices.length
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to fetch devices' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch devices' });
     }
   });
 
@@ -143,7 +144,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
         },
         _include: {
           customer: {
-            select: { id: true, _firstName: true, _lastName: true, email: true, _phone: true }
+            select: { id: true, _firstName: true, _lastName: true, _email: true, _phone: true }
           },
           _bookings: {
             include: {
@@ -170,16 +171,16 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!device) {
-        return (reply as FastifyReply).status(404).send({ error: 'Device not found' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Device not found' });
       }
 
       return reply.send({
         _success: true,
-        data: device
+        _data: device
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to fetch device' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch device' });
     }
   });
 
@@ -190,13 +191,13 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
         type: 'object',
         _properties: {
           brand: { type: 'string' },
-          model: { type: 'string' },
-          serialNumber: { type: 'string' },
+          _model: { type: 'string' },
+          _serialNumber: { type: 'string' },
           _yearManufactured: { type: 'number' },
           _category: { type: 'string' },
           _subcategory: { type: 'string' },
           _color: { type: 'string' },
-          condition: { 
+          _condition: { 
             type: 'string', 
             _enum: ['EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED'] 
           },
@@ -220,31 +221,31 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!existingDevice) {
-        return (reply as FastifyReply).status(404).send({ error: 'Device not found' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Device not found' });
       }
 
       const updatedDevice = await prisma.device.update({
         _where: { id: deviceId },
-        data: {
+        _data: {
           ...request.body,
           _purchaseDate: request.body.purchaseDate ? new Date(request.body.purchaseDate) : undefined,
           _warrantyExpiry: request.body.warrantyExpiry ? new Date(request.body.warrantyExpiry) : undefined,
         },
         _include: {
           customer: {
-            select: { id: true, _firstName: true, _lastName: true, email: true }
+            select: { id: true, _firstName: true, _lastName: true, _email: true }
           }
         }
       });
 
       return reply.send({
         _success: true,
-        data: updatedDevice,
-        message: 'Device updated successfully'
+        _data: updatedDevice,
+        _message: 'Device updated successfully'
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to update device' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to update device' });
     }
   });
 
@@ -272,12 +273,12 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!device) {
-        return (reply as FastifyReply).status(404).send({ error: 'Device not found' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Device not found' });
       }
 
       if (device.bookings.length > 0 || device.jobSheets.length > 0) {
         return (reply as FastifyReply).status(400).send({ 
-          error: 'Cannot delete device with active bookings or job sheets' 
+          _error: 'Cannot delete device with active bookings or job sheets' 
         });
       }
 
@@ -287,11 +288,11 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.send({
         _success: true,
-        message: 'Device deleted successfully'
+        _message: 'Device deleted successfully'
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to delete device' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to delete device' });
     }
   });
 
@@ -320,11 +321,11 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.send({
         _success: true,
-        data: categories
+        _data: categories
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to fetch categories' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch categories' });
     }
   });
 }

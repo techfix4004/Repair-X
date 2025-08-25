@@ -3,6 +3,7 @@ import CustomerSuccessService from '../services/customer-success.service';
 
 const customerSuccessService = new CustomerSuccessService();
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export default async function customerSuccessRoutes(_server: FastifyInstance): Promise<void> {
   await server.register(async function (server) {
@@ -33,7 +34,7 @@ server.get('/dashboard', async (request: FastifyRequest, reply: FastifyReply) =>
       _recentInterventions: [
         {
           id: 'intervention_1',
-          customerId: 'customer_123',
+          _customerId: 'customer_123',
           _customerName: 'John Smith',
           _type: 'retention',
           _priority: 'high',
@@ -53,15 +54,15 @@ server.get('/dashboard', async (request: FastifyRequest, reply: FastifyReply) =>
 
     return reply.send({
       success: true,
-      data: dashboardData,
+      _data: dashboardData,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error fetching customer success _dashboard:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch customer success dashboard',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch customer success dashboard',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -90,7 +91,7 @@ server.get('/customers/:customerId/health', {
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         customerId,
         _customerName: profile?.name,
         healthScore,
@@ -115,8 +116,8 @@ server.get('/customers/:customerId/health', {
     console.error('Error fetching customer _health:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch customer health',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch customer health',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -133,7 +134,7 @@ server.get('/customers/at-risk', async (request: FastifyRequest, reply: FastifyR
         _id: 'customer_123',
         _name: 'John Smith',
         _company: 'Smith Repairs LLC',
-        email: 'john.smith@example.com',
+        _email: 'john.smith@example.com',
         _healthScore: 35,
         _riskLevel: 'high',
         _lastActivity: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
@@ -147,7 +148,7 @@ server.get('/customers/at-risk', async (request: FastifyRequest, reply: FastifyR
         _id: 'customer_789',
         _name: 'Quick Fix Co',
         _company: 'Quick Fix Co',
-        email: 'contact@quickfix.com',
+        _email: 'contact@quickfix.com',
         _healthScore: 25,
         _riskLevel: 'critical',
         _lastActivity: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
@@ -161,7 +162,7 @@ server.get('/customers/at-risk', async (request: FastifyRequest, reply: FastifyR
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         customers: atRiskCustomers,
         _total: atRiskCustomers.length,
         _summary: {
@@ -175,8 +176,8 @@ server.get('/customers/at-risk', async (request: FastifyRequest, reply: FastifyR
     console.error('Error fetching at-risk _customers:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch at-risk customers',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch at-risk customers',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -210,15 +211,15 @@ server.post('/interventions', {
 
     return reply.code(201).send({
       _success: true,
-      data: intervention,
-      message: 'Automated intervention created and initiated successfully'
+      _data: intervention,
+      _message: 'Automated intervention created and initiated successfully'
     });
   } catch (error) {
     console.error('Error creating _intervention:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to create intervention',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to create intervention',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -260,15 +261,15 @@ server.get('/analytics', async (request: FastifyRequest, reply: FastifyReply) =>
 
     return reply.send({
       success: true,
-      data: analytics,
+      _data: analytics,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error fetching customer success _analytics:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch analytics',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch analytics',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });

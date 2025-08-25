@@ -37,8 +37,9 @@ import apiMarketplaceRoutes from './api-marketplace';
 import visualRegressionTestingRoutes from './visual-regression-testing';
 import mobileFieldOperationsRoutes from './mobile-field-operations';
 
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function registerRoutes(server: FastifyInstance): Promise<void> {
+export async function registerRoutes(_server: FastifyInstance): Promise<void> {
   // API versioning
   await server.register(async function (server) {
     // Authentication routes

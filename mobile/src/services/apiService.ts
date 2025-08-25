@@ -37,9 +37,9 @@ class ApiService {
   private async apiCall<T>(_endpoint: string, _options: RequestInit = {}): Promise<ApiResponse<T>> {
     try {
       const token = await this.getAuthToken();
-      const headers: HeadersInit = {
+      const _headers: HeadersInit = {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token && { _Authorization: `Bearer ${token}` }),
         ..._options.headers,
       };
 
@@ -59,15 +59,15 @@ class ApiService {
       console.error('API call _failed:', error);
       return { 
         _success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+        _error: error instanceof Error ? error.message : 'Unknown error occurred' 
       };
     }
   }
 
   // Authentication
-  async login(email: string, password: string): Promise<ApiResponse<{ user: unknown; token: string }>> {
-    const result = await this.apiCall<{ user: unknown; token: string }>('/auth/login', { method: 'POST',
-      body: JSON.stringify({ email, password }),
+  async login(email: string, _password: string): Promise<ApiResponse<{ _user: unknown; token: string }>> {
+    const result = await this.apiCall<{ user: unknown; token: string }>('/auth/login', { _method: 'POST',
+      _body: JSON.stringify({ email, password }),
     });
 
     if (result._success && result.data?.token) {
@@ -96,8 +96,8 @@ class ApiService {
     description?: string;
     urgency?: string;
   }): Promise<ApiResponse<Job>> {
-    return this.apiCall<Job>('/jobs', { method: 'POST',
-      body: JSON.stringify(_jobData),
+    return this.apiCall<Job>('/jobs', { _method: 'POST',
+      _body: JSON.stringify(_jobData),
     });
   }
 
@@ -107,66 +107,66 @@ class ApiService {
   }
 
   async updateJobStatus(_jobId: string, _status: string, notes?: string): Promise<ApiResponse<Job>> {
-    return this.apiCall<Job>(`/jobs/${_jobId}/status`, { method: 'PUT',
-      body: JSON.stringify({ status, notes }),
+    return this.apiCall<Job>(`/jobs/${_jobId}/status`, { _method: 'PUT',
+      _body: JSON.stringify({ status, notes }),
     });
   }
 
   // Device Registration
-  async registerDevice(deviceData: {
+  async registerDevice(_deviceData: {
     brand: string;
     model: string;
     category: string;
     condition: string;
     serialNumber?: string;
   }): Promise<ApiResponse<any>> {
-    return this.apiCall<any>('/devices', { method: 'POST',
-      body: JSON.stringify(deviceData),
+    return this.apiCall<any>('/devices', { _method: 'POST',
+      _body: JSON.stringify(deviceData),
     });
   }
 
   // Payment
-  async createPaymentIntent(amount: number, currency: string = 'USD'): Promise<ApiResponse<any>> {
-    return this.apiCall<any>('/payments/create-intent', { method: 'POST',
-      body: JSON.stringify({ amount, currency }),
+  async createPaymentIntent(_amount: number, _currency: string = 'USD'): Promise<ApiResponse<any>> {
+    return this.apiCall<any>('/payments/create-intent', { _method: 'POST',
+      _body: JSON.stringify({ amount, currency }),
     });
   }
 
   // Rating and Review System
-  async submitRating(jobId: string, customerId: string, technicianId: string, rating: number, comment?: string): Promise<ApiResponse<any>> {
-    return this.apiCall<any>('/ratings', { method: 'POST',
-      body: JSON.stringify({ jobId, customerId, technicianId, rating, comment }),
+  async submitRating(_jobId: string, _customerId: string, _technicianId: string, _rating: number, comment?: string): Promise<ApiResponse<any>> {
+    return this.apiCall<any>('/ratings', { _method: 'POST',
+      _body: JSON.stringify({ jobId, customerId, technicianId, rating, comment }),
     });
   }
 
-  async getRatingsByJob(jobId: string): Promise<ApiResponse<any[]>> {
+  async getRatingsByJob(_jobId: string): Promise<ApiResponse<any[]>> {
     return this.apiCall<any[]>(`/ratings/job/${jobId}`);
   }
 
-  async getTechnicianRatings(technicianId: string, page: number = 1, limit: number = 10): Promise<ApiResponse<any>> {
+  async getTechnicianRatings(_technicianId: string, _page: number = 1, _limit: number = 10): Promise<ApiResponse<any>> {
     return this.apiCall<any>(`/ratings/technician/${technicianId}?page=${page}&limit=${limit}`);
   }
 
-  async getCustomerRatingHistory(customerId: string, page: number = 1, limit: number = 10): Promise<ApiResponse<any>> {
+  async getCustomerRatingHistory(_customerId: string, _page: number = 1, _limit: number = 10): Promise<ApiResponse<any>> {
     return this.apiCall<any>(`/ratings/customer/${customerId}?page=${page}&limit=${limit}`);
   }
 
   // Real-time Chat System  
-  async getChatMessages(jobId: string, page: number = 1, limit: number = 50): Promise<ApiResponse<any>> {
+  async getChatMessages(_jobId: string, _page: number = 1, _limit: number = 50): Promise<ApiResponse<any>> {
     return this.apiCall<any>(`/chat/job/${jobId}?page=${page}&limit=${limit}`);
   }
 
-  async getUnreadMessageCount(userId: string): Promise<ApiResponse<{ unreadCount: number }>> {
+  async getUnreadMessageCount(_userId: string): Promise<ApiResponse<{ _unreadCount: number }>> {
     return this.apiCall<{ unreadCount: number }>(`/chat/unread/${userId}`);
   }
 
-  async uploadChatFile(file: File): Promise<ApiResponse<any>> {
+  async uploadChatFile(_file: File): Promise<ApiResponse<any>> {
     const formData = new FormData();
     formData.append('file', file);
     
-    return this.apiCall<any>('/chat/upload', { method: 'POST',
-      headers: { 'Content-Type': 'multipart/form-data' },
-      body: formData,
+    return this.apiCall<any>('/chat/upload', { _method: 'POST',
+      _headers: { 'Content-Type': 'multipart/form-data' },
+      _body: formData,
     });
   }
 }

@@ -34,6 +34,7 @@ interface ComplianceReport {
   };
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function complianceRoutes(fastify: FastifyInstance) {
   // Comprehensive compliance status endpoint
@@ -43,12 +44,12 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       
       reply.send({
         _success: true,
-        data: complianceReport
+        _data: complianceReport
       });
     } catch (error) {
       reply.code(500).send({
         _success: false,
-        error: 'Failed to generate compliance report'
+        _error: 'Failed to generate compliance report'
       });
     }
   });
@@ -86,12 +87,12 @@ export async function complianceRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: pciStatus
+        _data: pciStatus
       });
     } catch (error) {
       reply.code(500).send({
         _success: false,
-        error: 'Failed to check PCI DSS compliance'
+        _error: 'Failed to check PCI DSS compliance'
       });
     }
   });
@@ -102,15 +103,15 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       const gdprStatus = {
         _status: 'compliant' as const,
         _principles: {
-          lawfulness: { status: 'compliant', description: 'Legal basis documented' },
-          _fairness: { status: 'compliant', description: 'Transparent processing' },
-          _transparency: { status: 'compliant', description: 'Clear privacy notices' },
-          _purposeLimitation: { status: 'compliant', description: 'Specific purposes defined' },
-          _dataMinimization: { status: 'compliant', description: 'Minimal data collection' },
-          _accuracy: { status: 'compliant', description: 'Data correction mechanisms' },
-          _storageLimitation: { status: 'compliant', description: 'Retention policies defined' },
-          _integrityConfidentiality: { status: 'compliant', description: 'Security measures implemented' },
-          _accountability: { status: 'compliant', description: 'Compliance documentation' }
+          lawfulness: { status: 'compliant', _description: 'Legal basis documented' },
+          _fairness: { status: 'compliant', _description: 'Transparent processing' },
+          _transparency: { status: 'compliant', _description: 'Clear privacy notices' },
+          _purposeLimitation: { status: 'compliant', _description: 'Specific purposes defined' },
+          _dataMinimization: { status: 'compliant', _description: 'Minimal data collection' },
+          _accuracy: { status: 'compliant', _description: 'Data correction mechanisms' },
+          _storageLimitation: { status: 'compliant', _description: 'Retention policies defined' },
+          _integrityConfidentiality: { status: 'compliant', _description: 'Security measures implemented' },
+          _accountability: { status: 'compliant', _description: 'Compliance documentation' }
         },
         _rights: {
           rightToBeInformed: true,
@@ -131,12 +132,12 @@ export async function complianceRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: gdprStatus
+        _data: gdprStatus
       });
     } catch (error) {
       reply.code(500).send({
         _success: false,
-        error: 'Failed to check GDPR compliance'
+        _error: 'Failed to check GDPR compliance'
       });
     }
   });
@@ -179,12 +180,12 @@ export async function complianceRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: gstStatus
+        _data: gstStatus
       });
     } catch (error) {
       reply.code(500).send({
         _success: false,
-        error: 'Failed to check GST compliance'
+        _error: 'Failed to check GST compliance'
       });
     }
   });
@@ -225,12 +226,12 @@ export async function complianceRoutes(fastify: FastifyInstance) {
 
       reply.send({
         _success: true,
-        data: sixSigmaStatus
+        _data: sixSigmaStatus
       });
     } catch (error) {
       reply.code(500).send({
         _success: false,
-        error: 'Failed to generate Six Sigma metrics'
+        _error: 'Failed to generate Six Sigma metrics'
       });
     }
   });
@@ -276,12 +277,12 @@ export async function complianceRoutes(fastify: FastifyInstance) {
 
       reply.send({
         success: true,
-        data: auditTrail
+        _data: auditTrail
       });
     } catch (error) {
       reply.code(500).send({
         _success: false,
-        error: 'Failed to retrieve audit trail'
+        _error: 'Failed to retrieve audit trail'
       });
     }
   });

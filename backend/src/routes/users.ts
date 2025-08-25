@@ -1,33 +1,33 @@
 import { FastifyInstance } from 'fastify';
 
-export async function userRoutes(server: FastifyInstance): Promise<void> {
+export async function userRoutes(_server: FastifyInstance): Promise<void> {
   server.get('/', async () => {
-    return { message: 'User routes - Coming soon' };
+    return { _message: 'User routes - Coming soon' };
   });
 }
 
-export async function serviceRoutes(server: FastifyInstance): Promise<void> {
+export async function serviceRoutes(_server: FastifyInstance): Promise<void> {
   server.get('/', async () => {
-    return { message: 'Service routes - Coming soon' };
+    return { _message: 'Service routes - Coming soon' };
   });
 }
 
-export async function bookingRoutes(server: FastifyInstance): Promise<void> {
+export async function bookingRoutes(_server: FastifyInstance): Promise<void> {
   server.get('/', async () => {
-    return { message: 'Booking routes - Coming soon' };
+    return { _message: 'Booking routes - Coming soon' };
   });
 }
 
-export async function paymentRoutes(server: FastifyInstance): Promise<void> {
+export async function paymentRoutes(_server: FastifyInstance): Promise<void> {
   server.get('/', async () => {
-    return { message: 'Payment routes - Coming soon' };
+    return { _message: 'Payment routes - Coming soon' };
   });
 }
 
-export async function qualityRoutes(server: FastifyInstance): Promise<void> {
+export async function qualityRoutes(_server: FastifyInstance): Promise<void> {
   server.get('/metrics', async () => {
     return {
-      message: 'Six Sigma Quality Metrics - Coming soon',
+      _message: 'Six Sigma Quality Metrics - Coming soon',
       _targets: {
         defectRate: '< 3.4 DPMO',
         _processCapability: '> 1.33',

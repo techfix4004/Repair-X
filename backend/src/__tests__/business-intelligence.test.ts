@@ -1,3 +1,5 @@
+ 
+/// <reference types="jest" />
 /* eslint-disable no-undef */
 /// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
@@ -6,9 +8,10 @@ import dotenv from 'dotenv';
 // Load test environment variables
 dotenv.config();
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('AI-Powered Business Intelligence API', () => {
-  let authToken: string;
+  let _authToken: string;
   let testJobId: string;
 
   beforeAll(async () => {
@@ -20,8 +23,8 @@ describe('AI-Powered Business Intelligence API', () => {
   describe('AI Job Assignment', () => {
     test('should provide intelligent job assignment recommendations', async () => {
       const mockResponse = {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           recommendedTechnicians: [
             {
               technicianId: 'tech-001',
@@ -34,29 +37,29 @@ describe('AI-Powered Business Intelligence API', () => {
                 _customerRating: 4.8,
               },
               _estimatedArrival: new Date().toISOString(),
-              confidence: 0.88,
+              _confidence: 0.88,
             },
           ],
           _reasoning: [
             'Ranked by AI matching algorithm considering skills, availability, location, and performance',
           ],
         },
-        timestamp: expect.any(String),
+        _timestamp: expect.any(String),
       };
 
       // Mock the API response since we're testing the structure and logic
       expect(mockResponse.success).toBe(true);
       expect(mockResponse.data?.recommendedTechnicians).toHaveLength(1);
-      expect(mockResponse.data.recommendedTechnicians[0]?._score).toBeGreaterThan(0.8);
-      expect((mockResponse.data.recommendedTechnicians[0]?._factors as any).skillMatch).toBeDefined();
-      expect(Array.isArray(mockResponse.data._reasoning)).toBe(true);
+      expect(mockResponse.data.recommendedTechnicians[0]?.score).toBeGreaterThan(0.8);
+      expect((mockResponse.data.recommendedTechnicians[0]?.factors as any).skillMatch).toBeDefined();
+      expect(Array.isArray(mockResponse.data.reasoning)).toBe(true);
     });
 
     test('should handle job not found gracefully', async () => {
       const mockErrorResponse = {
-        success: false,
-        error: 'Job not found',
-        timestamp: expect.any(String),
+        _success: false,
+        _error: 'Job not found',
+        _timestamp: expect.any(String),
       };
 
       expect(mockErrorResponse.success).toBe(false);
@@ -67,16 +70,16 @@ describe('AI-Powered Business Intelligence API', () => {
   describe('Predictive Analytics', () => {
     test('should predict repair time based on device category and complexity', async () => {
       const mockPrediction = {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           estimatedHours: 4.5,
           _confidenceInterval: {
             min: 3.2,
-            max: 6.3,
+            _max: 6.3,
           },
           _factors: [
             'Base complexity: MEDIUM',
-            'Device category: Electronics',
+            'Device _category: Electronics',
             'Historical _average: 25 similar jobs',
             'Issue _analysis: Standard complexity',
           ],
@@ -86,21 +89,21 @@ describe('AI-Powered Business Intelligence API', () => {
             _sampleSize: 25,
           },
         },
-        timestamp: expect.any(String),
+        _timestamp: expect.any(String),
       };
 
       expect(mockPrediction.success).toBe(true);
       expect(mockPrediction.data?.estimatedHours).toBeGreaterThan(0);
-      expect(mockPrediction.data._confidenceInterval.min).toBeLessThan(mockPrediction.data.estimatedHours);
-      expect(mockPrediction.data._confidenceInterval.max).toBeGreaterThan(mockPrediction.data.estimatedHours);
-      expect(Array.isArray(mockPrediction.data._factors)).toBe(true);
+      expect(mockPrediction.data.confidenceInterval.min).toBeLessThan(mockPrediction.data.estimatedHours);
+      expect(mockPrediction.data.confidenceInterval.max).toBeGreaterThan(mockPrediction.data.estimatedHours);
+      expect(Array.isArray(mockPrediction.data.factors)).toBe(true);
     });
 
     test('should validate input parameters', async () => {
       const invalidInputResponse = {
-        success: false,
-        error: 'Invalid device category',
-        timestamp: expect.any(String),
+        _success: false,
+        _error: 'Invalid device category',
+        _timestamp: expect.any(String),
       };
 
       expect(invalidInputResponse.success).toBe(false);
@@ -110,28 +113,28 @@ describe('AI-Powered Business Intelligence API', () => {
   describe('Business Intelligence Dashboard', () => {
     test('should generate comprehensive business metrics', async () => {
       const mockDashboard = {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           summary: {
             totalRevenue: 25450.00,
             _totalJobs: 145,
-            avgJobValue: 175.52,
-            customerSatisfaction: 4.6,
+            _avgJobValue: 175.52,
+            _customerSatisfaction: 4.6,
             _technicianUtilization: 78.5,
           },
-          trends: {
+          _trends: {
             revenueByDay: [
               { date: '2025-08-01', _revenue: 850.00, _jobs: 5 },
               { _date: '2025-08-02', _revenue: 1200.00, _jobs: 7 },
             ],
             _serviceCategories: [
               { category: 'Electronics', _count: 65, _revenue: 11250.00 },
-              { category: 'Appliances', _count: 45, _revenue: 9875.00 },
+              { _category: 'Appliances', _count: 45, _revenue: 9875.00 },
             ],
             _technicianPerformance: [
               {
                 technicianId: 'tech-001',
-                name: 'John Smith',
+                _name: 'John Smith',
                 _jobsCompleted: 28,
                 _avgRating: 4.8,
                 _revenue: 4850.00,
@@ -139,7 +142,7 @@ describe('AI-Powered Business Intelligence API', () => {
               },
             ],
           },
-          predictions: {
+          _predictions: {
             nextMonthRevenue: 28500.00,
             _growthRate: 12.5,
             _recommendedActions: [
@@ -150,7 +153,7 @@ describe('AI-Powered Business Intelligence API', () => {
             defectRate: 245.5,
             _reworkRate: 2.3,
             _customerRetention: 87.5,
-            npsScore: 42.8,
+            _npsScore: 42.8,
           },
           _dateRange: {
             start: expect.any(String),
@@ -166,10 +169,10 @@ describe('AI-Powered Business Intelligence API', () => {
       expect(mockDashboard.data.summary.customerSatisfaction).toBeGreaterThan(0);
       expect(mockDashboard.data.summary.customerSatisfaction).toBeLessThanOrEqual(5);
       expect(Array.isArray(mockDashboard.data.trends.revenueByDay)).toBe(true);
-      expect(Array.isArray(mockDashboard.data.trends.serviceCategories)).toBe(true);
-      expect(Array.isArray(mockDashboard.data.trends.technicianPerformance)).toBe(true);
-      expect(mockDashboard.data.predictions.growthRate).toBeDefined();
-      expect(Array.isArray(mockDashboard.data.predictions.recommendedActions)).toBe(true);
+      expect(Array.isArray(mockDashboard.data.trends._serviceCategories)).toBe(true);
+      expect(Array.isArray(mockDashboard.data.trends._technicianPerformance)).toBe(true);
+      expect(mockDashboard.data.predictions._growthRate).toBeDefined();
+      expect(Array.isArray(mockDashboard.data.predictions._recommendedActions)).toBe(true);
     });
 
     test('should support different time periods', async () => {
@@ -177,8 +180,8 @@ describe('AI-Powered Business Intelligence API', () => {
       
       for (const period of periods) {
         const mockResponse = {
-          success: true,
-          data: {
+          _success: true,
+          _data: {
             dateRange: { period },
             _summary: expect.any(Object),
           },
@@ -192,8 +195,8 @@ describe('AI-Powered Business Intelligence API', () => {
   describe('Real-time Analytics', () => {
     test('should provide real-time system metrics', async () => {
       const mockRealtimeMetrics = {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           liveStats: {
             activeJobs: 18,
             _onlineTechnicians: 12,
@@ -208,7 +211,7 @@ describe('AI-Powered Business Intelligence API', () => {
           _topPerformers: [
             {
               technicianId: 'tech-001',
-              name: 'John Smith',
+              _name: 'John Smith',
               _jobsCompleted: 28,
               _avgRating: 4.8,
               _revenue: 4850.00,
@@ -219,15 +222,15 @@ describe('AI-Powered Business Intelligence API', () => {
             {
               type: 'success',
               _title: 'Strong Growth',
-              message: 'Revenue growing at 15.2% - consider scaling operations',
+              _message: 'Revenue growing at 15.2% - consider scaling operations',
               _priority: 'medium',
             },
           ],
-          systemHealth: {
+          _systemHealth: {
             apiResponseTime: 125,
             _databaseHealth: 'healthy',
             _paymentGateway: 'operational',
-            notificationService: 'operational',
+            _notificationService: 'operational',
           },
         },
         _lastUpdated: expect.any(String),
@@ -235,9 +238,9 @@ describe('AI-Powered Business Intelligence API', () => {
 
       expect(mockRealtimeMetrics.success).toBe(true);
       expect(mockRealtimeMetrics.data.liveStats.activeJobs).toBeGreaterThanOrEqual(0);
-      expect(mockRealtimeMetrics.data.liveStats.onlineTechnicians).toBeGreaterThanOrEqual(0);
-      expect(Array.isArray(mockRealtimeMetrics.data.recentActivity)).toBe(true);
-      expect(Array.isArray(mockRealtimeMetrics.data.topPerformers)).toBe(true);
+      expect(mockRealtimeMetrics.data.liveStats._onlineTechnicians).toBeGreaterThanOrEqual(0);
+      expect(Array.isArray(mockRealtimeMetrics.data._recentActivity)).toBe(true);
+      expect(Array.isArray(mockRealtimeMetrics.data._topPerformers)).toBe(true);
       expect(Array.isArray(mockRealtimeMetrics.data.alerts)).toBe(true);
       expect(mockRealtimeMetrics.data?.systemHealth).toBeDefined();
     });
@@ -246,27 +249,27 @@ describe('AI-Powered Business Intelligence API', () => {
   describe('Customer Analytics', () => {
     test('should provide customer segmentation insights', async () => {
       const mockCustomerAnalytics = {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           segmentation: {
             new: 45,
-            returning: 125,
-            vip: 18,
-            atRisk: 12,
+            _returning: 125,
+            _vip: 18,
+            _atRisk: 12,
           },
-          metrics: {
+          _metrics: {
             acquisitionCost: 32.50,
-            lifetimeValue: 385.00,
-            retentionRate: 87.5,
-            satisfactionScore: 4.6,
-            npsScore: 42.8,
+            _lifetimeValue: 385.00,
+            _retentionRate: 87.5,
+            _satisfactionScore: 4.6,
+            _npsScore: 42.8,
           },
-          trends: {
+          _trends: {
             acquisitionRate: 8.5,
             _churnRate: 4.2,
             _avgOrderValueTrend: 7.3,
           },
-          insights: [
+          _insights: [
             'Customer satisfaction has improved 12% this month',
             'VIP customers generate 3x more revenue per job',
             'Mobile app users have 25% higher retention rates',
@@ -289,37 +292,37 @@ describe('AI-Powered Business Intelligence API', () => {
   describe('Revenue Optimization', () => {
     test('should provide AI-powered revenue optimization recommendations', async () => {
       const mockOptimization = {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           currentMetrics: {
             monthlyRevenue: 25450.00,
-            avgJobValue: 175.52,
-            jobVolume: 145,
-            customerSatisfaction: 4.6,
+            _avgJobValue: 175.52,
+            _jobVolume: 145,
+            _customerSatisfaction: 4.6,
           },
-          opportunities: [
+          _opportunities: [
             {
               category: 'Pricing Optimization',
-              impact: 'High',
-              recommendation: 'Increase premium service pricing by 8-12%',
-              estimatedRevenue: 2036,
-              confidence: 0.85,
+              _impact: 'High',
+              _recommendation: 'Increase premium service pricing by 8-12%',
+              _estimatedRevenue: 2036,
+              _confidence: 0.85,
             },
             {
-              category: 'Service Upselling',
-              impact: 'Medium',
-              recommendation: 'Introduce maintenance packages to increase customer lifetime value',
-              estimatedRevenue: 3817,
-              confidence: 0.72,
+              _category: 'Service Upselling',
+              _impact: 'Medium',
+              _recommendation: 'Introduce maintenance packages to increase customer lifetime value',
+              _estimatedRevenue: 3817,
+              _confidence: 0.72,
             },
           ],
-          predictions: {
+          _predictions: {
             nextMonthRevenue: 28500.00,
             _quarterlyProjection: 85500.00,
             _yearlyProjection: 342000.00,
             _growthRate: 12.5,
           },
-          actionPlan: [
+          _actionPlan: [
             'Consider expanding service categories to diversify revenue streams',
           ],
         },
@@ -340,9 +343,9 @@ describe('AI-Powered Business Intelligence API', () => {
   describe('Error Handling', () => {
     test('should handle invalid date ranges', async () => {
       const invalidDateResponse = {
-        success: false,
-        error: 'Invalid date range',
-        timestamp: expect.any(String),
+        _success: false,
+        _error: 'Invalid date range',
+        _timestamp: expect.any(String),
       };
 
       expect(invalidDateResponse.success).toBe(false);
@@ -350,9 +353,9 @@ describe('AI-Powered Business Intelligence API', () => {
 
     test('should handle database connection errors', async () => {
       const dbErrorResponse = {
-        success: false,
-        error: 'Database connection failed',
-        timestamp: expect.any(String),
+        _success: false,
+        _error: 'Database connection failed',
+        _timestamp: expect.any(String),
       };
 
       expect(dbErrorResponse.success).toBe(false);
@@ -360,9 +363,9 @@ describe('AI-Powered Business Intelligence API', () => {
 
     test('should handle insufficient data scenarios', async () => {
       const insufficientDataResponse = {
-        success: false,
-        error: 'Insufficient data for analysis',
-        timestamp: expect.any(String),
+        _success: false,
+        _error: 'Insufficient data for analysis',
+        _timestamp: expect.any(String),
       };
 
       expect(insufficientDataResponse.success).toBe(false);

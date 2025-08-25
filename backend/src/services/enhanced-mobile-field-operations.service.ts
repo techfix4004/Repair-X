@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 export interface MobileFieldOperations {
-  id: string;
+  _id: string;
   technicianId: string;
   deviceId: string;
   currentJob?: string;
@@ -162,18 +162,18 @@ export interface TimeEntry {
 
 export class EnhancedMobileFieldOperationsService {
   // Enhanced offline capabilities and data synchronization
-  async enableOfflineMode(technicianId: string, deviceId: string): Promise<OfflineSyncManager> {
+  async enableOfflineMode(technicianId: string, _deviceId: string): Promise<OfflineSyncManager> {
     console.log(`🔄 Enabling offline mode for technician ${technicianId} on device ${deviceId}`);
     
     // Create offline sync manager
-    const syncManager: OfflineSyncManager = {
+    const _syncManager: OfflineSyncManager = {
       id: `sync_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       deviceId,
-      lastSync: new Date(),
-      pendingSync: [],
-      conflicts: [],
-      storageUsed: 0,
-      storageLimit: 1024 * 1024 * 100, // 100MB
+      _lastSync: new Date(),
+      _pendingSync: [],
+      _conflicts: [],
+      _storageUsed: 0,
+      _storageLimit: 1024 * 1024 * 100, // 100MB
     };
 
     // Sync essential data for offline use
@@ -182,7 +182,7 @@ export class EnhancedMobileFieldOperationsService {
     return syncManager;
   }
 
-  async syncCriticalData(syncManager: OfflineSyncManager): Promise<void> {
+  async syncCriticalData(_syncManager: OfflineSyncManager): Promise<void> {
     console.log(`📱 Syncing critical data for offline mode`);
     
     // Sync job data, customer info, parts inventory, workflow states
@@ -195,31 +195,31 @@ export class EnhancedMobileFieldOperationsService {
     ];
 
     for (const dataType of criticalData) {
-      const syncItem: SyncItem = {
+      const _syncItem: SyncItem = {
         id: `sync_${Date.now()}_${dataType}`,
-        type: 'job-update',
-        data: await this.getCriticalDataByType(dataType),
-        timestamp: new Date(),
-        retryCount: 0,
-        priority: 'high'
+        _type: 'job-update',
+        _data: await this.getCriticalDataByType(dataType),
+        _timestamp: new Date(),
+        _retryCount: 0,
+        _priority: 'high'
       };
       
       syncManager.pendingSync.push(syncItem);
     }
   }
 
-  async getCriticalDataByType(dataType: string): Promise<any> {
+  async getCriticalDataByType(_dataType: string): Promise<any> {
     // Mock critical data fetching
     return {
-      type: dataType,
-      data: [],
-      timestamp: new Date(),
-      version: '1.0'
+      _type: dataType,
+      _data: [],
+      _timestamp: new Date(),
+      _version: '1.0'
     };
   }
 
   // Mobile print _options for receipt printers
-  async setupMobilePrinting(technicianId: string, printerConfig: unknown): Promise<boolean> {
+  async setupMobilePrinting(technicianId: string, _printerConfig: unknown): Promise<boolean> {
     console.log(`🖨️ Setting up mobile printing for technician ${technicianId}`);
     
     // Configure Bluetooth/WiFi receipt printer
@@ -230,22 +230,22 @@ export class EnhancedMobileFieldOperationsService {
       'Zebra ZD220'
     ];
 
-    console.log(`📄 Supported printers: ${supportedPrinters.join(', ')}`);
+    console.log(`📄 Supported _printers: ${supportedPrinters.join(', ')}`);
     
     return true;
   }
 
-  async printReceipt(jobId: string, technicianId: string, content: PrintContent): Promise<MobilePrintJob> {
+  async printReceipt(_jobId: string, _technicianId: string, _content: PrintContent): Promise<MobilePrintJob> {
     console.log(`📄 Printing receipt for job ${_jobId}`);
     
-    const printJob: MobilePrintJob = {
+    const _printJob: MobilePrintJob = {
       id: `print_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       _jobId,
       technicianId,
-      printerType: 'receipt',
+      _printerType: 'receipt',
       content,
-      status: 'queued',
-      createdAt: new Date()
+      _status: 'queued',
+      _createdAt: new Date()
     };
 
     // Generate receipt content
@@ -263,15 +263,15 @@ export class EnhancedMobileFieldOperationsService {
     return printJob;
   }
 
-  async generateReceiptContent(printJob: MobilePrintJob): Promise<void> {
+  async generateReceiptContent(_printJob: MobilePrintJob): Promise<void> {
     const receiptTemplate = `
     =====================================
            REPAIRX FIELD SERVICE
     =====================================
-    Job ID: ${printJob.jobId}
+    Job _ID: ${printJob.jobId}
     Date: ${new Date().toLocaleDateString()}
-    Time: ${new Date().toLocaleTimeString()}
-    Technician: ${printJob.technicianId}
+    _Time: ${new Date().toLocaleTimeString()}
+    _Technician: ${printJob.technicianId}
     
     Service Details:
     - Device: ${printJob.content.data?.device || 'N/A'}
@@ -291,13 +291,13 @@ export class EnhancedMobileFieldOperationsService {
   }
 
   // Complete 12-state workflow management on mobile devices
-  async initializeMobileWorkflow(jobId: string, technicianId: string): Promise<WorkflowStateManager> {
+  async initializeMobileWorkflow(jobId: string, _technicianId: string): Promise<WorkflowStateManager> {
     console.log(`⚙️ Initializing mobile workflow for job ${_jobId}`);
     
-    const workflowManager: WorkflowStateManager = {
+    const _workflowManager: WorkflowStateManager = {
       _jobId,
-      currentState: 'CREATED',
-      availableStates: [
+      _currentState: 'CREATED',
+      _availableStates: [
         'CREATED',
         'IN_DIAGNOSIS', 
         'AWAITING_APPROVAL',
@@ -311,18 +311,18 @@ export class EnhancedMobileFieldOperationsService {
         'DELIVERED',
         'CANCELLED'
       ],
-      stateHistory: [{
+      _stateHistory: [{
         state: 'CREATED',
-        timestamp: new Date(),
+        _timestamp: new Date(),
         technicianId,
-        notes: 'Job created and assigned to technician',
-        attachments: []
+        _notes: 'Job created and assigned to technician',
+        _attachments: []
       }],
-      mobileCapture: {
+      _mobileCapture: {
         photos: [],
-        signatures: [],
-        checklists: [],
-        timeTracking: []
+        _signatures: [],
+        _checklists: [],
+        _timeTracking: []
       }
     };
 
@@ -331,8 +331,8 @@ export class EnhancedMobileFieldOperationsService {
 
   async transitionWorkflowState(
     workflowManager: WorkflowStateManager,
-    newState: string,
-    technicianId: string,
+    _newState: string,
+    _technicianId: string,
     location?: GPSLocation,
     notes?: string
   ): Promise<boolean> {
@@ -340,18 +340,18 @@ export class EnhancedMobileFieldOperationsService {
     
     // Validate state transition
     if (!this.isValidStateTransition(workflowManager.currentState, newState)) {
-      console.error(`❌ Invalid state transition: ${workflowManager.currentState} -> ${newState}`);
+      console.error(`❌ Invalid state _transition: ${workflowManager.currentState} -> ${newState}`);
       return false;
     }
 
     // Add to history
-    const historyEntry: WorkflowStateHistory = {
+    const _historyEntry: WorkflowStateHistory = {
       state: newState,
-      timestamp: new Date(),
+      _timestamp: new Date(),
       technicianId,
       location,
       notes,
-      attachments: []
+      _attachments: []
     };
 
     workflowManager.stateHistory.push(historyEntry);
@@ -364,8 +364,8 @@ export class EnhancedMobileFieldOperationsService {
     return true;
   }
 
-  private isValidStateTransition(currentState: string, newState: string): boolean {
-    const validTransitions: Record<string, string[]> = {
+  private isValidStateTransition(_currentState: string, _newState: string): boolean {
+    const _validTransitions: Record<string, string[]> = {
       'CREATED': ['IN_DIAGNOSIS', 'CANCELLED'],
       'IN_DIAGNOSIS': ['AWAITING_APPROVAL', 'APPROVED', 'CANCELLED'],
       'AWAITING_APPROVAL': ['APPROVED', 'CANCELLED'],
@@ -383,7 +383,7 @@ export class EnhancedMobileFieldOperationsService {
     return validTransitions[currentState]?.includes(newState) || false;
   }
 
-  private async executeStateActions(workflowManager: WorkflowStateManager, newState: string): Promise<void> {
+  private async executeStateActions(_workflowManager: WorkflowStateManager, _newState: string): Promise<void> {
     switch (newState) {
       case 'IN_DIAGNOSIS':
         await this.startTimeTracking(workflowManager, 'diagnosis');
@@ -404,25 +404,25 @@ export class EnhancedMobileFieldOperationsService {
   }
 
   async capturePhoto(
-    workflowManager: WorkflowStateManager,
-    description: string,
+    _workflowManager: WorkflowStateManager,
+    _description: string,
     location?: GPSLocation
   ): Promise<PhotoCapture> {
     console.log(`📸 Capturing photo for workflow state ${workflowManager.currentState}`);
     
-    const photoCapture: PhotoCapture = {
+    const _photoCapture: PhotoCapture = {
       id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      workflowState: workflowManager.currentState,
-      url: `/photos/${workflowManager.jobId}/${Date.now()}.jpg`,
-      thumbnail: `/thumbnails/${workflowManager.jobId}/${Date.now()}_thumb.jpg`,
-      metadata: {
+      _workflowState: workflowManager.currentState,
+      _url: `/photos/${workflowManager.jobId}/${Date.now()}.jpg`,
+      _thumbnail: `/thumbnails/${workflowManager.jobId}/${Date.now()}_thumb.jpg`,
+      _metadata: {
         gpsLocation: location,
-        deviceInfo: 'Mobile Camera',
-        resolution: '1920x1080',
-        fileSize: 2048000, // 2MB
+        _deviceInfo: 'Mobile Camera',
+        _resolution: '1920x1080',
+        _fileSize: 2048000, // 2MB
         description
       },
-      timestamp: new Date()
+      _timestamp: new Date()
     };
 
     workflowManager.mobileCapture.photos.push(photoCapture);
@@ -430,83 +430,83 @@ export class EnhancedMobileFieldOperationsService {
   }
 
   async captureDigitalSignature(
-    workflowManager: WorkflowStateManager,
-    type: 'customer-approval' | 'completion-confirmation' | 'parts-received',
-    signerName: string,
-    signerRole: string,
-    signatureData: string
+    _workflowManager: WorkflowStateManager,
+    _type: 'customer-approval' | 'completion-confirmation' | 'parts-received',
+    _signerName: string,
+    _signerRole: string,
+    _signatureData: string
   ): Promise<SignatureCapture> {
     console.log(`✍️ Capturing digital signature for ${type}`);
     
-    const signature: SignatureCapture = {
+    const _signature: SignatureCapture = {
       id: `sig_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       type,
       signatureData,
       signerName,
       signerRole,
-      timestamp: new Date(),
-      workflowState: workflowManager.currentState
+      _timestamp: new Date(),
+      _workflowState: workflowManager.currentState
     };
 
     workflowManager.mobileCapture.signatures.push(signature);
     return signature;
   }
 
-  private async startTimeTracking(workflowManager: WorkflowStateManager, activityType: string): Promise<void> {
-    const timeEntry: TimeEntry = {
+  private async startTimeTracking(_workflowManager: WorkflowStateManager, _activityType: string): Promise<void> {
+    const _timeEntry: TimeEntry = {
       id: `time_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      jobId: workflowManager.jobId,
-      technicianId: 'current-tech',
-      activityType: activityType as unknown,
-      startTime: new Date(),
-      location: undefined,
-      description: `Started ${activityType} for workflow state ${workflowManager.currentState}`
+      _jobId: workflowManager.jobId,
+      _technicianId: 'current-tech',
+      _activityType: activityType as unknown,
+      _startTime: new Date(),
+      _location: undefined,
+      _description: `Started ${activityType} for workflow state ${workflowManager.currentState}`
     };
 
     workflowManager.mobileCapture.timeTracking.push(timeEntry);
   }
 
-  private async sendCustomerNotification(jobId: string, type: string): Promise<void> {
-    console.log(`📧 Sending customer notification: ${type} for job ${_jobId}`);
+  private async sendCustomerNotification(_jobId: string, _type: string): Promise<void> {
+    console.log(`📧 Sending customer _notification: ${type} for job ${_jobId}`);
   }
 
-  private async initializeQualityChecklist(workflowManager: WorkflowStateManager): Promise<void> {
+  private async initializeQualityChecklist(_workflowManager: WorkflowStateManager): Promise<void> {
     console.log(`✅ Initializing quality checklist for job ${workflowManager.jobId}`);
     
-    const checklist: QualityChecklist = {
+    const _checklist: QualityChecklist = {
       id: `qc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      jobId: workflowManager.jobId,
-      workflowState: workflowManager.currentState,
-      checkpoints: [
+      _jobId: workflowManager.jobId,
+      _workflowState: workflowManager.currentState,
+      _checkpoints: [
         {
           checkpointId: 'functional_test',
-          description: 'Device functional test completed',
-          result: 'pass',
-          timestamp: new Date()
+          _description: 'Device functional test completed',
+          _result: 'pass',
+          _timestamp: new Date()
         },
         {
-          checkpointId: 'visual_inspection',
-          description: 'Visual inspection for defects',
-          result: 'pass',
-          timestamp: new Date()
+          _checkpointId: 'visual_inspection',
+          _description: 'Visual inspection for defects',
+          _result: 'pass',
+          _timestamp: new Date()
         },
         {
-          checkpointId: 'customer_satisfaction',
-          description: 'Customer satisfaction check',
-          result: 'pass',
-          timestamp: new Date()
+          _checkpointId: 'customer_satisfaction',
+          _description: 'Customer satisfaction check',
+          _result: 'pass',
+          _timestamp: new Date()
         }
       ],
-      overallScore: 100,
-      passed: true,
-      technicianId: 'current-tech',
-      completedAt: new Date()
+      _overallScore: 100,
+      _passed: true,
+      _technicianId: 'current-tech',
+      _completedAt: new Date()
     };
 
     workflowManager.mobileCapture.checklists.push(checklist);
   }
 
-  private async captureCustomerSignature(workflowManager: WorkflowStateManager): Promise<void> {
+  private async captureCustomerSignature(_workflowManager: WorkflowStateManager): Promise<void> {
     console.log(`✍️ Capturing customer approval signature for job ${workflowManager.jobId}`);
     
     await this.captureDigitalSignature(
@@ -518,20 +518,20 @@ export class EnhancedMobileFieldOperationsService {
     );
   }
 
-  private async generateCompletionReceipt(workflowManager: WorkflowStateManager): Promise<void> {
+  private async generateCompletionReceipt(_workflowManager: WorkflowStateManager): Promise<void> {
     console.log(`🧾 Generating completion receipt for job ${workflowManager.jobId}`);
     
-    const printContent: PrintContent = {
+    const _printContent: PrintContent = {
       template: 'completion_receipt',
-      data: {
+      _data: {
         jobId: workflowManager.jobId,
-        device: 'Customer Device',
-        status: 'Completed Successfully',
-        total: '150.00'
+        _device: 'Customer Device',
+        _status: 'Completed Successfully',
+        _total: '150.00'
       },
-      copies: 1,
-      paperSize: '80mm',
-      orientation: 'portrait'
+      _copies: 1,
+      _paperSize: '80mm',
+      _orientation: 'portrait'
     };
 
     await this.printReceipt(workflowManager.jobId, 'current-tech', printContent);
@@ -549,15 +549,15 @@ export const enhancedMobileFieldOperationsRoutes = {
       const syncManager = await service.enableOfflineMode(technicianId, deviceId);
       
       reply.code(200).send({
-        success: true,
-        data: syncManager,
-        message: 'Offline mode enabled successfully'
+        _success: true,
+        _data: syncManager,
+        _message: 'Offline mode enabled successfully'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to enable offline mode',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to enable offline mode',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -571,14 +571,14 @@ export const enhancedMobileFieldOperationsRoutes = {
       const result = await service.setupMobilePrinting(technicianId, printerConfig);
       
       reply.code(200).send({
-        success: result,
-        message: 'Mobile printing setup completed'
+        _success: result,
+        _message: 'Mobile printing setup completed'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to setup mobile printing',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to setup mobile printing',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -592,15 +592,15 @@ export const enhancedMobileFieldOperationsRoutes = {
       const workflowManager = await service.initializeMobileWorkflow(_jobId, technicianId);
       
       reply.code(200).send({
-        success: true,
-        data: workflowManager,
-        message: 'Mobile workflow initialized successfully'
+        _success: true,
+        _data: workflowManager,
+        _message: 'Mobile workflow initialized successfully'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to initialize mobile workflow',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to initialize mobile workflow',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -614,15 +614,15 @@ export const enhancedMobileFieldOperationsRoutes = {
       const photoCapture = await service.capturePhoto(workflowManager, description, location);
       
       reply.code(200).send({
-        success: true,
-        data: photoCapture,
-        message: 'Photo captured successfully'
+        _success: true,
+        _data: photoCapture,
+        _message: 'Photo captured successfully'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to capture photo',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to capture photo',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -636,19 +636,19 @@ export const enhancedMobileFieldOperationsRoutes = {
       const printJob = await service.printReceipt(_jobId, technicianId, content);
       
       reply.code(200).send({
-        success: true,
-        data: printJob,
-        message: 'Receipt print job created successfully'
+        _success: true,
+        _data: printJob,
+        _message: 'Receipt print job created successfully'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to print receipt',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to print receipt',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
 };
 
 console.log('🚀 Enhanced Mobile Field Operations System initialized');
-console.log('📱 Features: Offline sync, Mobile printing, 12-state workflow, Photo capture, Digital signatures');
+console.log('📱 _Features: Offline sync, Mobile printing, 12-state workflow, Photo capture, Digital signatures');

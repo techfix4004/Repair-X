@@ -22,11 +22,11 @@ const SettingSchema = z.object({
   _category: z.string(),
   _subcategory: z.string().optional(),
   _dataType: z.enum(['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'ARRAY']),
-  description: z.string().optional(),
+  _description: z.string().optional(),
   _validation: z.object({
     required: z.boolean().default(false),
     _min: z.number().optional(),
-    max: z.number().optional(),
+    _max: z.number().optional(),
     _pattern: z.string().optional(),
   }).optional(),
   _displayOrder: z.number().default(0),
@@ -34,11 +34,11 @@ const SettingSchema = z.object({
 });
 
 const TaxSettingsSchema = z.object({
-  gstin: z.string().optional(),
-  vatNumber: z.string().optional(),
+  _gstin: z.string().optional(),
+  _vatNumber: z.string().optional(),
   _taxRates: z.object({
     gst: z.number().min(0).max(50).default(18),
-    vat: z.number().min(0).max(30).default(20),
+    _vat: z.number().min(0).max(30).default(20),
     _hst: z.number().min(0).max(25).default(13),
     _salesTax: z.number().min(0).max(15).default(8.5),
   }),
@@ -51,7 +51,7 @@ const WorkflowConfigSchema = z.object({
   _states: z.array(z.object({
     id: z.string(),
     _name: z.string(),
-    description: z.string(),
+    _description: z.string(),
     _color: z.string().default('#6366f1'),
     _order: z.number(),
     _automated: z.boolean().default(false),
@@ -59,7 +59,7 @@ const WorkflowConfigSchema = z.object({
     _notifications: z.array(z.string()).default([]),
     _transitions: z.array(z.object({
       to: z.string(),
-      condition: z.string().optional(),
+      _condition: z.string().optional(),
       _automated: z.boolean().default(false),
       _delay: z.number().optional(), // in minutes
     })).default([]),
@@ -96,11 +96,11 @@ class EnhancedBusinessSettingsService {
 
   private setDefaultTaxSettings() {
     this.settings.set('tax_settings', {
-      gstin: '',
-      vatNumber: '',
+      _gstin: '',
+      _vatNumber: '',
       _taxRates: {
         gst: 18,
-        vat: 20,
+        _vat: 20,
         _hst: 13,
         _salesTax: 8.5,
       },
@@ -116,7 +116,7 @@ class EnhancedBusinessSettingsService {
         {
           id: 'CREATED',
           _name: 'Created',
-          description: 'Initial job sheet creation from booking',
+          _description: 'Initial job sheet creation from booking',
           _color: '#3b82f6',
           _order: 1,
           _automated: true,
@@ -124,13 +124,13 @@ class EnhancedBusinessSettingsService {
           _notifications: ['customer_confirmation', 'technician_assignment'],
           _transitions: [
             { to: 'IN_DIAGNOSIS', _automated: true, _delay: 5 },
-            { _to: 'CANCELLED', condition: 'customer_cancellation' }
+            { _to: 'CANCELLED', _condition: 'customer_cancellation' }
           ]
         },
         {
           _id: 'IN_DIAGNOSIS',
           _name: 'In Diagnosis',
-          description: 'Technician evaluating device/issue',
+          _description: 'Technician evaluating device/issue',
           _color: '#f59e0b',
           _order: 2,
           _automated: false,
@@ -138,22 +138,22 @@ class EnhancedBusinessSettingsService {
           _notifications: ['customer_update'],
           _transitions: [
             { to: 'AWAITING_APPROVAL', _automated: false },
-            { _to: 'CANCELLED', condition: 'unfixable_device' }
+            { _to: 'CANCELLED', _condition: 'unfixable_device' }
           ]
         },
         {
           _id: 'AWAITING_APPROVAL',
           _name: 'Awaiting Approval',
-          description: 'Customer approval needed for diagnosis/quote',
+          _description: 'Customer approval needed for diagnosis/quote',
           _color: '#8b5cf6',
           _order: 3,
           _automated: false,
           _requiredFields: ['quotationId', 'customerResponse'],
           _notifications: ['customer_quote_request', 'approval_reminder'],
           _transitions: [
-            { to: 'APPROVED', condition: 'customerapproved' },
-            { _to: 'CANCELLED', condition: 'customer_declined' },
-            { _to: 'IN_DIAGNOSIS', condition: 'quote_revision_requested' }
+            { to: 'APPROVED', _condition: 'customerapproved' },
+            { _to: 'CANCELLED', _condition: 'customer_declined' },
+            { _to: 'IN_DIAGNOSIS', _condition: 'quote_revision_requested' }
           ]
         },
         // ... continue with all 12 states as defined in roadmap
@@ -173,10 +173,10 @@ class EnhancedBusinessSettingsService {
 
   private setDefaultPrintSettings() {
     this.settings.set('print_settings', {
-      templates: {
+      _templates: {
         jobSheet: {
           header: '<h1>{{businessName}}</h1><p>{{businessAddress}}</p>',
-          body: '<h2>Job Sheet #{{jobNumber}}</h2><p>Customer: {{customerName}}</p>',
+          _body: '<h2>Job Sheet #{{jobNumber}}</h2><p>Customer: {{customerName}}</p>',
           _footer: '<p>Thank you for choosing RepairX</p>',
           _styles: {
             fontFamily: 'Arial, sans-serif',
@@ -186,7 +186,7 @@ class EnhancedBusinessSettingsService {
         },
         _invoice: {
           header: '<h1>{{businessName}}</h1><p>{{businessAddress}}</p>',
-          body: '<h2>Invoice #{{invoiceNumber}}</h2><table>{{itemsTable}}</table>',
+          _body: '<h2>Invoice #{{invoiceNumber}}</h2><table>{{itemsTable}}</table>',
           _footer: '<p>Payment Terms: {{paymentTerms}}</p>',
           _styles: {
             fontFamily: 'Arial, sans-serif',
@@ -196,7 +196,7 @@ class EnhancedBusinessSettingsService {
         },
         _quotation: {
           header: '<h1>{{businessName}}</h1><p>{{businessAddress}}</p>',
-          body: '<h2>Quotation #{{quotationNumber}}</h2><table>{{itemsTable}}</table>',
+          _body: '<h2>Quotation #{{quotationNumber}}</h2><table>{{itemsTable}}</table>',
           _footer: '<p>Valid until: {{validityDate}}</p>',
           _styles: {
             fontFamily: 'Arial, sans-serif',
@@ -229,20 +229,20 @@ class EnhancedBusinessSettingsService {
           _pass: '',
         }
       },
-      templates: {
+      _templates: {
         bookingConfirmation: {
           subject: 'Booking Confirmation - {{jobNumber}}',
-          body: 'Dear {{customerName}}, your booking has been confirmed...',
+          _body: 'Dear {{customerName}}, your booking has been confirmed...',
           _enabled: true,
         },
         _quotationReady: {
           subject: 'Quotation Ready - {{quotationNumber}}',
-          body: 'Dear {{customerName}}, your quotation is ready for review...',
+          _body: 'Dear {{customerName}}, your quotation is ready for review...',
           _enabled: true,
         },
         _jobCompleted: {
           subject: 'Job Completed - {{jobNumber}}',
-          body: 'Dear {{customerName}}, your repair is completed...',
+          _body: 'Dear {{customerName}}, your repair is completed...',
           _enabled: true,
         }
       },
@@ -280,7 +280,7 @@ class EnhancedBusinessSettingsService {
           _threshold: 50,
         }
       },
-      templates: {
+      _templates: {
         bookingConfirmation: {
           message: 'Hi {{customerName}}, your booking {{jobNumber}} is confirmed. _Track: {{trackingUrl}}',
           _enabled: true,
@@ -321,7 +321,7 @@ class EnhancedBusinessSettingsService {
   }
 
   // Category-specific business logic methods
-  async validateGSTIN(gstin: string): Promise<{ _valid: boolean; details?: unknown }> {
+  async validateGSTIN(_gstin: string): Promise<{ _valid: boolean; details?: unknown }> {
     // Implement GSTIN validation logic
     const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
     const isValid = gstinRegex.test(gstin);
@@ -348,8 +348,7 @@ class EnhancedBusinessSettingsService {
       case 'CA':
         taxRate = rates.hst || 13;
         break;
-      _default:
-        taxRate = rates.salesTax || 8.5;
+      taxRate = rates.salesTax || 8.5;
     }
 
     const taxAmount = (amount * taxRate) / 100;
@@ -380,7 +379,7 @@ class EnhancedBusinessSettingsService {
     let html = template.header + template.body + template.footer;
     
     // Simple template variable replacement
-    Object.keys(sampleData).forEach((key: unknown) => {
+    Object.keys(sampleData).forEach((_key: unknown) => {
       const regex = new RegExp(`{{${key}}}`, 'g');
       html = html.replace(regex, sampleData[key]);
     });
@@ -398,6 +397,7 @@ class EnhancedBusinessSettingsService {
 }
 
 // Fastify Plugin
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): Promise<void> {
   const settingsService = new EnhancedBusinessSettingsService();
@@ -412,7 +412,7 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       
       return reply.send({
         _success: true,
-        data: settings,
+        _data: settings,
         _metadata: {
           categories: [
             'tax_settings', 'print_settings', 'workflow_config', 'email_settings', 
@@ -421,11 +421,11 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
           ]
         }
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve settings',
-        error: error.message
+        _message: 'Failed to retrieve settings',
+        _error: error.message
       });
     }
   });
@@ -445,14 +445,14 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       
       return reply.send({
         _success: true,
-        message: `${category} settings updated successfully`,
-        data: await settingsService.getSettings(category, tenantId)
+        _message: `${category} settings updated successfully`,
+        _data: await settingsService.getSettings(category, tenantId)
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to update settings',
-        error: error.message
+        _message: 'Failed to update settings',
+        _error: error.message
       });
     }
   });
@@ -467,13 +467,13 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       
       return reply.send({
         _success: true,
-        data: validation
+        _data: validation
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'GSTIN validation failed',
-        error: error.message
+        _message: 'GSTIN validation failed',
+        _error: error.message
       });
     }
   });
@@ -488,13 +488,13 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       
       return reply.send({
         _success: true,
-        data: calculation
+        _data: calculation
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Tax calculation failed',
-        error: error.message
+        _message: 'Tax calculation failed',
+        _error: error.message
       });
     }
   });
@@ -511,11 +511,11 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       const html = await settingsService.previewTemplate(templateType, sampleData);
       
       return reply.type('text/html').send(html);
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Template preview failed',
-        error: error.message
+        _message: 'Template preview failed',
+        _error: error.message
       });
     }
   });
@@ -526,44 +526,44 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       {
         _id: 'tax_settings',
         _name: 'Tax Settings',
-        description: 'Multi-jurisdiction tax configuration and automated calculations',
+        _description: 'Multi-jurisdiction tax configuration and automated calculations',
         _icon: '📊',
-        features: ['GST/VAT/HST support', 'GSTIN validation', 'Automated calculations', 'Multi-currency']
+        _features: ['GST/VAT/HST support', 'GSTIN validation', 'Automated calculations', 'Multi-currency']
       },
       {
         _id: 'print_settings',
         _name: 'Print Settings & Templates',
-        description: 'Customizable document templates for all business needs',
+        _description: 'Customizable document templates for all business needs',
         _icon: '🖨️',
-        features: ['Job sheet templates', 'Invoice templates', 'Quotation templates', 'Thermal printing']
+        _features: ['Job sheet templates', 'Invoice templates', 'Quotation templates', 'Thermal printing']
       },
       {
         _id: 'workflow_config',
         _name: 'Workflow Configuration',
-        description: 'Visual business process designer with automated rules',
+        _description: 'Visual business process designer with automated rules',
         _icon: '🔄',
-        features: ['12-state workflow', 'Automated transitions', 'Role-based assignments', 'Visual designer']
+        _features: ['12-state workflow', 'Automated transitions', 'Role-based assignments', 'Visual designer']
       },
       {
         _id: 'email_settings',
         _name: 'Email Settings',
-        description: 'SMTP configuration and automated communication templates',
+        _description: 'SMTP configuration and automated communication templates',
         _icon: '📧',
-        features: ['SMTP integration', 'Template management', 'Delivery tracking', 'Automation rules']
+        _features: ['SMTP integration', 'Template management', 'Delivery tracking', 'Automation rules']
       },
       {
         _id: 'sms_settings',
         _name: 'SMS Settings',
-        description: 'Credit management and gateway integration',
+        _description: 'Credit management and gateway integration',
         _icon: '📱',
-        features: ['Multi-gateway support', 'Credit management', 'Delivery tracking', 'Automated notifications']
+        _features: ['Multi-gateway support', 'Credit management', 'Delivery tracking', 'Automated notifications']
       }
       // Add remaining 15+ categories...
     ];
 
     return reply.send({
       _success: true,
-      data: categories,
+      _data: categories,
       _total: categories.length
     });
   });

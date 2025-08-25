@@ -10,7 +10,7 @@ interface DeviceRegistrationFormProps {
 
 export default function DeviceRegistrationForm({ onSubmit, isLoading }: DeviceRegistrationFormProps) {
   const [formData, setFormData] = useState<DeviceFormData>({
-    brand: '',
+    _brand: '',
     model: '',
     serialNumber: '',
     yearManufactured: new Date().getFullYear(),
@@ -47,7 +47,7 @@ export default function DeviceRegistrationForm({ onSubmit, isLoading }: DeviceRe
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.brand.trim()) newErrors.brand = 'Brand is required'
+    if (!formData._brand.trim()) newErrors.brand = 'Brand is required'
     if (!formData.model.trim()) newErrors.model = 'Model is required'  
     if (!formData.category) newErrors.category = 'Category is required'
     if (!formData.condition) newErrors.condition = 'Condition is required'
@@ -90,8 +90,8 @@ export default function DeviceRegistrationForm({ onSubmit, isLoading }: DeviceRe
             </label>
             <input
               type="text"
-              value={formData.brand}
-              onChange={(e) => handleInputChange('brand', e.target.value)}
+              value={formData._brand}
+              onChange={(e) => handleInputChange('_brand', e.target.value)}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.brand ? 'border-red-500' : 'border-gray-300'
               }`}

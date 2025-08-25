@@ -13,7 +13,7 @@ const CustomerOnboardingSchema = z.object({
   _personalInfo: z.object({
     firstName: z.string().min(2),
     _lastName: z.string().min(2),
-    email: z.string().email(),
+    _email: z.string().email(),
     _phone: z.string().min(10),
     _address: z.object({
       street: z.string(),
@@ -54,7 +54,7 @@ const TechnicianOnboardingSchema = z.object({
   _personalInfo: z.object({
     firstName: z.string().min(2),
     _lastName: z.string().min(2),
-    email: z.string().email(),
+    _email: z.string().email(),
     _phone: z.string().min(10),
     _address: z.object({
       street: z.string(),
@@ -174,13 +174,13 @@ interface ReminderAutomation {
 const CustomerOnboardingWorkflow: OnboardingWorkflow = {
   id: 'customer_onboarding_v1',
   _name: 'Customer Onboarding Automation',
-  description: 'Complete customer onboarding with guided setup and tutorials',
+  _description: 'Complete customer onboarding with guided setup and tutorials',
   _userType: 'customer',
-  steps: [
+  _steps: [
     {
       id: 'account_creation',
       _title: 'Account Creation',
-      description: 'Create account with email verification',
+      _description: 'Create account with email verification',
       _required: true,
       _estimatedTime: 3,
       _dependencies: [],
@@ -190,7 +190,7 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'profile_completion',
       _title: 'Complete Profile',
-      description: 'Fill in personal and address information',
+      _description: 'Fill in personal and address information',
       _required: true,
       _estimatedTime: 5,
       _dependencies: ['account_creation'],
@@ -200,7 +200,7 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'service_preferences',
       _title: 'Service Preferences',
-      description: 'Select preferred services and availability',
+      _description: 'Select preferred services and availability',
       _required: false,
       _estimatedTime: 3,
       _dependencies: ['profile_completion'],
@@ -210,7 +210,7 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'first_booking_tutorial',
       _title: 'Booking Tutorial',
-      description: 'Interactive guide for making first service request',
+      _description: 'Interactive guide for making first service request',
       _required: false,
       _estimatedTime: 7,
       _dependencies: ['service_preferences'],
@@ -220,7 +220,7 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'payment_setup',
       _title: 'Payment Method',
-      description: 'Add and verify payment method',
+      _description: 'Add and verify payment method',
       _required: false,
       _estimatedTime: 4,
       _dependencies: ['profile_completion'],
@@ -230,7 +230,7 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'mobileapp_setup',
       _title: 'Mobile App Setup',
-      description: 'Download and configure mobile application',
+      _description: 'Download and configure mobile application',
       _required: false,
       _estimatedTime: 8,
       _dependencies: ['account_creation'],
@@ -243,21 +243,21 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
       {
         trigger: 'account_creation',
         _delay: 0,
-        template: 'welcome_customer',
+        _template: 'welcome_customer',
         _personalization: { firstName: '{{(user as any).firstName}}' },
         _conditions: { emailVerified: true },
       },
       {
         _trigger: 'profile_completion',
         _delay: 24,
-        template: 'profile_completion_reminder',
+        _template: 'profile_completion_reminder',
         _personalization: { firstName: '{{(user as any).firstName}}' },
         _conditions: { profileCompletion: '<80' },
       },
       {
         _trigger: 'onboarding_completion',
         _delay: 0,
-        template: 'onboarding_success',
+        _template: 'onboarding_success',
         _personalization: { firstName: '{{(user as any).firstName}}', _completionRate: '{{progress.completion}}' },
         _conditions: { onboardingComplete: true },
       },
@@ -266,13 +266,13 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
       {
         trigger: 'account_creation',
         _delay: 1,
-        message: 'Welcome to RepairX! Complete your profile to get started: {{profileLink}}',
+        _message: 'Welcome to RepairX! Complete your profile to get started: {{profileLink}}',
         _conditions: { smsConsent: true },
       },
       {
         _trigger: 'first_booking_ready',
         _delay: 0,
-        message: 'You\'re all set! Ready to book your first repair service? {{bookingLink}}',
+        _message: 'You\'re all set! Ready to book your first repair service? {{bookingLink}}',
         _conditions: { onboardingComplete: true },
       },
     ],
@@ -282,7 +282,7 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
         _assignee: 'customer_success_team',
         _priority: 'medium',
         _dueDate: '+24h',
-        description: 'Follow up with customer on incomplete profile',
+        _description: 'Follow up with customer on incomplete profile',
       },
     ],
     _reminderSchedule: [
@@ -290,8 +290,8 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
         trigger: 'profile_completion',
         _delay: 24,
         _channel: 'email',
-        message: 'Complete your RepairX profile to get personalized service recommendations',
-        maxAttempts: 3,
+        _message: 'Complete your RepairX profile to get personalized service recommendations',
+        _maxAttempts: 3,
       },
     ],
   },
@@ -300,13 +300,13 @@ const CustomerOnboardingWorkflow: OnboardingWorkflow = {
 const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
   id: 'technician_onboarding_v1',
   _name: 'Technician Onboarding Automation',
-  description: 'Complete technician onboarding with verification and training',
+  _description: 'Complete technician onboarding with verification and training',
   _userType: 'technician',
-  steps: [
+  _steps: [
     {
       id: 'application_submission',
       _title: 'Application Submission',
-      description: 'Submit application with credentials and experience',
+      _description: 'Submit application with credentials and experience',
       _required: true,
       _estimatedTime: 20,
       _dependencies: [],
@@ -316,7 +316,7 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'background_check',
       _title: 'Background Verification',
-      description: 'Complete background check and identity verification',
+      _description: 'Complete background check and identity verification',
       _required: true,
       _estimatedTime: 1440, // 24 hours
       _dependencies: ['application_submission'],
@@ -326,7 +326,7 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'skills_assessment',
       _title: 'Skills Assessment',
-      description: 'Complete technical skills assessment and certification',
+      _description: 'Complete technical skills assessment and certification',
       _required: true,
       _estimatedTime: 60,
       _dependencies: ['background_check'],
@@ -336,17 +336,17 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'insurance_verification',
       _title: 'Insurance & Licensing',
-      description: 'Verify insurance coverage and professional licenses',
+      _description: 'Verify insurance coverage and professional licenses',
       _required: true,
       _estimatedTime: 30,
       _dependencies: ['background_check'],
       _automationTriggers: ['insurance_verification_request'],
-      _completionCriteria: { insuranceVerified: true, licensesVerified: true },
+      _completionCriteria: { insuranceVerified: true, _licensesVerified: true },
     },
     {
       _id: 'banking_setup',
       _title: 'Payment Setup',
-      description: 'Configure banking information for payments',
+      _description: 'Configure banking information for payments',
       _required: true,
       _estimatedTime: 10,
       _dependencies: ['skills_assessment'],
@@ -356,7 +356,7 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'platform_training',
       _title: 'Platform Training',
-      description: 'Complete RepairX platform training and certification',
+      _description: 'Complete RepairX platform training and certification',
       _required: true,
       _estimatedTime: 120,
       _dependencies: ['skills_assessment'],
@@ -366,7 +366,7 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
     {
       _id: 'first_job_shadow',
       _title: 'Supervised First Job',
-      description: 'Complete first job under supervision',
+      _description: 'Complete first job under supervision',
       _required: true,
       _estimatedTime: 240,
       _dependencies: ['platform_training'],
@@ -379,21 +379,21 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
       {
         trigger: 'application_submission',
         _delay: 0,
-        template: 'application_received_technician',
+        _template: 'application_received_technician',
         _personalization: { firstName: '{{(user as any).firstName}}' },
         _conditions: { applicationComplete: true },
       },
       {
         _trigger: 'background_checkapproved',
         _delay: 0,
-        template: 'background_check_success',
+        _template: 'background_check_success',
         _personalization: { firstName: '{{(user as any).firstName}}' },
         _conditions: { backgroundCheckPassed: true },
       },
       {
         _trigger: 'onboarding_completion',
         _delay: 0,
-        template: 'technician_welcome_active',
+        _template: 'technician_welcome_active',
         _personalization: { firstName: '{{(user as any).firstName}}', _specialties: '{{profile.specialties}}' },
         _conditions: { onboardingComplete: true },
       },
@@ -402,13 +402,13 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
       {
         trigger: 'application_submission',
         _delay: 1,
-        message: 'Application received! We\'ll review and get back to you within 24 hours.',
+        _message: 'Application received! We\'ll review and get back to you within 24 hours.',
         _conditions: { smsConsent: true },
       },
       {
         _trigger: 'approval_complete',
         _delay: 0,
-        message: 'Congratulations! You\'re now an active RepairX technician. Your first job awaits!',
+        _message: 'Congratulations! You\'re now an active RepairX technician. Your first job awaits!',
         _conditions: { onboardingComplete: true },
       },
     ],
@@ -418,14 +418,14 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
         _assignee: 'technician_review_team',
         _priority: 'high',
         _dueDate: '+24h',
-        description: 'Review technician application and credentials',
+        _description: 'Review technician application and credentials',
       },
       {
         _trigger: 'background_checkapproved',
         _assignee: 'skills_assessment_coordinator',
         _priority: 'medium',
         _dueDate: '+48h',
-        description: 'Schedule skills assessment for approved technician',
+        _description: 'Schedule skills assessment for approved technician',
       },
     ],
     _reminderSchedule: [
@@ -433,8 +433,8 @@ const _TechnicianOnboardingWorkflow: OnboardingWorkflow = {
         trigger: 'skills_assessment_scheduled',
         _delay: 24,
         _channel: 'email',
-        message: 'Reminder: Your skills assessment is scheduled for tomorrow',
-        maxAttempts: 2,
+        _message: 'Reminder: Your skills assessment is scheduled for tomorrow',
+        _maxAttempts: 2,
       },
     ],
   },
@@ -498,6 +498,7 @@ interface OnboardingAnalytics {
   };
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export default async function onboardingRoutes(fastify: FastifyInstance) {
   // Start customer onboarding
@@ -538,17 +539,17 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
         _success: true,
         _userId,
         progress,
-        _nextSteps: CustomerOnboardingWorkflow.steps.slice(0, 3).map((step: unknown) => ({
+        _nextSteps: CustomerOnboardingWorkflow.steps.slice(0, 3).map((_step: unknown) => ({
           _id: step.id,
           _title: step.title,
-          description: step.description,
+          _description: step.description,
           _estimatedTime: step.estimatedTime,
         })),
       });
     } catch (error) {
       return (reply as FastifyReply).status(400).send({ 
         _success: false, 
-        error: 'Failed to start customer onboarding' 
+        _error: 'Failed to start customer onboarding' 
       });
     }
   });
@@ -591,17 +592,17 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
         _success: true,
         _userId,
         progress,
-        _nextSteps: TechnicianOnboardingWorkflow.steps.slice(0, 3).map((step: unknown) => ({
+        _nextSteps: TechnicianOnboardingWorkflow.steps.slice(0, 3).map((_step: unknown) => ({
           _id: step.id,
           _title: step.title,
-          description: step.description,
+          _description: step.description,
           _estimatedTime: step.estimatedTime,
         })),
       });
     } catch (error) {
       return (reply as FastifyReply).status(400).send({ 
         _success: false, 
-        error: 'Failed to start technician onboarding' 
+        _error: 'Failed to start technician onboarding' 
       });
     }
   });
@@ -632,7 +633,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
     } catch (error) {
       return (reply as FastifyReply).status(400).send({ 
         _success: false, 
-        error: 'Failed to update onboarding progress' 
+        _error: 'Failed to update onboarding progress' 
       });
     }
   });
@@ -674,7 +675,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
     } catch (error) {
       return (reply as FastifyReply).status(404).send({ 
         _success: false, 
-        error: 'Onboarding progress not found' 
+        _error: 'Onboarding progress not found' 
       });
     }
   });
@@ -695,8 +696,8 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
           _averageTimeToComplete: 18.5,
           _dropOffPoints: [
             { stepId: 'profile_completion', _dropOffRate: 15.2 },
-            { stepId: 'payment_setup', _dropOffRate: 8.7 },
-            { stepId: 'mobileapp_setup', _dropOffRate: 4.1 },
+            { _stepId: 'payment_setup', _dropOffRate: 8.7 },
+            { _stepId: 'mobileapp_setup', _dropOffRate: 4.1 },
           ],
           _userSatisfaction: 4.6,
           _conversionToActive: 84.3,
@@ -723,14 +724,14 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
     } catch (error) {
       return (reply as FastifyReply).status(500).send({ 
         _success: false, 
-        error: 'Failed to retrieve onboarding analytics' 
+        _error: 'Failed to retrieve onboarding analytics' 
       });
     }
   });
 }
 
 // Helper functions
-async function triggerOnboardingAutomation(_userId: string, _trigger: string, data: unknown): Promise<void> {
+async function triggerOnboardingAutomation(_userId: string, _trigger: string, _data: unknown): Promise<void> {
   console.log(`Triggering automation for user ${_userId} on trigger ${trigger}`);
   
   // In a real implementation, this _would:
@@ -743,9 +744,9 @@ async function triggerOnboardingAutomation(_userId: string, _trigger: string, da
 
 async function updateOnboardingProgress(
   userId: string, 
-  stepId: string, 
+  _stepId: string, 
   _completed: boolean, 
-  data: object
+  _data: object
 ): Promise<OnboardingProgress> {
   console.log(`Updating progress for user ${_userId}, step ${stepId}, _completed: ${completed}`);
   

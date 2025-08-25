@@ -3,6 +3,7 @@ import LaunchCampaignService, { LaunchCampaign, CampaignMetrics } from '../servi
 
 const launchCampaignService = new LaunchCampaignService();
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export default async function launchCampaignsRoutes(_server: FastifyInstance): Promise<void> {
   await server.register(async function (server) {
@@ -21,7 +22,7 @@ server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         campaigns: campaigns.filter((c: unknown) => c !== null),
         _total: campaigns.length,
         _page: 1,
@@ -29,11 +30,11 @@ server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching launch campaigns:', error);
+    console.error('Error fetching launch _campaigns:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch launch campaigns',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch launch campaigns',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -61,20 +62,20 @@ server.get('/:campaignId', {
     if (!campaign) {
       return reply.code(404).send({
         _success: false,
-        message: 'Campaign not found'
+        _message: 'Campaign not found'
       });
     }
 
     return reply.send({
       _success: true,
-      data: campaign
+      _data: campaign
     });
   } catch (error) {
-    console.error('Error fetching campaign:', error);
+    console.error('Error fetching _campaign:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch campaign',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch campaign',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -106,15 +107,15 @@ server.post('/', {
 
     return reply.code(201).send({
       _success: true,
-      data: campaign,
-      message: 'Campaign created successfully'
+      _data: campaign,
+      _message: 'Campaign created successfully'
     });
   } catch (error) {
-    console.error('Error creating campaign:', error);
+    console.error('Error creating _campaign:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to create campaign',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to create campaign',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -139,23 +140,23 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
         {
           id: 'activity_1',
           _type: 'campaign_launched',
-          description: 'RepairX Platform Launch campaign started',
+          _description: 'RepairX Platform Launch campaign started',
           _timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          campaignId: 'repairx_launch_2024'
+          _campaignId: 'repairx_launch_2024'
         },
         {
           _id: 'activity_2',
           _type: 'milestone_completed',
-          description: 'Week 1 optimization milestone completed',
+          _description: 'Week 1 optimization milestone completed',
           _timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-          campaignId: 'repairx_launch_2024'
+          _campaignId: 'repairx_launch_2024'
         }
       ],
       _upcomingMilestones: [
         {
           id: 'milestone_upcoming_1',
           _name: 'Media Outreach Results',
-          campaignId: 'repairx_launch_2024',
+          _campaignId: 'repairx_launch_2024',
           _dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           _status: 'pending'
         }
@@ -164,7 +165,7 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
         {
           id: 'alert_1',
           _type: 'success',
-          message: 'Social media campaign exceeded conversion target by 15%',
+          _message: 'Social media campaign exceeded conversion target by 15%',
           _severity: 'low',
           _timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000)
         }
@@ -173,15 +174,15 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
 
     return reply.send({
       _success: true,
-      data: dashboardData,
+      _data: dashboardData,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error fetching campaign _dashboard:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch campaign dashboard',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch campaign dashboard',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });

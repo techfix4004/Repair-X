@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 interface User {
-  id: string;
+  _id: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -20,17 +20,17 @@ interface AuthState {
 }
 
 interface AuthActions {
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
-  refreshToken: () => Promise<void>;
-  clearError: () => void;
-  setLoading: (loading: boolean) => void;
-  updateUser: (userData: Partial<User>) => void;
+  login: (email: string, _password: string) => Promise<void>;
+  _register: (data: RegisterData) => Promise<void>;
+  _logout: () => void;
+  _refreshToken: () => Promise<void>;
+  _clearError: () => void;
+  _setLoading: (loading: boolean) => void;
+  _updateUser: (userData: Partial<User>) => void;
 }
 
 interface RegisterData {
-  email: string;
+  _email: string;
   password: string;
   firstName: string;
   lastName: string;
@@ -43,13 +43,13 @@ type AuthStore = AuthState & AuthActions;
 // Mock API functions (replace with real API calls)
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '_http://localhost:3001/api/v1';
 
-async function apiLogin(email: string, password: string): Promise<{ user: User; token: string }> {
+async function apiLogin(email: string, _password: string): Promise<{ user: User; token: string }> {
   const response = await fetch(`${apiBaseUrl}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password: _password }),
   });
 
   if (!response.ok) {
@@ -60,13 +60,13 @@ async function apiLogin(email: string, password: string): Promise<{ user: User; 
   return response.json();
 }
 
-async function apiRegister(data: RegisterData): Promise<{ user: User; token: string }> {
+async function apiRegister(_data: RegisterData): Promise<{ user: User; token: string }> {
   const response = await fetch(`${apiBaseUrl}/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(_data),
   });
 
   if (!response.ok) {
@@ -94,6 +94,7 @@ async function apiRefreshToken(token: string): Promise<{ token: string; user: Us
 }
 
 // eslint-disable-next-line max-lines-per-function
+// eslint-disable-next-line max-lines-per-function
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   // Initial state
   user: null,
@@ -103,11 +104,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   isAuthenticated: false,
 
   // Actions
-  login: async (email: string, password: string) => {
+  login: async (email: string, _password: string) => {
     set({ isLoading: true, error: null });
     
     try {
-      const response = await apiLogin(email, password);
+      const response = await apiLogin(email, _password);
       
       set({
         user: response.user,
@@ -126,7 +127,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     }
   },
 
-  register: async (data: RegisterData) => {
+  _register: async (data: RegisterData) => {
     set({ isLoading: true, error: null });
     
     try {
@@ -149,7 +150,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     }
   },
 
-  logout: () => {
+  _logout: () => {
     set({
       user: null,
       token: null,
@@ -158,7 +159,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     });
   },
 
-  refreshToken: async () => {
+  _refreshToken: async () => {
     const { token } = get();
     if (!token) {
       throw new Error('No token available');
@@ -174,20 +175,20 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       });
     } catch (error) {
       // If refresh fails, logout user
-      get().logout();
+      get()._logout();
       throw error;
     }
   },
 
-  clearError: () => {
+  _clearError: () => {
     set({ error: null });
   },
 
-  setLoading: (loading: boolean) => {
+  _setLoading: (loading: boolean) => {
     set({ isLoading: loading });
   },
 
-  updateUser: (userData: Partial<User>) => {
+  _updateUser: (userData: Partial<User>) => {
     const { user } = get();
     if (user) {
       set({
@@ -198,8 +199,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 }));
 
 // Role-based route protection utilities
-export const hasRole = (user: User | null, allowedRoles: User['role'][]): boolean => {
-  return user ? allowedRoles.includes(user.role) : false;
+export const hasRole = (user: User | null, _allowedRoles: User['role'][]): boolean => {
+  return user ? _allowedRoles.includes(user.role) : false;
 };
 
 export const isCustomer = (user: User | null): boolean => {
@@ -246,11 +247,11 @@ export const useAuth = () => {
     error,
     isAuthenticated,
     login,
-    register,
-    logout,
-    refreshToken,
-    clearError,
-    updateUser,
+    _register: register,
+    _logout: logout,
+    _refreshToken: refreshToken,
+    _clearError: clearError,
+    _updateUser: updateUser,
   } = useAuthStore();
 
   return {

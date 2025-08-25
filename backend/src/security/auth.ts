@@ -1,11 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
-import { businessMetrics } from '../observability/metrics';
 import { tracer } from '../observability/metrics';
 
 export interface User {
-  id: string;
+  _id: string;
   email: string;
   name: string;
   role: string;
@@ -26,26 +25,26 @@ export class AuthService {
   private static readonly LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
 
   // Mock user database - in production, this would be in the actual database
-  private static users: Map<string, User> = new Map([
+  private static _users: Map<string, User> = new Map([
     ['admin@repairx.com', {
-      id: '1',
-      email: 'admin@repairx.com',
-      name: 'Admin User',
-      role: 'admin',
-      twoFactorEnabled: false,
-      failedLoginAttempts: 0
+      _id: '1',
+      _email: 'admin@repairx.com',
+      _name: 'Admin User',
+      _role: 'admin',
+      _twoFactorEnabled: false,
+      _failedLoginAttempts: 0
     } as User],
     ['technician@repairx.com', {
-      id: '2',
-      email: 'technician@repairx.com',
-      name: 'Technician User',
-      role: 'technician',
-      twoFactorEnabled: false,
-      failedLoginAttempts: 0
+      _id: '2',
+      _email: 'technician@repairx.com',
+      _name: 'Technician User',
+      _role: 'technician',
+      _twoFactorEnabled: false,
+      _failedLoginAttempts: 0
     } as User],
   ]);
 
-  static async authenticateUser(email: string, password: string, totp?: string): Promise<{ user: User; accessToken: string; refreshToken: string } | null> {
+  static async authenticateUser(_email: string, _password: string, totp?: string): Promise<{ _user: User; accessToken: string; refreshToken: string } | null> {
     const span = tracer.startSpan('authenticate_user');
     
     try {
@@ -112,14 +111,14 @@ export class AuthService {
       return { user, accessToken, refreshToken };
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Authentication failed' });
+      span.setStatus({ _code: 2, _message: 'Authentication failed' });
       throw error;
     } finally {
       span.end();
     }
   }
 
-  static async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string } | null> {
+  static async refreshAccessToken(_refreshToken: string): Promise<{ _accessToken: string; refreshToken: string } | null> {
     const span = tracer.startSpan('refresh_access_token');
     
     try {
@@ -143,10 +142,10 @@ export class AuthService {
         'refresh.user_id': user.id
       });
 
-      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+      return { _accessToken: newAccessToken, _refreshToken: newRefreshToken };
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: 'Token refresh failed' });
+      span.setStatus({ _code: 2, _message: 'Token refresh failed' });
       throw error;
     } finally {
       span.end();
@@ -154,7 +153,7 @@ export class AuthService {
   }
 
   // TOTP 2FA Implementation
-  static async setup2FA(userId: string): Promise<{ secret: string; qrCode: string } | null> {
+  static async setup2FA(_userId: string): Promise<{ _secret: string; qrCode: string } | null> {
     const span = tracer.startSpan('setup_2fa');
     
     try {
@@ -166,9 +165,9 @@ export class AuthService {
 
       // Generate secret
       const secret = speakeasy.generateSecret({
-        name: user.email,
-        issuer: 'RepairX',
-        length: 32
+        _name: user.email,
+        _issuer: 'RepairX',
+        _length: 32
       });
 
       // Store secret (temporarily, until verified)
@@ -176,10 +175,10 @@ export class AuthService {
 
       // Generate QR code
       const qrCodeUrl = speakeasy.otpauthURL({
-        secret: secret.base32,
-        label: user.email,
-        issuer: 'RepairX',
-        encoding: 'base32'
+        _secret: secret.base32,
+        _label: user.email,
+        _issuer: 'RepairX',
+        _encoding: 'base32'
       });
 
       const qrCode = await QRCode.toDataURL(qrCodeUrl);
@@ -190,19 +189,19 @@ export class AuthService {
       });
 
       return {
-        secret: secret.base32,
+        _secret: secret.base32,
         qrCode
       };
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: '2FA setup failed' });
+      span.setStatus({ _code: 2, _message: '2FA setup failed' });
       throw error;
     } finally {
       span.end();
     }
   }
 
-  static async verify2FA(userId: string, token: string): Promise<boolean> {
+  static async verify2FA(_userId: string, _token: string): Promise<boolean> {
     const span = tracer.startSpan('verify_2fa');
     
     try {
@@ -213,10 +212,10 @@ export class AuthService {
       }
 
       const verified = speakeasy.totp.verify({
-        secret: user.twoFactorSecret,
-        encoding: 'base32',
-        token: token,
-        window: 2 // Allow some time drift
+        _secret: user.twoFactorSecret,
+        _encoding: 'base32',
+        _token: token,
+        _window: 2 // Allow some time drift
       });
 
       if (verified) {
@@ -232,14 +231,14 @@ export class AuthService {
       return verified;
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: '2FA verification failed' });
+      span.setStatus({ _code: 2, _message: '2FA verification failed' });
       throw error;
     } finally {
       span.end();
     }
   }
 
-  static async disable2FA(userId: string, token: string): Promise<boolean> {
+  static async disable2FA(_userId: string, _token: string): Promise<boolean> {
     const span = tracer.startSpan('disable_2fa');
     
     try {
@@ -267,7 +266,7 @@ export class AuthService {
       return true;
     } catch (error) {
       span.recordException(error as Error);
-      span.setStatus({ code: 2, message: '2FA disable failed' });
+      span.setStatus({ _code: 2, _message: '2FA disable failed' });
       throw error;
     } finally {
       span.end();
@@ -275,32 +274,32 @@ export class AuthService {
   }
 
   // Helper methods
-  private static validatePassword(password: string, user: User): boolean {
+  private static validatePassword(_password: string, _user: User): boolean {
     // Mock password validation - in production, use bcrypt
-    const mockPasswords: { [key: string]: string } = {
+    const _mockPasswords: { [key: string]: string } = {
       'admin@repairx.com': 'admin123',
       'technician@repairx.com': 'tech123'
     };
     return mockPasswords[user.email] === password;
   }
 
-  private static verifyTOTP(user: User, token: string): boolean {
+  private static verifyTOTP(_user: User, _token: string): boolean {
     if (!user.twoFactorSecret) return false;
     
     return speakeasy.totp.verify({
-      secret: user.twoFactorSecret,
-      encoding: 'base32',
-      token: token,
-      window: 2
+      _secret: user.twoFactorSecret,
+      _encoding: 'base32',
+      _token: token,
+      _window: 2
     });
   }
 
-  private static async generateAccessToken(user: User): Promise<string> {
+  private static async generateAccessToken(_user: User): Promise<string> {
     // Mock JWT generation - in production, use proper JWT library
     return `access_${user.id}_${Date.now()}`;
   }
 
-  private static async generateRefreshToken(user: User): Promise<string> {
+  private static async generateRefreshToken(_user: User): Promise<string> {
     // Mock refresh token generation - in production, use secure random generation
     return `refresh_${user.id}_${Date.now()}_${Math.random().toString(36)}`;
   }

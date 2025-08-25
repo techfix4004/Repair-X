@@ -5,8 +5,8 @@ console.log('🔍 OpenTelemetry placeholder initialized (simplified for demo)');
 
 // Mock SDK for now
 export const sdk = {
-  start: () => console.log('🔍 Mock OpenTelemetry started'),
-  shutdown: () => Promise.resolve()
+  _start: () => console.log('🔍 Mock OpenTelemetry started'),
+  _shutdown: () => Promise.resolve()
 };
 
 // Graceful shutdown

@@ -3,12 +3,15 @@
  * Tests PCI DSS compliant payment system with multiple gateways
  */
 
-/* eslint-disable no-undef */
+ 
+/// <reference types="jest" />
+ 
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
 import Fastify, { FastifyInstance } from 'fastify';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('Payment Processing API Tests', () => {
   let app: FastifyInstance;
@@ -22,14 +25,14 @@ describe('Payment Processing API Tests', () => {
       
       if (!(paymentData as any).amount || !(paymentData as any).currency) {
         return reply.code(400).send({
-          success: false,
-          error: 'Amount and currency are required'
+          _success: false,
+          _error: 'Amount and currency are required'
         });
       }
 
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           transactionId: `txn_${Date.now()}`,
           _amount: (paymentData as any).amount,
           _currency: (paymentData as any).currency,
@@ -42,27 +45,27 @@ describe('Payment Processing API Tests', () => {
             _total: (paymentData as any).amount * 1.18
           }
         },
-        message: 'Payment processed successfully'
+        _message: 'Payment processed successfully'
       });
     });
 
     app.post('/api/v1/payments/refund', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           refundId: `ref_${Date.now()}`,
           _amount: (request.body as Record<string, any>).amount,
           _status: 'processed',
           _reason: (request.body as Record<string, any>).reason || 'customer_request'
         },
-        message: 'Refund processed successfully'
+        _message: 'Refund processed successfully'
       });
     });
 
     app.get('/api/v1/payments/gateways', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           gateways: [
             {
               name: 'stripe',
@@ -71,13 +74,13 @@ describe('Payment Processing API Tests', () => {
               _supportedCurrencies: ['USD', 'EUR', 'GBP', 'CAD', 'INR']
             },
             {
-              name: 'paypal',
+              _name: 'paypal',
               _status: 'active',
               _pciCompliant: true,
               _supportedCurrencies: ['USD', 'EUR', 'GBP']
             },
             {
-              name: 'square',
+              _name: 'square',
               _status: 'active',
               _pciCompliant: true,
               _supportedCurrencies: ['USD', 'CAD']
@@ -99,13 +102,13 @@ describe('Payment Processing API Tests', () => {
       _amount: 1000,
       _currency: 'USD',
       _gateway: 'stripe',
-      jobId: 'job_123'
+      _jobId: 'job_123'
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/payments/process',
-      payload: paymentData
+      _url: '/api/v1/payments/process',
+      _payload: paymentData
     });
 
     expect(response.statusCode).toBe(200);
@@ -125,8 +128,8 @@ describe('Payment Processing API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/payments/process',
-      payload: invalidData
+      _url: '/api/v1/payments/process',
+      _payload: invalidData
     });
 
     expect(response.statusCode).toBe(400);
@@ -137,8 +140,8 @@ describe('Payment Processing API Tests', () => {
 
   test('GET /api/v1/payments/gateways - should return supported payment gateways', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/payments/gateways'
+      _method: 'GET',
+      _url: '/api/v1/payments/gateways'
     });
 
     expect(response.statusCode).toBe(200);
@@ -158,8 +161,8 @@ describe('Payment Processing API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/payments/refund',
-      payload: refundData
+      _url: '/api/v1/payments/refund',
+      _payload: refundData
     });
 
     expect(response.statusCode).toBe(200);
@@ -174,9 +177,9 @@ describe('Payment Processing API Tests', () => {
     
     for (const currency of currencies) {
       const response = await app.inject({
-        method: 'POST',
-        url: '/api/v1/payments/process',
-        payload: {
+        _method: 'POST',
+        _url: '/api/v1/payments/process',
+        _payload: {
           amount: 100,
           _currency: currency,
           _gateway: 'stripe'

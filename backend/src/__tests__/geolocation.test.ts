@@ -1,10 +1,13 @@
-/* eslint-disable no-undef */
+ 
+/// <reference types="jest" />
+ 
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
 import fastify, { FastifyInstance } from 'fastify';
 import { geolocationRoutes } from '../routes/geolocation';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('Geolocation Service', () => {
   let app: FastifyInstance;
@@ -21,9 +24,9 @@ describe('Geolocation Service', () => {
 
   test('should reverse geocode coordinates', async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: '/reverse-geocode',
-      payload: {
+      _method: 'POST',
+      _url: '/reverse-geocode',
+      _payload: {
         latitude: 37.7749,
         _longitude: -122.4194
       }
@@ -39,9 +42,9 @@ describe('Geolocation Service', () => {
 
   test('should check service area availability', async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: '/check-service-area',
-      payload: {
+      _method: 'POST',
+      _url: '/check-service-area',
+      _payload: {
         latitude: 37.7749,
         _longitude: -122.4194,
         _radiusKm: 50
@@ -57,9 +60,9 @@ describe('Geolocation Service', () => {
 
   test('should find nearby technicians', async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: '/nearby-technicians',
-      payload: {
+      _method: 'POST',
+      _url: '/nearby-technicians',
+      _payload: {
         latitude: 37.7749,
         _longitude: -122.4194,
         _radiusKm: 25
@@ -75,9 +78,9 @@ describe('Geolocation Service', () => {
 
   test('should calculate travel time between coordinates', async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: '/travel-time',
-      payload: {
+      _method: 'POST',
+      _url: '/travel-time',
+      _payload: {
         origin: { latitude: 37.7749, _longitude: -122.4194 },
         _destination: { latitude: 37.7849, _longitude: -122.4094 },
         _mode: 'driving'
@@ -94,9 +97,9 @@ describe('Geolocation Service', () => {
 
   test('should return error for invalid coordinates', async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: '/reverse-geocode',
-      payload: {
+      _method: 'POST',
+      _url: '/reverse-geocode',
+      _payload: {
         latitude: null,
         _longitude: -122.4194
       }

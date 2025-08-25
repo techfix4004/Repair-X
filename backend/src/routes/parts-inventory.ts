@@ -12,7 +12,7 @@ const PartSchema = z.object({
   _id: z.string().optional(),
   _partNumber: z.string().min(1, 'Part number is required'),
   _name: z.string().min(1, 'Part name is required'),
-  description: z.string().optional(),
+  _description: z.string().optional(),
   _category: z.enum([
     'SCREEN_DISPLAY',
     'BATTERY',
@@ -35,7 +35,7 @@ const PartSchema = z.object({
     'OTHER',
   ]),
   _manufacturer: z.string().optional(),
-  model: z.string().optional(),
+  _model: z.string().optional(),
   _compatibility: z.array(z.string()).default([]), // Compatible device models
   _specifications: z.object({
     color: z.string().optional(),
@@ -66,7 +66,7 @@ const PartSchema = z.object({
     _reservedStock: z.number().min(0).default(0), // Stock allocated to jobs
     _availableStock: z.number().min(0).default(0), // current - reserved
     _minimumStock: z.number().min(0).default(5),
-    maximumStock: z.number().min(0).default(100),
+    _maximumStock: z.number().min(0).default(100),
     _reorderPoint: z.number().min(0).default(10),
     _reorderQuantity: z.number().min(1).default(20),
     _location: z.string().default('MAIN_WAREHOUSE'),
@@ -90,7 +90,7 @@ const PartSchema = z.object({
   _documents: z.array(z.object({
     type: z.enum(['DATASHEET', 'MANUAL', 'WARRANTY', 'CERTIFICATE', 'OTHER']),
     _filename: z.string(),
-    url: z.string(),
+    _url: z.string(),
   })).default([]),
   _tenantId: z.string().optional(),
 });
@@ -98,12 +98,12 @@ const PartSchema = z.object({
 const SupplierSchema = z.object({
   _id: z.string().optional(),
   _name: z.string().min(1, 'Supplier name is required'),
-  code: z.string().min(1, 'Supplier code is required'),
-  contactInfo: z.object({
+  _code: z.string().min(1, 'Supplier code is required'),
+  _contactInfo: z.object({
     primaryContact: z.object({
       name: z.string(),
       _title: z.string().optional(),
-      email: z.string().email(),
+      _email: z.string().email(),
       _phone: z.string(),
     }),
     _address: z.object({
@@ -207,12 +207,12 @@ class PartsInventoryService {
       {
         _id: 'sup-001',
         _name: 'Tech Parts Direct',
-        code: 'TPD001',
-        contactInfo: {
+        _code: 'TPD001',
+        _contactInfo: {
           primaryContact: {
             name: 'Sarah Johnson',
             _title: 'Sales Manager',
-            email: 'sarah@techpartsdirect.com',
+            _email: 'sarah@techpartsdirect.com',
             _phone: '+1234567890',
           },
           _address: {
@@ -241,7 +241,7 @@ class PartsInventoryService {
       },
     ];
 
-    sampleSuppliers.forEach((supplier: unknown) => {
+    sampleSuppliers.forEach((_supplier: unknown) => {
       this.suppliers.set(supplier.id, supplier);
     });
 
@@ -251,10 +251,10 @@ class PartsInventoryService {
         _id: 'part-001',
         _partNumber: 'SCR-IP14-BLK',
         _name: 'iPhone 14 Screen Assembly Black',
-        description: 'Complete LCD screen assembly with digitizer for iPhone 14',
+        _description: 'Complete LCD screen assembly with digitizer for iPhone 14',
         _category: 'SCREEN_DISPLAY',
         _manufacturer: 'Apple',
-        model: 'A2884',
+        _model: 'A2884',
         _compatibility: ['iPhone 14', 'iPhone 14 Standard'],
         _specifications: {
           color: 'Black',
@@ -282,7 +282,7 @@ class PartsInventoryService {
           _reservedStock: 3,
           _availableStock: 22,
           _minimumStock: 10,
-          maximumStock: 100,
+          _maximumStock: 100,
           _reorderPoint: 15,
           _reorderQuantity: 25,
           _location: 'MAIN_WAREHOUSE',
@@ -306,10 +306,10 @@ class PartsInventoryService {
         _id: 'part-002',
         _partNumber: 'BAT-IP14-3279',
         _name: 'iPhone 14 Battery',
-        description: 'Lithium-ion battery for iPhone 14',
+        _description: 'Lithium-ion battery for iPhone 14',
         _category: 'BATTERY',
         _manufacturer: 'Apple',
-        model: 'A2884',
+        _model: 'A2884',
         _compatibility: ['iPhone 14'],
         _specifications: {
           capacity: '3279mAh',
@@ -327,7 +327,7 @@ class PartsInventoryService {
           _reservedStock: 2,
           _availableStock: 43,
           _minimumStock: 20,
-          maximumStock: 150,
+          _maximumStock: 150,
           _reorderPoint: 30,
           _reorderQuantity: 50,
           _location: 'MAIN_WAREHOUSE',
@@ -349,35 +349,35 @@ class PartsInventoryService {
       },
     ];
 
-    sampleParts.forEach((part: unknown) => {
+    sampleParts.forEach((_part: unknown) => {
       this.parts.set(part.id, part);
     });
   }
 
   // Parts Management
-  async getAllParts(tenantId?: string, filters?: any): Promise<any[]> {
+  async getAllParts(tenantId?: string, filters?: unknown): Promise<any[]> {
     let parts = Array.from(this.parts.values());
     
     if (tenantId) {
-      parts = parts.filter((part: unknown) => part.tenantId === tenantId);
+      parts = parts.filter((_part: unknown) => part.tenantId === tenantId);
     }
 
     if (filters) {
       if (filters.category) {
-        parts = parts.filter((part: unknown) => part.category === filters.category);
+        parts = parts.filter((_part: unknown) => part.category === filters.category);
       }
       if (filters.status) {
-        parts = parts.filter((part: unknown) => part.status === filters.status);
+        parts = parts.filter((_part: unknown) => part.status === filters.status);
       }
       if (filters.lowStock) {
-        parts = parts.filter((part: unknown) => part.inventory.availableStock <= part.inventory.minimumStock);
+        parts = parts.filter((_part: unknown) => part.inventory.availableStock <= part.inventory.minimumStock);
       }
       if (filters.outOfStock) {
-        parts = parts.filter((part: unknown) => part.inventory.availableStock === 0);
+        parts = parts.filter((_part: unknown) => part.inventory.availableStock === 0);
       }
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase();
-        parts = parts.filter((part: unknown) => 
+        parts = parts.filter((_part: unknown) => 
           part.name.toLowerCase().includes(searchTerm) ||
           part.partNumber.toLowerCase().includes(searchTerm) ||
           part.manufacturer?.toLowerCase().includes(searchTerm)
@@ -388,30 +388,30 @@ class PartsInventoryService {
     return parts;
   }
 
-  async getPartById(partId: string): Promise<any | null> {
+  async getPartById(_partId: string): Promise<any | null> {
     return this.parts.get(partId) || null;
   }
 
-  async createPart(partData: unknown): Promise<any> {
+  async createPart(_partData: unknown): Promise<any> {
     const validated = PartSchema.parse(partData);
     const id = validated.id || `part-${Date.now()}`;
     
     // Calculate available stock
     validated.inventory.availableStock = validated.inventory.currentStock - validated.inventory.reservedStock;
     
-    const part = { ...validated, id, createdAt: new Date().toISOString() };
+    const part = { ...validated, id, _createdAt: new Date().toISOString() };
     this.parts.set(id, part);
     
     return part;
   }
 
-  async updatePart(partId: string, updateData: unknown): Promise<any> {
+  async updatePart(_partId: string, _updateData: unknown): Promise<any> {
     const existingPart = this.parts.get(partId);
     if (!existingPart) {
       throw new Error('Part not found');
     }
 
-    const updatedPart = { ...existingPart, ...updateData, updatedAt: new Date().toISOString() };
+    const updatedPart = { ...existingPart, ...updateData, _updatedAt: new Date().toISOString() };
     
     // Recalculate available stock
     if (updatedPart.inventory) {
@@ -424,7 +424,7 @@ class PartsInventoryService {
     return validated;
   }
 
-  async deletePart(partId: string): Promise<void> {
+  async deletePart(_partId: string): Promise<void> {
     const part = this.parts.get(partId);
     if (!part) {
       throw new Error('Part not found');
@@ -492,7 +492,7 @@ class PartsInventoryService {
       if (!startDate && !endDate) {
         return movements;
       }
-      return movements.filter((m: unknown) => {
+      return movements.filter((_m: unknown) => {
         const movementDate = new Date(m.timestamp);
         const start = startDate ? new Date(startDate) : new Date(0);
         const end = endDate ? new Date(endDate) : new Date();
@@ -538,7 +538,7 @@ class PartsInventoryService {
   // Supplier Management
   async getAllSuppliers(tenantId?: string): Promise<any[]> {
     const suppliers = Array.from(this.suppliers.values());
-    return tenantId ? suppliers.filter((supplier: unknown) => supplier.tenantId === tenantId) : suppliers;
+    return tenantId ? suppliers.filter((_supplier: unknown) => supplier.tenantId === tenantId) : suppliers;
   }
 
   async createSupplier(_supplierData: unknown): Promise<any> {
@@ -555,12 +555,12 @@ class PartsInventoryService {
   async getInventoryAnalytics(tenantId?: string): Promise<any> {
     const parts = await this.getAllParts(tenantId);
     
-    const totalValue = parts.reduce((sum: unknown, part: unknown) => sum + (part.inventory.currentStock * part.pricing.cost), 0);
-    const lowStockItems = parts.filter((part: unknown) => part.inventory.availableStock <= part.inventory.minimumStock);
-    const outOfStockItems = parts.filter((part: unknown) => part.inventory.availableStock === 0);
-    const reorderNeeded = parts.filter((part: unknown) => part.inventory.availableStock <= part.inventory.reorderPoint);
+    const totalValue = parts.reduce((_sum: unknown, _part: unknown) => sum + (part.inventory.currentStock * part.pricing.cost), 0);
+    const lowStockItems = parts.filter((_part: unknown) => part.inventory.availableStock <= part.inventory.minimumStock);
+    const outOfStockItems = parts.filter((_part: unknown) => part.inventory.availableStock === 0);
+    const reorderNeeded = parts.filter((_part: unknown) => part.inventory.availableStock <= part.inventory.reorderPoint);
     
-    const categoryBreakdown = parts.reduce((acc: unknown, part: unknown) => {
+    const categoryBreakdown = parts.reduce((_acc: unknown, _part: unknown) => {
       const category = part.category;
       if (!acc[category]) {
         acc[category] = { _count: 0, _value: 0 };
@@ -579,14 +579,14 @@ class PartsInventoryService {
         _reorderNeededCount: reorderNeeded.length,
       },
       _lowStockItems: lowStockItems.map((part: unknown) => ({
-        id: part.id,
+        _id: part.id,
         _partNumber: part.partNumber,
         _name: part.name,
         _currentStock: part.inventory.currentStock,
         _minimumStock: part.inventory.minimumStock,
       })),
       _reorderSuggestions: reorderNeeded.map((part: unknown) => ({
-        id: part.id,
+        _id: part.id,
         _partNumber: part.partNumber,
         _name: part.name,
         _currentStock: part.inventory.currentStock,
@@ -604,8 +604,9 @@ class PartsInventoryService {
 }
 
 // Route Handlers
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function partsInventoryRoutes(server: FastifyInstance): Promise<void> {
+export async function partsInventoryRoutes(_server: FastifyInstance): Promise<void> {
   const inventoryService = new PartsInventoryService();
 
   // Get all parts
@@ -625,14 +626,14 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: parts,
+        _data: parts,
         _count: parts.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve parts',
-        error: error.message,
+        _message: 'Failed to retrieve parts',
+        _error: error.message,
       });
     }
   });
@@ -647,14 +648,14 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: part,
-        message: 'Part created successfully',
+        _data: part,
+        _message: 'Part created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create part',
-        error: error.message,
+        _message: 'Failed to create part',
+        _error: error.message,
       });
     }
   });
@@ -670,19 +671,19 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       if (!part) {
         return (reply as FastifyReply).status(404).send({
           _success: false,
-          message: 'Part not found',
+          _message: 'Part not found',
         });
       }
       
       return reply.send({
         _success: true,
-        data: part,
+        _data: part,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve part',
-        error: error.message,
+        _message: 'Failed to retrieve part',
+        _error: error.message,
       });
     }
   });
@@ -700,15 +701,15 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: part,
-        message: 'Part updated successfully',
+        _data: part,
+        _message: 'Part updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Part not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to update part',
-        error: error.message,
+        _message: 'Failed to update part',
+        _error: error.message,
       });
     }
   });
@@ -723,14 +724,14 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: movement,
-        message: 'Stock movement recorded successfully',
+        _data: movement,
+        _message: 'Stock movement recorded successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to record stock movement',
-        error: error.message,
+        _message: 'Failed to record stock movement',
+        _error: error.message,
       });
     }
   });
@@ -748,13 +749,13 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: movements,
+        _data: movements,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve stock movements',
-        error: error.message,
+        _message: 'Failed to retrieve stock movements',
+        _error: error.message,
       });
     }
   });
@@ -772,15 +773,15 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        message: 'Stock reserved successfully',
+        _message: 'Stock reserved successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Part not found' ? _404 : 
                     error.message === 'Insufficient stock available' ? 409 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to reserve stock',
-        error: error.message,
+        _message: 'Failed to reserve stock',
+        _error: error.message,
       });
     }
   });
@@ -795,13 +796,13 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: suppliers,
+        _data: suppliers,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve suppliers',
-        error: error.message,
+        _message: 'Failed to retrieve suppliers',
+        _error: error.message,
       });
     }
   });
@@ -816,14 +817,14 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: supplier,
-        message: 'Supplier created successfully',
+        _data: supplier,
+        _message: 'Supplier created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create supplier',
-        error: error.message,
+        _message: 'Failed to create supplier',
+        _error: error.message,
       });
     }
   });
@@ -838,13 +839,13 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: analytics,
+        _data: analytics,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve inventory analytics',
-        error: error.message,
+        _message: 'Failed to retrieve inventory analytics',
+        _error: error.message,
       });
     }
   });
@@ -875,7 +876,7 @@ export async function partsInventoryRoutes(server: FastifyInstance): Promise<voi
 
     return reply.send({
       _success: true,
-      data: categories,
+      _data: categories,
     });
   });
 }

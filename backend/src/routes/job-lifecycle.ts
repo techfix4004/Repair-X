@@ -30,7 +30,7 @@ type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 const JOB_STATES = {
   _CREATED: {
     name: 'Job Created',
-    description: 'Initial job sheet creation from customer booking',
+    _description: 'Initial job sheet creation from customer booking',
     _color: '#3B82F6',
     _icon: 'plus-circle',
     _actions: [
@@ -49,18 +49,18 @@ const JOB_STATES = {
     _businessRules: {
       validateServiceArea: true,
       _checkTechnicianCapacity: true,
-      applyPricingRules: true
+      _applyPricingRules: true
     },
     _requiredFields: ['customerId', 'deviceId', 'problemDescription', 'serviceId'],
     _documentation: {
-      photos: { required: false, maximum: 5 },
+      photos: { required: false, _maximum: 5 },
       _notes: { required: true, _minimum: 10 }
     }
   },
 
   _IN_DIAGNOSIS: {
     name: 'Under Diagnosis',
-    description: 'Technician evaluating device/issue with comprehensive documentation',
+    _description: 'Technician evaluating device/issue with comprehensive documentation',
     _color: '#F59E0B',
     _icon: 'magnifying-glass',
     _actions: [
@@ -85,14 +85,14 @@ const JOB_STATES = {
     },
     _requiredFields: ['diagnosisNotes', 'estimatedHours', 'laborCost'],
     _documentation: {
-      photos: { required: true, _minimum: 2, maximum: 10 },
+      photos: { required: true, _minimum: 2, _maximum: 10 },
       _diagnosticChecklist: { required: true }
     }
   },
 
   _AWAITING_APPROVAL: {
     name: 'Awaiting Customer Approval',
-    description: 'Customer approval needed for diagnosis/quote with digital workflow',
+    _description: 'Customer approval needed for diagnosis/quote with digital workflow',
     _color: '#8B5CF6',
     _icon: 'clock',
     _actions: [
@@ -123,7 +123,7 @@ const JOB_STATES = {
 
   _APPROVED: {
     name: 'Work Approved',
-    description: 'Customer approved work to proceed with comprehensive planning',
+    _description: 'Customer approved work to proceed with comprehensive planning',
     _color: '#10B981',
     _icon: 'check-circle',
     _actions: [
@@ -154,7 +154,7 @@ const JOB_STATES = {
 
   _IN_PROGRESS: {
     name: 'Work in Progress',
-    description: 'Active repair/service work in progress with real-time tracking',
+    _description: 'Active repair/service work in progress with real-time tracking',
     _color: '#DC2626',
     _icon: 'cog',
     _actions: [
@@ -186,7 +186,7 @@ const JOB_STATES = {
 
   _PARTS_ORDERED: {
     name: 'Waiting for Parts',
-    description: 'Waiting for parts/components with comprehensive tracking',
+    _description: 'Waiting for parts/components with comprehensive tracking',
     _color: '#F97316',
     _icon: 'truck',
     _actions: [
@@ -219,7 +219,7 @@ const JOB_STATES = {
 
   _TESTING: {
     name: 'Testing & Validation',
-    description: 'Post-repair testing and comprehensive validation',
+    _description: 'Post-repair testing and comprehensive validation',
     _color: '#14B8A6',
     _icon: 'beaker',
     _actions: [
@@ -250,7 +250,7 @@ const JOB_STATES = {
 
   _QUALITY_CHECK: {
     name: 'Quality Validation',
-    description: 'Six Sigma quality validation checkpoint with comprehensive audit',
+    _description: 'Six Sigma quality validation checkpoint with comprehensive audit',
     _color: '#7C3AED',
     _icon: 'shield-check',
     _actions: [
@@ -281,7 +281,7 @@ const JOB_STATES = {
 
   _COMPLETED: {
     name: 'Work Completed',
-    description: 'All work finished and ready for customer with comprehensive finalization',
+    _description: 'All work finished and ready for customer with comprehensive finalization',
     _color: '#059669',
     _icon: 'check-circle',
     _actions: [
@@ -312,7 +312,7 @@ const JOB_STATES = {
 
   _CUSTOMER_APPROVED: {
     name: 'Customer Approved',
-    description: 'Customer final sign-off and comprehensive satisfaction confirmation',
+    _description: 'Customer final sign-off and comprehensive satisfaction confirmation',
     _color: '#16A34A',
     _icon: 'user-check',
     _actions: [
@@ -343,7 +343,7 @@ const JOB_STATES = {
 
   _DELIVERED: {
     name: 'Delivered',
-    description: 'Job delivered to customer with comprehensive documentation and follow-up',
+    _description: 'Job delivered to customer with comprehensive documentation and follow-up',
     _color: '#15803D',
     _icon: 'truck',
     _actions: [
@@ -375,7 +375,7 @@ const JOB_STATES = {
 
   _CANCELLED: {
     name: 'Cancelled',
-    description: 'Job cancelled at any stage with comprehensive reason tracking and recovery',
+    _description: 'Job cancelled at any stage with comprehensive reason tracking and recovery',
     _color: '#DC2626',
     _icon: 'x-circle',
     _actions: [
@@ -474,7 +474,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
     if (!validation.valid) {
       return {
         _success: false,
-        message: `Invalid transition: ${validation.errors.join(', ')}`
+        _message: `Invalid transition: ${validation.errors.join(', ')}`
       };
     }
 
@@ -484,7 +484,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
         // Update job sheet status
         await tx.jobSheet.update({
           _where: { id: validated.jobSheetId },
-          data: {
+          _data: {
             status: validated.toState,
             _updatedAt: new Date(),
           },
@@ -492,7 +492,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
 
         // Create audit trail entry
         await tx.jobSheetAudit.create({
-          data: {
+          _data: {
             jobSheetId: validated.jobSheetId,
             _fromState: validated.fromState,
             _toState: validated.toState,
@@ -523,14 +523,14 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
 
       return {
         _success: true,
-        message: `Successfully transitioned to ${validated.toState}`,
+        _message: `Successfully transitioned to ${validated.toState}`,
         nextActions,
       };
 
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return {
         _success: false,
-        message: `Transition failed: ${error.message}`
+        _message: `Transition failed: ${error.message}`
       };
     }
   }
@@ -644,7 +644,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
       _jobNumber: jobSheet.jobNumber,
       state,
       _stateName: stateConfig.name,
-      description: stateConfig.description,
+      _description: stateConfig.description,
       _customerName: `${jobSheet.booking.customer.firstName  } ${  jobSheet.booking.customer.lastName}`,
       _technicianName: jobSheet.technician ? `${jobSheet.technician.firstName} ${jobSheet.technician.lastName}` : 'Unassigned',
     };
@@ -711,7 +711,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
 
   async captureDocumentation(_jobSheetId: string, _state: string, _documentation: unknown): Promise<void> {
     await this.prisma.jobSheetDocumentation.create({
-      data: {
+      _data: {
         jobSheetId,
         state,
         _documentationType: documentation.type,
@@ -800,8 +800,8 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
     console.log(`Executing automation rules for job ${jobSheetId} in state ${state}`);
   }
 
-  private generateSMSTemplate(_state: string, data: unknown): string {
-    const templates: Record<string, string> = {
+  private generateSMSTemplate(_state: string, _data: unknown): string {
+    const _templates: Record<string, string> = {
       _CREATED: `RepairX: Job ${data.jobNumber} created. Technician ${data.technicianName} assigned.`,
       _IN_DIAGNOSIS: `RepairX: Diagnosis in progress for job ${data.jobNumber}.`,
       _AWAITING_APPROVAL: `RepairX: Quote ready for approval - Job ${data.jobNumber}. Please review and approve.`,
@@ -814,13 +814,14 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
     return templates[state] || `_RepairX: Update on job ${data.jobNumber} - ${data.stateName}`;
   }
 
-  private generateEmailTemplate(state: string, data: unknown): string {
+  private generateEmailTemplate(state: string, _data: unknown): string {
     // Email template generation logic
     return `<h2>${data.stateName}</h2><p>${data.description}</p><p>Job _Number: ${data.jobNumber}</p>`;
   }
 }
 
 // Export the job sheet lifecycle routes
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   const notificationService = { _sendSMS: async () => {}, _sendEmail: async () => {} };
@@ -851,9 +852,9 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/jobsheets/:id/state', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
       const report = await lifecycleManager.generateStateReport(request.params.id);
-      return { _success: true, data: report };
+      return { _success: true, _data: report };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
@@ -871,8 +872,8 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
       }
       
       return result;
-    } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+    } catch (_error: unknown) {
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
@@ -880,9 +881,9 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/jobsheets/:id/transitions', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
       const transitions = await lifecycleManager.getAvailableTransitions(request.params.id);
-      return { _success: true, data: transitions };
+      return { _success: true, _data: transitions };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
@@ -890,7 +891,7 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/jobsheets/workflow/states', async (request: FastifyRequest, reply: FastifyReply) => {
     return { 
       _success: true, 
-      data: Object.entries(JOB_STATES).map(([key, config]) => ({
+      _data: Object.entries(JOB_STATES).map(([key, config]) => ({
         key,
         ...config,
       })),
@@ -901,9 +902,9 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   fastify.post('/api/v1/jobsheets/:id/quality-check', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
       const result = await lifecycleManager.executeSixSigmaQualityCheck(request.params.id);
-      return { _success: true, data: result };
+      return { _success: true, _data: result };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
@@ -918,9 +919,9 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
       };
       
       const analytics = await lifecycleManager.getWorkflowAnalytics(dateRange);
-      return { _success: true, data: analytics };
+      return { _success: true, _data: analytics };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
