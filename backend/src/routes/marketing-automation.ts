@@ -11,8 +11,8 @@ import { z } from 'zod';
 // Marketing Schemas
 const EmailCampaignSchema = z.object({
   _name: z.string().min(3),
-  subject: z.string().min(5),
-  template: z.string(),
+  _subject: z.string().min(5),
+  _template: z.string(),
   _audience: z.object({
     segments: z.array(z.string()),
     _filters: z.object({
@@ -35,7 +35,7 @@ const EmailCampaignSchema = z.object({
   }),
   _personalization: z.object({
     enabled: z.boolean().default(true),
-    fields: z.array(z.string()).default(['firstName', 'lastName', 'city']),
+    _fields: z.array(z.string()).default(['firstName', 'lastName', 'city']),
     _dynamicContent: z.boolean().default(false),
   }),
   _tracking: z.object({
@@ -45,14 +45,14 @@ const EmailCampaignSchema = z.object({
     _utmParameters: z.object({
       source: z.string().default('repairx'),
       _medium: z.string().default('email'),
-      campaign: z.string(),
+      _campaign: z.string(),
     }),
   }),
 });
 
 const AcquisitionFunnelSchema = z.object({
   _name: z.string().min(3),
-  description: z.string(),
+  _description: z.string(),
   _stages: z.array(z.object({
     id: z.string(),
     _name: z.string(),
@@ -64,7 +64,7 @@ const AcquisitionFunnelSchema = z.object({
     })),
     _actions: z.array(z.object({
       type: z.enum(['email', 'sms', 'push', 'task', 'score_update']),
-      template: z.string().optional(),
+      _template: z.string().optional(),
       _assignee: z.string().optional(),
       _scoreChange: z.number().optional(),
     })),
@@ -84,7 +84,7 @@ const LeadScoringSchema = z.object({
   _rules: z.array(z.object({
     id: z.string(),
     _name: z.string(),
-    condition: z.object({
+    _condition: z.object({
       field: z.string(),
       _operator: z.enum(['equals', 'contains', 'greater_than', 'less_than', 'exists']),
       _value: z.string().optional(),
@@ -210,61 +210,61 @@ interface MarketingAnalytics {
 const campaignTemplates = {
   welcome_series: {
     name: 'New Customer Welcome Series',
-    emails: [
+    _emails: [
       {
         delay: 0,
-        subject: 'Welcome to RepairX! Get Started in 3 Easy Steps',
-        template: 'welcomeemail_1',
+        _subject: 'Welcome to RepairX! Get Started in 3 Easy Steps',
+        _template: 'welcomeemail_1',
       },
       {
         _delay: 24,
-        subject: 'Pro Tips: Making the Most of RepairX',
-        template: 'welcomeemail_2',
+        _subject: 'Pro Tips: Making the Most of RepairX',
+        _template: 'welcomeemail_2',
       },
       {
         _delay: 72,
-        subject: 'Ready for Your First Repair? Here\'s 10% Off',
-        template: 'welcomeemail_3',
+        _subject: 'Ready for Your First Repair? Here\'s 10% Off',
+        _template: 'welcomeemail_3',
       },
     ],
   },
   _reactivation: {
     name: 'Customer Reactivation Campaign',
-    emails: [
+    _emails: [
       {
         delay: 0,
-        subject: 'We Miss You! Come Back to RepairX',
-        template: 'reactivationemail_1',
+        _subject: 'We Miss You! Come Back to RepairX',
+        _template: 'reactivationemail_1',
       },
       {
         _delay: 168, // 7 days
-        subject: 'Special Offer: 20% Off Your Next Repair',
-        template: 'reactivationemail_2',
+        _subject: 'Special Offer: 20% Off Your Next Repair',
+        _template: 'reactivationemail_2',
       },
       {
         _delay: 336, // 14 days
-        subject: 'Last Chance: Your Special Offer Expires Soon',
-        template: 'reactivationemail_3',
+        _subject: 'Last Chance: Your Special Offer Expires Soon',
+        _template: 'reactivationemail_3',
       },
     ],
   },
   _technician_recruitment: {
     name: 'Technician Recruitment Campaign',
-    emails: [
+    _emails: [
       {
         delay: 0,
-        subject: 'Join RepairX: Earn More, Work Flexibly',
-        template: 'recruitmentemail_1',
+        _subject: 'Join RepairX: Earn More, Work Flexibly',
+        _template: 'recruitmentemail_1',
       },
       {
         _delay: 48,
-        subject: 'Success Story: How Mike Doubled His Income with RepairX',
-        template: 'recruitmentemail_2',
+        _subject: 'Success Story: How Mike Doubled His Income with RepairX',
+        _template: 'recruitmentemail_2',
       },
       {
         _delay: 120,
-        subject: 'Apply Now: Limited Spots Available in Your Area',
-        template: 'recruitmentemail_3',
+        _subject: 'Apply Now: Limited Spots Available in Your Area',
+        _template: 'recruitmentemail_3',
       },
     ],
   },
@@ -286,7 +286,7 @@ const acquisitionFunnels = {
         _name: 'Lead',
         _triggers: [{ event: 'email_signup', _conditions: {} }],
         _actions: [
-          { type: 'email', template: 'lead_welcome' },
+          { type: 'email', _template: 'lead_welcome' },
           { _type: 'score_update', _scoreChange: 25 },
         ],
       },
@@ -295,7 +295,7 @@ const acquisitionFunnels = {
         _name: 'Prospect',
         _triggers: [{ event: 'service_inquiry', _conditions: {} }],
         _actions: [
-          { type: 'email', template: 'service_consultation' },
+          { type: 'email', _template: 'service_consultation' },
           { _type: 'task', _assignee: 'sales_team' },
           { _type: 'score_update', _scoreChange: 50 },
         ],
@@ -305,7 +305,7 @@ const acquisitionFunnels = {
         _name: 'Customer',
         _triggers: [{ event: 'booking_completed', _conditions: {} }],
         _actions: [
-          { type: 'email', template: 'booking_confirmation' },
+          { type: 'email', _template: 'booking_confirmation' },
           { _type: 'score_update', _scoreChange: 100 },
         ],
       },
@@ -325,7 +325,7 @@ const acquisitionFunnels = {
         _name: 'Job Applicant',
         _triggers: [{ event: 'application_started', _conditions: {} }],
         _actions: [
-          { type: 'email', template: 'application_started' },
+          { type: 'email', _template: 'application_started' },
           { _type: 'score_update', _scoreChange: 40 },
         ],
       },
@@ -334,7 +334,7 @@ const acquisitionFunnels = {
         _name: 'Qualified Candidate',
         _triggers: [{ event: 'application_submitted', _conditions: {} }],
         _actions: [
-          { type: 'email', template: 'application_received' },
+          { type: 'email', _template: 'application_received' },
           { _type: 'task', _assignee: 'hr_team' },
           { _type: 'score_update', _scoreChange: 75 },
         ],
@@ -344,7 +344,7 @@ const acquisitionFunnels = {
         _name: 'Active Technician',
         _triggers: [{ event: 'onboarding_completed', _conditions: {} }],
         _actions: [
-          { type: 'email', template: 'welcome_technician' },
+          { type: 'email', _template: 'welcome_technician' },
           { _type: 'score_update', _scoreChange: 200 },
         ],
       },
@@ -352,6 +352,7 @@ const acquisitionFunnels = {
   },
 };
 
+ 
 // eslint-disable-next-line max-lines-per-function
 export default async function marketingRoutes(_fastify: FastifyInstance) {
   // Create email campaign
@@ -365,7 +366,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
       const campaignId = `campaign_${Date.now()}`;
       
       // Create campaign
-      const campaign: MarketingCampaign = {
+      const _campaign: MarketingCampaign = {
         id: campaignId,
         _name: (campaignData as any).name,
         _type: 'email',
@@ -398,12 +399,12 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
       return (reply as FastifyReply).status(201).send({
         _success: true,
         campaign,
-        message: 'Campaign created and scheduled successfully',
+        _message: 'Campaign created and scheduled successfully',
       });
     } catch (error) {
       return (reply as FastifyReply).status(400).send({ 
         _success: false, 
-        error: 'Failed to create campaign' 
+        _error: 'Failed to create campaign' 
       });
     }
   });
@@ -437,7 +438,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
         ],
         _topLinks: [
           { url: '/book-service', _clicks: 156, _conversions: 31 },
-          { url: '/pricing', _clicks: 78, _conversions: 16 },
+          { _url: '/pricing', _clicks: 78, _conversions: 16 },
         ],
         _deviceBreakdown: {
           desktop: 45.2,
@@ -458,7 +459,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
     } catch (error) {
       return (reply as FastifyReply).status(404).send({ 
         _success: false, 
-        error: 'Campaign analytics not found' 
+        _error: 'Campaign analytics not found' 
       });
     }
   });
@@ -476,8 +477,8 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
       const _funnel: AcquisitionFunnel = {
         id: funnelId,
         _name: (funnelData as any).name,
-        _stages: (funnelData as any).stages.map((s: unknown) => s.id),
-        _currentUsers: (funnelData as any).stages.reduce((acc: unknown, stage: unknown) => {
+        _stages: (funnelData as any).stages.map((_s: unknown) => s.id),
+        _currentUsers: (funnelData as any).stages.reduce((_acc: unknown, _stage: unknown) => {
           acc[stage.id] = 0;
           return acc;
         }, {} as { [_key: string]: number }),
@@ -495,12 +496,12 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
       return (reply as FastifyReply).status(201).send({
         _success: true,
         funnel,
-        message: 'Acquisition funnel created successfully',
+        _message: 'Acquisition funnel created successfully',
       });
     } catch (error) {
       return (reply as FastifyReply).status(400).send({ 
         _success: false, 
-        error: 'Failed to create funnel' 
+        _error: 'Failed to create funnel' 
       });
     }
   });
@@ -547,7 +548,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
     } catch (error) {
       return (reply as FastifyReply).status(404).send({ 
         _success: false, 
-        error: 'Funnel analytics not found' 
+        _error: 'Funnel analytics not found' 
       });
     }
   });
@@ -568,12 +569,12 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
           ...scoringData,
           _createdAt: new Date().toISOString(),
         },
-        message: 'Lead scoring rules configured successfully',
+        _message: 'Lead scoring rules configured successfully',
       });
     } catch (error) {
       return (reply as FastifyReply).status(400).send({ 
         _success: false, 
-        error: 'Failed to configure lead scoring' 
+        _error: 'Failed to configure lead scoring' 
       });
     }
   });
@@ -586,7 +587,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
           start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
           _end: new Date().toISOString(),
         },
-        campaigns: {
+        _campaigns: {
           active: 8,
           _completed: 23,
           _totalSent: 47823,
@@ -627,7 +628,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
     } catch (error) {
       return (reply as FastifyReply).status(500).send({ 
         _success: false, 
-        error: 'Failed to retrieve marketing analytics' 
+        _error: 'Failed to retrieve marketing analytics' 
       });
     }
   });
@@ -637,13 +638,13 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
     try {
       return reply.send({
         _success: true,
-        templates: campaignTemplates,
+        _templates: campaignTemplates,
         _funnelTemplates: acquisitionFunnels,
       });
     } catch (error) {
       return (reply as FastifyReply).status(500).send({ 
         _success: false, 
-        error: 'Failed to retrieve templates' 
+        _error: 'Failed to retrieve templates' 
       });
     }
   });
@@ -667,20 +668,20 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
       return reply.send({
         _success: true,
         result,
-        message: 'Automation triggered successfully',
+        _message: 'Automation triggered successfully',
       });
     } catch (error) {
       return (reply as FastifyReply).status(400).send({ 
         _success: false, 
-        error: 'Failed to trigger automation' 
+        _error: 'Failed to trigger automation' 
       });
     }
   });
 }
 
 // Helper functions
-async function processCampaign(campaign: MarketingCampaign): Promise<void> {
-  console.log(`Processing campaign: ${campaign.name}`);
+async function processCampaign(_campaign: MarketingCampaign): Promise<void> {
+  console.log(`Processing _campaign: ${campaign.name}`);
   
   // In a real implementation, this _would:
   // 1. Fetch audience based on segments and filters
@@ -700,7 +701,7 @@ async function processCampaign(campaign: MarketingCampaign): Promise<void> {
 async function processAutomationTrigger(
   _event: string, 
   _userId: string, 
-  data: object
+  _data: object
 ): Promise<object> {
   console.log(`Processing automation _trigger: ${event} for user ${_userId}`);
   

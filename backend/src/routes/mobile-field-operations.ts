@@ -9,130 +9,130 @@ import { z } from 'zod';
 
 // Schemas for Mobile Field Operations
 const FieldTechnicianSchema = z.object({
-  id: z.string().optional(),
-  employeeId: z.string(),
-  personalInfo: z.object({
+  _id: z.string().optional(),
+  _employeeId: z.string(),
+  _personalInfo: z.object({
     firstName: z.string(),
-    lastName: z.string(),
-    phone: z.string(),
-    email: z.string().email(),
-    emergencyContact: z.object({
+    _lastName: z.string(),
+    _phone: z.string(),
+    _email: z.string().email(),
+    _emergencyContact: z.object({
       name: z.string(),
-      phone: z.string(),
-      relationship: z.string(),
+      _phone: z.string(),
+      _relationship: z.string(),
     }).optional(),
   }),
-  fieldOperations: z.object({
+  _fieldOperations: z.object({
     vehicleInfo: z.object({
       make: z.string(),
-      model: z.string(),
-      year: z.number(),
-      licensePlate: z.string(),
-      color: z.string(),
+      _model: z.string(),
+      _year: z.number(),
+      _licensePlate: z.string(),
+      _color: z.string(),
     }).optional(),
-    serviceArea: z.object({
+    _serviceArea: z.object({
       primaryZip: z.string(),
-      radiusMiles: z.number(),
-      coverageAreas: z.array(z.string()),
+      _radiusMiles: z.number(),
+      _coverageAreas: z.array(z.string()),
     }),
-    equipment: z.array(z.object({
+    _equipment: z.array(z.object({
       id: z.string(),
-      name: z.string(),
-      type: z.enum(['TOOL', 'DIAGNOSTIC', 'SAFETY', 'CONSUMABLE']),
-      condition: z.enum(['EXCELLENT', 'GOOD', 'FAIR', 'POOR']),
-      lastInspected: z.string(),
+      _name: z.string(),
+      _type: z.enum(['TOOL', 'DIAGNOSTIC', 'SAFETY', 'CONSUMABLE']),
+      _condition: z.enum(['EXCELLENT', 'GOOD', 'FAIR', 'POOR']),
+      _lastInspected: z.string(),
     })).default([]),
-    certifications: z.array(z.object({
+    _certifications: z.array(z.object({
       name: z.string(),
-      issuedBy: z.string(),
-      issuedDate: z.string(),
-      expiryDate: z.string(),
-      certificateNumber: z.string(),
+      _issuedBy: z.string(),
+      _issuedDate: z.string(),
+      _expiryDate: z.string(),
+      _certificateNumber: z.string(),
     })).default([]),
   }),
-  mobileCapabilities: z.object({
+  _mobileCapabilities: z.object({
     hasSmartphone: z.boolean().default(true),
-    hasTablet: z.boolean().default(false),
-    hasLaptop: z.boolean().default(false),
-    gpsEnabled: z.boolean().default(true),
-    offlineCapable: z.boolean().default(true),
-    digitalSignature: z.boolean().default(true),
-    photoCapture: z.boolean().default(true),
+    _hasTablet: z.boolean().default(false),
+    _hasLaptop: z.boolean().default(false),
+    _gpsEnabled: z.boolean().default(true),
+    _offlineCapable: z.boolean().default(true),
+    _digitalSignature: z.boolean().default(true),
+    _photoCapture: z.boolean().default(true),
   }),
-  workSchedule: z.object({
+  _workSchedule: z.object({
     availability: z.array(z.object({
       dayOfWeek: z.number().min(0).max(6),
-      startTime: z.string(),
-      endTime: z.string(),
-      isAvailable: z.boolean(),
+      _startTime: z.string(),
+      _endTime: z.string(),
+      _isAvailable: z.boolean(),
     })),
-    maxJobsPerDay: z.number().min(1).max(20).default(8),
-    travelTimeBuffer: z.number().min(15).max(120).default(30), // minutes
+    _maxJobsPerDay: z.number().min(1).max(20).default(8),
+    _travelTimeBuffer: z.number().min(15).max(120).default(30), // minutes
   }),
-  performance: z.object({
+  _performance: z.object({
     rating: z.number().min(1).max(5).default(5),
-    completionRate: z.number().min(0).max(100).default(100),
-    customerSatisfaction: z.number().min(1).max(5).default(5),
-    onTimeArrival: z.number().min(0).max(100).default(95),
-    avgJobDuration: z.number().min(0).default(120), // minutes
+    _completionRate: z.number().min(0).max(100).default(100),
+    _customerSatisfaction: z.number().min(1).max(5).default(5),
+    _onTimeArrival: z.number().min(0).max(100).default(95),
+    _avgJobDuration: z.number().min(0).default(120), // minutes
   }),
-  status: z.enum(['ACTIVE', 'ON_DUTY', 'OFF_DUTY', 'UNAVAILABLE', 'SUSPENDED']).default('ACTIVE'),
-  location: z.object({
+  _status: z.enum(['ACTIVE', 'ON_DUTY', 'OFF_DUTY', 'UNAVAILABLE', 'SUSPENDED']).default('ACTIVE'),
+  _location: z.object({
     current: z.object({
       latitude: z.number(),
-      longitude: z.number(),
-      accuracy: z.number().optional(),
-      timestamp: z.string(),
+      _longitude: z.number(),
+      _accuracy: z.number().optional(),
+      _timestamp: z.string(),
     }).optional(),
-    lastKnown: z.object({
+    _lastKnown: z.object({
       latitude: z.number(),
-      longitude: z.number(),
-      timestamp: z.string(),
+      _longitude: z.number(),
+      _timestamp: z.string(),
     }).optional(),
   }),
-  tenantId: z.string().optional(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  _tenantId: z.string().optional(),
+  _createdAt: z.string().optional(),
+  _updatedAt: z.string().optional(),
 });
 
 const MobileJobAssignmentSchema = z.object({
-  id: z.string().optional(),
-  jobId: z.string(),
-  technicianId: z.string(),
-  assignmentType: z.enum(['AUTO', 'MANUAL', 'EMERGENCY', 'PREFERRED']),
-  priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT', 'EMERGENCY']).default('NORMAL'),
-  scheduledTime: z.object({
+  _id: z.string().optional(),
+  _jobId: z.string(),
+  _technicianId: z.string(),
+  _assignmentType: z.enum(['AUTO', 'MANUAL', 'EMERGENCY', 'PREFERRED']),
+  _priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT', 'EMERGENCY']).default('NORMAL'),
+  _scheduledTime: z.object({
     date: z.string(),
-    timeSlot: z.object({
+    _timeSlot: z.object({
       start: z.string(),
-      end: z.string(),
+      _end: z.string(),
     }),
-    estimatedDuration: z.number(), // minutes
+    _estimatedDuration: z.number(), // minutes
   }),
-  location: z.object({
+  _location: z.object({
     address: z.string(),
-    latitude: z.number(),
-    longitude: z.number(),
-    specialInstructions: z.string().optional(),
-    accessCodes: z.string().optional(),
+    _latitude: z.number(),
+    _longitude: z.number(),
+    _specialInstructions: z.string().optional(),
+    _accessCodes: z.string().optional(),
   }),
-  jobDetails: z.object({
+  _jobDetails: z.object({
     customerName: z.string(),
-    contactPhone: z.string(),
-    deviceType: z.string(),
-    issueDescription: z.string(),
-    serviceType: z.string(),
-    partsRequired: z.array(z.string()).default([]),
-    specialSkills: z.array(z.string()).default([]),
+    _contactPhone: z.string(),
+    _deviceType: z.string(),
+    _issueDescription: z.string(),
+    _serviceType: z.string(),
+    _partsRequired: z.array(z.string()).default([]),
+    _specialSkills: z.array(z.string()).default([]),
   }),
-  fieldOperations: z.object({
+  _fieldOperations: z.object({
     allowOffline: z.boolean().default(true),
-    requiresSignature: z.boolean().default(true),
-    requiresPhotos: z.boolean().default(true),
-    maxPhotoCount: z.number().min(1).max(20).default(10),
-    qualityChecklist: z.array(z.string()).default([]),
+    _requiresSignature: z.boolean().default(true),
+    _requiresPhotos: z.boolean().default(true),
+    _maxPhotoCount: z.number().min(1).max(20).default(10),
+    _qualityChecklist: z.array(z.string()).default([]),
   }),
-  tracking: z.object({
+  _tracking: z.object({
     status: z.enum([
       'ASSIGNED',
       'ACCEPTED',
@@ -143,164 +143,164 @@ const MobileJobAssignmentSchema = z.object({
       'COMPLETED',
       'CANCELLED',
     ]).default('ASSIGNED'),
-    acceptedAt: z.string().optional(),
-    arrivedAt: z.string().optional(),
-    startedAt: z.string().optional(),
-    completedAt: z.string().optional(),
-    travelTime: z.number().optional(), // minutes
-    workTime: z.number().optional(), // minutes
+    _acceptedAt: z.string().optional(),
+    _arrivedAt: z.string().optional(),
+    _startedAt: z.string().optional(),
+    _completedAt: z.string().optional(),
+    _travelTime: z.number().optional(), // minutes
+    _workTime: z.number().optional(), // minutes
   }),
-  offline: z.object({
+  _offline: z.object({
     isOfflineCapable: z.boolean().default(true),
-    syncRequired: z.boolean().default(false),
-    lastSyncAt: z.string().optional(),
-    offlineActions: z.array(z.object({
+    _syncRequired: z.boolean().default(false),
+    _lastSyncAt: z.string().optional(),
+    _offlineActions: z.array(z.object({
       action: z.string(),
-      timestamp: z.string(),
-      data: z.unknown(),
+      _timestamp: z.string(),
+      _data: z.unknown(),
     })).default([]),
   }),
-  tenantId: z.string().optional(),
-  createdAt: z.string().optional(),
+  _tenantId: z.string().optional(),
+  _createdAt: z.string().optional(),
 });
 
 const FieldWorkRecordSchema = z.object({
-  id: z.string().optional(),
-  assignmentId: z.string(),
-  jobId: z.string(),
-  technicianId: z.string(),
-  workLog: z.object({
+  _id: z.string().optional(),
+  _assignmentId: z.string(),
+  _jobId: z.string(),
+  _technicianId: z.string(),
+  _workLog: z.object({
     arrivalTime: z.string().optional(),
-    departureTime: z.string().optional(),
-    workDuration: z.number().optional(), // minutes
-    travelDistance: z.number().optional(), // miles
-    mileage: z.object({
+    _departureTime: z.string().optional(),
+    _workDuration: z.number().optional(), // minutes
+    _travelDistance: z.number().optional(), // miles
+    _mileage: z.object({
       start: z.number().optional(),
-      end: z.number().optional(),
-      total: z.number().optional(),
+      _end: z.number().optional(),
+      _total: z.number().optional(),
     }).optional(),
   }),
-  serviceDetails: z.object({
+  _serviceDetails: z.object({
     diagnosis: z.string().optional(),
-    workPerformed: z.string().optional(),
-    partsUsed: z.array(z.object({
+    _workPerformed: z.string().optional(),
+    _partsUsed: z.array(z.object({
       partId: z.string(),
-      partName: z.string(),
-      quantity: z.number(),
-      cost: z.number(),
+      _partName: z.string(),
+      _quantity: z.number(),
+      _cost: z.number(),
     })).default([]),
-    laborHours: z.number().min(0).default(0),
-    laborRate: z.number().min(0).default(0),
-    totalCost: z.number().min(0).default(0),
+    _laborHours: z.number().min(0).default(0),
+    _laborRate: z.number().min(0).default(0),
+    _totalCost: z.number().min(0).default(0),
   }),
-  qualityAssurance: z.object({
+  _qualityAssurance: z.object({
     checklist: z.array(z.object({
       item: z.string(),
-      completed: z.boolean(),
-      notes: z.string().optional(),
+      _completed: z.boolean(),
+      _notes: z.string().optional(),
     })).default([]),
-    testResults: z.array(z.object({
+    _testResults: z.array(z.object({
       test: z.string(),
-      result: z.enum(['PASS', 'FAIL', 'N/A']),
-      notes: z.string().optional(),
+      _result: z.enum(['PASS', 'FAIL', 'N/A']),
+      _notes: z.string().optional(),
     })).default([]),
-    finalInspection: z.boolean().default(false),
+    _finalInspection: z.boolean().default(false),
   }),
-  documentation: z.object({
+  _documentation: z.object({
     photos: z.array(z.object({
       id: z.string(),
-      filename: z.string(),
-      url: z.string(),
-      type: z.enum(['BEFORE', 'PROGRESS', 'AFTER', 'PROBLEM', 'SOLUTION']),
-      description: z.string().optional(),
-      timestamp: z.string(),
-      gpsLocation: z.object({
+      _filename: z.string(),
+      _url: z.string(),
+      _type: z.enum(['BEFORE', 'PROGRESS', 'AFTER', 'PROBLEM', 'SOLUTION']),
+      _description: z.string().optional(),
+      _timestamp: z.string(),
+      _gpsLocation: z.object({
         latitude: z.number(),
-        longitude: z.number(),
+        _longitude: z.number(),
       }).optional(),
     })).default([]),
-    customerSignature: z.object({
+    _customerSignature: z.object({
       signatureImage: z.string(),
-      customerName: z.string(),
-      timestamp: z.string(),
-      deviceInfo: z.object({
+      _customerName: z.string(),
+      _timestamp: z.string(),
+      _deviceInfo: z.object({
         device: z.string(),
-        browser: z.string(),
-        ipAddress: z.string(),
+        _browser: z.string(),
+        _ipAddress: z.string(),
       }),
     }).optional(),
-    notes: z.string().optional(),
+    _notes: z.string().optional(),
   }),
-  customerFeedback: z.object({
+  _customerFeedback: z.object({
     rating: z.number().min(1).max(5).optional(),
-    comments: z.string().optional(),
-    issues: z.array(z.string()).default([]),
-    followUpRequired: z.boolean().default(false),
+    _comments: z.string().optional(),
+    _issues: z.array(z.string()).default([]),
+    _followUpRequired: z.boolean().default(false),
   }),
-  billing: z.object({
+  _billing: z.object({
     laborCost: z.number().min(0).default(0),
-    partsCost: z.number().min(0).default(0),
-    travelCost: z.number().min(0).default(0),
-    totalCost: z.number().min(0).default(0),
-    invoiceGenerated: z.boolean().default(false),
-    paymentStatus: z.enum(['PENDING', 'PAID', 'PARTIAL', 'DISPUTED']).default('PENDING'),
+    _partsCost: z.number().min(0).default(0),
+    _travelCost: z.number().min(0).default(0),
+    _totalCost: z.number().min(0).default(0),
+    _invoiceGenerated: z.boolean().default(false),
+    _paymentStatus: z.enum(['PENDING', 'PAID', 'PARTIAL', 'DISPUTED']).default('PENDING'),
   }),
-  syncStatus: z.object({
+  _syncStatus: z.object({
     isOnlineRecord: z.boolean().default(true),
-    lastSyncAt: z.string().optional(),
-    syncErrors: z.array(z.string()).default([]),
-    pendingUploads: z.array(z.string()).default([]), // File URLs pending upload
+    _lastSyncAt: z.string().optional(),
+    _syncErrors: z.array(z.string()).default([]),
+    _pendingUploads: z.array(z.string()).default([]), // File URLs pending upload
   }),
-  tenantId: z.string().optional(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  _tenantId: z.string().optional(),
+  _createdAt: z.string().optional(),
+  _updatedAt: z.string().optional(),
 });
 
 const MobileDeviceSchema = z.object({
-  id: z.string().optional(),
-  technicianId: z.string(),
-  deviceInfo: z.object({
+  _id: z.string().optional(),
+  _technicianId: z.string(),
+  _deviceInfo: z.object({
     deviceType: z.enum(['SMARTPHONE', 'TABLET', 'LAPTOP']),
-    manufacturer: z.string(),
-    model: z.string(),
-    osVersion: z.string(),
-    appVersion: z.string(),
-    deviceId: z.string().optional(),
+    _manufacturer: z.string(),
+    _model: z.string(),
+    _osVersion: z.string(),
+    _appVersion: z.string(),
+    _deviceId: z.string().optional(),
   }),
-  capabilities: z.object({
+  _capabilities: z.object({
     gps: z.boolean().default(true),
-    camera: z.boolean().default(true),
-    offline: z.boolean().default(true),
-    signature: z.boolean().default(true),
-    barcode: z.boolean().default(true),
-    nfc: z.boolean().default(false),
-    bluetooth: z.boolean().default(true),
+    _camera: z.boolean().default(true),
+    _offline: z.boolean().default(true),
+    _signature: z.boolean().default(true),
+    _barcode: z.boolean().default(true),
+    _nfc: z.boolean().default(false),
+    _bluetooth: z.boolean().default(true),
   }),
-  configuration: z.object({
+  _configuration: z.object({
     offlineMode: z.boolean().default(true),
-    autoSync: z.boolean().default(true),
-    syncInterval: z.number().min(5).max(60).default(15), // minutes
-    photoQuality: z.enum(['LOW', 'MEDIUM', 'HIGH']).default('MEDIUM'),
-    gpsAccuracy: z.enum(['LOW', 'MEDIUM', 'HIGH']).default('HIGH'),
+    _autoSync: z.boolean().default(true),
+    _syncInterval: z.number().min(5).max(60).default(15), // minutes
+    _photoQuality: z.enum(['LOW', 'MEDIUM', 'HIGH']).default('MEDIUM'),
+    _gpsAccuracy: z.enum(['LOW', 'MEDIUM', 'HIGH']).default('HIGH'),
   }),
-  status: z.object({
+  _status: z.object({
     isOnline: z.boolean().default(true),
-    lastSeen: z.string().optional(),
-    batteryLevel: z.number().min(0).max(100).optional(),
-    storageUsed: z.number().min(0).optional(), // MB
-    storageAvailable: z.number().min(0).optional(), // MB
+    _lastSeen: z.string().optional(),
+    _batteryLevel: z.number().min(0).max(100).optional(),
+    _storageUsed: z.number().min(0).optional(), // MB
+    _storageAvailable: z.number().min(0).optional(), // MB
   }),
-  tenantId: z.string().optional(),
-  registeredAt: z.string().optional(),
-  lastUpdated: z.string().optional(),
+  _tenantId: z.string().optional(),
+  _registeredAt: z.string().optional(),
+  _lastUpdated: z.string().optional(),
 });
 
 // Enhanced Mobile Field Operations Service
 class MobileFieldOperationsService {
-  private technicians: Map<string, any> = new Map();
-  private assignments: Map<string, any> = new Map();
-  private workRecords: Map<string, any> = new Map();
-  private devices: Map<string, any> = new Map();
+  private _technicians: Map<string, any> = new Map();
+  private _assignments: Map<string, any> = new Map();
+  private _workRecords: Map<string, any> = new Map();
+  private _devices: Map<string, any> = new Map();
 
   constructor() {
     this.initializeSampleData();
@@ -310,254 +310,254 @@ class MobileFieldOperationsService {
     // Sample field technicians
     const sampleTechnicians = [
       {
-        id: 'tech-001',
-        employeeId: 'EMP-001',
-        personalInfo: {
+        _id: 'tech-001',
+        _employeeId: 'EMP-001',
+        _personalInfo: {
           firstName: 'John',
-          lastName: 'Smith',
-          phone: '+1-555-0201',
-          email: 'john.smith@repairx.com',
-          emergencyContact: {
+          _lastName: 'Smith',
+          _phone: '+1-555-0201',
+          _email: 'john.smith@repairx.com',
+          _emergencyContact: {
             name: 'Jane Smith',
-            phone: '+1-555-0202',
-            relationship: 'Spouse',
+            _phone: '+1-555-0202',
+            _relationship: 'Spouse',
           },
         },
-        fieldOperations: {
+        _fieldOperations: {
           vehicleInfo: {
             make: 'Ford',
-            model: 'Transit',
-            year: 2023,
-            licensePlate: 'RX-001',
-            color: 'White',
+            _model: 'Transit',
+            _year: 2023,
+            _licensePlate: 'RX-001',
+            _color: 'White',
           },
-          serviceArea: {
+          _serviceArea: {
             primaryZip: '10001',
-            radiusMiles: 25,
-            coverageAreas: ['10001', '10002', '10003', '10004', '10005'],
+            _radiusMiles: 25,
+            _coverageAreas: ['10001', '10002', '10003', '10004', '10005'],
           },
-          equipment: [
+          _equipment: [
             {
               id: 'eq-001',
-              name: 'Digital Multimeter',
-              type: 'DIAGNOSTIC',
-              condition: 'EXCELLENT',
-              lastInspected: '2025-08-01T00:00:00Z',
+              _name: 'Digital Multimeter',
+              _type: 'DIAGNOSTIC',
+              _condition: 'EXCELLENT',
+              _lastInspected: '2025-08-01T00:00:00Z',
             },
             {
-              id: 'eq-002',
-              name: 'Mobile Repair Kit',
-              type: 'TOOL',
-              condition: 'GOOD',
-              lastInspected: '2025-08-01T00:00:00Z',
+              _id: 'eq-002',
+              _name: 'Mobile Repair Kit',
+              _type: 'TOOL',
+              _condition: 'GOOD',
+              _lastInspected: '2025-08-01T00:00:00Z',
             },
           ],
-          certifications: [
+          _certifications: [
             {
               name: 'Mobile Device Repair Certification',
-              issuedBy: 'RepairX Academy',
-              issuedDate: '2024-01-15',
-              expiryDate: '2026-01-15',
-              certificateNumber: 'RXA-2024-001',
+              _issuedBy: 'RepairX Academy',
+              _issuedDate: '2024-01-15',
+              _expiryDate: '2026-01-15',
+              _certificateNumber: 'RXA-2024-001',
             },
           ],
         },
-        mobileCapabilities: {
+        _mobileCapabilities: {
           hasSmartphone: true,
-          hasTablet: true,
-          hasLaptop: false,
-          gpsEnabled: true,
-          offlineCapable: true,
-          digitalSignature: true,
-          photoCapture: true,
+          _hasTablet: true,
+          _hasLaptop: false,
+          _gpsEnabled: true,
+          _offlineCapable: true,
+          _digitalSignature: true,
+          _photoCapture: true,
         },
-        workSchedule: {
+        _workSchedule: {
           availability: [
-            { dayOfWeek: 1, startTime: '08:00', endTime: '17:00', isAvailable: true },
-            { dayOfWeek: 2, startTime: '08:00', endTime: '17:00', isAvailable: true },
-            { dayOfWeek: 3, startTime: '08:00', endTime: '17:00', isAvailable: true },
-            { dayOfWeek: 4, startTime: '08:00', endTime: '17:00', isAvailable: true },
-            { dayOfWeek: 5, startTime: '08:00', endTime: '17:00', isAvailable: true },
-            { dayOfWeek: 6, startTime: '09:00', endTime: '15:00', isAvailable: true },
-            { dayOfWeek: 0, startTime: '00:00', endTime: '00:00', isAvailable: false },
+            { dayOfWeek: 1, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 2, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 3, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 4, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 5, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 6, _startTime: '09:00', _endTime: '15:00', _isAvailable: true },
+            { _dayOfWeek: 0, _startTime: '00:00', _endTime: '00:00', _isAvailable: false },
           ],
-          maxJobsPerDay: 8,
-          travelTimeBuffer: 30,
+          _maxJobsPerDay: 8,
+          _travelTimeBuffer: 30,
         },
-        performance: {
+        _performance: {
           rating: 4.8,
-          completionRate: 96.5,
-          customerSatisfaction: 4.7,
-          onTimeArrival: 94.2,
-          avgJobDuration: 125,
+          _completionRate: 96.5,
+          _customerSatisfaction: 4.7,
+          _onTimeArrival: 94.2,
+          _avgJobDuration: 125,
         },
-        status: 'ON_DUTY',
-        location: {
+        _status: 'ON_DUTY',
+        _location: {
           current: {
             latitude: 40.7128,
-            longitude: -74.0060,
-            accuracy: 5,
-            timestamp: new Date().toISOString(),
+            _longitude: -74.0060,
+            _accuracy: 5,
+            _timestamp: new Date().toISOString(),
           },
-          lastKnown: {
+          _lastKnown: {
             latitude: 40.7128,
-            longitude: -74.0060,
-            timestamp: new Date(Date.now() - 300000).toISOString(),
+            _longitude: -74.0060,
+            _timestamp: new Date(Date.now() - 300000).toISOString(),
           },
         },
-        createdAt: '2024-01-01T00:00:00Z',
+        _createdAt: '2024-01-01T00:00:00Z',
       },
     ];
 
-    sampleTechnicians.forEach((tech: unknown) => {
+    sampleTechnicians.forEach((_tech: unknown) => {
       this.technicians.set(tech.id, tech);
     });
 
     // Sample mobile assignments
     const sampleAssignments = [
       {
-        id: 'assign-001',
-        jobId: 'job-001',
-        technicianId: 'tech-001',
-        assignmentType: 'AUTO',
-        priority: 'HIGH',
-        scheduledTime: {
+        _id: 'assign-001',
+        _jobId: 'job-001',
+        _technicianId: 'tech-001',
+        _assignmentType: 'AUTO',
+        _priority: 'HIGH',
+        _scheduledTime: {
           date: '2025-08-10',
-          timeSlot: {
+          _timeSlot: {
             start: '10:00',
-            end: '12:00',
+            _end: '12:00',
           },
-          estimatedDuration: 90,
+          _estimatedDuration: 90,
         },
-        location: {
+        _location: {
           address: '123 Customer St, New York, NY 10001',
-          latitude: 40.7589,
-          longitude: -73.9851,
-          specialInstructions: 'Ring doorbell twice',
+          _latitude: 40.7589,
+          _longitude: -73.9851,
+          _specialInstructions: 'Ring doorbell twice',
         },
-        jobDetails: {
+        _jobDetails: {
           customerName: 'Alice Johnson',
-          contactPhone: '+1-555-0301',
-          deviceType: 'iPhone 14',
-          issueDescription: 'Cracked screen replacement needed',
-          serviceType: 'Screen Repair',
-          partsRequired: ['iPhone 14 Screen Assembly'],
-          specialSkills: ['Mobile Repair'],
+          _contactPhone: '+1-555-0301',
+          _deviceType: 'iPhone 14',
+          _issueDescription: 'Cracked screen replacement needed',
+          _serviceType: 'Screen Repair',
+          _partsRequired: ['iPhone 14 Screen Assembly'],
+          _specialSkills: ['Mobile Repair'],
         },
-        fieldOperations: {
+        _fieldOperations: {
           allowOffline: true,
-          requiresSignature: true,
-          requiresPhotos: true,
-          maxPhotoCount: 10,
-          qualityChecklist: [
+          _requiresSignature: true,
+          _requiresPhotos: true,
+          _maxPhotoCount: 10,
+          _qualityChecklist: [
             'Screen functionality test',
             'Touch responsiveness check',
             'Camera alignment verification',
             'Customer satisfaction confirmation',
           ],
         },
-        tracking: {
+        _tracking: {
           status: 'ACCEPTED',
-          acceptedAt: '2025-08-10T08:30:00Z',
+          _acceptedAt: '2025-08-10T08:30:00Z',
         },
-        offline: {
+        _offline: {
           isOfflineCapable: true,
-          syncRequired: false,
+          _syncRequired: false,
         },
-        createdAt: '2025-08-10T08:00:00Z',
+        _createdAt: '2025-08-10T08:00:00Z',
       },
     ];
 
-    sampleAssignments.forEach((assignment: unknown) => {
+    sampleAssignments.forEach((_assignment: unknown) => {
       this.assignments.set(assignment.id, assignment);
     });
 
     // Sample mobile devices
     const sampleDevices = [
       {
-        id: 'device-001',
-        technicianId: 'tech-001',
-        deviceInfo: {
+        _id: 'device-001',
+        _technicianId: 'tech-001',
+        _deviceInfo: {
           deviceType: 'SMARTPHONE',
-          manufacturer: 'Apple',
-          model: 'iPhone 13',
-          osVersion: 'iOS 16.5',
-          appVersion: '2.1.0',
-          deviceId: 'ABC123DEF456',
+          _manufacturer: 'Apple',
+          _model: 'iPhone 13',
+          _osVersion: 'iOS 16.5',
+          _appVersion: '2.1.0',
+          _deviceId: 'ABC123DEF456',
         },
-        capabilities: {
+        _capabilities: {
           gps: true,
-          camera: true,
-          offline: true,
-          signature: true,
-          barcode: true,
-          nfc: true,
-          bluetooth: true,
+          _camera: true,
+          _offline: true,
+          _signature: true,
+          _barcode: true,
+          _nfc: true,
+          _bluetooth: true,
         },
-        configuration: {
+        _configuration: {
           offlineMode: true,
-          autoSync: true,
-          syncInterval: 15,
-          photoQuality: 'HIGH',
-          gpsAccuracy: 'HIGH',
+          _autoSync: true,
+          _syncInterval: 15,
+          _photoQuality: 'HIGH',
+          _gpsAccuracy: 'HIGH',
         },
-        status: {
+        _status: {
           isOnline: true,
-          lastSeen: new Date().toISOString(),
-          batteryLevel: 78,
-          storageUsed: 2048,
-          storageAvailable: 30720,
+          _lastSeen: new Date().toISOString(),
+          _batteryLevel: 78,
+          _storageUsed: 2048,
+          _storageAvailable: 30720,
         },
-        registeredAt: '2024-01-01T00:00:00Z',
+        _registeredAt: '2024-01-01T00:00:00Z',
       },
     ];
 
-    sampleDevices.forEach((device: unknown) => {
+    sampleDevices.forEach((_device: unknown) => {
       this.devices.set(device.id, device);
     });
   }
 
   // Technician Management
-  async getAllFieldTechnicians(tenantId?: string, filters?: any): Promise<any[]> {
+  async getAllFieldTechnicians(tenantId?: string, filters?: unknown): Promise<any[]> {
     let technicians = Array.from(this.technicians.values());
     
     if (tenantId) {
-      technicians = technicians.filter((tech: unknown) => tech.tenantId === tenantId);
+      technicians = technicians.filter((_tech: unknown) => tech.tenantId === tenantId);
     }
 
     if (filters) {
       if (filters.status) {
-        technicians = technicians.filter((tech: unknown) => tech.status === filters.status);
+        technicians = technicians.filter((_tech: unknown) => tech.status === filters.status);
       }
       if (filters.serviceArea) {
-        technicians = technicians.filter((tech: unknown) => 
+        technicians = technicians.filter((_tech: unknown) => 
           tech.fieldOperations.serviceArea.coverageAreas.includes(filters.serviceArea)
         );
       }
       if (filters.available) {
-        technicians = technicians.filter((tech: unknown) => tech.status === 'ON_DUTY');
+        technicians = technicians.filter((_tech: unknown) => tech.status === 'ON_DUTY');
       }
     }
 
     return technicians;
   }
 
-  async createFieldTechnician(technicianData: unknown): Promise<any> {
+  async createFieldTechnician(_technicianData: unknown): Promise<any> {
     const validated = FieldTechnicianSchema.parse(technicianData);
     const id = validated.id || `tech-${Date.now()}`;
     
     const technician = { 
       ...validated, 
       id, 
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      _createdAt: new Date().toISOString(),
+      _updatedAt: new Date().toISOString(),
     };
     
     this.technicians.set(id, technician);
     return technician;
   }
 
-  async updateTechnicianLocation(technicianId: string, location: unknown): Promise<void> {
+  async updateTechnicianLocation(_technicianId: string, _location: unknown): Promise<void> {
     const technician = this.technicians.get(technicianId);
     if (!technician) {
       throw new Error('Technician not found');
@@ -566,17 +566,17 @@ class MobileFieldOperationsService {
     technician.location.lastKnown = technician.location.current || technician.location?.lastKnown;
     technician.location.current = {
       ...location,
-      timestamp: new Date().toISOString(),
+      _timestamp: new Date().toISOString(),
     };
 
     this.technicians.set(technicianId, technician);
   }
 
   // Job Assignment Management
-  async createMobileJobAssignment(assignmentData: unknown): Promise<any> {
+  async createMobileJobAssignment(_assignmentData: unknown): Promise<any> {
     const validated = MobileJobAssignmentSchema.parse({
       ...assignmentData,
-      createdAt: new Date().toISOString(),
+      _createdAt: new Date().toISOString(),
     });
     
     const id = validated.id || `assign-${Date.now()}`;
@@ -590,11 +590,11 @@ class MobileFieldOperationsService {
     let assignments = Array.from(this.assignments.values());
     
     if (technicianId) {
-      assignments = assignments.filter((assign: unknown) => assign.technicianId === technicianId);
+      assignments = assignments.filter((_assign: unknown) => assign.technicianId === technicianId);
     }
 
     if (status) {
-      assignments = assignments.filter((assign: unknown) => assign.tracking.status === status);
+      assignments = assignments.filter((_assign: unknown) => assign.tracking.status === status);
     }
 
     return assignments.sort((a, b) => 
@@ -602,7 +602,7 @@ class MobileFieldOperationsService {
     );
   }
 
-  async updateAssignmentStatus(assignmentId: string, status: string, additionalData?: any): Promise<any> {
+  async updateAssignmentStatus(_assignmentId: string, _status: string, additionalData?: unknown): Promise<any> {
     const assignment = this.assignments.get(assignmentId);
     if (!assignment) {
       throw new Error('Assignment not found');
@@ -640,11 +640,11 @@ class MobileFieldOperationsService {
   }
 
   // Field Work Records
-  async createFieldWorkRecord(recordData: unknown): Promise<any> {
+  async createFieldWorkRecord(_recordData: unknown): Promise<any> {
     const validated = FieldWorkRecordSchema.parse({
       ...recordData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      _createdAt: new Date().toISOString(),
+      _updatedAt: new Date().toISOString(),
     });
     
     const id = validated.id || `record-${Date.now()}`;
@@ -654,7 +654,7 @@ class MobileFieldOperationsService {
     return record;
   }
 
-  async updateFieldWorkRecord(recordId: string, updateData: unknown): Promise<any> {
+  async updateFieldWorkRecord(_recordId: string, _updateData: unknown): Promise<any> {
     const existingRecord = this.workRecords.get(recordId);
     if (!existingRecord) {
       throw new Error('Work record not found');
@@ -663,7 +663,7 @@ class MobileFieldOperationsService {
     const updatedRecord = { 
       ...existingRecord, 
       ...updateData, 
-      updatedAt: new Date().toISOString(),
+      _updatedAt: new Date().toISOString(),
     };
     
     const validated = FieldWorkRecordSchema.parse(updatedRecord);
@@ -676,11 +676,11 @@ class MobileFieldOperationsService {
     let records = Array.from(this.workRecords.values());
     
     if (technicianId) {
-      records = records.filter((record: unknown) => record.technicianId === technicianId);
+      records = records.filter((_record: unknown) => record.technicianId === technicianId);
     }
 
     if (_jobId) {
-      records = records.filter((record: unknown) => record.jobId === _jobId);
+      records = records.filter((_record: unknown) => record.jobId === _jobId);
     }
 
     return records.sort((a, b) => 
@@ -689,11 +689,11 @@ class MobileFieldOperationsService {
   }
 
   // Mobile Device Management
-  async registerMobileDevice(deviceData: unknown): Promise<any> {
+  async registerMobileDevice(_deviceData: unknown): Promise<any> {
     const validated = MobileDeviceSchema.parse({
       ...deviceData,
-      registeredAt: new Date().toISOString(),
-      lastUpdated: new Date().toISOString(),
+      _registeredAt: new Date().toISOString(),
+      _lastUpdated: new Date().toISOString(),
     });
     
     const id = validated.id || `device-${Date.now()}`;
@@ -703,25 +703,25 @@ class MobileFieldOperationsService {
     return device;
   }
 
-  async updateDeviceStatus(deviceId: string, statusData: unknown): Promise<void> {
+  async updateDeviceStatus(_deviceId: string, _statusData: unknown): Promise<void> {
     const device = this.devices.get(deviceId);
     if (!device) {
       throw new Error('Device not found');
     }
 
-    device.status = { ...device.status, ...statusData, lastSeen: new Date().toISOString() };
+    device.status = { ...device.status, ...statusData, _lastSeen: new Date().toISOString() };
     device.lastUpdated = new Date().toISOString();
     
     this.devices.set(deviceId, device);
   }
 
   // Offline Operations Support
-  async syncOfflineData(technicianId: string, offlineData: unknown): Promise<any> {
+  async syncOfflineData(_technicianId: string, _offlineData: unknown): Promise<any> {
     const syncResults = {
-      successful: 0,
-      failed: 0,
-      errors: [] as string[],
-      syncedItems: [] as unknown[],
+      _successful: 0,
+      _failed: 0,
+      _errors: [] as string[],
+      _syncedItems: [] as unknown[],
     };
 
     try {
@@ -736,11 +736,11 @@ class MobileFieldOperationsService {
             );
             syncResults.successful++;
             syncResults.syncedItems.push({
-              type: 'assignment',
-              id: assignmentUpdate.assignmentId,
-              action: 'update',
+              _type: 'assignment',
+              _id: assignmentUpdate.assignmentId,
+              _action: 'update',
             });
-          } catch (error: unknown) {
+          } catch (_error: unknown) {
             syncResults.failed++;
             syncResults.errors.push(`Assignment ${assignmentUpdate.assignmentId}: ${error.message}`);
           }
@@ -754,22 +754,22 @@ class MobileFieldOperationsService {
             if ((recordData as any).id && this.workRecords.has((recordData as any).id)) {
               await this.updateFieldWorkRecord((recordData as any).id, recordData);
               syncResults.syncedItems.push({
-                type: 'workRecord',
-                id: (recordData as any).id,
-                action: 'update',
+                _type: 'workRecord',
+                _id: (recordData as any).id,
+                _action: 'update',
               });
             } else {
               const newRecord = await this.createFieldWorkRecord(recordData);
               syncResults.syncedItems.push({
-                type: 'workRecord',
-                id: newRecord.id,
-                action: 'create',
+                _type: 'workRecord',
+                _id: newRecord.id,
+                _action: 'create',
               });
             }
             syncResults.successful++;
-          } catch (error: unknown) {
+          } catch (_error: unknown) {
             syncResults.failed++;
-            syncResults.errors.push(`Work record: ${error.message}`);
+            syncResults.errors.push(`Work _record: ${error.message}`);
           }
         }
       }
@@ -781,21 +781,21 @@ class MobileFieldOperationsService {
         this.technicians.set(technicianId, technician);
       }
 
-    } catch (error: unknown) {
-      syncResults.errors.push(`Sync process error: ${error.message}`);
+    } catch (_error: unknown) {
+      syncResults.errors.push(`Sync process _error: ${error.message}`);
     }
 
     return {
-      syncId: `sync-${Date.now()}`,
+      _syncId: `sync-${Date.now()}`,
       technicianId,
-      syncedAt: new Date().toISOString(),
-      results: syncResults,
+      _syncedAt: new Date().toISOString(),
+      _results: syncResults,
     };
   }
 
   // Route Optimization
-  async optimizeRoute(technicianId: string, assignmentIds: string[]): Promise<any> {
-    const assignments = assignmentIds.map((id: unknown) => this.assignments.get(id)).filter(Boolean);
+  async optimizeRoute(_technicianId: string, _assignmentIds: string[]): Promise<any> {
+    const assignments = assignmentIds.map((_id: unknown) => this.assignments.get(id)).filter(Boolean);
     const technician = this.technicians.get(technicianId);
     
     if (!technician || !technician.location.current) {
@@ -810,12 +810,12 @@ class MobileFieldOperationsService {
       );
       
       return {
-        assignmentId: assignment.id,
-        sequence: index + 1,
-        location: assignment.location,
-        estimatedTravelTime: Math.round(distance * 2.5), // Rough estimate: 2.5 min per mile
+        _assignmentId: assignment.id,
+        _sequence: index + 1,
+        _location: assignment.location,
+        _estimatedTravelTime: Math.round(distance * 2.5), // Rough _estimate: 2.5 min per mile
         estimatedArrival: this.calculateArrivalTime(index, distance, assignments),
-        distance: Math.round(distance * 100) / 100,
+        _distance: Math.round(distance * 100) / 100,
       };
     }).sort((a, b) => a.distance - b.distance);
 
@@ -826,14 +826,14 @@ class MobileFieldOperationsService {
 
     return {
       technicianId,
-      optimizedRoute: optimized,
-      totalDistance: optimized.reduce((sum: unknown, item: unknown) => sum + item.distance, 0),
-      totalTravelTime: optimized.reduce((sum: unknown, item: unknown) => sum + item.estimatedTravelTime, 0),
-      optimizedAt: new Date().toISOString(),
+      _optimizedRoute: optimized,
+      _totalDistance: optimized.reduce((sum: unknown, _item: unknown) => sum + item.distance, 0),
+      _totalTravelTime: optimized.reduce((sum: unknown, _item: unknown) => sum + item.estimatedTravelTime, 0),
+      _optimizedAt: new Date().toISOString(),
     };
   }
 
-  private calculateDistance(point1: unknown, point2: unknown): number {
+  private calculateDistance(_point1: unknown, _point2: unknown): number {
     const R = 3959; // Earth radius in miles
     const dLat = this.deg2rad(point2.latitude - point1.latitude);
     const dLon = this.deg2rad(point2.longitude - point1.longitude);
@@ -847,11 +847,11 @@ class MobileFieldOperationsService {
     return R * c;
   }
 
-  private deg2rad(deg: number): number {
+  private deg2rad(_deg: number): number {
     return deg * (Math.PI / 180);
   }
 
-  private calculateArrivalTime(sequence: number, distance: number, assignments: unknown[]): string {
+  private calculateArrivalTime(_sequence: number, _distance: number, _assignments: unknown[]): string {
     // Simplified arrival time calculation
     const baseTime = new Date();
     const travelMinutes = sequence * 30 + distance * 2.5;
@@ -860,52 +860,52 @@ class MobileFieldOperationsService {
   }
 
   // Performance Analytics
-  async getTechnicianPerformanceAnalytics(technicianId: string): Promise<any> {
+  async getTechnicianPerformanceAnalytics(_technicianId: string): Promise<any> {
     const technician = this.technicians.get(technicianId);
     if (!technician) {
       throw new Error('Technician not found');
     }
 
     const assignments = Array.from(this.assignments.values())
-      .filter((a: unknown) => a.technicianId === technicianId);
+      .filter((_a: unknown) => a.technicianId === technicianId);
     const workRecords = Array.from(this.workRecords.values())
-      .filter((r: unknown) => r.technicianId === technicianId);
+      .filter((_r: unknown) => r.technicianId === technicianId);
 
     return {
       technicianId,
-      period: {
+      _period: {
         start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        end: new Date().toISOString(),
+        _end: new Date().toISOString(),
       },
-      metrics: {
+      _metrics: {
         totalJobs: assignments.length,
-        completedJobs: assignments.filter((a: unknown) => a.tracking.status === 'COMPLETED').length,
-        averageJobDuration: this.calculateAverageJobDuration(workRecords),
-        onTimePerformance: this.calculateOnTimePerformance(assignments),
-        customerSatisfaction: this.calculateAverageCustomerRating(workRecords),
-        firstTimeFixRate: this.calculateFirstTimeFixRate(workRecords),
+        _completedJobs: assignments.filter((a: unknown) => a.tracking.status === 'COMPLETED').length,
+        _averageJobDuration: this.calculateAverageJobDuration(workRecords),
+        _onTimePerformance: this.calculateOnTimePerformance(assignments),
+        _customerSatisfaction: this.calculateAverageCustomerRating(workRecords),
+        _firstTimeFixRate: this.calculateFirstTimeFixRate(workRecords),
       },
-      trends: {
+      _trends: {
         dailyJobs: this.calculateDailyJobTrends(assignments),
-        qualityScores: this.calculateQualityTrends(workRecords),
+        _qualityScores: this.calculateQualityTrends(workRecords),
       },
-      recommendations: this.generatePerformanceRecommendations(technician, assignments, workRecords),
+      _recommendations: this.generatePerformanceRecommendations(technician, assignments, workRecords),
     };
   }
 
-  private calculateAverageJobDuration(workRecords: unknown[]): number {
-    const completedRecords = workRecords.filter((r: unknown) => r.workLog.workDuration);
+  private calculateAverageJobDuration(_workRecords: unknown[]): number {
+    const completedRecords = workRecords.filter((_r: unknown) => r.workLog.workDuration);
     if (completedRecords.length === 0) return 0;
     
-    const totalDuration = completedRecords.reduce((sum: unknown, record: unknown) => sum + record.workLog.workDuration, 0);
+    const totalDuration = completedRecords.reduce((_sum: unknown, _record: unknown) => sum + record.workLog.workDuration, 0);
     return Math.round(totalDuration / completedRecords.length);
   }
 
-  private calculateOnTimePerformance(assignments: unknown[]): number {
-    const completedAssignments = assignments.filter((a: unknown) => a.tracking.completedAt);
+  private calculateOnTimePerformance(_assignments: unknown[]): number {
+    const completedAssignments = assignments.filter((_a: unknown) => a.tracking.completedAt);
     if (completedAssignments.length === 0) return 100;
     
-    const onTimeJobs = completedAssignments.filter((a: unknown) => {
+    const onTimeJobs = completedAssignments.filter((_a: unknown) => {
       const scheduledEnd = new Date(`${a.scheduledTime.date}T${a.scheduledTime.timeSlot.end}:00Z`);
       const actualCompletion = new Date(a.tracking.completedAt);
       return actualCompletion <= scheduledEnd;
@@ -914,54 +914,54 @@ class MobileFieldOperationsService {
     return Math.round((onTimeJobs / completedAssignments.length) * 100);
   }
 
-  private calculateAverageCustomerRating(workRecords: unknown[]): number {
-    const ratedRecords = workRecords.filter((r: unknown) => r.customerFeedback.rating);
+  private calculateAverageCustomerRating(_workRecords: unknown[]): number {
+    const ratedRecords = workRecords.filter((_r: unknown) => r.customerFeedback.rating);
     if (ratedRecords.length === 0) return 5;
     
-    const totalRating = ratedRecords.reduce((sum: unknown, record: unknown) => sum + record.customerFeedback.rating, 0);
+    const totalRating = ratedRecords.reduce((_sum: unknown, _record: unknown) => sum + record.customerFeedback.rating, 0);
     return Math.round((totalRating / ratedRecords.length) * 10) / 10;
   }
 
-  private calculateFirstTimeFixRate(workRecords: unknown[]): number {
-    const completedRecords = workRecords.filter((r: unknown) => r.qualityAssurance.finalInspection);
+  private calculateFirstTimeFixRate(_workRecords: unknown[]): number {
+    const completedRecords = workRecords.filter((_r: unknown) => r.qualityAssurance.finalInspection);
     if (completedRecords.length === 0) return 100;
     
-    const firstTimeFixes = completedRecords.filter((r: unknown) => {
-      return r.qualityAssurance.testResults.every((test: unknown) => test.result === 'PASS');
+    const firstTimeFixes = completedRecords.filter((_r: unknown) => {
+      return r.qualityAssurance.testResults.every((_test: unknown) => test.result === 'PASS');
     }).length;
     
     return Math.round((firstTimeFixes / completedRecords.length) * 100);
   }
 
-  private calculateDailyJobTrends(assignments: unknown[]): any[] {
+  private calculateDailyJobTrends(_assignments: unknown[]): unknown[] {
     const dailyJobs = new Map();
     
-    assignments.forEach((assignment: unknown) => {
+    assignments.forEach((_assignment: unknown) => {
       const date = assignment.scheduledTime.date;
       dailyJobs.set(date, (dailyJobs.get(date) || 0) + 1);
     });
     
     return Array.from(dailyJobs.entries())
-      .map(([date, count]) => ({ date, jobs: count }))
+      .map(([date, count]) => ({ date, _jobs: count }))
       .sort((a, b) => a.date.localeCompare(b.date));
   }
 
-  private calculateQualityTrends(workRecords: unknown[]): any[] {
-    return workRecords.map((record: unknown) => ({
-      date: record.createdAt.split('T')[0],
-      qualityScore: this.calculateRecordQualityScore(record),
+  private calculateQualityTrends(_workRecords: unknown[]): unknown[] {
+    return workRecords.map((_record: unknown) => ({
+      _date: record.createdAt.split('T')[0],
+      _qualityScore: this.calculateRecordQualityScore(record),
     }));
   }
 
-  private calculateRecordQualityScore(record: unknown): number {
+  private calculateRecordQualityScore(_record: unknown): number {
     let score = 100;
     
     // Deduct for failed quality checks
-    const failedChecks = record.qualityAssurance.checklist.filter((item: unknown) => !item.completed).length;
+    const failedChecks = record.qualityAssurance.checklist.filter((_item: unknown) => !item.completed).length;
     score -= failedChecks * 10;
     
     // Deduct for failed tests
-    const failedTests = record.qualityAssurance.testResults.filter((test: unknown) => test.result === 'FAIL').length;
+    const failedTests = record.qualityAssurance.testResults.filter((_test: unknown) => test.result === 'FAIL').length;
     score -= failedTests * 15;
     
     // Add for customer satisfaction
@@ -972,7 +972,7 @@ class MobileFieldOperationsService {
     return Math.max(0, Math.min(100, score));
   }
 
-  private generatePerformanceRecommendations(technician: unknown, assignments: unknown[], workRecords: unknown[]): string[] {
+  private generatePerformanceRecommendations(_technician: unknown, _assignments: unknown[], _workRecords: unknown[]): string[] {
     const recommendations = [];
     
     // Check on-time performance
@@ -1004,7 +1004,8 @@ class MobileFieldOperationsService {
 }
 
 // Route Handlers
-export async function mobileFieldOperationsRoutes(server: FastifyInstance): Promise<void> {
+// eslint-disable-next-line max-lines-per-function
+export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Promise<void> {
   const fieldService = new MobileFieldOperationsService();
 
   // Get all field technicians
@@ -1021,15 +1022,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const technicians = await fieldService.getAllFieldTechnicians(tenantId, filters);
       
       return reply.send({
-        success: true,
-        data: technicians,
-        count: technicians.length,
+        _success: true,
+        _data: technicians,
+        _count: technicians.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        message: 'Failed to retrieve field technicians',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to retrieve field technicians',
+        _error: error.message,
       });
     }
   });
@@ -1043,15 +1044,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const technician = await fieldService.createFieldTechnician(technicianData);
       
       return (reply as FastifyReply).status(201).send({
-        success: true,
-        data: technician,
-        message: 'Field technician created successfully',
+        _success: true,
+        _data: technician,
+        _message: 'Field technician created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to create field technician',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to create field technician',
+        _error: error.message,
       });
     }
   });
@@ -1068,14 +1069,14 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       await fieldService.updateTechnicianLocation(technicianId, location);
       
       return reply.send({
-        success: true,
-        message: 'Location updated successfully',
+        _success: true,
+        _message: 'Location updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to update technician location',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to update technician location',
+        _error: error.message,
       });
     }
   });
@@ -1089,15 +1090,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const assignment = await fieldService.createMobileJobAssignment(assignmentData);
       
       return (reply as FastifyReply).status(201).send({
-        success: true,
-        data: assignment,
-        message: 'Job assignment created successfully',
+        _success: true,
+        _data: assignment,
+        _message: 'Job assignment created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to create job assignment',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to create job assignment',
+        _error: error.message,
       });
     }
   });
@@ -1111,14 +1112,14 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const assignments = await fieldService.getJobAssignments(technicianId, status);
       
       return reply.send({
-        success: true,
-        data: assignments,
+        _success: true,
+        _data: assignments,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        message: 'Failed to retrieve job assignments',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to retrieve job assignments',
+        _error: error.message,
       });
     }
   });
@@ -1126,7 +1127,7 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
   // Update assignment status
   server.put('/assignments/:assignmentId/status', async (request: FastifyRequest<{
     Params: { assignmentId: string }
-    Body: { status: string; additionalData?: any }
+    Body: { status: string; additionalData?: unknown }
   }>, reply: FastifyReply) => {
     try {
       const { assignmentId  } = (request.params as unknown);
@@ -1135,15 +1136,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const assignment = await fieldService.updateAssignmentStatus(assignmentId, status, additionalData);
       
       return reply.send({
-        success: true,
-        data: assignment,
-        message: 'Assignment status updated successfully',
+        _success: true,
+        _data: assignment,
+        _message: 'Assignment status updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to update assignment status',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to update assignment status',
+        _error: error.message,
       });
     }
   });
@@ -1157,15 +1158,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const record = await fieldService.createFieldWorkRecord(recordData);
       
       return (reply as FastifyReply).status(201).send({
-        success: true,
-        data: record,
-        message: 'Field work record created successfully',
+        _success: true,
+        _data: record,
+        _message: 'Field work record created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to create field work record',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to create field work record',
+        _error: error.message,
       });
     }
   });
@@ -1182,15 +1183,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const record = await fieldService.updateFieldWorkRecord(recordId, updateData);
       
       return reply.send({
-        success: true,
-        data: record,
-        message: 'Field work record updated successfully',
+        _success: true,
+        _data: record,
+        _message: 'Field work record updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to update field work record',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to update field work record',
+        _error: error.message,
       });
     }
   });
@@ -1204,14 +1205,14 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const records = await fieldService.getFieldWorkRecords(technicianId, _jobId);
       
       return reply.send({
-        success: true,
-        data: records,
+        _success: true,
+        _data: records,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
-        success: false,
-        message: 'Failed to retrieve field work records',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to retrieve field work records',
+        _error: error.message,
       });
     }
   });
@@ -1225,15 +1226,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const device = await fieldService.registerMobileDevice(deviceData);
       
       return (reply as FastifyReply).status(201).send({
-        success: true,
-        data: device,
-        message: 'Mobile device registered successfully',
+        _success: true,
+        _data: device,
+        _message: 'Mobile device registered successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to register mobile device',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to register mobile device',
+        _error: error.message,
       });
     }
   });
@@ -1250,14 +1251,14 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       await fieldService.updateDeviceStatus(deviceId, statusData);
       
       return reply.send({
-        success: true,
-        message: 'Device status updated successfully',
+        _success: true,
+        _message: 'Device status updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to update device status',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to update device status',
+        _error: error.message,
       });
     }
   });
@@ -1274,15 +1275,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const syncResult = await fieldService.syncOfflineData(technicianId, offlineData);
       
       return reply.send({
-        success: true,
-        data: syncResult,
-        message: 'Offline data synchronized successfully',
+        _success: true,
+        _data: syncResult,
+        _message: 'Offline data synchronized successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to sync offline data',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to sync offline data',
+        _error: error.message,
       });
     }
   });
@@ -1299,15 +1300,15 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const optimizedRoute = await fieldService.optimizeRoute(technicianId, assignmentIds);
       
       return reply.send({
-        success: true,
-        data: optimizedRoute,
-        message: 'Route optimized successfully',
+        _success: true,
+        _data: optimizedRoute,
+        _message: 'Route optimized successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to optimize route',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to optimize route',
+        _error: error.message,
       });
     }
   });
@@ -1321,14 +1322,14 @@ export async function mobileFieldOperationsRoutes(server: FastifyInstance): Prom
       const analytics = await fieldService.getTechnicianPerformanceAnalytics(technicianId);
       
       return reply.send({
-        success: true,
-        data: analytics,
+        _success: true,
+        _data: analytics,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
-        success: false,
-        message: 'Failed to retrieve performance analytics',
-        error: error.message,
+        _success: false,
+        _message: 'Failed to retrieve performance analytics',
+        _error: error.message,
       });
     }
   });

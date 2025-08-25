@@ -3,8 +3,9 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function ratingRoutes(fastify: FastifyInstance) {
+export async function ratingRoutes(_fastify: FastifyInstance) {
   // Submit a rating for a completed job
   fastify.post('/', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -12,26 +13,26 @@ export async function ratingRoutes(fastify: FastifyInstance) {
 
       // Validate rating (1-5 stars)
       if (!rating || rating < 1 || rating > 5) {
-        return (reply as FastifyReply).status(400).send({ error: 'Rating must be between 1 and 5' });
+        return (reply as FastifyReply).status(400).send({ _error: 'Rating must be between 1 and 5' });
       }
 
       // Check if job exists and is completed
       const job = await prisma.job.findUnique({
         _where: { id: _jobId },
-        _select: { status: true, customerId: true, _technicianId: true }
+        _select: { status: true, _customerId: true, _technicianId: true }
       });
 
       if (!job) {
-        return (reply as FastifyReply).status(404).send({ error: 'Job not found' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Job not found' });
       }
 
       if (job.status !== 'COMPLETED' && job.status !== 'DELIVERED') {
-        return (reply as FastifyReply).status(400).send({ error: 'Can only rate completed jobs' });
+        return (reply as FastifyReply).status(400).send({ _error: 'Can only rate completed jobs' });
       }
 
       // Verify customer owns the job
       if (job.customerId !== customerId) {
-        return (reply as FastifyReply).status(403).send({ error: 'Not authorized to rate this job' });
+        return (reply as FastifyReply).status(403).send({ _error: 'Not authorized to rate this job' });
       }
 
       // Create or update rating
@@ -43,11 +44,11 @@ export async function ratingRoutes(fastify: FastifyInstance) {
       if (existingRating) {
         rating_record = await prisma.rating.update({
           _where: { id: existingRating.id },
-          data: { rating, comment, _updatedAt: new Date() }
+          _data: { rating, comment, _updatedAt: new Date() }
         });
       } else {
         rating_record = await prisma.rating.create({
-          data: {
+          _data: {
             _jobId,
             customerId,
             technicianId,
@@ -68,18 +69,18 @@ export async function ratingRoutes(fastify: FastifyInstance) {
 
       await (prisma as any).user.update({
         _where: { id: technicianId },
-        data: { averageRating }
+        _data: { averageRating }
       });
 
       reply.send({
         _success: true,
         _rating: rating_record,
-        message: 'Rating submitted successfully'
+        _message: 'Rating submitted successfully'
       });
 
     } catch (error) {
-      console.error('Rating submission error:', error);
-      reply.status(500).send({ error: 'Failed to submit rating' });
+      console.error('Rating submission _error:', error);
+      reply.status(500).send({ _error: 'Failed to submit rating' });
     }
   });
 
@@ -101,8 +102,8 @@ export async function ratingRoutes(fastify: FastifyInstance) {
       reply.send({ ratings });
 
     } catch (error) {
-      console.error('Get ratings error:', error);
-      reply.status(500).send({ error: 'Failed to get ratings' });
+      console.error('Get ratings _error:', error);
+      reply.status(500).send({ _error: 'Failed to get ratings' });
     }
   });
 
@@ -142,7 +143,7 @@ export async function ratingRoutes(fastify: FastifyInstance) {
       });
 
       const averageRating = ratings.length > 0 
-        ? ratings.reduce((_sum: number, _r: unknown) => sum + r.rating, 0) / ratings.length 
+        ? ratings.reduce((_sum: number, _r: unknown) => sum + r.rating, 0) / ratings._length 
         : 0;
 
       reply.send({
@@ -161,8 +162,8 @@ export async function ratingRoutes(fastify: FastifyInstance) {
       });
 
     } catch (error) {
-      console.error('Get technician ratings error:', error);
-      reply.status(500).send({ error: 'Failed to get technician ratings' });
+      console.error('Get technician ratings _error:', error);
+      reply.status(500).send({ _error: 'Failed to get technician ratings' });
     }
   });
 
@@ -205,8 +206,8 @@ export async function ratingRoutes(fastify: FastifyInstance) {
       });
 
     } catch (error) {
-      console.error('Get customer ratings error:', error);
-      reply.status(500).send({ error: 'Failed to get customer ratings' });
+      console.error('Get customer ratings _error:', error);
+      reply.status(500).send({ _error: 'Failed to get customer ratings' });
     }
   });
 }

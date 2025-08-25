@@ -3,8 +3,9 @@ import AppStoreOptimizationService from '../services/app-store-optimization.serv
 
 const asoService = new AppStoreOptimizationService();
 
+ 
 // eslint-disable-next-line max-lines-per-function
-export default async function appStoreOptimizationRoutes(server: FastifyInstance): Promise<void> {
+export default async function appStoreOptimizationRoutes(_server: FastifyInstance): Promise<void> {
   await server.register(async function (server) {
 
 /**
@@ -32,16 +33,16 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
         {
           id: 'activity_1',
           _type: 'screenshots_generated',
-          description: 'New screenshots generated for iOS app',
+          _description: 'New screenshots generated for iOS app',
           _timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          appId: 'repairx_ios'
+          _appId: 'repairx_ios'
         },
         {
           _id: 'activity_2',
           _type: 'ab_test_completed',
-          description: 'Icon A/B test completed - Variant B wins by 23%',
+          _description: 'Icon A/B test completed - Variant B wins by 23%',
           _timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-          appId: 'repairx_android'
+          _appId: 'repairx_android'
         }
       ],
       _competitorInsights: [
@@ -57,15 +58,15 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
 
     return reply.send({
       success: true,
-      data: dashboardData,
+      _data: dashboardData,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error fetching ASO _dashboard:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch ASO dashboard',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch ASO dashboard',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -92,18 +93,18 @@ server.get('/:appId/performance', {
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         performance,
         _timeRange: '30d',
         _insights: [
           {
             type: 'positive',
-            message: 'Install conversion rate increased 15% this month',
+            _message: 'Install conversion rate increased 15% this month',
             _impact: 'high'
           },
           {
             _type: 'opportunity',
-            message: 'Competitor analysis shows opportunity in "enterprise repair" keyword',
+            _message: 'Competitor analysis shows opportunity in "enterprise repair" keyword',
             _impact: 'high'
           }
         ],
@@ -118,8 +119,8 @@ server.get('/:appId/performance', {
     console.error('Error fetching performance _analytics:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to fetch performance analytics',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to fetch performance analytics',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });
@@ -138,12 +139,12 @@ server.post('/:appId/screenshots/generate', {
       },
       _required: ['appId']
     },
-    body: {
+    _body: {
       type: 'object',
       _properties: {
         devices: { type: 'array', _items: { type: 'string' } },
-        features: { type: 'array', _items: { type: 'string' } },
-        branding: { type: 'object' }
+        _features: { type: 'array', _items: { type: 'string' } },
+        _branding: { type: 'object' }
       }
     }
   }
@@ -153,27 +154,27 @@ server.post('/:appId/screenshots/generate', {
     const { devices, features, branding  } = (request.body as unknown);
 
     const screenshots = await asoService.generateScreenshots(appId, {
-      devices: devices || ['iPhone 15 Pro', 'Pixel 8 Pro'],
-      features: features || ['Customer Dashboard', 'Job Tracking', 'Technician Tools'],
-      branding: branding || {}
+      _devices: devices || ['iPhone 15 Pro', 'Pixel 8 Pro'],
+      _features: features || ['Customer Dashboard', 'Job Tracking', 'Technician Tools'],
+      _branding: branding || {}
     });
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         screenshots,
         _totalGenerated: screenshots.length,
         _platforms: ['iOS', 'Android'],
         _estimatedProcessingTime: '5-10 minutes'
       },
-      message: 'Screenshots generated successfully'
+      _message: 'Screenshots generated successfully'
     });
   } catch (error) {
     console.error('Error generating _screenshots:', error);
     return reply.code(500).send({
       _success: false,
-      message: 'Failed to generate screenshots',
-      error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
+      _message: 'Failed to generate screenshots',
+      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
     });
   }
 });

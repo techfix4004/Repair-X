@@ -3,22 +3,22 @@ import { businessMetrics } from '../observability/metrics';
 
 // Enhanced rate limiting with multiple tiers
 export class RateLimitService {
-  private static requestCounts = new Map<string, { count: number; resetTime: number; blocked: boolean }>();
+  private static requestCounts = new Map<string, { _count: number; resetTime: number; blocked: boolean }>();
   private static blockedIPs = new Set<string>();
   
   // Rate limit configurations
   private static readonly LIMITS = {
     // Per IP limits
-    global: { requests: 100, window: 60 * 1000 }, // 100 requests per minute
-    auth: { requests: 5, window: 15 * 60 * 1000 }, // 5 login attempts per 15 minutes
-    api: { requests: 60, window: 60 * 1000 }, // 60 API calls per minute
+    _global: { requests: 100, _window: 60 * 1000 }, // 100 requests per minute
+    _auth: { requests: 5, _window: 15 * 60 * 1000 }, // 5 login attempts per 15 minutes
+    _api: { requests: 60, _window: 60 * 1000 }, // 60 API calls per minute
     
     // Per user limits (authenticated users get higher limits)
-    userGlobal: { requests: 300, window: 60 * 1000 }, // 300 requests per minute
-    userApi: { requests: 180, window: 60 * 1000 }, // 180 API calls per minute
+    _userGlobal: { requests: 300, _window: 60 * 1000 }, // 300 requests per minute
+    _userApi: { requests: 180, _window: 60 * 1000 }, // 180 API calls per minute
   };
 
-  static createRateLimitMiddleware(type: keyof typeof RateLimitService.LIMITS = 'global') {
+  static createRateLimitMiddleware(_type: keyof typeof RateLimitService.LIMITS = 'global') {
     return async (request: FastifyRequest, reply: FastifyReply) => {
       const clientIP = request.ip;
       const userAgent = request.headers['user-agent'] || 'unknown';
@@ -28,9 +28,9 @@ export class RateLimitService {
         businessMetrics.suspiciousActivity.labels('blocked_ip_access', clientIP).inc();
         
         reply.status(429).send({
-          error: 'Too Many Requests',
-          message: 'Your IP address has been temporarily blocked due to suspicious activity',
-          retryAfter: 3600 // 1 hour
+          _error: 'Too Many Requests',
+          _message: 'Your IP address has been temporarily blocked due to suspicious activity',
+          _retryAfter: 3600 // 1 hour
         });
         return;
       }
@@ -51,10 +51,10 @@ export class RateLimitService {
         }
         
         reply.status(429).send({
-          error: 'Rate Limit Exceeded',
-          message: `Too many requests. Limit: ${limit.requests} per ${limit.window / 1000}s`,
-          retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
-          remaining: 0
+          _error: 'Rate Limit Exceeded',
+          _message: `Too many requests. Limit: ${limit.requests} per ${limit.window / 1000}s`,
+          _retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
+          _remaining: 0
         });
         return;
       }
@@ -66,8 +66,8 @@ export class RateLimitService {
     };
   }
 
-  private static checkLimit(key: string, limit: number, windowMs: number): {
-    allowed: boolean;
+  private static checkLimit(_key: string, _limit: number, _windowMs: number): {
+    _allowed: boolean;
     remaining: number;
     resetTime: number;
     violationCount: number;
@@ -78,16 +78,16 @@ export class RateLimitService {
     if (!current || now > current.resetTime) {
       // Reset window
       this.requestCounts.set(key, {
-        count: 1,
-        resetTime: now + windowMs,
-        blocked: false
+        _count: 1,
+        _resetTime: now + windowMs,
+        _blocked: false
       });
       
       return {
-        allowed: true,
-        remaining: limit - 1,
-        resetTime: now + windowMs,
-        violationCount: 0
+        _allowed: true,
+        _remaining: limit - 1,
+        _resetTime: now + windowMs,
+        _violationCount: 0
       };
     }
     
@@ -96,18 +96,18 @@ export class RateLimitService {
     if (current.count > limit) {
       current.blocked = true;
       return {
-        allowed: false,
-        remaining: 0,
-        resetTime: current.resetTime,
-        violationCount: current.count - limit
+        _allowed: false,
+        _remaining: 0,
+        _resetTime: current.resetTime,
+        _violationCount: current.count - limit
       };
     }
     
     return {
       allowed: true,
-      remaining: limit - current.count,
-      resetTime: current.resetTime,
-      violationCount: 0
+      _remaining: limit - current.count,
+      _resetTime: current.resetTime,
+      _violationCount: 0
     };
   }
 }
@@ -125,7 +125,7 @@ export class ValidationService {
   // XSS patterns
   private static readonly XSS_PATTERNS = [
     /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    /javascript:/gi,
+    /_javascript:/gi,
     /on\w+\s*=\s*["'][^"']*["']/gi,
     /<iframe\b[^>]*>/gi,
     /<object\b[^>]*>/gi,
@@ -138,7 +138,7 @@ export class ValidationService {
     /\b(rm|cat|ls|pwd|wget|curl|nc|netcat)\b/i
   ];
 
-  static sanitizeInput(input: any): any {
+  static sanitizeInput(_input: unknown): unknown {
     if (typeof input === 'string') {
       return this.sanitizeString(input);
     }
@@ -148,7 +148,7 @@ export class ValidationService {
     }
     
     if (typeof input === 'object' && input !== null) {
-      const sanitized: any = {};
+      const _sanitized: unknown = {};
       for (const [key, value] of Object.entries(input)) {
         sanitized[this.sanitizeString(key)] = this.sanitizeInput(value);
       }
@@ -158,7 +158,7 @@ export class ValidationService {
     return input;
   }
 
-  private static sanitizeString(str: string): string {
+  private static sanitizeString(_str: string): string {
     // Remove potential XSS
     str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     str = str.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
@@ -170,7 +170,7 @@ export class ValidationService {
     return str.trim();
   }
 
-  static validateInput(input: any, request?: FastifyRequest): { valid: boolean; threats: string[] } {
+  static validateInput(_input: unknown, request?: FastifyRequest): { _valid: boolean; threats: string[] } {
     const threats: string[] = [];
     const inputStr = typeof input === 'string' ? input : JSON.stringify(input);
     
@@ -206,7 +206,7 @@ export class ValidationService {
     }
     
     return {
-      valid: threats.length === 0,
+      _valid: threats.length === 0,
       threats
     };
   }
@@ -217,8 +217,8 @@ export const securityHeadersMiddleware = async (request: FastifyRequest, reply: 
   // Enforce HTTPS in production
   if (process.env.NODE_ENV === 'production' && request.headers['x-forwarded-proto'] !== 'https') {
     return reply.status(426).send({
-      error: 'Upgrade Required',
-      message: 'HTTPS is required for this service'
+      _error: 'Upgrade Required',
+      _message: 'HTTPS is required for this service'
     });
   }
 
@@ -239,7 +239,7 @@ export const securityHeadersMiddleware = async (request: FastifyRequest, reply: 
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline'", // In production, avoid unsafe-inline
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https:",
+    "img-src 'self' _data: https:",
     "font-src 'self'",
     "connect-src 'self'",
     "frame-ancestors 'none'",
@@ -251,7 +251,7 @@ export const securityHeadersMiddleware = async (request: FastifyRequest, reply: 
 
 // Audit logging for sensitive operations
 export class AuditService {
-  private static auditLog: Array<{
+  private static _auditLog: Array<{
     timestamp: Date;
     userId?: string;
     ip: string;
@@ -259,22 +259,22 @@ export class AuditService {
     action: string;
     resource: string;
     result: 'success' | 'failure';
-    details: any;
+    details: unknown;
   }> = [];
 
   static logSensitiveAction(
     action: string,
-    resource: string,
-    result: 'success' | 'failure',
+    _resource: string,
+    _result: 'success' | 'failure',
     request: FastifyRequest,
     userId?: string,
-    details?: any
+    details?: unknown
   ) {
     const entry = {
-      timestamp: new Date(),
+      _timestamp: new Date(),
       userId,
-      ip: request.ip,
-      userAgent: request.headers['user-agent'] || 'unknown',
+      _ip: request.ip,
+      _userAgent: request.headers['user-agent'] || 'unknown',
       action,
       resource,
       result,
@@ -284,7 +284,7 @@ export class AuditService {
     this.auditLog.push(entry);
     
     // In production, this should write to a secure, immutable audit log
-    console.log('AUDIT:', JSON.stringify(entry));
+    console.log('_AUDIT:', JSON.stringify(entry));
     
     // Keep only last 10000 entries in memory (in production, persist to database)
     if (this.auditLog.length > 10000) {

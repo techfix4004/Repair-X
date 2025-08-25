@@ -37,17 +37,17 @@ enum JobState {
 const JobSheetSchema = z.object({
   _id: z.string().optional(),
   _jobNumber: z.string().optional(),
-  customerId: z.string(),
+  _customerId: z.string(),
   _customerName: z.string(),
   _customerPhone: z.string(),
   _customerEmail: z.string().email(),
   _deviceInfo: z.object({
     brand: z.string(),
-    model: z.string(),
+    _model: z.string(),
     _category: z.string(),
-    serialNumber: z.string().optional(),
+    _serialNumber: z.string().optional(),
     _imei: z.string().optional(),
-    condition: z.enum(['NEW', 'GOOD', 'FAIR', 'POOR', 'DAMAGED']),
+    _condition: z.enum(['NEW', 'GOOD', 'FAIR', 'POOR', 'DAMAGED']),
   }),
   _issueDescription: z.string(),
   _priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).default('MEDIUM'),
@@ -96,7 +96,7 @@ class JobSheetLifecycleService {
   private stateConfig = {
     [JobState.CREATED]: {
       _name: 'Created',
-      description: 'Initial job sheet creation from booking',
+      _description: 'Initial job sheet creation from booking',
       _color: '#3b82f6',
       _order: 1,
       _automated: true,
@@ -104,11 +104,11 @@ class JobSheetLifecycleService {
       _notifications: ['customer_confirmation', 'technician_assignment'],
       _allowedTransitions: [JobState.IN_DIAGNOSIS, JobState.CANCELLED],
       _requiredRole: 'ADMIN',
-      maxDuration: 30, // minutes
+      _maxDuration: 30, // minutes
     },
     [JobState.IN_DIAGNOSIS]: {
       _name: 'In Diagnosis',
-      description: 'Technician evaluating device/issue',
+      _description: 'Technician evaluating device/issue',
       _color: '#f59e0b',
       _order: 2,
       _automated: false,
@@ -116,11 +116,11 @@ class JobSheetLifecycleService {
       _notifications: ['customer_update'],
       _allowedTransitions: [JobState.AWAITING_APPROVAL, JobState.CANCELLED],
       _requiredRole: 'TECHNICIAN',
-      maxDuration: 240, // 4 hours
+      _maxDuration: 240, // 4 hours
     },
     [JobState.AWAITING_APPROVAL]: {
       _name: 'Awaiting Approval',
-      description: 'Customer approval needed for diagnosis/quote',
+      _description: 'Customer approval needed for diagnosis/quote',
       _color: '#8b5cf6',
       _order: 3,
       _automated: false,
@@ -128,11 +128,11 @@ class JobSheetLifecycleService {
       _notifications: ['customer_quote_request', 'approval_reminder'],
       _allowedTransitions: [JobState.APPROVED, JobState.CANCELLED, JobState.IN_DIAGNOSIS],
       _requiredRole: 'CUSTOMER',
-      maxDuration: 2880, // 48 hours
+      _maxDuration: 2880, // 48 hours
     },
     [JobState.APPROVED]: {
       _name: 'Approved',
-      description: 'Customer approved work to proceed',
+      _description: 'Customer approved work to proceed',
       _color: '#10b981',
       _order: 4,
       _automated: true,
@@ -140,11 +140,11 @@ class JobSheetLifecycleService {
       _notifications: ['technician_start_work'],
       _allowedTransitions: [JobState.IN_PROGRESS, JobState.PARTS_ORDERED],
       _requiredRole: 'SYSTEM',
-      maxDuration: 60, // 1 hour
+      _maxDuration: 60, // 1 hour
     },
     [JobState.IN_PROGRESS]: {
       _name: 'In Progress',
-      description: 'Active repair/service work in progress',
+      _description: 'Active repair/service work in progress',
       _color: '#ef4444',
       _order: 5,
       _automated: false,
@@ -152,11 +152,11 @@ class JobSheetLifecycleService {
       _notifications: ['customer_progress_update'],
       _allowedTransitions: [JobState.TESTING, JobState.PARTS_ORDERED, JobState.CANCELLED],
       _requiredRole: 'TECHNICIAN',
-      maxDuration: 1440, // 24 hours (varies by complexity)
+      _maxDuration: 1440, // 24 hours (varies by complexity)
     },
     [JobState.PARTS_ORDERED]: {
       _name: 'Parts Ordered',
-      description: 'Waiting for parts/components to arrive',
+      _description: 'Waiting for parts/components to arrive',
       _color: '#f97316',
       _order: 6,
       _automated: false,
@@ -164,11 +164,11 @@ class JobSheetLifecycleService {
       _notifications: ['customer_delay_notification', 'supplier_order'],
       _allowedTransitions: [JobState.IN_PROGRESS, JobState.CANCELLED],
       _requiredRole: 'TECHNICIAN',
-      maxDuration: 7200, // 5 days
+      _maxDuration: 7200, // 5 days
     },
     [JobState.TESTING]: {
       _name: 'Testing',
-      description: 'Post-repair testing and validation',
+      _description: 'Post-repair testing and validation',
       _color: '#84cc16',
       _order: 7,
       _automated: false,
@@ -176,11 +176,11 @@ class JobSheetLifecycleService {
       _notifications: ['testing_progress'],
       _allowedTransitions: [JobState.QUALITY_CHECK, JobState.IN_PROGRESS],
       _requiredRole: 'TECHNICIAN',
-      maxDuration: 120, // 2 hours
+      _maxDuration: 120, // 2 hours
     },
     [JobState.QUALITY_CHECK]: {
       _name: 'Quality Check',
-      description: 'Six Sigma quality validation checkpoint',
+      _description: 'Six Sigma quality validation checkpoint',
       _color: '#06b6d4',
       _order: 8,
       _automated: false,
@@ -188,11 +188,11 @@ class JobSheetLifecycleService {
       _notifications: ['quality_validation'],
       _allowedTransitions: [JobState.COMPLETED, JobState.TESTING],
       _requiredRole: 'SUPERVISOR',
-      maxDuration: 60, // 1 hour
+      _maxDuration: 60, // 1 hour
     },
     [JobState.COMPLETED]: {
       _name: 'Completed',
-      description: 'All work finished, ready for customer',
+      _description: 'All work finished, ready for customer',
       _color: '#22c55e',
       _order: 9,
       _automated: true,
@@ -200,11 +200,11 @@ class JobSheetLifecycleService {
       _notifications: ['customer_ready_notification', 'invoice_sent'],
       _allowedTransitions: [JobState.CUSTOMER_APPROVED, JobState.DELIVERED],
       _requiredRole: 'SYSTEM',
-      maxDuration: 30, // 30 minutes
+      _maxDuration: 30, // 30 minutes
     },
     [JobState.CUSTOMER_APPROVED]: {
       _name: 'Customer Approved',
-      description: 'Customer final sign-off and satisfaction',
+      _description: 'Customer final sign-off and satisfaction',
       _color: '#16a34a',
       _order: 10,
       _automated: false,
@@ -212,11 +212,11 @@ class JobSheetLifecycleService {
       _notifications: ['completion_confirmed'],
       _allowedTransitions: [JobState.DELIVERED],
       _requiredRole: 'CUSTOMER',
-      maxDuration: 1440, // 24 hours
+      _maxDuration: 1440, // 24 hours
     },
     [JobState.DELIVERED]: {
       _name: 'Delivered',
-      description: 'Job delivered with documentation and follow-up',
+      _description: 'Job delivered with documentation and follow-up',
       _color: '#059669',
       _order: 11,
       _automated: true,
@@ -224,11 +224,11 @@ class JobSheetLifecycleService {
       _notifications: ['delivery_complete', 'follow_up_scheduled'],
       _allowedTransitions: [], // Final state
       _requiredRole: 'SYSTEM',
-      maxDuration: 0,
+      _maxDuration: 0,
     },
     [JobState.CANCELLED]: {
       _name: 'Cancelled',
-      description: 'Job cancelled with reason tracking and recovery',
+      _description: 'Job cancelled with reason tracking and recovery',
       _color: '#dc2626',
       _order: 12,
       _automated: false,
@@ -236,11 +236,11 @@ class JobSheetLifecycleService {
       _notifications: ['cancellation_processed', 'refund_initiated'],
       _allowedTransitions: [], // Final state
       _requiredRole: 'ADMIN',
-      maxDuration: 0,
+      _maxDuration: 0,
     },
   };
 
-  async createJobSheet(data: unknown): Promise<any> {
+  async createJobSheet(_data: unknown): Promise<any> {
     const _jobData = JobSheetSchema.parse(data);
     
     const _jobId = `JOB-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
@@ -349,8 +349,8 @@ class JobSheetLifecycleService {
   }
 
   async getJobsByState(_state: unknown): Promise<any[]> {
-    const jobs = Array.from(this.jobs.values()).filter((job: unknown) => job.state === state);
-    return jobs.map((job: unknown) => ({
+    const jobs = Array.from(this.jobs.values()).filter((_job: unknown) => job.state === state);
+    return jobs.map((_job: unknown) => ({
       ...job,
       _stateConfig: this.stateConfig[job.state as JobState],
     }));
@@ -360,8 +360,8 @@ class JobSheetLifecycleService {
     const jobs = Array.from(this.jobs.values());
     const totalJobs = jobs.length;
     
-    const stateDistribution = Object.values(JobState).reduce((acc: unknown, state: unknown) => {
-      acc[state] = jobs.filter((job: unknown) => job.state === state).length;
+    const stateDistribution = Object.values(JobState).reduce((_acc: unknown, _state: unknown) => {
+      acc[state] = jobs.filter((_job: unknown) => job.state === state).length;
       return acc;
     }, {} as Record<string, number>);
 
@@ -369,9 +369,9 @@ class JobSheetLifecycleService {
     const cancellationRate = ((stateDistribution[JobState.CANCELLED] || 0) / totalJobs) * 100;
     
     // Calculate average cycle times
-    const completedJobs = jobs.filter((job: unknown) => job.state === JobState.DELIVERED);
+    const completedJobs = jobs.filter((_job: unknown) => job.state === JobState.DELIVERED);
     const avgCycleTime = completedJobs.length > 0 
-      ? completedJobs.reduce((sum: unknown, job: unknown) => sum + (new Date(job.updatedAt).getTime() - new Date(job.createdAt).getTime()), 0) / completedJobs.length / (1000 * 60 * 60) // _hours
+      ? completedJobs.reduce((_sum: unknown, _job: unknown) => sum + (new Date(job.updatedAt).getTime() - new Date(job.createdAt).getTime()), 0) / completedJobs.length / (1000 * 60 * 60) // _hours
       : 0;
 
     return {
@@ -485,8 +485,9 @@ class JobSheetLifecycleService {
 }
 
 // Fastify Plugin for Job Sheet Lifecycle
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<void> {
+export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise<void> {
   const lifecycleService = new JobSheetLifecycleService();
 
   // Create new job sheet
@@ -495,14 +496,14 @@ export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<
       const job = await lifecycleService.createJobSheet(request.body);
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        message: 'Job sheet created successfully',
-        data: job,
+        _message: 'Job sheet created successfully',
+        _data: job,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create job sheet',
-        error: error.message,
+        _message: 'Failed to create job sheet',
+        _error: error.message,
       });
     }
   });
@@ -513,13 +514,13 @@ export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<
       const job = await lifecycleService.getJobSheet(request.params.jobId);
       return reply.send({
         _success: true,
-        data: job,
+        _data: job,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Job not found',
-        error: error.message,
+        _message: 'Job not found',
+        _error: error.message,
       });
     }
   });
@@ -536,14 +537,14 @@ export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<
       });
       return reply.send({
         _success: true,
-        message: 'State transition completed',
-        data: result,
+        _message: 'State transition completed',
+        _data: result,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'State transition failed',
-        error: error.message,
+        _message: 'State transition failed',
+        _error: error.message,
       });
     }
   });
@@ -557,14 +558,14 @@ export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<
       const job = await lifecycleService.updateJobSheet(request.params.jobId, request.body);
       return reply.send({
         _success: true,
-        message: 'Job sheet updated successfully',
-        data: job,
+        _message: 'Job sheet updated successfully',
+        _data: job,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to update job sheet',
-        error: error.message,
+        _message: 'Failed to update job sheet',
+        _error: error.message,
       });
     }
   });
@@ -575,14 +576,14 @@ export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<
       const jobs = await lifecycleService.getJobsByState(request.params.state);
       return reply.send({
         _success: true,
-        data: jobs,
+        _data: jobs,
         _total: jobs.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to retrieve jobs',
-        error: error.message,
+        _message: 'Failed to retrieve jobs',
+        _error: error.message,
       });
     }
   });
@@ -593,13 +594,13 @@ export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<
       const analytics = await lifecycleService.getJobAnalytics();
       return reply.send({
         _success: true,
-        data: analytics,
+        _data: analytics,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to generate analytics',
-        error: error.message,
+        _message: 'Failed to generate analytics',
+        _error: error.message,
       });
     }
   });
@@ -612,16 +613,16 @@ export async function jobSheetLifecycleRoutes(server: FastifyInstance): Promise<
       
       return reply.send({
         _success: true,
-        data: {
+        _data: {
           stateConfig: config,
           _workflow: visualization,
         },
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve workflow configuration',
-        error: error.message,
+        _message: 'Failed to retrieve workflow configuration',
+        _error: error.message,
       });
     }
   });

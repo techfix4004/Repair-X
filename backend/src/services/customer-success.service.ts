@@ -1,7 +1,7 @@
 import { LaunchCampaign, CampaignChannel, CampaignObjective, AppStoreOptimization, GuidelineCompliance, CustomerIntervention, SupportTicket, SatisfactionSurvey, ABTest, ComplianceStatus, KeywordOptimization } from '../types';
 
 export interface CustomerSuccessAutomation {
-  id: string;
+  _id: string;
   customerId: string;
   customerProfile: CustomerProfile;
   successMetrics: SuccessMetrics;
@@ -238,11 +238,11 @@ class CustomerSuccessService {
 
     // Health score calculation based on multiple factors
     const weights = {
-      usage: 0.3,
-      engagement: 0.25,
-      satisfaction: 0.2,
-      support: 0.15,
-      payment: 0.1
+      _usage: 0.3,
+      _engagement: 0.25,
+      _satisfaction: 0.2,
+      _support: 0.15,
+      _payment: 0.1
     };
 
     const usageScore = this.calculateUsageScore(customer);
@@ -262,7 +262,7 @@ class CustomerSuccessService {
     return Math.min(100, Math.max(0, healthScore));
   }
 
-  private calculateUsageScore(customer: CustomerProfile): number {
+  private calculateUsageScore(_customer: CustomerProfile): number {
     // Calculate based on login frequency, feature adoption, and job completion
     const daysSinceLastLogin = customer.lastActivity ? 
       (Date.now() - customer.lastActivity.getTime()) / (1000 * 60 * 60 * 24) : 999;
@@ -273,31 +273,31 @@ class CustomerSuccessService {
     return 100;
   }
 
-  private calculateEngagementScore(customer: CustomerProfile): number {
+  private calculateEngagementScore(_customer: CustomerProfile): number {
     // Based on feature adoption and session duration
     const jobsScore = Math.min(100, (customer.totalJobs / 10) * 100);
     const milestoneScore = Math.min(100, (customer.successMilestones.length / 5) * 100);
     return Math.round((jobsScore + milestoneScore) / 2);
   }
 
-  private calculateSatisfactionScore(customerId: string): number {
+  private calculateSatisfactionScore(_customerId: string): number {
     // Mock - in production, calculate from survey responses
     return 85; // 0-100 scale
   }
 
-  private calculateSupportScore(customerId: string): number {
+  private calculateSupportScore(_customerId: string): number {
     // Mock - in production, calculate from support ticket history
     return 90; // Higher score = fewer support issues
   }
 
-  private calculatePaymentScore(customer: CustomerProfile): number {
+  private calculatePaymentScore(_customer: CustomerProfile): number {
     // Mock - in production, calculate from payment history
-    return customer.subscriptionTier === 'free' ? 60 : 95;
+    return customer.subscriptionTier === 'free' ? _60 : 95;
   }
 
   // Churn Risk Assessment
   async assessChurnRisk(customerId: string): Promise<{
-    riskLevel: 'low' | 'medium' | 'high' | 'critical';
+    _riskLevel: 'low' | 'medium' | 'high' | 'critical';
     riskFactors: string[];
     recommendations: string[];
     interventionRequired: boolean;
@@ -305,15 +305,15 @@ class CustomerSuccessService {
     const customer = await this.getCustomerProfile(customerId);
     if (!customer) {
       return {
-        riskLevel: 'critical',
-        riskFactors: ['Customer not found'],
-        recommendations: ['Investigate customer data'],
-        interventionRequired: true
+        _riskLevel: 'critical',
+        _riskFactors: ['Customer not found'],
+        _recommendations: ['Investigate customer data'],
+        _interventionRequired: true
       };
     }
 
     const healthScore = await this.calculateHealthScore(customerId);
-    const riskFactors: string[] = [];
+    const _riskFactors: string[] = [];
     const recommendations: string[] = [];
 
     // Assess risk factors
@@ -339,7 +339,7 @@ class CustomerSuccessService {
     }
 
     // Determine risk level
-    let riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
+    const _riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
     if (healthScore < 30 || daysSinceLastLogin > 30) riskLevel = 'critical';
     else if (healthScore < 50 || daysSinceLastLogin > 14) riskLevel = 'high';
     else if (healthScore < 70 || daysSinceLastLogin > 7) riskLevel = 'medium';
@@ -348,32 +348,32 @@ class CustomerSuccessService {
       riskLevel,
       riskFactors,
       recommendations,
-      interventionRequired: riskLevel === 'critical' || riskLevel === 'high'
+      _interventionRequired: riskLevel === 'critical' || riskLevel === 'high'
     };
   }
 
   // Automated Interventions
   async createAutomatedIntervention(
     customerId: string,
-    trigger: string,
-    type: CustomerIntervention['category']
+    _trigger: string,
+    _type: CustomerIntervention['category']
   ): Promise<CustomerIntervention> {
-    const intervention: CustomerIntervention = {
+    const _intervention: CustomerIntervention = {
       id: `intervention_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       customerId,
-      type: 'proactive',
-      category: type,
-      priority: 'medium',
-      status: 'planned',
+      _type: 'proactive',
+      _category: type,
+      _priority: 'medium',
+      _status: 'planned',
       trigger,
-      description: this.getInterventionDescription(type, trigger),
-      assignedTo: 'Customer Success Team',
-      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-      outcome: {
+      _description: this.getInterventionDescription(type, trigger),
+      _assignedTo: 'Customer Success Team',
+      _dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      _outcome: {
         success: false,
-        healthScoreChange: 0,
-        satisfactionChange: 0,
-        notes: ''
+        _healthScoreChange: 0,
+        _satisfactionChange: 0,
+        _notes: ''
       }
     };
 
@@ -383,13 +383,13 @@ class CustomerSuccessService {
     return intervention;
   }
 
-  private getInterventionDescription(type: CustomerIntervention['category'], trigger: string): string {
+  private getInterventionDescription(_type: CustomerIntervention['category'], _trigger: string): string {
     const descriptions = {
-      onboarding: `Help customer complete onboarding - triggered by: ${trigger}`,
-      usage: `Increase feature adoption and usage - triggered by: ${trigger}`,
-      satisfaction: `Address satisfaction concerns - triggered by: ${trigger}`,
-      retention: `Prevent churn and improve retention - triggered by: ${trigger}`,
-      expansion: `Identify upsell opportunities - triggered by: ${trigger}`
+      _onboarding: `Help customer complete onboarding - triggered by: ${trigger}`,
+      _usage: `Increase feature adoption and usage - triggered by: ${trigger}`,
+      _satisfaction: `Address satisfaction concerns - triggered by: ${trigger}`,
+      _retention: `Prevent churn and improve retention - triggered by: ${trigger}`,
+      _expansion: `Identify upsell opportunities - triggered by: ${trigger}`
     };
     return descriptions[type];
   }
@@ -415,19 +415,19 @@ class CustomerSuccessService {
   }
 
   // Support Ticket Management
-  async createSupportTicket(ticketData: Partial<SupportTicket>): Promise<SupportTicket> {
-    const ticket: SupportTicket = {
+  async createSupportTicket(_ticketData: Partial<SupportTicket>): Promise<SupportTicket> {
+    const _ticket: SupportTicket = {
       id: `ticket_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      customerId: (ticketData as any).customerId!,
-      type: (ticketData as any).type || 'question',
-      priority: this.calculateTicketPriority(ticketData),
-      status: 'open',
-      subject: (ticketData as any).subject || 'Support Request',
-      description: (ticketData as any).description || '',
-      category: this.categorizeTicket((ticketData as any).subject || ''),
-      escalated: false,
-      relatedTickets: [],
-      createdAt: new Date()
+      _customerId: (ticketData as any).customerId!,
+      _type: (ticketData as any).type || 'question',
+      _priority: this.calculateTicketPriority(ticketData),
+      _status: 'open',
+      _subject: (ticketData as any).subject || 'Support Request',
+      _description: (ticketData as any).description || '',
+      _category: this.categorizeTicket((ticketData as any).subject || ''),
+      _escalated: false,
+      _relatedTickets: [],
+      _createdAt: new Date()
     };
 
     // Auto-assign based on category and priority
@@ -439,7 +439,7 @@ class CustomerSuccessService {
     return ticket;
   }
 
-  private calculateTicketPriority(ticketData: Partial<SupportTicket>): SupportTicket['priority'] {
+  private calculateTicketPriority(_ticketData: Partial<SupportTicket>): SupportTicket['priority'] {
     const urgentKeywords = ['urgent', 'critical', 'down', 'broken', 'not working'];
     const subject = ((ticketData as any).subject || '').toLowerCase();
     
@@ -452,7 +452,7 @@ class CustomerSuccessService {
     return 'low';
   }
 
-  private categorizeTicket(subject: string): string {
+  private categorizeTicket(_subject: string): string {
     const categories = {
       'login': 'Authentication',
       'payment': 'Billing',
@@ -472,8 +472,8 @@ class CustomerSuccessService {
     return 'General Support';
   }
 
-  private assignTicketToAgent(ticket: SupportTicket): string {
-    const agents: { [key: string]: string } = {
+  private assignTicketToAgent(_ticket: SupportTicket): string {
+    const _agents: { [key: string]: string } = {
       'Technical Issue': 'Tech Support Team',
       'Billing': 'Billing Team',
       'Feature Request': 'Product Team',
@@ -487,21 +487,21 @@ class CustomerSuccessService {
 
   // Satisfaction Surveys
   async createSatisfactionSurvey(
-    customerId: string,
-    type: SatisfactionSurvey['type'],
-    trigger: SatisfactionSurvey['trigger']
+    _customerId: string,
+    _type: SatisfactionSurvey['type'],
+    _trigger: SatisfactionSurvey['trigger']
   ): Promise<SatisfactionSurvey> {
-    const survey: SatisfactionSurvey = {
+    const _survey: SatisfactionSurvey = {
       id: `survey_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       customerId,
       type,
       trigger,
-      questions: this.getSurveyQuestions(type),
-      responses: [],
-      status: 'draft',
-      sentAt: new Date(),
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      followUpActions: []
+      _questions: this.getSurveyQuestions(type),
+      _responses: [],
+      _status: 'draft',
+      _sentAt: new Date(),
+      _expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      _followUpActions: []
     };
 
     // Send survey
@@ -511,48 +511,48 @@ class CustomerSuccessService {
     return survey;
   }
 
-  private getSurveyQuestions(type: SatisfactionSurvey['type']): SurveyQuestion[] {
+  private getSurveyQuestions(_type: SatisfactionSurvey['type']): SurveyQuestion[] {
     const questionSets = {
-      nps: [
+      _nps: [
         {
           id: 'nps_score',
-          type: 'rating' as const,
-          question: 'How likely are you to recommend RepairX to a friend or colleague?',
-          required: true,
-          scale: { min: 0, max: 10 }
+          _type: 'rating' as const,
+          _question: 'How likely are you to recommend RepairX to a friend or colleague?',
+          _required: true,
+          _scale: { min: 0, _max: 10 }
         },
         {
-          id: 'nps_reason',
-          type: 'text' as const,
-          question: 'What is the primary reason for your score?',
-          required: false
+          _id: 'nps_reason',
+          _type: 'text' as const,
+          _question: 'What is the primary reason for your score?',
+          _required: false
         }
       ],
-      csat: [
+      _csat: [
         {
           id: 'satisfaction',
-          type: 'rating' as const,
-          question: 'How satisfied are you with RepairX?',
-          required: true,
-          scale: { min: 1, max: 5 }
+          _type: 'rating' as const,
+          _question: 'How satisfied are you with RepairX?',
+          _required: true,
+          _scale: { min: 1, _max: 5 }
         },
         {
-          id: 'improvement',
-          type: 'text' as const,
-          question: 'What could we improve?',
-          required: false
+          _id: 'improvement',
+          _type: 'text' as const,
+          _question: 'What could we improve?',
+          _required: false
         }
       ],
-      ces: [
+      _ces: [
         {
           id: 'effort',
-          type: 'rating' as const,
-          question: 'How easy was it to accomplish what you wanted to do?',
-          required: true,
-          scale: { min: 1, max: 7 }
+          _type: 'rating' as const,
+          _question: 'How easy was it to accomplish what you wanted to do?',
+          _required: true,
+          _scale: { min: 1, _max: 7 }
         }
       ],
-      custom: []
+      _custom: []
     };
 
     return questionSets[type] || [];
@@ -560,16 +560,16 @@ class CustomerSuccessService {
 
   // Retention Campaigns
   async createRetentionCampaign(campaignData: Partial<RetentionCampaign>): Promise<RetentionCampaign> {
-    const campaign: RetentionCampaign = {
+    const _campaign: RetentionCampaign = {
       id: `retention_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name: (campaignData as any).name || 'Retention Campaign',
-      type: (campaignData as any).type || 'at-risk',
-      status: 'draft',
-      targetSegment: (campaignData as any).targetSegment || 'high-risk-customers',
-      triggers: (campaignData as any).triggers || this.getDefaultTriggers(),
-      sequence: (campaignData as any).sequence || this.getDefaultSequence((campaignData as any).type || 'at-risk'),
-      metrics: this.initializeCampaignMetrics(),
-      startDate: new Date()
+      _name: (campaignData as any).name || 'Retention Campaign',
+      _type: (campaignData as any).type || 'at-risk',
+      _status: 'draft',
+      _targetSegment: (campaignData as any).targetSegment || 'high-risk-customers',
+      _triggers: (campaignData as any).triggers || this.getDefaultTriggers(),
+      _sequence: (campaignData as any).sequence || this.getDefaultSequence((campaignData as any).type || 'at-risk'),
+      _metrics: this.initializeCampaignMetrics(),
+      _startDate: new Date()
     };
 
     // Add budget if provided
@@ -583,14 +583,14 @@ class CustomerSuccessService {
   private getDefaultTriggers(): CampaignTrigger[] {
     return [
       {
-        type: 'health_score',
-        threshold: 50,
-        timeframe: '7d'
+        _type: 'health_score',
+        _threshold: 50,
+        _timeframe: '7d'
       },
       {
-        type: 'usage_decline',
-        threshold: 50,
-        timeframe: '14d'
+        _type: 'usage_decline',
+        _threshold: 50,
+        _timeframe: '14d'
       }
     ];
   }
@@ -599,68 +599,68 @@ class CustomerSuccessService {
     const sequences = {
       'win-back': [
         {
-          step: 1,
-          type: 'email' as const,
-          delay: 0,
-          template: 'We miss you! Here\'s what\'s new in RepairX',
-          personalizations: [],
-          successMetrics: ['opened', 'clicked']
+          _step: 1,
+          _type: 'email' as const,
+          _delay: 0,
+          _template: 'We miss you! Here\'s what\'s new in RepairX',
+          _personalizations: [],
+          _successMetrics: ['opened', 'clicked']
         },
         {
-          step: 2,
-          type: 'discount' as const,
-          delay: 3,
-          template: 'Special comeback offer - 30% off your next month',
-          personalizations: [],
-          successMetrics: ['redeemed']
+          _step: 2,
+          _type: 'discount' as const,
+          _delay: 3,
+          _template: 'Special comeback offer - 30% off your next month',
+          _personalizations: [],
+          _successMetrics: ['redeemed']
         }
       ],
       'at-risk': [
         {
-          step: 1,
-          type: 'email' as const,
-          delay: 0,
-          template: 'Having trouble? We\'re here to help',
-          personalizations: [],
-          successMetrics: ['opened', 'replied']
+          _step: 1,
+          _type: 'email' as const,
+          _delay: 0,
+          _template: 'Having trouble? We\'re here to help',
+          _personalizations: [],
+          _successMetrics: ['opened', 'replied']
         },
         {
-          step: 2,
-          type: 'call' as const,
-          delay: 2,
-          template: 'Personal check-in call',
-          personalizations: [],
-          successMetrics: ['connected', 'scheduled']
+          _step: 2,
+          _type: 'call' as const,
+          _delay: 2,
+          _template: 'Personal check-in call',
+          _personalizations: [],
+          _successMetrics: ['connected', 'scheduled']
         }
       ],
       'renewal': [
         {
-          step: 1,
-          type: 'email' as const,
-          delay: 30,
-          template: 'Your subscription expires soon - renew now',
-          personalizations: [],
-          successMetrics: ['opened', 'renewed']
+          _step: 1,
+          _type: 'email' as const,
+          _delay: 30,
+          _template: 'Your subscription expires soon - renew now',
+          _personalizations: [],
+          _successMetrics: ['opened', 'renewed']
         }
       ],
       'expansion': [
         {
-          step: 1,
-          type: 'email' as const,
-          delay: 0,
-          template: 'Unlock more value with premium features',
-          personalizations: [],
-          successMetrics: ['opened', 'upgraded']
+          _step: 1,
+          _type: 'email' as const,
+          _delay: 0,
+          _template: 'Unlock more value with premium features',
+          _personalizations: [],
+          _successMetrics: ['opened', 'upgraded']
         }
       ],
       'satisfaction': [
         {
-          step: 1,
-          type: 'email' as const,
-          delay: 0,
-          template: 'How are we doing? Your feedback matters',
-          personalizations: [],
-          successMetrics: ['responded']
+          _step: 1,
+          _type: 'email' as const,
+          _delay: 0,
+          _template: 'How are we doing? Your feedback matters',
+          _personalizations: [],
+          _successMetrics: ['responded']
         }
       ]
     };
@@ -672,22 +672,22 @@ class CustomerSuccessService {
   async getCustomerProfile(customerId: string): Promise<CustomerProfile | null> {
     // Mock implementation - in production, fetch from database
     return {
-      id: customerId,
-      name: 'John Smith',
-      email: 'john.smith@example.com',
-      phone: '+1234567890',
-      company: 'Smith Repairs LLC',
-      segment: 'small-business',
-      subscriptionTier: 'professional',
-      onboardingDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      lastActivity: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      healthScore: 75,
-      riskLevel: 'medium',
-      lifetimeValue: 2400,
-      totalJobs: 45,
-      successMilestones: ['first_job', 'payment_setup', 'team_invite'],
-      preferredCommunication: 'email',
-      timezone: 'America/New_York'
+      _id: customerId,
+      _name: 'John Smith',
+      _email: 'john.smith@example.com',
+      _phone: '+1234567890',
+      _company: 'Smith Repairs LLC',
+      _segment: 'small-business',
+      _subscriptionTier: 'professional',
+      _onboardingDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      _lastActivity: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      _healthScore: 75,
+      _riskLevel: 'medium',
+      _lifetimeValue: 2400,
+      _totalJobs: 45,
+      _successMilestones: ['first_job', 'payment_setup', 'team_invite'],
+      _preferredCommunication: 'email',
+      _timezone: 'America/New_York'
     };
   }
 
@@ -695,40 +695,40 @@ class CustomerSuccessService {
     console.log(`Sending onboarding help to customer ${customerId}`);
   }
 
-  private async sendFeatureGuidance(customerId: string): Promise<void> {
+  private async sendFeatureGuidance(_customerId: string): Promise<void> {
     console.log(`Sending feature guidance to customer ${customerId}`);
   }
 
-  private async sendSatisfactionSurvey(customerId: string): Promise<void> {
+  private async sendSatisfactionSurvey(_customerId: string): Promise<void> {
     console.log(`Sending satisfaction survey to customer ${customerId}`);
   }
 
-  private async sendRetentionOffer(customerId: string): Promise<void> {
+  private async sendRetentionOffer(_customerId: string): Promise<void> {
     console.log(`Sending retention offer to customer ${customerId}`);
   }
 
-  private async sendUpgradeRecommendation(customerId: string): Promise<void> {
+  private async sendUpgradeRecommendation(_customerId: string): Promise<void> {
     console.log(`Sending upgrade recommendation to customer ${customerId}`);
   }
 
-  private async sendAutoResponse(ticket: SupportTicket): Promise<void> {
+  private async sendAutoResponse(_ticket: SupportTicket): Promise<void> {
     console.log(`Sending auto-response for ticket ${ticket.id}`);
   }
 
-  private async sendSurvey(survey: SatisfactionSurvey): Promise<void> {
+  private async sendSurvey(_survey: SatisfactionSurvey): Promise<void> {
     console.log(`Sending survey ${survey.id} to customer ${survey.customerId}`);
   }
 
   private initializeCampaignMetrics(): CampaignMetrics {
     return {
-      sent: 0,
-      opened: 0,
-      clicked: 0,
-      responded: 0,
-      converted: 0,
-      openRate: 0,
-      clickRate: 0,
-      conversionRate: 0,
+      _sent: 0,
+      _opened: 0,
+      _clicked: 0,
+      _responded: 0,
+      _converted: 0,
+      _openRate: 0,
+      _clickRate: 0,
+      _conversionRate: 0,
       roi: 0
     };
   }

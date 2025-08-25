@@ -27,8 +27,8 @@ const IoTDeviceSchema = z.object({
     'LOCATION_BEACON',    // For technician/device tracking
   ]),
   _manufacturer: z.string().optional(),
-  model: z.string().optional(),
-  serialNumber: z.string().optional(),
+  _model: z.string().optional(),
+  _serialNumber: z.string().optional(),
   _firmwareVersion: z.string().optional(),
   _connectionType: z.enum(['WIFI', 'BLUETOOTH', 'ETHERNET', 'USB', 'SERIAL']),
   _capabilities: z.array(z.string()).default([]),
@@ -56,7 +56,7 @@ const IoTDataSchema = z.object({
     'CALIBRATION_DATA',
     'USAGE_LOG',
   ]),
-  data: z.record(z.string(), z.any()),
+  _data: z.record(z.string(), z.any()),
   _metadata: z.object({
     jobId: z.string().optional(),
     _technicianId: z.string().optional(),
@@ -80,7 +80,7 @@ const IoTAlertSchema = z.object({
     'SECURITY_BREACH',
   ]),
   _severity: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
-  message: z.string(),
+  _message: z.string(),
   _timestamp: z.string().default(() => new Date().toISOString()),
   _acknowledged: z.boolean().default(false),
   _acknowledgedBy: z.string().optional(),
@@ -92,7 +92,7 @@ const IoTAlertSchema = z.object({
 
 // IoT Integration Service
 class IoTIntegrationService {
-  private devices: Map<string, any> = new Map();
+  private _devices: Map<string, any> = new Map();
   private _dataPoints: Map<string, any[]> = new Map();
   private _alerts: Map<string, any> = new Map();
   private _connectedDevices: Set<string> = new Set();
@@ -110,8 +110,8 @@ class IoTIntegrationService {
         _name: 'Workshop Digital Scale',
         _type: 'SMART_SCALE',
         _manufacturer: 'PrecisionTech',
-        model: 'PT-5000',
-        serialNumber: 'PT5000-2024-001',
+        _model: 'PT-5000',
+        _serialNumber: 'PT5000-2024-001',
         _firmwareVersion: '2.1.3',
         _connectionType: 'WIFI',
         _capabilities: ['weight_measurement', 'component_analysis', 'batch_processing'],
@@ -134,8 +134,8 @@ class IoTIntegrationService {
         _name: 'Smart Diagnostic Scanner',
         _type: 'DIAGNOSTIC_TOOL',
         _manufacturer: 'TechDiag',
-        model: 'TD-Pro-X1',
-        serialNumber: 'TDPX1-2024-002',
+        _model: 'TD-Pro-X1',
+        _serialNumber: 'TDPX1-2024-002',
         _firmwareVersion: '1.8.2',
         _connectionType: 'BLUETOOTH',
         _capabilities: ['battery_test', 'screen_test', 'connectivity_test', 'performance_benchmark'],
@@ -158,8 +158,8 @@ class IoTIntegrationService {
         _name: 'Workshop Environment Monitor',
         _type: 'ENVIRONMENT_SENSOR',
         _manufacturer: 'EnviroTech',
-        model: 'ET-Multi-Sens',
-        serialNumber: 'ETMS-2024-003',
+        _model: 'ET-Multi-Sens',
+        _serialNumber: 'ETMS-2024-003',
         _firmwareVersion: '3.2.1',
         _connectionType: 'WIFI',
         _capabilities: ['temperature', 'humidity', 'air_quality', 'dust_levels'],
@@ -183,8 +183,8 @@ class IoTIntegrationService {
         _name: 'Thermal Imaging Camera',
         _type: 'THERMAL_CAMERA',
         _manufacturer: 'ThermalVision',
-        model: 'TV-IR-500',
-        serialNumber: 'TVIR500-2024-004',
+        _model: 'TV-IR-500',
+        _serialNumber: 'TVIR500-2024-004',
         _firmwareVersion: '4.1.0',
         _connectionType: 'USB',
         _capabilities: ['thermal_imaging', 'temperature_measurement', 'hotspot_detection', 'thermal_analysis'],
@@ -203,7 +203,7 @@ class IoTIntegrationService {
       },
     ];
 
-    sampleDevices.forEach((device: unknown) => {
+    sampleDevices.forEach((_device: unknown) => {
       this.devices.set(device.id, device);
       if (device.status === 'ONLINE') {
         this.connectedDevices.add(device.id);
@@ -224,7 +224,7 @@ class IoTIntegrationService {
         _deviceId: 'SCALE-WS-001',
         _timestamp: new Date(now.getTime() - 1800000).toISOString(), // 30 min ago
         _dataType: 'MEASUREMENT',
-        data: {
+        _data: {
           weight: 125.3,
           _stability: 'stable',
           _temperature: 22.5,
@@ -242,7 +242,7 @@ class IoTIntegrationService {
         _deviceId: 'DIAG-TOOL-001',
         _timestamp: new Date(now.getTime() - 900000).toISOString(), // 15 min ago
         _dataType: 'DIAGNOSTIC_RESULT',
-        data: {
+        _data: {
           battery_health: 87,
           _battery_cycles: 342,
           _screen_test: 'PASS',
@@ -258,7 +258,7 @@ class IoTIntegrationService {
       },
     ];
 
-    (scaleData as any).forEach((data: unknown) => {
+    (scaleData as any).forEach((_data: unknown) => {
       const deviceData = this.dataPoints.get(data.deviceId) || [];
       (deviceData as any).push(data);
       this.dataPoints.set(data.deviceId, deviceData);
@@ -287,7 +287,7 @@ class IoTIntegrationService {
             _deviceId: device.deviceId,
             _alertType: 'DEVICE_OFFLINE',
             _severity: 'MEDIUM',
-            message: `Device ${device.name} has gone offline`,
+            _message: `Device ${device.name} has gone offline`,
           });
         } else {
           device.lastSeen = new Date().toISOString();
@@ -301,7 +301,7 @@ class IoTIntegrationService {
                 _deviceId: device.deviceId,
                 _alertType: 'LOW_BATTERY',
                 _severity: 'HIGH',
-                message: `Device ${device.name} has low battery: ${device.batteryLevel.toFixed(1)}%`,
+                _message: `Device ${device.name} has low battery: ${device.batteryLevel.toFixed(1)}%`,
               });
             }
           }
@@ -330,14 +330,14 @@ class IoTIntegrationService {
             _deviceId: device.deviceId,
             _alertType: 'CALIBRATION_DUE',
             _severity: 'MEDIUM',
-            message: `Device ${device.name} calibration due in ${daysUntilDue} days`,
+            _message: `Device ${device.name} calibration due in ${daysUntilDue} days`,
           });
         } else if (daysUntilDue <= 0) {
           this.createAlert({
             _deviceId: device.deviceId,
             _alertType: 'CALIBRATION_DUE',
             _severity: 'HIGH',
-            message: `Device ${device.name} calibration is overdue`,
+            _message: `Device ${device.name} calibration is overdue`,
           });
         }
       }
@@ -345,7 +345,7 @@ class IoTIntegrationService {
   }
 
   private createAlert(_alertData: unknown) {
-    const existingAlert = Array.from(this.alerts.values()).find((alert: unknown) => 
+    const existingAlert = Array.from(this.alerts.values()).find((_alert: unknown) => 
       alert.deviceId === (alertData as any).deviceId && 
       alert.alertType === (alertData as any).alertType && 
       !alert.resolved
@@ -370,13 +370,13 @@ class IoTIntegrationService {
 
     if (filters) {
       if (filters.status) {
-        devices = devices.filter((device: unknown) => device.status === filters.status);
+        devices = devices.filter((_device: unknown) => device.status === filters.status);
       }
       if (filters.type) {
-        devices = devices.filter((device: unknown) => device.type === filters.type);
+        devices = devices.filter((_device: unknown) => device.type === filters.type);
       }
       if (filters.location) {
-        devices = devices.filter((device: unknown) => device.location === filters.location);
+        devices = devices.filter((_device: unknown) => device.location === filters.location);
       }
     }
 
@@ -384,7 +384,7 @@ class IoTIntegrationService {
   }
 
   async getDevice(_deviceId: string): Promise<any | null> {
-    return Array.from(this.devices.values()).find((device: unknown) => device.deviceId === deviceId) || null;
+    return Array.from(this.devices.values()).find((_device: unknown) => device.deviceId === deviceId) || null;
   }
 
   async registerDevice(_deviceData: unknown): Promise<any> {
@@ -446,8 +446,8 @@ class IoTIntegrationService {
     return data;
   }
 
-  private processDataForAlerts(data: unknown) {
-    const device = Array.from(this.devices.values()).find((d: unknown) => d.deviceId === data.deviceId);
+  private processDataForAlerts(_data: unknown) {
+    const device = Array.from(this.devices.values()).find((_d: unknown) => d.deviceId === data.deviceId);
     if (!device) return;
 
     // Check for out-of-range measurements
@@ -460,7 +460,7 @@ class IoTIntegrationService {
           _deviceId: data.deviceId,
           _alertType: 'MEASUREMENT_OUT_OF_RANGE',
           _severity: 'HIGH',
-          message: `Temperature reading ${temperature}°C exceeds maximum threshold`,
+          _message: `Temperature reading ${temperature}°C exceeds maximum threshold`,
         });
       }
 
@@ -469,7 +469,7 @@ class IoTIntegrationService {
           _deviceId: data.deviceId,
           _alertType: 'MEASUREMENT_OUT_OF_RANGE',
           _severity: 'MEDIUM',
-          message: `Humidity reading ${humidity}% exceeds maximum threshold`,
+          _message: `Humidity reading ${humidity}% exceeds maximum threshold`,
         });
       }
     }
@@ -487,16 +487,16 @@ class IoTIntegrationService {
     if (filters) {
       if (filters.startDate) {
         const startDate = new Date(filters.startDate);
-        filtered = filtered.filter((data: unknown) => new Date(data.timestamp) >= startDate);
+        filtered = filtered.filter((_data: unknown) => new Date(data.timestamp) >= startDate);
       }
 
       if (filters.endDate) {
         const endDate = new Date(filters.endDate);
-        filtered = filtered.filter((data: unknown) => new Date(data.timestamp) <= endDate);
+        filtered = filtered.filter((_data: unknown) => new Date(data.timestamp) <= endDate);
       }
 
       if (filters.dataType) {
-        filtered = filtered.filter((data: unknown) => data.dataType === filters.dataType);
+        filtered = filtered.filter((_data: unknown) => data.dataType === filters.dataType);
       }
 
       if (filters.limit) {
@@ -513,13 +513,13 @@ class IoTIntegrationService {
 
     if (filters) {
       if (filters.deviceId) {
-        alerts = alerts.filter((alert: unknown) => alert.deviceId === filters.deviceId);
+        alerts = alerts.filter((_alert: unknown) => alert.deviceId === filters.deviceId);
       }
       if (filters.severity) {
-        alerts = alerts.filter((alert: unknown) => alert.severity === filters.severity);
+        alerts = alerts.filter((_alert: unknown) => alert.severity === filters.severity);
       }
       if (filters.acknowledged !== undefined) {
-        alerts = alerts.filter((alert: unknown) => alert.acknowledged === filters.acknowledged);
+        alerts = alerts.filter((_alert: unknown) => alert.acknowledged === filters.acknowledged);
       }
     }
 
@@ -563,9 +563,9 @@ class IoTIntegrationService {
         _online: devices.filter((d: unknown) => d.status === 'ONLINE').length,
         _offline: devices.filter((d: unknown) => d.status === 'OFFLINE').length,
         _maintenance: devices.filter((d: unknown) => d.status === 'MAINTENANCE').length,
-        error: devices.filter((d: unknown) => d.status === 'ERROR').length,
+        _error: devices.filter((d: unknown) => d.status === 'ERROR').length,
       },
-      _typeBreakdown: devices.reduce((acc: unknown, device: unknown) => {
+      _typeBreakdown: devices.reduce((acc: unknown, _device: unknown) => {
         acc[device.type] = (acc[device.type] || 0) + 1;
         return acc;
       }, {} as Record<string, number>),
@@ -578,16 +578,16 @@ class IoTIntegrationService {
       },
       _batteryLevels: devices
         .filter((d: unknown) => d.batteryLevel !== undefined)
-        .map((d: unknown) => ({ _deviceId: d.deviceId, _name: d.name, _batteryLevel: d.batteryLevel })),
+        .map((_d: unknown) => ({ _deviceId: d.deviceId, _name: d.name, _batteryLevel: d.batteryLevel })),
       _calibrationDue: devices
         .filter((d: unknown) => d.nextCalibrationDue)
-        .map((d: unknown) => {
+        .map((_d: unknown) => {
           const daysUntilDue = Math.ceil(
             (new Date(d.nextCalibrationDue).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
           );
           return { _deviceId: d.deviceId, _name: d.name, daysUntilDue };
         })
-        .filter((d: unknown) => d.daysUntilDue <= 30),
+        .filter((_d: unknown) => d.daysUntilDue <= 30),
     };
 
     return analytics;
@@ -595,8 +595,9 @@ class IoTIntegrationService {
 }
 
 // Route Handlers
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function iotIntegrationRoutes(server: FastifyInstance): Promise<void> {
+export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<void> {
   const iotService = new IoTIntegrationService();
 
   // Device management routes
@@ -609,14 +610,14 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: devices,
+        _data: devices,
         _count: devices.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve devices',
-        error: error.message,
+        _message: 'Failed to retrieve devices',
+        _error: error.message,
       });
     }
   });
@@ -631,19 +632,19 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       if (!device) {
         return (reply as FastifyReply).status(404).send({
           _success: false,
-          message: 'Device not found',
+          _message: 'Device not found',
         });
       }
       
       return reply.send({
         _success: true,
-        data: device,
+        _data: device,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve device',
-        error: error.message,
+        _message: 'Failed to retrieve device',
+        _error: error.message,
       });
     }
   });
@@ -657,14 +658,14 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: device,
-        message: 'Device registered successfully',
+        _data: device,
+        _message: 'Device registered successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to register device',
-        error: error.message,
+        _message: 'Failed to register device',
+        _error: error.message,
       });
     }
   });
@@ -681,15 +682,15 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: device,
-        message: 'Device updated successfully',
+        _data: device,
+        _message: 'Device updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Device not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to update device',
-        error: error.message,
+        _message: 'Failed to update device',
+        _error: error.message,
       });
     }
   });
@@ -704,14 +705,14 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: result,
-        message: 'Data recorded successfully',
+        _data: result,
+        _message: 'Data recorded successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to record data',
-        error: error.message,
+        _message: 'Failed to record data',
+        _error: error.message,
       });
     }
   });
@@ -736,11 +737,11 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
         data,
         _count: data.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve device data',
-        error: error.message,
+        _message: 'Failed to retrieve device data',
+        _error: error.message,
       });
     }
   });
@@ -755,14 +756,14 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: alerts,
+        _data: alerts,
         _count: alerts.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve alerts',
-        error: error.message,
+        _message: 'Failed to retrieve alerts',
+        _error: error.message,
       });
     }
   });
@@ -779,14 +780,14 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        message: 'Alert acknowledged successfully',
+        _message: 'Alert acknowledged successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Alert not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to acknowledge alert',
-        error: error.message,
+        _message: 'Failed to acknowledge alert',
+        _error: error.message,
       });
     }
   });
@@ -803,14 +804,14 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        message: 'Alert resolved successfully',
+        _message: 'Alert resolved successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Alert not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to resolve alert',
-        error: error.message,
+        _message: 'Failed to resolve alert',
+        _error: error.message,
       });
     }
   });
@@ -822,13 +823,13 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        data: analytics,
+        _data: analytics,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve analytics',
-        error: error.message,
+        _message: 'Failed to retrieve analytics',
+        _error: error.message,
       });
     }
   });
@@ -836,23 +837,23 @@ export async function iotIntegrationRoutes(server: FastifyInstance): Promise<voi
   // Device types reference
   server.get('/device-types', async (request: FastifyRequest, reply: FastifyReply) => {
     const deviceTypes = [
-      { _id: 'SMART_SCALE', _name: 'Smart Scale', description: 'Digital scale for component weighing', _icon: '⚖️' },
-      { _id: 'DIAGNOSTIC_TOOL', _name: 'Diagnostic Tool', description: 'Automated device diagnostics', _icon: '🔍' },
-      { _id: 'ENVIRONMENT_SENSOR', _name: 'Environment Sensor', description: 'Temperature, humidity monitoring', _icon: '🌡️' },
-      { _id: 'POWER_MONITOR', _name: 'Power Monitor', description: 'Power consumption analysis', _icon: '⚡' },
-      { _id: 'RFID_READER', _name: 'RFID Reader', description: 'Inventory tracking via RFID', _icon: '📡' },
-      { _id: 'BARCODE_SCANNER', _name: 'Barcode Scanner', description: 'Quick device identification', _icon: '🔯' },
-      { _id: 'MULTIMETER', _name: 'Digital Multimeter', description: 'Electrical testing and measurement', _icon: '🔌' },
-      { _id: 'OSCILLOSCOPE', _name: 'Oscilloscope', description: 'Signal analysis and testing', _icon: '📊' },
-      { _id: 'THERMAL_CAMERA', _name: 'Thermal Camera', description: 'Heat signature analysis', _icon: '🔥' },
-      { _id: 'VIBRATION_SENSOR', _name: 'Vibration Sensor', description: 'Mechanical issue detection', _icon: '📳' },
-      { _id: 'SOUND_ANALYZER', _name: 'Sound Analyzer', description: 'Audio diagnostics and analysis', _icon: '🎵' },
-      { _id: 'LOCATION_BEACON', _name: 'Location Beacon', description: 'Technician and asset tracking', _icon: '📍' },
+      { _id: 'SMART_SCALE', _name: 'Smart Scale', _description: 'Digital scale for component weighing', _icon: '⚖️' },
+      { _id: 'DIAGNOSTIC_TOOL', _name: 'Diagnostic Tool', _description: 'Automated device diagnostics', _icon: '🔍' },
+      { _id: 'ENVIRONMENT_SENSOR', _name: 'Environment Sensor', _description: 'Temperature, humidity monitoring', _icon: '🌡️' },
+      { _id: 'POWER_MONITOR', _name: 'Power Monitor', _description: 'Power consumption analysis', _icon: '⚡' },
+      { _id: 'RFID_READER', _name: 'RFID Reader', _description: 'Inventory tracking via RFID', _icon: '📡' },
+      { _id: 'BARCODE_SCANNER', _name: 'Barcode Scanner', _description: 'Quick device identification', _icon: '🔯' },
+      { _id: 'MULTIMETER', _name: 'Digital Multimeter', _description: 'Electrical testing and measurement', _icon: '🔌' },
+      { _id: 'OSCILLOSCOPE', _name: 'Oscilloscope', _description: 'Signal analysis and testing', _icon: '📊' },
+      { _id: 'THERMAL_CAMERA', _name: 'Thermal Camera', _description: 'Heat signature analysis', _icon: '🔥' },
+      { _id: 'VIBRATION_SENSOR', _name: 'Vibration Sensor', _description: 'Mechanical issue detection', _icon: '📳' },
+      { _id: 'SOUND_ANALYZER', _name: 'Sound Analyzer', _description: 'Audio diagnostics and analysis', _icon: '🎵' },
+      { _id: 'LOCATION_BEACON', _name: 'Location Beacon', _description: 'Technician and asset tracking', _icon: '📍' },
     ];
 
     return reply.send({
       _success: true,
-      data: deviceTypes,
+      _data: deviceTypes,
     });
   });
 }

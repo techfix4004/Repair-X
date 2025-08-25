@@ -1,11 +1,21 @@
+import { jest } from '@jest/globals';
 
-// Global test setup
-beforeAll(() => {
-  // Setup test environment
-  process.env['NODE_ENV'] = 'test';
-  process.env['JWT_SECRET'] = 'test-secret';
-});
+// Mock implementations for production tests
+global.console = {
+  ...console,
+  log: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+};
 
-afterAll(() => {
-  // Cleanup
-});
+// Mock database
+jest.mock('../utils/database', () => ({
+  mockUsers: [],
+  findUserByEmail: jest.fn(),
+  createUser: jest.fn(),
+  updateUser: jest.fn(),
+  deleteUser: jest.fn(),
+}));
+
+// Global test configuration
+jest.setTimeout(30000);

@@ -1,3 +1,5 @@
+ 
+/// <reference types="jest" />
 /* eslint-disable no-undef */
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
@@ -5,12 +7,13 @@ import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach 
 import Fastify, { FastifyInstance, FastifyReply } from 'fastify';
 import { registerPlugins } from '../plugins/index';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('Device Registration API Tests', () => {
-  let app: FastifyInstance;
+  let _app: FastifyInstance;
 
   beforeAll(async () => {
-    app = Fastify({ logger: false });
+    app = Fastify({ _logger: false });
     await registerPlugins(app);
     
     // Add device routes for testing
@@ -20,14 +23,14 @@ describe('Device Registration API Tests', () => {
       // Basic validation
       if (!(deviceData as any).brand || !(deviceData as any).model) {
         return (reply as FastifyReply).status(400).send({
-          success: false,
-          error: 'Brand and model are required'
+          _success: false,
+          _error: 'Brand and model are required'
         });
       }
 
       return {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           id: 'device-123',
           ...deviceData,
           _registeredAt: new Date().toISOString(),
@@ -37,14 +40,14 @@ describe('Device Registration API Tests', () => {
 
     app.get('/api/v1/devices', async () => {
       return {
-        success: true,
-        data: [
+        _success: true,
+        _data: [
           {
             id: 'device-1',
-            brand: 'Apple',
-            model: 'iPhone 13',
-            category: 'Smartphone',
-            condition: 'Good',
+            _brand: 'Apple',
+            _model: 'iPhone 13',
+            _category: 'Smartphone',
+            _condition: 'Good',
             _registeredAt: '2025-01-08T10:00:00Z',
           }
         ]
@@ -60,17 +63,17 @@ describe('Device Registration API Tests', () => {
 
   test('POST /api/v1/devices - should register new device with valid data', async () => {
     const deviceData = {
-      brand: 'Samsung',
-      model: 'Galaxy S21',
-      category: 'Smartphone',
-      condition: 'Good',
-      serialNumber: 'SN123456789'
+      _brand: 'Samsung',
+      _model: 'Galaxy S21',
+      _category: 'Smartphone',
+      _condition: 'Good',
+      _serialNumber: 'SN123456789'
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/devices',
-      payload: deviceData
+      _url: '/api/v1/devices',
+      _payload: deviceData
     });
 
     expect(response.statusCode).toBe(200);
@@ -83,15 +86,15 @@ describe('Device Registration API Tests', () => {
 
   test('POST /api/v1/devices - should return error for missing required fields', async () => {
     const invalidData = {
-      category: 'Smartphone',
-      condition: 'Good'
+      _category: 'Smartphone',
+      _condition: 'Good'
       // Missing brand and model
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/devices',
-      payload: invalidData
+      _url: '/api/v1/devices',
+      _payload: invalidData
     });
 
     expect(response.statusCode).toBe(400);
@@ -102,8 +105,8 @@ describe('Device Registration API Tests', () => {
 
   test('GET /api/v1/devices - should return list of devices', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/devices'
+      _method: 'GET',
+      _url: '/api/v1/devices'
     });
 
     expect(response.statusCode).toBe(200);

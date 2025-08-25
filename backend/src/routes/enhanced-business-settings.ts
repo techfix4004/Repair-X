@@ -23,7 +23,7 @@ const businessSettingSchema = z.object({
   _value: z.any(),
   _dataType: z.string().default('STRING'),
   _label: z.string().min(1).max(200),
-  description: z.string().optional(),
+  _description: z.string().optional(),
   _isRequired: z.boolean().default(false),
   _isActive: z.boolean().default(true),
   _validationRules: z.record(z.string(), z.any()).optional(),
@@ -36,7 +36,7 @@ const taxSettingsSchema = z.object({
   _vatRate: z.number().min(0).max(100),
   _hstRate: z.number().min(0).max(100),
   _salesTaxRate: z.number().min(0).max(100),
-  gstin: z.string().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/).optional(),
+  _gstin: z.string().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/).optional(),
   _taxExemptionEnabled: z.boolean().default(false),
   _automaticCalculation: z.boolean().default(true),
   _multiJurisdictionSupport: z.boolean().default(true),
@@ -66,7 +66,7 @@ const workflowConfigSchema = z.object({
     _transitions: z.record(z.string(), z.array(z.string())),
     _autoTransitions: z.record(z.string(), z.boolean()).default({}),
     _notifications: z.record(z.string(), z.array(z.string())).default({}),
-    approvalChains: z.record(z.string(), z.array(z.string())).default({}),
+    _approvalChains: z.record(z.string(), z.array(z.string())).default({}),
     _escalationRules: z.record(z.string(), z.object({
       _timeoutMinutes: z.number(),
       _escalateTo: z.string(),
@@ -85,14 +85,14 @@ interface BusinessSettingsService {
   // Category _1: Tax Settings
   getTaxSettings(_tenantId?: string): Promise<any>;
   updateTaxSettings(_settings: unknown, _tenantId?: string): Promise<void>;
-  validateGSTIN(gstin: string): Promise<boolean>;
+  validateGSTIN(_gstin: string): Promise<boolean>;
   calculateTax(_amount: number, _jurisdiction: string, _tenantId?: string): Promise<any>;
 
   // Category _2: Print Settings & Templates
   getPrintSettings(_tenantId?: string): Promise<any>;
-  updatePrintTemplate(templateType: string, template: string, _tenantId?: string): Promise<void>;
-  generateDocument(_type: string, data: unknown, _tenantId?: string): Promise<Buffer>;
-  previewTemplate(templateType: string, _sampleData: unknown, _tenantId?: string): Promise<string>;
+  updatePrintTemplate(_templateType: string, _template: string, _tenantId?: string): Promise<void>;
+  generateDocument(_type: string, _data: unknown, _tenantId?: string): Promise<Buffer>;
+  previewTemplate(_templateType: string, _sampleData: unknown, _tenantId?: string): Promise<string>;
 
   // Category _3: Workflow Configuration
   getWorkflowConfig(_tenantId?: string): Promise<any>;
@@ -103,12 +103,12 @@ interface BusinessSettingsService {
   // Category _4: Email Settings
   getEmailSettings(_tenantId?: string): Promise<any>;
   testEmailConnection(_settings: unknown): Promise<{ _success: boolean; error?: string }>;
-  sendAutomatedEmail(template: string, _recipient: string, data: unknown, _tenantId?: string): Promise<void>;
+  sendAutomatedEmail(template: string, _recipient: string, _data: unknown, _tenantId?: string): Promise<void>;
 
   // Category _5: SMS Settings
   getSMSSettings(_tenantId?: string): Promise<any>;
   getSMSCredits(tenantId?: string): Promise<number>;
-  sendSMS(_toNumber: string, message: string, _tenantId?: string): Promise<{ _success: boolean; _messageId?: string }>;
+  sendSMS(_toNumber: string, _message: string, _tenantId?: string): Promise<{ _success: boolean; _messageId?: string }>;
   topUpSMSCredits(_amount: number, _tenantId?: string): Promise<void>;
 
   // Category _6: Employee Management
@@ -120,8 +120,8 @@ interface BusinessSettingsService {
   // Category _7: Customer Database
   getCustomerSettings(_tenantId?: string): Promise<any>;
   segmentCustomers(_criteria: unknown, _tenantId?: string): Promise<any[]>;
-  getCustomerLifetimeValue(customerId: string, _tenantId?: string): Promise<number>;
-  updateCustomerPreferences(customerId: string, _preferences: unknown, _tenantId?: string): Promise<void>;
+  getCustomerLifetimeValue(_customerId: string, _tenantId?: string): Promise<number>;
+  updateCustomerPreferences(_customerId: string, _preferences: unknown, _tenantId?: string): Promise<void>;
 
   // Category _8: Invoice Settings
   getInvoiceSettings(_tenantId?: string): Promise<any>;
@@ -132,7 +132,7 @@ interface BusinessSettingsService {
   // Category _9: Quotation Settings
   getQuotationSettings(_tenantId?: string): Promise<any>;
   createQuotation(_quotationData: unknown, _tenantId?: string): Promise<any>;
-  processQuotationApproval(_quotationId: string, approverRole: string, _decision: boolean, _tenantId?: string): Promise<void>;
+  processQuotationApproval(_quotationId: string, _approverRole: string, _decision: boolean, _tenantId?: string): Promise<void>;
   convertQuotationToJob(_quotationId: string, _tenantId?: string): Promise<any>;
 
   // Category _10: Payment Settings
@@ -172,7 +172,7 @@ class BusinessSettingsController implements BusinessSettingsService {
       _vatRate: taxSettings.vatRate || 20,
       _hstRate: taxSettings.hstRate || 13,
       _salesTaxRate: taxSettings.salesTaxRate || 8.25,
-      gstin: taxSettings.gstin || null,
+      _gstin: taxSettings.gstin || null,
       _taxExemptionEnabled: taxSettings.taxExemptionEnabled || false,
       _automaticCalculation: taxSettings.automaticCalculation || true,
       _multiJurisdictionSupport: taxSettings.multiJurisdictionSupport || true,
@@ -211,7 +211,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     }
   }
 
-  async validateGSTIN(gstin: string): Promise<boolean> {
+  async validateGSTIN(_gstin: string): Promise<boolean> {
     // GSTIN validation logic
     const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
     if (!gstinRegex.test(gstin)) {
@@ -244,8 +244,7 @@ class BusinessSettingsController implements BusinessSettingsService {
         taxRate = settings.salesTaxRate;
         taxType = 'Sales Tax';
         break;
-      _default:
-        taxRate = 0;
+      taxRate = 0;
         taxType = 'No Tax';
     }
 
@@ -291,7 +290,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     };
   }
 
-  async updatePrintTemplate(templateType: string, template: string, _tenantId?: string): Promise<void> {
+  async updatePrintTemplate(_templateType: string, _template: string, _tenantId?: string): Promise<void> {
     await this.prisma.businessSettings.upsert({
       _where: {
         category_keytenantId: {
@@ -310,7 +309,7 @@ class BusinessSettingsController implements BusinessSettingsService {
         _value: template,
         _dataType: 'STRING',
         _label: `${templateType} Template`,
-        description: `HTML template for ${templateType} documents`,
+        _description: `HTML template for ${templateType} documents`,
         _isRequired: true,
         _isActive: true,
         _tenantId: tenantId || null,
@@ -318,7 +317,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     });
   }
 
-  async generateDocument(_type: string, data: unknown, _tenantId?: string): Promise<Buffer> {
+  async generateDocument(_type: string, _data: unknown, _tenantId?: string): Promise<Buffer> {
     const settings = await this.getPrintSettings(tenantId);
     const templateKey = `${type}Template`;
     const template = settings[templateKey];
@@ -333,7 +332,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     return Buffer.from(mockPdfContent, 'utf8');
   }
 
-  async previewTemplate(templateType: string, _sampleData: unknown, _tenantId?: string): Promise<string> {
+  async previewTemplate(_templateType: string, _sampleData: unknown, _tenantId?: string): Promise<string> {
     const settings = await this.getPrintSettings(tenantId);
     const templateKey = `${templateType}Template`;
     const template = settings[templateKey];
@@ -383,7 +382,7 @@ class BusinessSettingsController implements BusinessSettingsService {
         },
         _autoTransitions: {},
         _notifications: {},
-        approvalChains: {},
+        _approvalChains: {},
         _escalationRules: {},
       },
       _conditionalLogic: workflowConfig.conditionalLogic || [],
@@ -414,7 +413,7 @@ class BusinessSettingsController implements BusinessSettingsService {
           value,
           _dataType: 'JSON',
           _label: key.charAt(0).toUpperCase() + key.slice(1),
-          description: `${key} configuration for workflow management`,
+          _description: `${key} configuration for workflow management`,
           _isRequired: key === 'jobSheetWorkflow',
           _isActive: true,
           _tenantId: tenantId || null,
@@ -474,7 +473,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     // Update job sheet status
     await this.prisma.jobSheet.update({
       _where: { id: _jobId },
-      data: { status: toState },
+      _data: { status: toState },
     });
 
     // Trigger notifications if configured
@@ -492,14 +491,14 @@ class BusinessSettingsController implements BusinessSettingsService {
 
   // Placeholder implementations for remaining categories (4-20)
   async getEmailSettings(tenantId?: string): Promise<any> { 
-    return { _smtp: 'configured', templates: [] }; 
+    return { _smtp: 'configured', _templates: [] }; 
   }
   
   async testEmailConnection(_settings: unknown): Promise<{ _success: boolean; error?: string }> { 
     return { success: true }; 
   }
   
-  async sendAutomatedEmail(template: string, _recipient: string, data: unknown, _tenantId?: string): Promise<void> {
+  async sendAutomatedEmail(template: string, _recipient: string, _data: unknown, _tenantId?: string): Promise<void> {
     // Implementation would go here
   }
 
@@ -511,7 +510,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     return 1000; 
   }
   
-  async sendSMS(_toNumber: string, message: string, _tenantId?: string): Promise<{ _success: boolean; messageId?: string }> { 
+  async sendSMS(_toNumber: string, _message: string, _tenantId?: string): Promise<{ _success: boolean; messageId?: string }> { 
     return { success: true, _messageId: 'msg123' }; 
   }
   
@@ -526,15 +525,15 @@ class BusinessSettingsController implements BusinessSettingsService {
   async trackPerformance(_employeeId: string, _metrics: unknown, _tenantId?: string): Promise<void> {}
   async getCustomerSettings(tenantId?: string): Promise<any> { return {}; }
   async segmentCustomers(_criteria: unknown, _tenantId?: string): Promise<any[]> { return []; }
-  async getCustomerLifetimeValue(customerId: string, _tenantId?: string): Promise<number> { return 0; }
-  async updateCustomerPreferences(customerId: string, _preferences: unknown, _tenantId?: string): Promise<void> {}
+  async getCustomerLifetimeValue(_customerId: string, _tenantId?: string): Promise<number> { return 0; }
+  async updateCustomerPreferences(_customerId: string, _preferences: unknown, _tenantId?: string): Promise<void> {}
   async getInvoiceSettings(tenantId?: string): Promise<any> { return {}; }
   async generateInvoice(_invoiceData: unknown, _tenantId?: string): Promise<any> { return invoiceData; }
   async processAutomaticPayment(_invoiceId: string, _tenantId?: string): Promise<void> {}
   async calculateLateFees(_invoiceId: string, _tenantId?: string): Promise<number> { return 0; }
   async getQuotationSettings(tenantId?: string): Promise<any> { return {}; }
   async createQuotation(_quotationData: unknown, _tenantId?: string): Promise<any> { return quotationData; }
-  async processQuotationApproval(_quotationId: string, approverRole: string, _decision: boolean, _tenantId?: string): Promise<void> {}
+  async processQuotationApproval(_quotationId: string, _approverRole: string, _decision: boolean, _tenantId?: string): Promise<void> {}
   async convertQuotationToJob(_quotationId: string, _tenantId?: string): Promise<any> { return {}; }
   async getPaymentSettings(tenantId?: string): Promise<any> { return {}; }
   async processPayment(_paymentData: unknown, _tenantId?: string): Promise<any> { return paymentData; }
@@ -545,6 +544,7 @@ class BusinessSettingsController implements BusinessSettingsService {
 }
 
 // Export the enhanced business settings routes
+ 
 // eslint-disable-next-line max-lines-per-function
 async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   const mockPrisma = { _businessSettings: { _findMany: async () => [], _create: async () => ({ _id: '1' }) } };
@@ -554,9 +554,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/business-settings/tax', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const settings = await businessSettings.getTaxSettings();
-      return { _success: true, data: settings };
+      return { _success: true, _data: settings };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
@@ -567,9 +567,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   }, async (request: FastifyRequest<{ _Body: unknown }>, reply: FastifyReply) => {
     try {
       await businessSettings.updateTaxSettings(request.body);
-      return { _success: true, message: 'Tax settings updated successfully' };
+      return { _success: true, _message: 'Tax settings updated successfully' };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
     }
   });
 
@@ -579,9 +579,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     try {
       const { amount, jurisdiction  } = (request.body as unknown);
       const result = await businessSettings.calculateTax(amount, jurisdiction);
-      return { _success: true, data: result };
+      return { _success: true, _data: result };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
     }
   });
 
@@ -589,9 +589,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/business-settings/print', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const settings = await businessSettings.getPrintSettings();
-      return { _success: true, data: settings };
+      return { _success: true, _data: settings };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
@@ -602,9 +602,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
       const { type  } = (request.params as unknown);
       const { template  } = (request.body as unknown);
       await businessSettings.updatePrintTemplate(type, template);
-      return { _success: true, message: 'Template updated successfully' };
+      return { _success: true, _message: 'Template updated successfully' };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
     }
   });
 
@@ -612,9 +612,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/business-settings/workflow', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const config = await businessSettings.getWorkflowConfig();
-      return { _success: true, data: config };
+      return { _success: true, _data: config };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
   });
 
@@ -625,16 +625,16 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
       if (!validation.valid) {
         return (reply as FastifyReply).status(400).send({ 
           _success: false, 
-          error: 'Invalid workflow configuration',
+          _error: 'Invalid workflow configuration',
           _details: validation.errors,
         });
         return;
       }
 
       await businessSettings.updateWorkflowConfig(request.body);
-      return { _success: true, message: 'Workflow configuration updated successfully' };
+      return { _success: true, _message: 'Workflow configuration updated successfully' };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
     }
   });
 
@@ -645,9 +645,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     try {
       const { _jobId, fromState, toState  } = (request.body as unknown);
       await businessSettings.executeWorkflowTransition(_jobId, fromState, toState);
-      return { _success: true, message: 'Workflow transition executed successfully' };
+      return { _success: true, _message: 'Workflow transition executed successfully' };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
     }
   });
 
@@ -663,9 +663,9 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
 
     return { 
       _success: true, 
-      data: categories.map((category: unknown) => ({
-        key: category,
-        _label: category.split('_').map((word: unknown) => word.charAt(0) + word.slice(1).toLowerCase()).join(' '),
+      _data: categories.map((category: unknown) => ({
+        _key: category,
+        _label: category.split('_').map((_word: unknown) => word.charAt(0) + word.slice(1).toLowerCase()).join(' '),
         _implemented: ['TAX_SETTINGS', 'PRINT_SETTINGS', 'WORKFLOW_CONFIGURATION'].includes(category),
       })),
     };

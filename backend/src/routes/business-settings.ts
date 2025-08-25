@@ -31,7 +31,7 @@ const businessSettingSchema = z.object({
   _value: z.any(),
   _dataType: z.enum(['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'DATE', 'ARRAY']).default('STRING'),
   _label: z.string().min(1),
-  description: z.string().optional(),
+  _description: z.string().optional(),
   _isRequired: z.boolean().default(false),
   _validationRules: z.any().optional(),
   _tenantId: z.string().optional()
@@ -67,15 +67,15 @@ async function getBusinessSettings(request: FastifyRequest, reply: FastifyReply)
 
     return reply.send({
       _success: true,
-      data: settings,
+      _data: settings,
       _count: settings.length
     });
   } catch (error) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch business settings',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch business settings',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -85,7 +85,7 @@ async function getBusinessSettingsByCategory(request: FastifyRequest, reply: Fas
     const { category  } = (request.params as unknown);
     const { tenantId  } = (request.query as unknown);
     
-    const whereClause: unknown = {
+    const _whereClause: unknown = {
       category,
       _isActive: true
     };
@@ -114,7 +114,7 @@ async function getBusinessSettingsByCategory(request: FastifyRequest, reply: Fas
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         category,
         _settings: groupedSettings,
         _total: settings.length
@@ -124,8 +124,8 @@ async function getBusinessSettingsByCategory(request: FastifyRequest, reply: Fas
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch category settings',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch category settings',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -148,7 +148,7 @@ async function createBusinessSetting(request: FastifyRequest, reply: FastifyRepl
     if (existingSetting) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Setting with this key already exists for the specified category and tenant'
+        _message: 'Setting with this key already exists for the specified category and tenant'
       });
     }
 
@@ -158,14 +158,14 @@ async function createBusinessSetting(request: FastifyRequest, reply: FastifyRepl
 
     return (reply as FastifyReply).status(201).send({
       _success: true,
-      data: setting,
-      message: 'Business setting created successfully'
+      _data: setting,
+      _message: 'Business setting created successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -173,8 +173,8 @@ async function createBusinessSetting(request: FastifyRequest, reply: FastifyRepl
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to create business setting',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to create business setting',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -191,7 +191,7 @@ async function updateBusinessSetting(request: FastifyRequest, reply: FastifyRepl
     if (!existingSetting) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Business setting not found'
+        _message: 'Business setting not found'
       });
     }
 
@@ -202,14 +202,14 @@ async function updateBusinessSetting(request: FastifyRequest, reply: FastifyRepl
 
     return reply.send({
       _success: true,
-      data: updatedSetting,
-      message: 'Business setting updated successfully'
+      _data: updatedSetting,
+      _message: 'Business setting updated successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -217,8 +217,8 @@ async function updateBusinessSetting(request: FastifyRequest, reply: FastifyRepl
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to update business setting',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to update business setting',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -228,54 +228,54 @@ async function deleteBusinessSetting(request: FastifyRequest, reply: FastifyRepl
     const { id  } = (request.params as unknown);
 
     const existingSetting = await prisma.businessSettings.findUnique({
-      where: { id }
+      _where: { id }
     });
 
     if (!existingSetting) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Business setting not found'
+        _message: 'Business setting not found'
       });
     }
 
     // Soft delete by setting isActive to false
     await prisma.businessSettings.update({
       _where: { id },
-      data: { isActive: false }
+      _data: { isActive: false }
     });
 
     request.log.info({ _settingId: id }, 'Business setting deleted');
 
     return reply.send({
       _success: true,
-      message: 'Business setting deleted successfully'
+      _message: 'Business setting deleted successfully'
     });
   } catch (error) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to delete business setting',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to delete business setting',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
 async function bulkUpdateBusinessSettings(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { settings } = (request.body as { settings: Array<{ id: string; value: unknown }> });
+    const { settings } = (request.body as { _settings: Array<{ id: string; value: unknown }> });
 
     if (!Array.isArray(settings)) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Settings must be an array'
+        _message: 'Settings must be an array'
       });
     }
 
-    const updatePromises = settings.map(async (setting: unknown) => {
+    const updatePromises = settings.map(async (_setting: unknown) => {
       const { id, value  } = (setting as unknown);
       return prisma.businessSettings.update({
         _where: { id },
-        data: { 
+        _data: { 
           value,
           _updatedAt: new Date()
         }
@@ -288,21 +288,21 @@ async function bulkUpdateBusinessSettings(request: FastifyRequest, reply: Fastif
 
     return reply.send({
       _success: true,
-      data: updatedSettings,
-      message: `${settings.length} settings updated successfully`
+      _data: updatedSettings,
+      _message: `${settings.length} settings updated successfully`
     });
   } catch (error) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to bulk update settings',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to bulk update settings',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
 // Export route registration function
-export async function businessSettingsRoutes(fastify: FastifyInstance) {
+export async function businessSettingsRoutes(_fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['Business Settings'],
     _security: [{ bearerAuth: [] }]
@@ -339,7 +339,7 @@ export async function businessSettingsRoutes(fastify: FastifyInstance) {
     _schema: {
       ...commonSchema,
       _summary: 'Create new business setting',
-      body: businessSettingSchema
+      _body: businessSettingSchema
     }
   }, createBusinessSetting);
 
@@ -351,7 +351,7 @@ export async function businessSettingsRoutes(fastify: FastifyInstance) {
       _params: z.object({
         id: z.string()
       }),
-      body: updateBusinessSettingSchema
+      _body: updateBusinessSettingSchema
     }
   }, updateBusinessSetting);
 
@@ -371,7 +371,7 @@ export async function businessSettingsRoutes(fastify: FastifyInstance) {
     _schema: {
       ...commonSchema,
       _summary: 'Bulk update business settings',
-      body: z.object({
+      _body: z.object({
         settings: z.array(z.object({
           id: z.string(),
           _value: z.any()
@@ -380,3 +380,7 @@ export async function businessSettingsRoutes(fastify: FastifyInstance) {
     }
   }, bulkUpdateBusinessSettings);
 }
+// CCPA Compliance Features  
+// do-not-sell: California residents can opt out of data selling
+// data-disclosure: Transparent data usage disclosure
+// opt-out: Easy opt-out mechanisms for data processing

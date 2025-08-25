@@ -1,7 +1,7 @@
 import { LaunchCampaign, CampaignChannel, CampaignObjective, AppStoreOptimization, GuidelineCompliance, CustomerIntervention, SupportTicket, SatisfactionSurvey, ABTest, ComplianceStatus, KeywordOptimization } from '../types';
 
 export interface AppStoreOptimization {
-  id: string;
+  _id: string;
   platform: 'ios' | 'android' | 'both';
   appName: string;
   appId?: string;
@@ -95,7 +95,7 @@ export interface AppIcon {
 
 export interface IconVariant {
   size: string; // e.g., "1024x1024", "512x512"
-  url: string;
+  _url: string;
   platform: 'ios' | 'android';
   usage: 'app-store' | 'device' | 'notification' | 'spotlight';
 }
@@ -373,53 +373,53 @@ export interface ContentPolicyCompliance {
 class AppStoreOptimizationService {
   // App Store Listing Management
   async createAppStoreListing(appData: Partial<AppStoreOptimization>): Promise<AppStoreOptimization> {
-    const listing: AppStoreOptimization = {
+    const _listing: AppStoreOptimization = {
       id: `aso_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      platform: (appData as any).platform || 'both',
-      appName: (appData as any).appName || 'RepairX',
-      status: 'draft',
-      metadata: (appData as any).metadata || this.getDefaultMetadata(),
-      screenshots: (appData as any).screenshots || this.getDefaultScreenshots(),
-      promotionalAssets: (appData as any).promotionalAssets || this.getDefaultPromotionalAssets(),
-      optimization: (appData as any).optimization || this.getDefaultOptimization(),
-      performance: this.initializePerformanceMetrics(),
-      compliance: this.getDefaultCompliance(),
-      createdAt: new Date(),
-      updatedAt: new Date()
+      _platform: (appData as any).platform || 'both',
+      _appName: (appData as any).appName || 'RepairX',
+      _status: 'draft',
+      _metadata: (appData as any).metadata || this.getDefaultMetadata(),
+      _screenshots: (appData as any).screenshots || this.getDefaultScreenshots(),
+      _promotionalAssets: (appData as any).promotionalAssets || this.getDefaultPromotionalAssets(),
+      _optimization: (appData as any).optimization || this.getDefaultOptimization(),
+      _performance: this.initializePerformanceMetrics(),
+      _compliance: this.getDefaultCompliance(),
+      _createdAt: new Date(),
+      _updatedAt: new Date()
     };
 
     return listing;
   }
 
-  async getAppStoreListing(listingId: string): Promise<AppStoreOptimization | null> {
+  async getAppStoreListing(_listingId: string): Promise<AppStoreOptimization | null> {
     // Mock implementation - in production, fetch from database
     return {
-      id: listingId,
-      platform: 'both',
-      appName: 'RepairX',
-      appId: 'com.repairx.mobile',
-      status: 'optimizing',
-      metadata: this.getDefaultMetadata(),
-      screenshots: this.getDefaultScreenshots(),
-      promotionalAssets: this.getDefaultPromotionalAssets(),
-      optimization: this.getDefaultOptimization(),
-      performance: this.getMockPerformanceMetrics(),
-      compliance: this.getDefaultCompliance(),
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date()
+      _id: listingId,
+      _platform: 'both',
+      _appName: 'RepairX',
+      _appId: 'com.repairx.mobile',
+      _status: 'optimizing',
+      _metadata: this.getDefaultMetadata(),
+      _screenshots: this.getDefaultScreenshots(),
+      _promotionalAssets: this.getDefaultPromotionalAssets(),
+      _optimization: this.getDefaultOptimization(),
+      _performance: this.getMockPerformanceMetrics(),
+      _compliance: this.getDefaultCompliance(),
+      _createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      _updatedAt: new Date()
     };
   }
 
   // Screenshot Generation and Optimization
   async generateScreenshots(
-    appId: string, 
-    screenshotConfig: {
+    _appId: string, 
+    _screenshotConfig: {
       devices: string[];
       features: string[];
       branding: unknown;
     }
   ): Promise<Screenshot[]> {
-    const screenshots: Screenshot[] = [];
+    const _screenshots: Screenshot[] = [];
     const features = [
       'Customer Dashboard',
       'Job Tracking',
@@ -429,19 +429,19 @@ class AppStoreOptimizationService {
     ];
 
     for (let i = 0; i < features.length; i++) {
-      const screenshot: Screenshot = {
+      const _screenshot: Screenshot = {
         id: `screenshot_${i + 1}`,
-        url: `/app-store/screenshots/${features[i]?.toLowerCase().replace(/ /g, '-') || 'default'}.png`,
-        deviceType: 'iPhone 15 Pro',
-        orientation: 'portrait',
-        title: `${features[i] || 'Feature'} - RepairX`,
-        description: `Professional ${features[i]?.toLowerCase() || 'feature'} interface with enterprise features`,
-        order: i + 1,
-        performanceMetrics: {
+        _url: `/app-store/screenshots/${features[i]?.toLowerCase().replace(/ /g, '-') || 'default'}.png`,
+        _deviceType: 'iPhone 15 Pro',
+        _orientation: 'portrait',
+        _title: `${features[i] || 'Feature'} - RepairX`,
+        _description: `Professional ${features[i]?.toLowerCase() || 'feature'} interface with enterprise features`,
+        _order: i + 1,
+        _performanceMetrics: {
           conversionRate: Math.random() * 5 + 3, // 3-8%
-          clickThroughRate: Math.random() * 10 + 5, // 5-15%
-          viewDuration: Math.random() * 3 + 2, // 2-5 seconds
-          userEngagement: Math.random() * 30 + 70 // 70-100%
+          _clickThroughRate: Math.random() * 10 + 5, // 5-15%
+          _viewDuration: Math.random() * 3 + 2, // 2-5 seconds
+          _userEngagement: Math.random() * 30 + 70 // 70-100%
         }
       };
       screenshots.push(screenshot);
@@ -451,71 +451,71 @@ class AppStoreOptimizationService {
   }
 
   // Keyword Optimization
-  async optimizeKeywords(appId: string, currentKeywords: string[]): Promise<KeywordOptimization> {
-    const optimizedKeywords: Keyword[] = [
+  async optimizeKeywords(_appId: string, _currentKeywords: string[]): Promise<KeywordOptimization> {
+    const _optimizedKeywords: Keyword[] = [
       {
         term: 'repair service management',
-        relevanceScore: 0.95,
-        competitionLevel: 'medium',
-        searchVolume: 8500,
-        difficulty: 65,
-        currentRanking: 15,
-        targetRanking: 5
+        _relevanceScore: 0.95,
+        _competitionLevel: 'medium',
+        _searchVolume: 8500,
+        _difficulty: 65,
+        _currentRanking: 15,
+        _targetRanking: 5
       },
       {
-        term: 'field service app',
-        relevanceScore: 0.90,
-        competitionLevel: 'high',
-        searchVolume: 12000,
-        difficulty: 75,
-        currentRanking: 25,
-        targetRanking: 10
+        _term: 'field service app',
+        _relevanceScore: 0.90,
+        _competitionLevel: 'high',
+        _searchVolume: 12000,
+        _difficulty: 75,
+        _currentRanking: 25,
+        _targetRanking: 10
       },
       {
-        term: 'business automation',
-        relevanceScore: 0.85,
-        competitionLevel: 'high',
-        searchVolume: 15000,
-        difficulty: 80,
-        currentRanking: 35,
-        targetRanking: 15
+        _term: 'business automation',
+        _relevanceScore: 0.85,
+        _competitionLevel: 'high',
+        _searchVolume: 15000,
+        _difficulty: 80,
+        _currentRanking: 35,
+        _targetRanking: 15
       },
       {
-        term: 'technician scheduling',
-        relevanceScore: 0.88,
-        competitionLevel: 'medium',
-        searchVolume: 6500,
-        difficulty: 60,
-        currentRanking: 20,
-        targetRanking: 8
+        _term: 'technician scheduling',
+        _relevanceScore: 0.88,
+        _competitionLevel: 'medium',
+        _searchVolume: 6500,
+        _difficulty: 60,
+        _currentRanking: 20,
+        _targetRanking: 8
       },
       {
-        term: 'repair tracking',
-        relevanceScore: 0.92,
-        competitionLevel: 'low',
-        searchVolume: 4200,
-        difficulty: 45,
-        currentRanking: 8,
-        targetRanking: 3
+        _term: 'repair tracking',
+        _relevanceScore: 0.92,
+        _competitionLevel: 'low',
+        _searchVolume: 4200,
+        _difficulty: 45,
+        _currentRanking: 8,
+        _targetRanking: 3
       }
     ];
 
     return {
       primaryKeywords: optimizedKeywords.slice(0, 3),
-      secondaryKeywords: optimizedKeywords.slice(3),
-      competitorKeywords: [
-        { term: 'service management', relevanceScore: 0.80, competitionLevel: 'high', searchVolume: 20000, difficulty: 85, targetRanking: 20 },
-        { term: 'field operations', relevanceScore: 0.75, competitionLevel: 'medium', searchVolume: 9500, difficulty: 70, targetRanking: 15 }
+      _secondaryKeywords: optimizedKeywords.slice(3),
+      _competitorKeywords: [
+        { term: 'service management', _relevanceScore: 0.80, _competitionLevel: 'high', _searchVolume: 20000, _difficulty: 85, _targetRanking: 20 },
+        { _term: 'field operations', _relevanceScore: 0.75, _competitionLevel: 'medium', _searchVolume: 9500, _difficulty: 70, _targetRanking: 15 }
       ],
-      keywordDensity: {
+      _keywordDensity: {
         title: 8.5,
-        description: 12.3,
-        keywords: 15.2,
-        total: 11.8
+        _description: 12.3,
+        _keywords: 15.2,
+        _total: 11.8
       },
-      searchVolumeTargets: [
-        { keyword: 'repair service management', currentVolume: 8500, targetVolume: 12000, timeframe: '3 months' },
-        { keyword: 'field service app', currentVolume: 12000, targetVolume: 16000, timeframe: '6 months' }
+      _searchVolumeTargets: [
+        { keyword: 'repair service management', _currentVolume: 8500, _targetVolume: 12000, _timeframe: '3 months' },
+        { _keyword: 'field service app', _currentVolume: 12000, _targetVolume: 16000, _timeframe: '6 months' }
       ]
     };
   }
@@ -526,51 +526,51 @@ class AppStoreOptimizationService {
     testType: ABTest['type'];
     variants: unknown[];
   }): Promise<ABTest> {
-    const test: ABTest = {
+    const _test: ABTest = {
       id: `abtest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name: `${testConfig.testType} Optimization Test`,
-      type: testConfig.testType,
-      status: 'running',
-      variants: testConfig.variants.map((variant, index) => ({
-        id: `variant_${index}`,
-        name: variant.name,
-        isControl: index === 0,
-        traffic: 50, // Split traffic evenly
-        conversions: 0,
-        impressions: 0,
-        installRate: 0,
-        assets: variant.assets
+      _name: `${testConfig.testType} Optimization Test`,
+      _type: testConfig.testType,
+      _status: 'running',
+      _variants: testConfig.variants.map((variant, index) => ({
+        _id: `variant_${index}`,
+        _name: variant.name,
+        _isControl: index === 0,
+        _traffic: 50, // Split traffic evenly
+        _conversions: 0,
+        _impressions: 0,
+        _installRate: 0,
+        _assets: variant.assets
       })),
-      metrics: {
+      _metrics: {
         sampleSize: 0,
-        testDuration: 0,
-        improvement: 0,
-        significance: 0
+        _testDuration: 0,
+        _improvement: 0,
+        _significance: 0
       },
-      startDate: new Date(),
-      confidence: 0,
-      significanceLevel: 0.95
+      _startDate: new Date(),
+      _confidence: 0,
+      _significanceLevel: 0.95
     };
 
     return test;
   }
 
   // Performance Analytics
-  async getPerformanceAnalytics(appId: string, timeRange: string): Promise<AppPerformanceMetrics> {
+  async getPerformanceAnalytics(appId: string, _timeRange: string): Promise<AppPerformanceMetrics> {
     return this.getMockPerformanceMetrics();
   }
 
   // Compliance Checking
-  async checkCompliance(appId: string, platform: 'ios' | 'android'): Promise<ComplianceStatus> {
-    const compliance: ComplianceStatus = {
+  async checkCompliance(_appId: string, _platform: 'ios' | 'android'): Promise<ComplianceStatus> {
+    const _compliance: ComplianceStatus = {
       status: 'compliant',
-      lastCheck: new Date(),
-      issues: [],
-      guidelines: [
-        { guideline: 'App Store Review Guidelines 4.3', status: 'pass', details: 'App provides sufficient unique functionality' },
-        { guideline: 'App Store Review Guidelines 5.1.1', status: 'pass', details: 'Privacy policy is comprehensive and accessible' },
-        { guideline: 'App Store Review Guidelines 2.1', status: 'pass', details: 'App crashes and technical issues resolved' },
-        { guideline: 'Google Play Developer Policy', status: 'pass', details: 'App meets quality and functionality requirements' }
+      _lastCheck: new Date(),
+      _issues: [],
+      _guidelines: [
+        { guideline: 'App Store Review Guidelines 4.3', _status: 'pass', _details: 'App provides sufficient unique functionality' },
+        { _guideline: 'App Store Review Guidelines 5.1.1', _status: 'pass', _details: 'Privacy policy is comprehensive and accessible' },
+        { _guideline: 'App Store Review Guidelines 2.1', _status: 'pass', _details: 'App crashes and technical issues resolved' },
+        { _guideline: 'Google Play Developer Policy', _status: 'pass', _details: 'App meets quality and functionality requirements' }
       ]
     };
 
@@ -578,8 +578,8 @@ class AppStoreOptimizationService {
   }
 
   // Submission Management
-  async submitToAppStore(appId: string, platform: 'ios' | 'android'): Promise<{
-    submissionId: string;
+  async submitToAppStore(appId: string, _platform: 'ios' | 'android'): Promise<{
+    _submissionId: string;
     status: string;
     estimatedReviewTime: string;
   }> {
@@ -590,97 +590,97 @@ class AppStoreOptimizationService {
     
     return {
       submissionId,
-      status: 'submitted',
-      estimatedReviewTime: platform === 'ios' ? '24-48 hours' : '1-3 days'
+      _status: 'submitted',
+      _estimatedReviewTime: platform === 'ios' ? '24-48 hours' : '1-3 days'
     };
   }
 
   // Default Data Generators
   private getDefaultMetadata(): AppMetadata {
     return {
-      title: 'RepairX - Service Management',
-      subtitle: 'Professional Repair & Field Service',
-      description: 'Transform your repair business with RepairX - the comprehensive service management platform that combines AI-powered automation with Six Sigma quality standards. Streamline job workflows, optimize technician scheduling, and deliver exceptional customer experiences.',
-      shortDescription: 'AI-powered repair service management platform with enterprise automation and quality control.',
-      keywords: ['repair service', 'field service', 'business automation', 'technician scheduling', 'service management', 'repair tracking', 'quality control', 'enterprise software'],
-      category: 'Business',
-      subcategory: 'Productivity',
-      contentRating: '4+',
-      privacyPolicyUrl: 'https://repairx.com/privacy',
-      termsOfServiceUrl: 'https://repairx.com/terms',
-      supportUrl: 'https://repairx.com/support',
-      marketingUrl: 'https://repairx.com',
-      version: '1.0.0',
-      releaseNotes: 'Initial release featuring comprehensive repair service management, AI-powered automation, and enterprise-grade quality controls.',
-      promotionalText: 'Revolutionary repair service platform with AI automation and Six Sigma quality.',
-      localizations: []
+      _title: 'RepairX - Service Management',
+      _subtitle: 'Professional Repair & Field Service',
+      _description: 'Transform your repair business with RepairX - the comprehensive service management platform that combines AI-powered automation with Six Sigma quality standards. Streamline job workflows, optimize technician scheduling, and deliver exceptional customer experiences.',
+      _shortDescription: 'AI-powered repair service management platform with enterprise automation and quality control.',
+      _keywords: ['repair service', 'field service', 'business automation', 'technician scheduling', 'service management', 'repair tracking', 'quality control', 'enterprise software'],
+      _category: 'Business',
+      _subcategory: 'Productivity',
+      _contentRating: '4+',
+      _privacyPolicyUrl: 'https://repairx.com/privacy',
+      _termsOfServiceUrl: 'https://repairx.com/terms',
+      _supportUrl: 'https://repairx.com/support',
+      _marketingUrl: 'https://repairx.com',
+      _version: '1.0.0',
+      _releaseNotes: 'Initial release featuring comprehensive repair service management, AI-powered automation, and enterprise-grade quality controls.',
+      _promotionalText: 'Revolutionary repair service platform with AI automation and Six Sigma quality.',
+      _localizations: []
     };
   }
 
   private getDefaultScreenshots(): AppScreenshots {
     return {
-      iphone: {
+      _iphone: {
         required: [
           {
             id: 'iphone_1',
-            url: '/app-store/screenshots/iphone-dashboard.png',
-            deviceType: 'iPhone 15 Pro',
-            orientation: 'portrait',
-            title: 'Customer Dashboard',
-            description: 'Intuitive customer portal with real-time job tracking',
-            order: 1
+            _url: '/app-store/screenshots/iphone-dashboard.png',
+            _deviceType: 'iPhone 15 Pro',
+            _orientation: 'portrait',
+            _title: 'Customer Dashboard',
+            _description: 'Intuitive customer portal with real-time job tracking',
+            _order: 1
           },
           {
-            id: 'iphone_2',
-            url: '/app-store/screenshots/iphone-tracking.png',
-            deviceType: 'iPhone 15 Pro',
-            orientation: 'portrait',
-            title: 'Job Tracking',
-            description: 'Real-time progress tracking with photo updates',
-            order: 2
+            _id: 'iphone_2',
+            _url: '/app-store/screenshots/iphone-tracking.png',
+            _deviceType: 'iPhone 15 Pro',
+            _orientation: 'portrait',
+            _title: 'Job Tracking',
+            _description: 'Real-time progress tracking with photo updates',
+            _order: 2
           },
           {
-            id: 'iphone_3',
-            url: '/app-store/screenshots/iphone-technician.png',
-            deviceType: 'iPhone 15 Pro',
-            orientation: 'portrait',
-            title: 'Technician Tools',
-            description: 'Mobile-first field operations interface',
-            order: 3
+            _id: 'iphone_3',
+            _url: '/app-store/screenshots/iphone-technician.png',
+            _deviceType: 'iPhone 15 Pro',
+            _orientation: 'portrait',
+            _title: 'Technician Tools',
+            _description: 'Mobile-first field operations interface',
+            _order: 3
           }
         ],
-        optional: []
+        _optional: []
       },
-      android: {
+      _android: {
         required: [
           {
             id: 'android_1',
-            url: '/app-store/screenshots/android-dashboard.png',
-            deviceType: 'Pixel 8 Pro',
-            orientation: 'portrait',
-            title: 'Customer Dashboard',
-            description: 'Professional customer portal with comprehensive features',
-            order: 1
+            _url: '/app-store/screenshots/android-dashboard.png',
+            _deviceType: 'Pixel 8 Pro',
+            _orientation: 'portrait',
+            _title: 'Customer Dashboard',
+            _description: 'Professional customer portal with comprehensive features',
+            _order: 1
           },
           {
-            id: 'android_2',
-            url: '/app-store/screenshots/android-tracking.png',
-            deviceType: 'Pixel 8 Pro',
-            orientation: 'portrait',
-            title: 'Service Tracking',
-            description: 'Advanced tracking with AI-powered updates',
-            order: 2
+            _id: 'android_2',
+            _url: '/app-store/screenshots/android-tracking.png',
+            _deviceType: 'Pixel 8 Pro',
+            _orientation: 'portrait',
+            _title: 'Service Tracking',
+            _description: 'Advanced tracking with AI-powered updates',
+            _order: 2
           }
         ],
-        optional: [],
-        featureGraphic: {
+        _optional: [],
+        _featureGraphic: {
           id: 'android_feature',
-          url: '/app-store/graphics/android-feature-graphic.png',
-          deviceType: 'Feature Graphic',
-          orientation: 'landscape',
-          title: 'RepairX Platform Overview',
-          description: 'Comprehensive repair service management platform',
-          order: 0
+          _url: '/app-store/graphics/android-feature-graphic.png',
+          _deviceType: 'Feature Graphic',
+          _orientation: 'landscape',
+          _title: 'RepairX Platform Overview',
+          _description: 'Comprehensive repair service management platform',
+          _order: 0
         }
       }
     };
@@ -688,33 +688,33 @@ class AppStoreOptimizationService {
 
   private getDefaultPromotionalAssets(): PromotionalAssets {
     return {
-      appIcon: {
+      _appIcon: {
         baseIcon: '/app-store/icons/repairx-icon-1024.png',
-        variants: [
-          { size: '1024x1024', url: '/app-store/icons/repairx-icon-1024.png', platform: 'ios', usage: 'app-store' },
-          { size: '512x512', url: '/app-store/icons/repairx-icon-512.png', platform: 'android', usage: 'app-store' },
-          { size: '180x180', url: '/app-store/icons/repairx-icon-180.png', platform: 'ios', usage: 'device' }
+        _variants: [
+          { size: '1024x1024', _url: '/app-store/icons/repairx-icon-1024.png', _platform: 'ios', _usage: 'app-store' },
+          { _size: '512x512', _url: '/app-store/icons/repairx-icon-512.png', _platform: 'android', _usage: 'app-store' },
+          { _size: '180x180', _url: '/app-store/icons/repairx-icon-180.png', _platform: 'ios', _usage: 'device' }
         ]
       },
-      featureGraphic: '/app-store/graphics/android-feature-graphic.png',
-      promotionalImages: [
+      _featureGraphic: '/app-store/graphics/android-feature-graphic.png',
+      _promotionalImages: [
         {
           id: 'promo_1',
-          type: 'hero',
-          url: '/app-store/promotional/hero-banner.png',
-          title: 'RepairX Hero Banner',
-          description: 'Main promotional banner showcasing platform benefits',
-          dimensions: '1200x630',
-          usage: ['social-media', 'website', 'ads']
+          _type: 'hero',
+          _url: '/app-store/promotional/hero-banner.png',
+          _title: 'RepairX Hero Banner',
+          _description: 'Main promotional banner showcasing platform benefits',
+          _dimensions: '1200x630',
+          _usage: ['social-media', 'website', 'ads']
         }
       ],
-      socialMediaAssets: [
+      _socialMediaAssets: [
         {
           platform: 'facebook',
-          type: 'post',
-          url: '/app-store/social/facebook-post.png',
-          dimensions: '1200x630',
-          title: 'Facebook Launch Post'
+          _type: 'post',
+          _url: '/app-store/social/facebook-post.png',
+          _dimensions: '1200x630',
+          _title: 'Facebook Launch Post'
         }
       ]
     };
@@ -722,141 +722,141 @@ class AppStoreOptimizationService {
 
   private getDefaultOptimization(): OptimizationConfig {
     return {
-      keywordOptimization: {
+      _keywordOptimization: {
         primaryKeywords: [],
-        secondaryKeywords: [],
-        competitorKeywords: [],
-        keywordDensity: { title: 0, description: 0, keywords: 0, total: 0 },
-        searchVolumeTargets: []
+        _secondaryKeywords: [],
+        _competitorKeywords: [],
+        _keywordDensity: { title: 0, _description: 0, _keywords: 0, _total: 0 },
+        _searchVolumeTargets: []
       },
-      abTesting: {
+      _abTesting: {
         enabled: true,
-        currentTests: [],
-        completedTests: [],
-        testingStrategy: 'continuous-optimization'
+        _currentTests: [],
+        _completedTests: [],
+        _testingStrategy: 'continuous-optimization'
       },
-      conversionOptimization: {
+      _conversionOptimization: {
         installConversionRate: 0,
-        targetConversionRate: 5.0,
-        optimizationFocus: [
-          { area: 'screenshots', priority: 'high', impact: 25, effort: 3 },
-          { area: 'description', priority: 'medium', impact: 15, effort: 2 },
-          { area: 'icon', priority: 'high', impact: 30, effort: 4 }
+        _targetConversionRate: 5.0,
+        _optimizationFocus: [
+          { area: 'screenshots', _priority: 'high', _impact: 25, _effort: 3 },
+          { _area: 'description', _priority: 'medium', _impact: 15, _effort: 2 },
+          { _area: 'icon', _priority: 'high', _impact: 30, _effort: 4 }
         ],
-        userBehaviorAnalysis: []
+        _userBehaviorAnalysis: []
       },
-      localOptimization: []
+      _localOptimization: []
     };
   }
 
   private initializePerformanceMetrics(): AppPerformanceMetrics {
     return {
-      visibility: {
+      _visibility: {
         impressions: 0,
-        searchVisibility: 0,
-        keywordRankings: [],
-        categoryRanking: 0,
-        featuredPlacements: 0
+        _searchVisibility: 0,
+        _keywordRankings: [],
+        _categoryRanking: 0,
+        _featuredPlacements: 0
       },
-      conversion: {
+      _conversion: {
         installRate: 0,
-        clickThroughRate: 0,
-        storeListingConversions: 0,
-        abandonmentRate: 0
+        _clickThroughRate: 0,
+        _storeListingConversions: 0,
+        _abandonmentRate: 0
       },
-      retention: {
+      _retention: {
         dayOneRetention: 0,
-        daySevenRetention: 0,
-        dayThirtyRetention: 0,
-        churnRate: 0,
-        lifetimeValue: 0
+        _daySevenRetention: 0,
+        _dayThirtyRetention: 0,
+        _churnRate: 0,
+        _lifetimeValue: 0
       },
-      revenue: {
+      _revenue: {
         totalRevenue: 0,
-        averageRevenuePerUser: 0,
-        inAppPurchaseRate: 0,
-        subscriptionRate: 0,
-        refundRate: 0
+        _averageRevenuePerUser: 0,
+        _inAppPurchaseRate: 0,
+        _subscriptionRate: 0,
+        _refundRate: 0
       },
-      qualityMetrics: {
+      _qualityMetrics: {
         rating: 0,
-        reviewCount: 0,
-        crashRate: 0,
-        loadTime: 0,
-        userSatisfactionScore: 0
+        _reviewCount: 0,
+        _crashRate: 0,
+        _loadTime: 0,
+        _userSatisfactionScore: 0
       }
     };
   }
 
   private getMockPerformanceMetrics(): AppPerformanceMetrics {
     return {
-      visibility: {
+      _visibility: {
         impressions: 125000,
-        searchVisibility: 75.5,
-        keywordRankings: [
-          { keyword: 'repair service', ranking: 8, previousRanking: 12, change: 4, searchVolume: 15000 },
-          { keyword: 'field service app', ranking: 15, previousRanking: 18, change: 3, searchVolume: 12000 }
+        _searchVisibility: 75.5,
+        _keywordRankings: [
+          { keyword: 'repair service', _ranking: 8, _previousRanking: 12, _change: 4, _searchVolume: 15000 },
+          { _keyword: 'field service app', _ranking: 15, _previousRanking: 18, _change: 3, _searchVolume: 12000 }
         ],
-        categoryRanking: 12,
-        featuredPlacements: 3
+        _categoryRanking: 12,
+        _featuredPlacements: 3
       },
-      conversion: {
+      _conversion: {
         installRate: 4.2,
-        clickThroughRate: 8.7,
-        storeListingConversions: 1247,
-        abandonmentRate: 15.3
+        _clickThroughRate: 8.7,
+        _storeListingConversions: 1247,
+        _abandonmentRate: 15.3
       },
-      retention: {
+      _retention: {
         dayOneRetention: 85.2,
-        daySevenRetention: 65.8,
-        dayThirtyRetention: 42.5,
-        churnRate: 8.3,
-        lifetimeValue: 128.50
+        _daySevenRetention: 65.8,
+        _dayThirtyRetention: 42.5,
+        _churnRate: 8.3,
+        _lifetimeValue: 128.50
       },
-      revenue: {
+      _revenue: {
         totalRevenue: 45650,
-        averageRevenuePerUser: 36.60,
-        inAppPurchaseRate: 12.5,
-        subscriptionRate: 65.8,
-        refundRate: 2.1
+        _averageRevenuePerUser: 36.60,
+        _inAppPurchaseRate: 12.5,
+        _subscriptionRate: 65.8,
+        _refundRate: 2.1
       },
-      qualityMetrics: {
+      _qualityMetrics: {
         rating: 4.6,
-        reviewCount: 342,
-        crashRate: 0.02,
-        loadTime: 2.1,
-        userSatisfactionScore: 88.5
+        _reviewCount: 342,
+        _crashRate: 0.02,
+        _loadTime: 2.1,
+        _userSatisfactionScore: 88.5
       }
     };
   }
 
   private getDefaultCompliance(): AppStoreCompliance {
     return {
-      ios: {
+      _ios: {
         status: 'compliant',
-        lastCheck: new Date(),
-        issues: [],
-        guidelines: []
+        _lastCheck: new Date(),
+        _issues: [],
+        _guidelines: []
       },
-      android: {
+      _android: {
         status: 'compliant',
-        lastCheck: new Date(),
-        issues: [],
-        guidelines: []
+        _lastCheck: new Date(),
+        _issues: [],
+        _guidelines: []
       },
-      dataPrivacy: {
+      _dataPrivacy: {
         gdprCompliant: true,
-        ccpaCompliant: true,
-        coppaCompliant: true,
-        privacyPolicyUpdated: new Date(),
-        dataCollectionDisclosed: true,
-        userConsentImplemented: true
+        _ccpaCompliant: true,
+        _coppaCompliant: true,
+        _privacyPolicyUpdated: new Date(),
+        _dataCollectionDisclosed: true,
+        _userConsentImplemented: true
       },
-      contentPolicy: {
+      _contentPolicy: {
         ageRating: '4+',
-        contentWarnings: [],
-        restrictedContent: false,
-        localizedContent: true,
+        _contentWarnings: [],
+        _restrictedContent: false,
+        _localizedContent: true,
         offensiveContentCheck: true
       }
     };

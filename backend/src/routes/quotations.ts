@@ -6,7 +6,7 @@ import { prisma } from '../utils/database';
 const quotationItemSchema = z.object({
   _itemType: z.enum(['SERVICE', 'PART', 'LABOR', 'MATERIAL', 'TRAVEL', 'DIAGNOSTIC']).default('SERVICE'),
   _name: z.string().min(1).max(200),
-  description: z.string().max(500).optional(),
+  _description: z.string().max(500).optional(),
   _quantity: z.number().positive(),
   _unitPrice: z.number().min(0),
   _partNumber: z.string().max(100).optional(),
@@ -14,10 +14,10 @@ const quotationItemSchema = z.object({
 });
 
 const quotationSchema = z.object({
-  customerId: z.string().min(1),
+  _customerId: z.string().min(1),
   _deviceId: z.string().optional(),
   _title: z.string().min(1).max(200),
-  description: z.string().min(1).max(1000),
+  _description: z.string().min(1).max(1000),
   _notes: z.string().max(1000).optional(),
   _validUntil: z.string().datetime(),
   _discountAmount: z.number().min(0).default(0),
@@ -48,7 +48,7 @@ function generateQuoteNumber(): string {
 }
 
 function calculateTotals(_items: unknown[], _discountAmount: number = 0, _taxRate: number = 0) {
-  const subtotal = items.reduce((sum: unknown, item: unknown) => {
+  const subtotal = items.reduce((_sum: unknown, _item: unknown) => {
     const itemTotal = item.quantity * item.unitPrice;
     return sum + itemTotal;
   }, 0);
@@ -74,14 +74,15 @@ async function checkApprovalRequirements(_totalAmount: number, _preparedBy: stri
 
   const requiredApprovals = approvalRules.filter((rule: unknown) => totalAmount >= rule.threshold);
   
-  return requiredApprovals.map((rule: unknown) => ({
-    approverRole: rule.role,
+  return requiredApprovals.map((_rule: unknown) => ({
+    _approverRole: rule.role,
     _requiredAmount: rule.threshold,
     _status: 'PENDING'
   }));
 }
 
 // Route handlers
+ 
 // eslint-disable-next-line max-lines-per-function
 async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -127,7 +128,7 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
               id: true,
               _firstName: true,
               _lastName: true,
-              email: true,
+              _email: true,
               _phone: true
             }
           },
@@ -141,15 +142,15 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
           _device: {
             select: {
               id: true,
-              brand: true,
-              model: true,
+              _brand: true,
+              _model: true,
               _category: true
             }
           },
           _items: {
             orderBy: { createdAt: 'asc' }
           },
-          approvals: {
+          _approvals: {
             include: {
               approver: {
                 select: {
@@ -182,7 +183,7 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
 
     return reply.send({
       _success: true,
-      data: quotations,
+      _data: quotations,
       _pagination: {
         page,
         limit,
@@ -194,26 +195,27 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch quotations',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch quotations',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { id  } = (request.params as unknown);
 
     const quotation = await prisma.quotation.findUnique({
-      where: { id },
+      _where: { id },
       _include: {
         customer: {
           select: {
             id: true,
             _firstName: true,
             _lastName: true,
-            email: true,
+            _email: true,
             _phone: true
           }
         },
@@ -227,16 +229,16 @@ async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
         _device: {
           select: {
             id: true,
-            brand: true,
-            model: true,
+            _brand: true,
+            _model: true,
             _category: true,
-            serialNumber: true
+            _serialNumber: true
           }
         },
         _items: {
           orderBy: { createdAt: 'asc' }
         },
-        approvals: {
+        _approvals: {
           include: {
             approver: {
               select: {
@@ -271,7 +273,7 @@ async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
     if (!quotation) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Quotation not found'
+        _message: 'Quotation not found'
       });
     }
 
@@ -279,24 +281,25 @@ async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
     if (!quotation.customerViewedAt) {
       await prisma.quotation.update({
         _where: { id },
-        data: { customerViewedAt: new Date() }
+        _data: { customerViewedAt: new Date() }
       });
     }
 
     return reply.send({
       _success: true,
-      data: quotation
+      _data: quotation
     });
   } catch (error) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch quotation',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch quotation',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -306,7 +309,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
     if (!_userId) {
       return (reply as FastifyReply).status(401).send({
         _success: false,
-        message: 'Authentication required'
+        _message: 'Authentication required'
       });
     }
 
@@ -319,7 +322,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
     if (!customer || customer.role !== 'CUSTOMER') {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Invalid customer'
+        _message: 'Invalid customer'
       });
     }
 
@@ -328,14 +331,14 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
       const device = await prisma.device.findFirst({
         _where: { 
           id: data.deviceId,
-          customerId: data.customerId 
+          _customerId: data.customerId 
         }
       });
 
       if (!device) {
         return (reply as FastifyReply).status(400).send({
           _success: false,
-          message: 'Device not found or does not belong to customer'
+          _message: 'Device not found or does not belong to customer'
         });
       }
     }
@@ -350,13 +353,13 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
     const quotation = await prisma.$transaction(async (_tx: unknown) => {
       // Create quotation
       const newQuotation = await tx.quotation.create({
-        data: {
+        _data: {
           quoteNumber,
-          customerId: data.customerId,
+          _customerId: data.customerId,
           _deviceId: data.deviceId,
           _preparedBy: _userId,
           _title: data.title,
-          description: data.description,
+          _description: data.description,
           _notes: data.notes,
           _validUntil: new Date(data.validUntil),
           _subtotal: totals.subtotal,
@@ -368,11 +371,11 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
       });
 
       // Create quotation items
-      const itemsWithTotals = data.items.map((item: unknown) => ({
+      const itemsWithTotals = data.items.map((_item: unknown) => ({
         _quotationId: newQuotation.id,
         _itemType: item.itemType,
         _name: item.name,
-        description: item.description,
+        _description: item.description,
         _quantity: item.quantity,
         _unitPrice: item.unitPrice,
         _totalPrice: item.quantity * item.unitPrice,
@@ -381,7 +384,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
       }));
 
       await tx.quotationItem.createMany({
-        data: itemsWithTotals
+        _data: itemsWithTotals
       });
 
       // Create approval requirements if needed
@@ -390,9 +393,9 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
         
         if (requiredApprovals.length > 0) {
           await tx.quotationApproval.createMany({
-            data: requiredApprovals.map((approval: unknown) => ({
-              quotationId: newQuotation.id,
-              approverRole: approval.approverRole as unknown,
+            _data: requiredApprovals.map((approval: unknown) => ({
+              _quotationId: newQuotation.id,
+              _approverRole: approval.approverRole as unknown,
               _requiredAmount: approval.requiredAmount,
               _status: 'PENDING'
             }))
@@ -411,11 +414,11 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
           select: {
             firstName: true,
             _lastName: true,
-            email: true
+            _email: true
           }
         },
         _items: true,
-        approvals: true
+        _approvals: true
       }
     });
 
@@ -423,14 +426,14 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
 
     return (reply as FastifyReply).status(201).send({
       _success: true,
-      data: completeQuotation,
-      message: 'Quotation created successfully'
+      _data: completeQuotation,
+      _message: 'Quotation created successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -438,12 +441,13 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to create quotation',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to create quotation',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function processQuotationApproval(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -454,7 +458,7 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     if (!_userId) {
       return (reply as FastifyReply).status(401).send({
         _success: false,
-        message: 'Authentication required'
+        _message: 'Authentication required'
       });
     }
 
@@ -466,7 +470,7 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
           select: {
             firstName: true,
             _lastName: true,
-            email: true
+            _email: true
           }
         }
       }
@@ -475,37 +479,37 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     if (!quotation) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Quotation not found'
+        _message: 'Quotation not found'
       });
     }
 
     if(quotation.status !== 'PENDING_APPROVAL') {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Quotation is not pending approval'
+        _message: 'Quotation is not pending approval'
       });
     }
 
     // Find pending approval for this user
     const pendingApproval = quotation.approvals.find(
-      (approval: unknown) => approval.status === 'PENDING' && !approval.approverId
+      (_approval: unknown) => approval.status === 'PENDING' && !approval.approverId
     );
 
     if (!pendingApproval) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'No pending approval found'
+        _message: 'No pending approval found'
       });
     }
 
     // Process the approval
     const updatedApproval = await prisma.quotationApproval.update({
       _where: { id: pendingApproval.id },
-      data: {
+      _data: {
         approverId: _userId,
         _status: data.action === 'approve' ? 'APPROVED' : 'REJECTED',
         _comments: data.comments,
-        approvedAt: data.action === 'approve' ? new Date() : undefined,
+        _approvedAt: data.action === 'approve' ? new Date() : undefined,
         _rejectedAt: data.action === 'reject' ? new Date() : undefined
       }
     });
@@ -517,8 +521,8 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     });
 
     const allApprovals = updatedQuotation!.approvals;
-    const allApproved = allApprovals.every((approval: unknown) => approval.status === 'APPROVED');
-    const anyRejected = allApprovals.some((approval: unknown) => approval.status === 'REJECTED');
+    const allApproved = allApprovals.every((_approval: unknown) => approval.status === 'APPROVED');
+    const anyRejected = allApprovals.some((_approval: unknown) => approval.status === 'REJECTED');
 
     let newStatus = quotation.status;
     if (anyRejected) {
@@ -531,14 +535,14 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     if (newStatus !== quotation.status) {
       await prisma.quotation.update({
         _where: { id },
-        data: { status: newStatus }
+        _data: { status: newStatus }
       });
     }
 
     // Create revision record if rejected
     if(data.action === 'reject' || data.action === 'request_revision') {
       await prisma.quotationRevision.create({
-        data: {
+        _data: {
           quotationId: id,
           _revisionNumber: quotation.revisionNumber + 1,
           _changes: {
@@ -555,23 +559,23 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     request.log.info({
       _quotationId: id,
       _action: data.action,
-      approverId: _userId
+      _approverId: _userId
     }, 'Quotation approval processed');
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         approvalId: updatedApproval.id,
         _quotationStatus: newStatus,
         _action: data.action
       },
-      message: `Quotation ${data.action} processed successfully`
+      _message: `Quotation ${data.action} processed successfully`
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -579,12 +583,13 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to process quotation approval',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to process quotation approval',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function customerResponseToQuotation(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -601,14 +606,14 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
     if (!quotation) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Quotation not found'
+        _message: 'Quotation not found'
       });
     }
 
     if(quotation.status !== 'SENT_TO_CUSTOMER' && quotation.status !== 'APPROVED') {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Quotation is not available for customer response'
+        _message: 'Quotation is not available for customer response'
       });
     }
 
@@ -616,12 +621,12 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
     if (new Date() > quotation.validUntil) {
       await prisma.quotation.update({
         _where: { id },
-        data: { status: 'EXPIRED' }
+        _data: { status: 'EXPIRED' }
       });
 
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Quotation has expired'
+        _message: 'Quotation has expired'
       });
     }
 
@@ -645,13 +650,13 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
 
     const updatedQuotation = await prisma.quotation.update({
       _where: { id },
-      data: updateData,
+      _data: updateData,
       _include: {
         customer: {
           select: {
             firstName: true,
             _lastName: true,
-            email: true
+            _email: true
           }
         },
         _items: true
@@ -661,7 +666,7 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
     // Create revision record if requested
     if(data.action === 'request_revision') {
       await prisma.quotationRevision.create({
-        data: {
+        _data: {
           quotationId: id,
           _revisionNumber: quotation.revisionNumber + 1,
           _changes: {
@@ -676,20 +681,20 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
 
     request.log.info({
       _quotationId: id,
-      customerId: quotation.customerId,
+      _customerId: quotation.customerId,
       _action: data.action
     }, 'Customer quotation response processed');
 
     return reply.send({
       _success: true,
-      data: updatedQuotation,
-      message: `Quotation ${data.action} processed successfully`
+      _data: updatedQuotation,
+      _message: `Quotation ${data.action} processed successfully`
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -697,12 +702,13 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to process customer response',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to process customer response',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function convertQuotationToJob(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -712,7 +718,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
     if (!_userId) {
       return (reply as FastifyReply).status(401).send({
         _success: false,
-        message: 'Authentication required'
+        _message: 'Authentication required'
       });
     }
 
@@ -728,21 +734,21 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
     if (!quotation) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Quotation not found'
+        _message: 'Quotation not found'
       });
     }
 
     if(quotation.status !== 'CUSTOMER_APPROVED') {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Quotation must be customer approved to convert to job'
+        _message: 'Quotation must be customer approved to convert to job'
       });
     }
 
     if (quotation.jobSheetId) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Quotation already converted to job sheet'
+        _message: 'Quotation already converted to job sheet'
       });
     }
 
@@ -751,14 +757,14 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
       // First create a booking (required for job sheet)
       // In a real system, this might already exist or be created differently
       const booking = await tx.booking.create({
-        data: {
+        _data: {
           customerId: quotation.customerId,
           _serviceId: 'default-service-id', // This would need proper service mapping
           _addressId: 'default-address-id', // This would need proper address handling
           _scheduledAt: new Date(),
           _status: 'CONFIRMED',
           _estimatedPrice: quotation.totalAmount,
-          description: quotation.description
+          _description: quotation.description
         }
       });
 
@@ -767,7 +773,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
 
       // Create job sheet
       const jobSheet = await tx.jobSheet.create({
-        data: {
+        _data: {
           jobNumber,
           _bookingId: booking.id,
           _deviceId: quotation.deviceId!,
@@ -782,7 +788,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
       // Update quotation
       await tx.quotation.update({
         _where: { id },
-        data: {
+        _data: {
           status: 'CONVERTED_TO_JOB',
           _convertedToJobAt: new Date(),
           _jobSheetId: jobSheet.id
@@ -800,25 +806,25 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         jobSheetId: result.jobSheet.id,
         _jobNumber: result.jobSheet.jobNumber,
         _bookingId: result.booking.id
       },
-      message: 'Quotation converted to job sheet successfully'
+      _message: 'Quotation converted to job sheet successfully'
     });
   } catch (error) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to convert quotation to job',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to convert quotation to job',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
 // Export route registration function
-export async function quotationRoutes(fastify: FastifyInstance) {
+export async function quotationRoutes(_fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['Quotation System'],
     _security: [{ bearerAuth: [] }]
@@ -833,7 +839,7 @@ export async function quotationRoutes(fastify: FastifyInstance) {
         page: z.number().int().min(1).default(1),
         _limit: z.number().int().min(1).max(100).default(50),
         _status: z.string().optional(),
-        customerId: z.string().optional(),
+        _customerId: z.string().optional(),
         _preparedBy: z.string().optional(),
         _startDate: z.string().datetime().optional(),
         _endDate: z.string().datetime().optional()
@@ -857,7 +863,7 @@ export async function quotationRoutes(fastify: FastifyInstance) {
     _schema: {
       ...commonSchema,
       _summary: 'Create quotation',
-      body: quotationSchema
+      _body: quotationSchema
     }
   }, createQuotation);
 
@@ -869,7 +875,7 @@ export async function quotationRoutes(fastify: FastifyInstance) {
       _params: z.object({
         id: z.string()
       }),
-      body: quotationApprovalSchema
+      _body: quotationApprovalSchema
     }
   }, processQuotationApproval);
 
@@ -881,7 +887,7 @@ export async function quotationRoutes(fastify: FastifyInstance) {
       _params: z.object({
         id: z.string()
       }),
-      body: customerResponseSchema
+      _body: customerResponseSchema
     }
   }, customerResponseToQuotation);
 

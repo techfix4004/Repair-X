@@ -1,6 +1,8 @@
+import { LaunchCampaign, CampaignChannel, CampaignObjective, AppStoreOptimization, GuidelineCompliance, CustomerIntervention, SupportTicket, SatisfactionSurvey, ABTest, ComplianceStatus, KeywordOptimization } from '../types';
+
 
 export interface QualityMetrics {
-  buildId: string;
+  _buildId: string;
   timestamp: string;
   defectRate: number;
   processCapability: {
@@ -31,30 +33,30 @@ export class SixSigmaMonitor {
     const buildId = `CORE-${Date.now()}`;
     
     // For clean core system, start with perfect metrics
-    const metrics: QualityMetrics = {
+    const _metrics: QualityMetrics = {
       buildId,
-      timestamp: new Date().toISOString(),
-      defectRate: 0, // Perfect start
-      processCapability: {
+      _timestamp: new Date().toISOString(),
+      _defectRate: 0, // Perfect start
+      _processCapability: {
         cp: 2.0,  // Excellent capability
-        cpk: 1.8  // Excellent capability
+        _cpk: 1.8  // Excellent capability
       },
-      compliance: {
+      _compliance: {
         sixSigma: true,  // Compliant with clean system
-        gdpr: true,      // Built with privacy in mind
-        ccpa: true,      // Privacy compliant
-        pciDss: true,    // Security compliant
-        gst: true        // Tax compliant
+        _gdpr: true,      // Built with privacy in mind
+        _ccpa: true,      // Privacy compliant
+        _pciDss: true,    // Security compliant
+        _gst: true        // Tax compliant
       },
-      codeQuality: {
+      _codeQuality: {
         coverage: 95,    // High test coverage
-        lintingIssues: 0, // Clean code
-        securityVulnerabilities: 0 // Secure
+        _lintingIssues: 0, // Clean code
+        _securityVulnerabilities: 0 // Secure
       },
-      performance: {
+      _performance: {
         averageResponseTime: 150, // <200ms target met
-        uptime: 99.9,            // High availability
-        throughput: 1000         // Good throughput
+        _uptime: 99.9,            // High availability
+        _throughput: 1000         // Good throughput
       }
     };
     
@@ -67,9 +69,9 @@ export class SixSigmaMonitor {
            metrics.processCapability.cpk > 1.33;
   }
   
-  static async updateRoadmap(metrics: QualityMetrics): Promise<void> {
-    console.log(`Six Sigma Status: ${this.isSixSigmaCompliant(metrics) ? '✅ COMPLIANT' : '❌ NON-COMPLIANT'}`);
-    console.log(`Defect Rate: ${metrics.defectRate} DPMO`);
-    console.log(`Process Capability: Cp=${metrics.processCapability.cp}, Cpk=${metrics.processCapability.cpk}`);
+  static async updateRoadmap(_metrics: QualityMetrics): Promise<void> {
+    console.log(`Six Sigma _Status: ${this.isSixSigmaCompliant(metrics) ? '✅ COMPLIANT' : '❌ NON-COMPLIANT'}`);
+    console.log(`Defect _Rate: ${metrics.defectRate} DPMO`);
+    console.log(`Process _Capability: Cp=${metrics.processCapability.cp}, Cpk=${metrics.processCapability.cpk}`);
   }
 }

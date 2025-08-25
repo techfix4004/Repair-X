@@ -1,0 +1,58 @@
+{
+  "sixSigma": {
+    "defectRate": 300,
+    "processCapability": 1.6666666666666667,
+    "processCapabilityK": 1.5666666666666667,
+    "qualityScore": 37
+  },
+  "codeQuality": {
+    "coverage": 0,
+    "lintIssues": 0,
+    "buildSuccess": false,
+    "typeScriptErrors": 0
+  },
+  "functionality": {
+    "businessLogicWorkflows": [
+      "Job Creation and Assignment",
+      "12-State Job Lifecycle Management",
+      "Quote Generation and Approval",
+      "Payment Processing",
+      "Invoice Generation",
+      "Technician Management",
+      "Customer Communication",
+      "Inventory Management"
+    ],
+    "userLogicWorkflows": [
+      "Customer Registration and Login",
+      "Real-time Job Tracking",
+      "Payment and Receipt Management",
+      "Technician Mobile Interface",
+      "Admin Dashboard Operations"
+    ],
+    "saasLogicWorkflows": [
+      "Multi-tenant Architecture",
+      "Subscription Management",
+      "White-label Configuration",
+      "Cross-tenant Analytics",
+      "API Key Management",
+      "Compliance Monitoring"
+    ],
+    "complianceStatus": {
+      "gdpr": true,
+      "ccpa": true,
+      "pciDss": true,
+      "gst": true,
+      "sixSigma": false
+    }
+  },
+  "performance": {
+    "loadTime": 1250,
+    "bundleSize": 92208,
+    "apiResponseTime": 150
+  },
+  "deployment": {
+    "productionReady": false,
+    "securityScan": false,
+    "documentationComplete": false
+  }
+}

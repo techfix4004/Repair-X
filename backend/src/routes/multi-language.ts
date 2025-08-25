@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 // Language & Translation Schemas
 const LanguageSchema = z.object({
-  code: z.string().length(2), // ISO 639-1 language codes
+  _code: z.string().length(2), // ISO 639-1 language codes
   _name: z.string().min(1),
   _nativeName: z.string().min(1),
   _isEnabled: z.boolean().default(true),
@@ -23,7 +23,7 @@ const TranslationSchema = z.object({
   _key: z.string().min(1),
   _namespace: z.string().default('common'),
   _translations: z.record(z.string(), z.string()), // language code -> translation
-  description: z.string().optional(),
+  _description: z.string().optional(),
   _tags: z.array(z.string()).default([]),
   _lastModified: z.string().optional(),
   _tenantId: z.string().optional(),
@@ -33,7 +33,7 @@ const TranslationImportSchema = z.object({
   _language: z.string().length(2),
   _namespace: z.string().default('common'),
   _format: z.enum(['json', 'csv', 'xlsx']).default('json'),
-  data: z.any(),
+  _data: z.any(),
   _overwrite: z.boolean().default(false),
 });
 
@@ -51,7 +51,7 @@ class MultiLanguageService {
   private initializeDefaultLanguages() {
     const defaultLanguages = [
       {
-        code: 'en',
+        _code: 'en',
         _name: 'English',
         _nativeName: 'English',
         _isEnabled: true,
@@ -60,7 +60,7 @@ class MultiLanguageService {
         _flag: '🇺🇸',
       },
       {
-        code: 'es',
+        _code: 'es',
         _name: 'Spanish',
         _nativeName: 'Español',
         _isEnabled: true,
@@ -69,7 +69,7 @@ class MultiLanguageService {
         _flag: '🇪🇸',
       },
       {
-        code: 'fr',
+        _code: 'fr',
         _name: 'French',
         _nativeName: 'Français',
         _isEnabled: true,
@@ -78,7 +78,7 @@ class MultiLanguageService {
         _flag: '🇫🇷',
       },
       {
-        code: 'de',
+        _code: 'de',
         _name: 'German',
         _nativeName: 'Deutsch',
         _isEnabled: true,
@@ -87,7 +87,7 @@ class MultiLanguageService {
         _flag: '🇩🇪',
       },
       {
-        code: 'zh',
+        _code: 'zh',
         _name: 'Chinese Simplified',
         _nativeName: '中文简体',
         _isEnabled: true,
@@ -96,7 +96,7 @@ class MultiLanguageService {
         _flag: '🇨🇳',
       },
       {
-        code: 'ja',
+        _code: 'ja',
         _name: 'Japanese',
         _nativeName: '日本語',
         _isEnabled: true,
@@ -105,7 +105,7 @@ class MultiLanguageService {
         _flag: '🇯🇵',
       },
       {
-        code: 'ar',
+        _code: 'ar',
         _name: 'Arabic',
         _nativeName: 'العربية',
         _isEnabled: false,
@@ -114,7 +114,7 @@ class MultiLanguageService {
         _flag: '🇸🇦',
       },
       {
-        code: 'hi',
+        _code: 'hi',
         _name: 'Hindi',
         _nativeName: 'हिन्दी',
         _isEnabled: false,
@@ -124,7 +124,7 @@ class MultiLanguageService {
       },
     ];
 
-    defaultLanguages.forEach((lang: unknown) => {
+    defaultLanguages.forEach((_lang: unknown) => {
       this.languages.set(lang.code, lang);
     });
   }
@@ -146,7 +146,7 @@ class MultiLanguageService {
           _ar: 'مرحبا',
           _hi: 'स्वागत',
         },
-        description: 'Welcome message',
+        _description: 'Welcome message',
         _tags: ['ui', 'greeting'],
       },
       {
@@ -163,7 +163,7 @@ class MultiLanguageService {
           _ar: 'تسجيل الدخول',
           _hi: 'लॉग इन करें',
         },
-        description: 'Login button text',
+        _description: 'Login button text',
         _tags: ['auth', 'button'],
       },
       {
@@ -180,7 +180,7 @@ class MultiLanguageService {
           _ar: 'تسجيل الخروج',
           _hi: 'लॉग आउट',
         },
-        description: 'Logout button text',
+        _description: 'Logout button text',
         _tags: ['auth', 'button'],
       },
       // Job-related translations
@@ -198,7 +198,7 @@ class MultiLanguageService {
           _ar: 'تم إنشاء المهمة بنجاح',
           _hi: 'कार्य सफलतापूर्वक बनाया गया',
         },
-        description: 'Job creation success message',
+        _description: 'Job creation success message',
         _tags: ['jobs', 'success'],
       },
       {
@@ -215,7 +215,7 @@ class MultiLanguageService {
           _ar: 'إصلاح الأجهزة',
           _hi: 'डिवाइस मरम्मत',
         },
-        description: 'Device repair service name',
+        _description: 'Device repair service name',
         _tags: ['services', 'repair'],
       },
       // Status translations
@@ -233,7 +233,7 @@ class MultiLanguageService {
           _ar: 'قيد التقدم',
           _hi: 'प्रगति में',
         },
-        description: 'In progress status',
+        _description: 'In progress status',
         _tags: ['status', 'workflow'],
       },
       {
@@ -250,7 +250,7 @@ class MultiLanguageService {
           _ar: 'مكتمل',
           _hi: 'पूर्ण',
         },
-        description: 'Completed status',
+        _description: 'Completed status',
         _tags: ['status', 'workflow'],
       },
       // Error messages
@@ -268,7 +268,7 @@ class MultiLanguageService {
           _ar: 'غير موجود',
           _hi: 'नहीं मिला',
         },
-        description: 'Not found error message',
+        _description: 'Not found error message',
         _tags: ['errors', 'http'],
       },
       {
@@ -285,12 +285,12 @@ class MultiLanguageService {
           _ar: 'فشل التحقق',
           _hi: 'सत्यापन असफल',
         },
-        description: 'Validation error message',
+        _description: 'Validation error message',
         _tags: ['errors', 'validation'],
       },
     ];
 
-    defaultTranslations.forEach((translation: unknown) => {
+    defaultTranslations.forEach((_translation: unknown) => {
       this.translations.set(translation.id, translation);
       this.namespaces.add(translation.namespace);
     });
@@ -299,10 +299,10 @@ class MultiLanguageService {
   // Language Management
   async getAllLanguages(_enabledOnly: boolean = false): Promise<any[]> {
     const languages = Array.from(this.languages.values());
-    return enabledOnly ? languages.filter((lang: unknown) => lang.isEnabled) : languages;
+    return enabledOnly ? languages.filter((_lang: unknown) => lang.isEnabled) : languages;
   }
 
-  async getLanguage(code: string): Promise<any | null> {
+  async getLanguage(_code: string): Promise<any | null> {
     return this.languages.get(code) || null;
   }
 
@@ -311,7 +311,7 @@ class MultiLanguageService {
     
     // Ensure only one default language
     if (validated.isDefault) {
-      Array.from(this.languages.values()).forEach((lang: unknown) => {
+      Array.from(this.languages.values()).forEach((_lang: unknown) => {
         if (lang.isDefault) {
           lang.isDefault = false;
           this.languages.set(lang.code, lang);
@@ -323,7 +323,7 @@ class MultiLanguageService {
     return validated;
   }
 
-  async updateLanguage(code: string, _updateData: unknown): Promise<any> {
+  async updateLanguage(_code: string, _updateData: unknown): Promise<any> {
     const existingLanguage = this.languages.get(code);
     if (!existingLanguage) {
       throw new Error('Language not found');
@@ -334,7 +334,7 @@ class MultiLanguageService {
     
     // Ensure only one default language
     if (validated.isDefault && !existingLanguage.isDefault) {
-      Array.from(this.languages.values()).forEach((lang: unknown) => {
+      Array.from(this.languages.values()).forEach((_lang: unknown) => {
         if (lang.isDefault && lang.code !== code) {
           lang.isDefault = false;
           this.languages.set(lang.code, lang);
@@ -346,7 +346,7 @@ class MultiLanguageService {
     return validated;
   }
 
-  async deleteLanguage(code: string): Promise<void> {
+  async deleteLanguage(_code: string): Promise<void> {
     const language = this.languages.get(code);
     if (!language) {
       throw new Error('Language not found');
@@ -359,7 +359,7 @@ class MultiLanguageService {
     this.languages.delete(code);
 
     // Remove translations for this language
-    Array.from(this.translations.values()).forEach((translation: unknown) => {
+    Array.from(this.translations.values()).forEach((_translation: unknown) => {
       delete translation.translations[code];
       this.translations.set(translation.id, translation);
     });
@@ -371,16 +371,16 @@ class MultiLanguageService {
 
     if (filters) {
       if (filters.namespace) {
-        translations = translations.filter((t: unknown) => t.namespace === filters.namespace);
+        translations = translations.filter((_t: unknown) => t.namespace === filters.namespace);
       }
       
       if (filters.language) {
-        translations = translations.filter((t: unknown) => t.translations[filters.language!]);
+        translations = translations.filter((_t: unknown) => t.translations[filters.language!]);
       }
       
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase();
-        translations = translations.filter((t: unknown) => 
+        translations = translations.filter((_t: unknown) => 
           t.key.toLowerCase().includes(searchTerm) ||
           Object.values(t.translations).some((_translation: unknown) => 
             translation.toLowerCase().includes(searchTerm)
@@ -399,11 +399,11 @@ class MultiLanguageService {
   async getTranslationsByLanguage(_language: string, _namespace?: string): Promise<Record<string, string>> {
     const translations = Array.from(this.translations.values());
     const filtered = namespace 
-      ? translations.filter((t: unknown) => t.namespace === namespace)
+      ? translations.filter((_t: unknown) => t.namespace === namespace)
       : translations;
 
     const _result: Record<string, string> = {};
-    filtered.forEach((translation: unknown) => {
+    filtered.forEach((_translation: unknown) => {
       if (translation.translations[language]) {
         result[translation.key] = translation.translations[language];
       }
@@ -491,7 +491,7 @@ class MultiLanguageService {
       for (const [key, value] of Object.entries(translations)) {
         try {
           const existingId = Array.from(this.translations.values())
-            .find((t: unknown) => t.key === key && t.namespace === namespace)?.id;
+            .find((_t: unknown) => t.key === key && t.namespace === namespace)?.id;
           
           if (existingId) {
             if (overwrite) {
@@ -515,11 +515,11 @@ class MultiLanguageService {
             this.namespaces.add(namespace);
             imported++;
           }
-        } catch (error: unknown) {
+        } catch (_error: unknown) {
           errors.push(`Failed to import key "${key}": ${error.message}`);
         }
       }
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       errors.push(`Import _failed: ${error.message}`);
     }
 
@@ -560,13 +560,13 @@ class MultiLanguageService {
     };
 
     // Calculate language completeness
-    languages.forEach((lang: unknown) => {
-      const translatedCount = translations.filter((t: unknown) => t.translations[lang.code]).length;
+    languages.forEach((_lang: unknown) => {
+      const translatedCount = translations.filter((_t: unknown) => t.translations[lang.code]).length;
       stats.languageCompleteness[lang.code] = Math.round((translatedCount / translations.length) * 100);
     });
 
     // Calculate namespace breakdown
-    translations.forEach((translation: unknown) => {
+    translations.forEach((_translation: unknown) => {
       stats.namespaceBreakdown[translation.namespace] = 
         (stats.namespaceBreakdown[translation.namespace] || 0) + 1;
     });
@@ -577,7 +577,7 @@ class MultiLanguageService {
   // Translate function
   async translate(_key: string, _language: string, _namespace?: string): Promise<string> {
     const translations = Array.from(this.translations.values());
-    const translation = translations.find((t: unknown) => 
+    const translation = translations.find((_t: unknown) => 
       t.key === key && 
       (!namespace || t.namespace === namespace)
     );
@@ -597,8 +597,9 @@ class MultiLanguageService {
 }
 
 // Route Handlers
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function multiLanguageRoutes(server: FastifyInstance): Promise<void> {
+export async function multiLanguageRoutes(_server: FastifyInstance): Promise<void> {
   const languageService = new MultiLanguageService();
 
   // Language management routes
@@ -611,13 +612,13 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: languages,
+        _data: languages,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve languages',
-        error: error.message,
+        _message: 'Failed to retrieve languages',
+        _error: error.message,
       });
     }
   });
@@ -631,14 +632,14 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: language,
-        message: 'Language created successfully',
+        _data: language,
+        _message: 'Language created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create language',
-        error: error.message,
+        _message: 'Failed to create language',
+        _error: error.message,
       });
     }
   });
@@ -655,15 +656,15 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: language,
-        message: 'Language updated successfully',
+        _data: language,
+        _message: 'Language updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Language not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to update language',
-        error: error.message,
+        _message: 'Failed to update language',
+        _error: error.message,
       });
     }
   });
@@ -677,14 +678,14 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        message: 'Language deleted successfully',
+        _message: 'Language deleted successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Language not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to delete language',
-        error: error.message,
+        _message: 'Failed to delete language',
+        _error: error.message,
       });
     }
   });
@@ -699,14 +700,14 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: translations,
+        _data: translations,
         _count: translations.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve translations',
-        error: error.message,
+        _message: 'Failed to retrieve translations',
+        _error: error.message,
       });
     }
   });
@@ -723,15 +724,15 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: translations,
+        _data: translations,
         language,
         _namespace: namespace || 'all',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve translations',
-        error: error.message,
+        _message: 'Failed to retrieve translations',
+        _error: error.message,
       });
     }
   });
@@ -745,14 +746,14 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: translation,
-        message: 'Translation created successfully',
+        _data: translation,
+        _message: 'Translation created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create translation',
-        error: error.message,
+        _message: 'Failed to create translation',
+        _error: error.message,
       });
     }
   });
@@ -769,15 +770,15 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: translation,
-        message: 'Translation updated successfully',
+        _data: translation,
+        _message: 'Translation updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Translation not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to update translation',
-        error: error.message,
+        _message: 'Failed to update translation',
+        _error: error.message,
       });
     }
   });
@@ -792,14 +793,14 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: result,
-        message: `Imported ${result.imported} translations`,
+        _data: result,
+        _message: `Imported ${result.imported} translations`,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to import translations',
-        error: error.message,
+        _message: 'Failed to import translations',
+        _error: error.message,
       });
     }
   });
@@ -822,16 +823,16 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: exportData,
+        _data: exportData,
         language,
         _namespace: namespace || 'all',
         format,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to export translations',
-        error: error.message,
+        _message: 'Failed to export translations',
+        _error: error.message,
       });
     }
   });
@@ -843,13 +844,13 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: namespaces,
+        _data: namespaces,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve namespaces',
-        error: error.message,
+        _message: 'Failed to retrieve namespaces',
+        _error: error.message,
       });
     }
   });
@@ -860,13 +861,13 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: stats,
+        _data: stats,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve translation stats',
-        error: error.message,
+        _message: 'Failed to retrieve translation stats',
+        _error: error.message,
       });
     }
   });
@@ -881,18 +882,18 @@ export async function multiLanguageRoutes(server: FastifyInstance): Promise<void
       
       return reply.send({
         _success: true,
-        data: {
+        _data: {
           key,
           language,
           namespace,
           translation,
         },
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Translation failed',
-        error: error.message,
+        _message: 'Translation failed',
+        _error: error.message,
       });
     }
   });

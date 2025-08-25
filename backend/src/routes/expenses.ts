@@ -5,7 +5,7 @@ import { prisma } from '../utils/database';
 // Validation schemas
 const expenseCategorySchema = z.object({
   _name: z.string().min(1).max(100),
-  description: z.string().optional(),
+  _description: z.string().optional(),
   _parentId: z.string().optional(),
   _monthlyBudget: z.number().positive().optional()
 });
@@ -14,7 +14,7 @@ const expenseSchema = z.object({
   _categoryId: z.string().min(1),
   _amount: z.number().positive(),
   _currency: z.string().length(3).default('USD'),
-  description: z.string().min(1).max(500),
+  _description: z.string().min(1).max(500),
   _notes: z.string().max(1000).optional(),
   _expenseDate: z.string().datetime(),
   _merchant: z.string().max(200).optional(),
@@ -75,7 +75,7 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
           _select: {
             id: true,
             _name: true,
-            description: true,
+            _description: true,
             _monthlyBudget: true
           }
         },
@@ -106,15 +106,15 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
 
     return reply.send({
       _success: true,
-      data: hierarchicalCategories,
+      _data: hierarchicalCategories,
       _count: categories.length
     });
   } catch (error) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch expense categories',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch expense categories',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -132,7 +132,7 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
       if (!parentCategory) {
         return (reply as FastifyReply).status(400).send({
           _success: false,
-          message: 'Parent category not found'
+          _message: 'Parent category not found'
         });
       }
     }
@@ -148,7 +148,7 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
     if (existingCategory) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Category with this name already exists in the same parent'
+        _message: 'Category with this name already exists in the same parent'
       });
     }
 
@@ -168,14 +168,14 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
 
     return (reply as FastifyReply).status(201).send({
       _success: true,
-      data: category,
-      message: 'Expense category created successfully'
+      _data: category,
+      _message: 'Expense category created successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -183,12 +183,13 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to create expense category',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to create expense category',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -257,10 +258,10 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
               id: true,
               _firstName: true,
               _lastName: true,
-              email: true
+              _email: true
             }
           },
-          approver: {
+          _approver: {
             select: {
               id: true,
               _firstName: true,
@@ -297,7 +298,7 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
 
     return reply.send({
       _success: true,
-      data: expenses,
+      _data: expenses,
       _pagination: {
         page,
         limit,
@@ -313,12 +314,13 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch expenses',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch expenses',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function createExpense(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -328,7 +330,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
     if (!_userId) {
       return (reply as FastifyReply).status(401).send({
         _success: false,
-        message: 'Authentication required'
+        _message: 'Authentication required'
       });
     }
 
@@ -340,7 +342,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
     if (!category || !category.isActive) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Invalid or inactive expense category'
+        _message: 'Invalid or inactive expense category'
       });
     }
 
@@ -353,7 +355,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
       if (!jobSheet) {
         return (reply as FastifyReply).status(400).send({
           _success: false,
-          message: 'Job sheet not found'
+          _message: 'Job sheet not found'
         });
       }
     }
@@ -365,7 +367,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
     };
 
     const expense = await prisma.expense.create({
-      data: expenseData,
+      _data: expenseData,
       _include: {
         category: {
           select: {
@@ -377,7 +379,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
           select: {
             firstName: true,
             _lastName: true,
-            email: true
+            _email: true
           }
         }
       }
@@ -393,14 +395,14 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
           
           await prisma.expense.update({
             _where: { id: expense.id },
-            data: {
+            _data: {
               receiptText: receiptText.text,
               _receiptUrl: firstReceiptFile
             }
           });
         }
       } catch (ocrError) {
-        request.log.warn({ _expenseId: expense.id, error: ocrError }, 'OCR processing failed');
+        request.log.warn({ _expenseId: expense.id, _error: ocrError }, 'OCR processing failed');
       }
     }
 
@@ -408,14 +410,14 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
 
     return (reply as FastifyReply).status(201).send({
       _success: true,
-      data: expense,
-      message: 'Expense created successfully'
+      _data: expense,
+      _message: 'Expense created successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -423,12 +425,13 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to create expense',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to create expense',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -439,7 +442,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
     if (!_userId) {
       return (reply as FastifyReply).status(401).send({
         _success: false,
-        message: 'Authentication required'
+        _message: 'Authentication required'
       });
     }
 
@@ -450,7 +453,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
           select: {
             firstName: true,
             _lastName: true,
-            email: true
+            _email: true
           }
         },
         _category: {
@@ -464,14 +467,14 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
     if (!expense) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
-        message: 'Expense not found'
+        _message: 'Expense not found'
       });
     }
 
     if (expense.status !== 'PENDING') {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Expense is not in pending status'
+        _message: 'Expense is not in pending status'
       });
     }
 
@@ -486,16 +489,16 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
 
     const updatedExpense = await prisma.expense.update({
       _where: { id },
-      data: updateData,
+      _data: updateData,
       _include: {
         submitter: {
           select: {
             firstName: true,
             _lastName: true,
-            email: true
+            _email: true
           }
         },
-        approver: {
+        _approver: {
           select: {
             firstName: true,
             _lastName: true
@@ -514,19 +517,19 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
     request.log.info({ 
       expenseId: id, 
       _action: data.action, 
-      approverId: _userId 
+      _approverId: _userId 
     }, 'Expense approval processed');
 
     return reply.send({
       _success: true,
-      data: updatedExpense,
-      message: `Expense ${data.action === 'approve' ? 'approved' : 'rejected'} successfully`
+      _data: updatedExpense,
+      _message: `Expense ${data.action === 'approve' ? 'approved' : 'rejected'} successfully`
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -534,12 +537,13 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to process expense approval',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to process expense approval',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -561,8 +565,7 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
       case 'ytd':
         startDate = new Date(now.getFullYear(), 0, 1);
         break;
-      _default:
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     }
 
     const _whereClause: unknown = {
@@ -628,7 +631,7 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         period,
         _totals: {
           amount: totalStats.sum.amount || 0,
@@ -644,14 +647,14 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch expense statistics',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch expense statistics',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
 // Export route registration function
-export async function expenseRoutes(fastify: FastifyInstance) {
+export async function expenseRoutes(_fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['Expense Management'],
     _security: [{ bearerAuth: [] }]
@@ -672,7 +675,7 @@ export async function expenseRoutes(fastify: FastifyInstance) {
     _schema: {
       ...commonSchema,
       _summary: 'Create expense category',
-      body: expenseCategorySchema
+      _body: expenseCategorySchema
     }
   }, createExpenseCategory);
 
@@ -690,7 +693,7 @@ export async function expenseRoutes(fastify: FastifyInstance) {
         _startDate: z.string().datetime().optional(),
         _endDate: z.string().datetime().optional(),
         _minAmount: z.number().positive().optional(),
-        maxAmount: z.number().positive().optional()
+        _maxAmount: z.number().positive().optional()
       })
     }
   }, getExpenses);
@@ -699,7 +702,7 @@ export async function expenseRoutes(fastify: FastifyInstance) {
     _schema: {
       ...commonSchema,
       _summary: 'Create expense',
-      body: expenseSchema
+      _body: expenseSchema
     }
   }, createExpense);
 
@@ -710,7 +713,7 @@ export async function expenseRoutes(fastify: FastifyInstance) {
       _params: z.object({
         id: z.string()
       }),
-      body: expenseApprovalSchema
+      _body: expenseApprovalSchema
     }
   }, approveExpense);
 

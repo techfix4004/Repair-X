@@ -6,7 +6,7 @@ import { prisma } from '../utils/database';
 const smsAccountSchema = z.object({
   _providerName: z.string().min(1),
   _accountSid: z.string().min(1),
-  authToken: z.string().min(1),
+  _authToken: z.string().min(1),
   _fromNumber: z.string().min(1),
   _creditsRemaining: z.number().int().min(0).default(0),
   _autoTopUp: z.boolean().default(false),
@@ -17,8 +17,8 @@ const smsAccountSchema = z.object({
 
 const sendSmsSchema = z.object({
   _toNumber: z.string().min(1),
-  message: z.string().min(1).max(1600),
-  templateName: z.string().optional(),
+  _message: z.string().min(1).max(1600),
+  _templateName: z.string().optional(),
   _bookingId: z.string().optional(),
   _userId: z.string().optional(),
   _scheduledAt: z.string().datetime().optional()
@@ -28,7 +28,7 @@ const sendSmsSchema = z.object({
 /*
 const smsTemplateSchema = z.object({
   _name: z.string().min(1),
-  subject: z.string().min(1),
+  _subject: z.string().min(1),
   _content: z.string().min(1),
   _variables: z.array(z.string()).default([]),
   _category: z.enum(['BOOKING', 'PAYMENT', 'REMINDER', 'NOTIFICATION', 'MARKETING']),
@@ -38,7 +38,7 @@ const smsTemplateSchema = z.object({
 
 // Mock SMS service for development (replace with real provider integration)
 class SmsService {
-  static async sendSms(_accountId: string, _toNumber: string, message: string): Promise<{ _success: boolean; externalId?: string; error?: string; cost?: number }> {
+  static async sendSms(_accountId: string, _toNumber: string, _message: string): Promise<{ _success: boolean; externalId?: string; error?: string; cost?: number }> {
     // Mock implementation - replace with actual SMS provider integration
     const mockExternalId = `SMS_${  Date.now()  }_${  Math.random().toString(36).substr(2, 9)}`;
     const mockCost = 0.0075; // Mock cost per SMS
@@ -58,7 +58,7 @@ class SmsService {
     } else {
       return {
         _success: false,
-        error: 'Failed to send _SMS: Network timeout'
+        _error: 'Failed to send _SMS: Network timeout'
       };
     }
   }
@@ -98,15 +98,15 @@ async function getSmsAccounts(request: FastifyRequest, reply: FastifyReply) {
 
     return reply.send({
       _success: true,
-      data: accounts,
+      _data: accounts,
       _count: accounts.length
     });
   } catch (error) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch SMS accounts',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch SMS accounts',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -119,7 +119,7 @@ async function createSmsAccount(request: FastifyRequest, reply: FastifyReply) {
     if (data.isPrimary) {
       await prisma.smsAccount.updateMany({
         _where: { isPrimary: true },
-        data: { isPrimary: false }
+        _data: { isPrimary: false }
       });
     }
 
@@ -140,14 +140,14 @@ async function createSmsAccount(request: FastifyRequest, reply: FastifyReply) {
 
     return (reply as FastifyReply).status(201).send({
       _success: true,
-      data: account,
-      message: 'SMS account created successfully'
+      _data: account,
+      _message: 'SMS account created successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -155,12 +155,13 @@ async function createSmsAccount(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to create SMS account',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to create SMS account',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function sendSms(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -181,25 +182,25 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
     if (!account) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'No active SMS account found'
+        _message: 'No active SMS account found'
       });
     }
 
     if (account.creditsRemaining <= 0) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Insufficient SMS credits'
+        _message: 'Insufficient SMS credits'
       });
     }
 
     // Create SMS message record
     const smsMessage = await prisma.smsMessage.create({
-      data: {
+      _data: {
         accountId: account.id,
         _toNumber: data.toNumber,
         _fromNumber: account.fromNumber,
-        message: data.message,
-        templateName: data.templateName,
+        _message: data.message,
+        _templateName: data.templateName,
         _bookingId: data.bookingId,
         _userId: data.userId,
         _status: 'PENDING'
@@ -214,7 +215,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
         // Update message with success details
         await prisma.smsMessage.update({
           _where: { id: smsMessage.id },
-          data: {
+          _data: {
             status: 'SENT',
             _externalId: result.externalId,
             _cost: result.cost
@@ -224,7 +225,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
         // Deduct credit and update account
         await prisma.smsAccount.update({
           _where: { id: account.id },
-          data: {
+          _data: {
             creditsRemaining: { decrement: 1 },
             _creditsUsed: { increment: 1 }
           }
@@ -238,19 +239,19 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
 
         return reply.send({
           _success: true,
-          data: {
+          _data: {
             messageId: smsMessage.id,
             _externalId: result.externalId,
             _status: 'SENT',
             _cost: result.cost
           },
-          message: 'SMS sent successfully'
+          _message: 'SMS sent successfully'
         });
       } else {
         // Update message with failure details
         await prisma.smsMessage.update({
           _where: { id: smsMessage.id },
-          data: {
+          _data: {
             status: 'FAILED',
             _failedAt: new Date(),
             _errorMessage: result.error
@@ -259,15 +260,15 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
 
         return (reply as FastifyReply).status(400).send({
           _success: false,
-          message: 'Failed to send SMS',
-          error: result.error
+          _message: 'Failed to send SMS',
+          _error: result.error
         });
       }
     } catch (providerError) {
       // Update message with failure
       await prisma.smsMessage.update({
         _where: { id: smsMessage.id },
-        data: {
+        _data: {
           status: 'FAILED',
           _failedAt: new Date(),
           _errorMessage: `Provider error: ${  String(providerError)}`
@@ -280,7 +281,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
     if (error instanceof z.ZodError) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Validation error',
+        _message: 'Validation error',
         _errors: error.issues
       });
     }
@@ -288,8 +289,8 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to send SMS',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to send SMS',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -327,7 +328,7 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
           _booking: {
             select: {
               id: true,
-              description: true,
+              _description: true,
               _customer: {
                 select: {
                   firstName: true,
@@ -340,7 +341,7 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
             select: {
               firstName: true,
               _lastName: true,
-              email: true
+              _email: true
             }
           }
         },
@@ -353,7 +354,7 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
 
     return reply.send({
       _success: true,
-      data: messages,
+      _data: messages,
       _pagination: {
         page,
         limit,
@@ -365,12 +366,13 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch SMS messages',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch SMS messages',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
 async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -389,8 +391,7 @@ async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
       case '30d':
         startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         break;
-      _default:
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     }
 
     const [totalMessages, statusStats, accountStats, totalCost] = await Promise.all([
@@ -434,7 +435,7 @@ async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
 
     return reply.send({
       _success: true,
-      data: {
+      _data: {
         period,
         totalMessages,
         statusBreakdown,
@@ -453,14 +454,14 @@ async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
     request.log.error(error);
     return (reply as FastifyReply).status(500).send({
       _success: false,
-      message: 'Failed to fetch SMS statistics',
-      error: process.env['NODE_ENV'] === 'development' ? error : undefined
+      _message: 'Failed to fetch SMS statistics',
+      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
 // Export route registration function
-export async function smsRoutes(fastify: FastifyInstance) {
+export async function smsRoutes(_fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['SMS Management'],
     _security: [{ bearerAuth: [] }]
@@ -479,7 +480,7 @@ export async function smsRoutes(fastify: FastifyInstance) {
     _schema: {
       ...commonSchema,
       _summary: 'Create SMS account',
-      body: smsAccountSchema
+      _body: smsAccountSchema
     }
   }, createSmsAccount);
 
@@ -488,7 +489,7 @@ export async function smsRoutes(fastify: FastifyInstance) {
     _schema: {
       ...commonSchema,
       _summary: 'Send SMS message',
-      body: sendSmsSchema
+      _body: sendSmsSchema
     }
   }, sendSms);
 

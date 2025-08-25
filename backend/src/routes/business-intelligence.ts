@@ -4,8 +4,9 @@ import { BusinessIntelligenceService } from '../services/business-intelligence.j
 const biService = new BusinessIntelligenceService();
 
 // Advanced Analytics and AI Routes
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function businessIntelligenceRoutes(fastify: FastifyInstance): Promise<void> {
+export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Promise<void> {
   
   // AI-Powered Job Assignment Recommendations
   fastify.post('/api/v1/ai/job-assignment/:jobId', async (request: FastifyRequest<{
@@ -18,13 +19,13 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       
       return {
         _success: true,
-        data: recommendations,
+        _data: recommendations,
         _timestamp: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -49,13 +50,13 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       
       return {
         _success: true,
-        data: prediction,
+        _data: prediction,
         _timestamp: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -98,7 +99,7 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       
       return {
         _success: true,
-        data: {
+        _data: {
           ...dashboard,
           _dateRange: {
             start: start.toISOString(),
@@ -108,10 +109,10 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
         },
         _generatedAt: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -152,13 +153,13 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       
       return {
         _success: true,
-        data: realtimeMetrics,
+        _data: realtimeMetrics,
         _lastUpdated: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -192,7 +193,7 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       if (!technicianData) {
         return (reply as FastifyReply).status(404).send({
           _success: false,
-          error: 'Technician not found or no data available',
+          _error: 'Technician not found or no data available',
         });
       }
       
@@ -218,14 +219,14 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       
       return {
         _success: true,
-        data: enhancedAnalytics,
+        _data: enhancedAnalytics,
         period,
         _generatedAt: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -281,15 +282,15 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       
       return {
         _success: true,
-        data: customerAnalytics,
+        _data: customerAnalytics,
         segment,
         period,
         _generatedAt: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -356,13 +357,13 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       
       return {
         _success: true,
-        data: optimizations,
+        _data: optimizations,
         _generatedAt: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -382,7 +383,7 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       alerts.push({
         _type: 'warning' as const,
         _title: 'Revenue Decline',
-        message: `Revenue growth is ${dashboard.predictions.growthRate.toFixed(1)}% - review operations`,
+        _message: `Revenue growth is ${dashboard.predictions.growthRate.toFixed(1)}% - review operations`,
         _priority: 'high' as const,
       });
     }
@@ -392,7 +393,7 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       alerts.push({
         _type: 'error' as const,
         _title: 'Low Customer Satisfaction',
-        message: `Current satisfaction: ${dashboard.summary.customerSatisfaction.toFixed(1)}/5 - immediate attention needed`,
+        _message: `Current satisfaction: ${dashboard.summary.customerSatisfaction.toFixed(1)}/5 - immediate attention needed`,
         _priority: 'high' as const,
       });
     }
@@ -402,7 +403,7 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       alerts.push({
         _type: 'warning' as const,
         _title: 'Quality Concern',
-        message: `Defect rate: ${dashboard.qualityMetrics.defectRate.toFixed(0)} DPMO - review quality processes`,
+        _message: `Defect rate: ${dashboard.qualityMetrics.defectRate.toFixed(0)} DPMO - review quality processes`,
         _priority: 'medium' as const,
       });
     }
@@ -412,7 +413,7 @@ export async function businessIntelligenceRoutes(fastify: FastifyInstance): Prom
       alerts.push({
         _type: 'success' as const,
         _title: 'Strong Growth',
-        message: `Revenue growing at ${dashboard.predictions.growthRate.toFixed(1)}% - consider scaling operations`,
+        _message: `Revenue growing at ${dashboard.predictions.growthRate.toFixed(1)}% - consider scaling operations`,
         _priority: 'medium' as const,
       });
     }

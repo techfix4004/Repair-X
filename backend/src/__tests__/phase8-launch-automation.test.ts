@@ -1,3 +1,5 @@
+ 
+/// <reference types="jest" />
 /* eslint-disable no-undef */
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
@@ -11,9 +13,10 @@ import type {
   SatisfactionSurvey, 
   AppStoreOptimization, ABTest } from '../types/missing-interfaces';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('Phase 8 Launch Automation & Marketing Systems', () => {
-  let launchCampaignService: LaunchCampaignService;
+  let _launchCampaignService: LaunchCampaignService;
   let asoService: AppStoreOptimizationService;
   let customerSuccessService: CustomerSuccessService;
 
@@ -27,9 +30,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
   describe('Launch Campaign Execution System', () => {
     it('should create a new launch campaign', async () => {
       const campaignData = {
-        name: 'Test Launch Campaign',
-        type: 'product-launch' as const,
-        budget: 25000,
+        _name: 'Test Launch Campaign',
+        _type: 'product-launch' as const,
+        _budget: 25000,
         _startDate: new Date(),
         _endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       };
@@ -63,12 +66,12 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(campaign!.objectives).toHaveLength(3);
       
       // Verify campaign channels
-      expect(campaign!.channels.map((c: unknown) => c.type)).toEqual(
+      expect(campaign!.channels.map((_c: unknown) => c.type)).toEqual(
         expect.arrayContaining(['email', 'social-media', 'pr'])
       );
       
       // Verify campaign objectives
-      expect(campaign!.objectives.map((o: unknown) => o.type)).toEqual(
+      expect(campaign!.objectives.map((_o: unknown) => o.type)).toEqual(
         expect.arrayContaining(['awareness', 'acquisition', 'conversion'])
       );
     });
@@ -101,15 +104,15 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
   describe('App Store Optimization System', () => {
     it('should create app store optimization listing', async () => {
       const appData = {
-        appName: 'RepairX Test',
-        platform: 'both' as const,
-        title: 'RepairX - Professional Repair Services',
-        description: 'Complete repair service platform',
-        keywords: ['repair', 'service', 'maintenance'],
-        screenshots: ['screenshot1.png', 'screenshot2.png'],
-        icon: 'app_icon.png',
-        category: 'Productivity',
-        targetAudience: ['professionals', 'businesses']
+        _appName: 'RepairX Test',
+        _platform: 'both' as const,
+        _title: 'RepairX - Professional Repair Services',
+        _description: 'Complete repair service platform',
+        _keywords: ['repair', 'service', 'maintenance'],
+        _screenshots: ['screenshot1.png', 'screenshot2.png'],
+        _icon: 'app_icon.png',
+        _category: 'Productivity',
+        _targetAudience: ['professionals', 'businesses']
       };
 
       const listing = await asoService.createAppStoreListing(appData);
@@ -130,9 +133,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     it('should generate optimized screenshots', async () => {
       const appId = 'testapp';
       const config = {
-        devices: ['iPhone 15 Pro', 'Pixel 8 Pro'],
-        features: ['Dashboard', 'Tracking', 'Analytics'],
-        branding: {}
+        _devices: ['iPhone 15 Pro', 'Pixel 8 Pro'],
+        _features: ['Dashboard', 'Tracking', 'Analytics'],
+        _branding: {}
       };
 
       const screenshots = await asoService.generateScreenshots(appId, config);
@@ -140,7 +143,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(screenshots).toBeInstanceOf(Array);
       expect(screenshots).toHaveLength(5); // One per default feature
       
-      screenshots.forEach((screenshot: unknown) => {
+      screenshots.forEach((_screenshot: unknown) => {
         expect(screenshot.id).toBeDefined();
         expect(screenshot.url).toMatch(/^\/app-store\/screenshots\//);
         expect(screenshot.deviceType).toBe('iPhone 15 Pro');
@@ -167,7 +170,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(optimization.searchVolumeTargets).toBeInstanceOf(Array);
 
       // Verify keyword structure
-      optimization.primaryKeywords.forEach((keyword: unknown) => {
+      optimization.primaryKeywords.forEach((_keyword: unknown) => {
         expect(keyword.term).toBeDefined();
         expect(keyword.relevanceScore).toBeGreaterThan(0);
         expect(keyword.searchVolume).toBeGreaterThan(0);
@@ -177,11 +180,11 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
     it('should create A/B test for optimization', async () => {
       const config = {
-        appId: 'testapp',
-        testType: 'icon' as const,
-        variants: [
-          { name: 'Original Icon', assets: { icon: 'original.png' } },
-          { name: 'New Icon', assets: { icon: 'new.png' } }
+        _appId: 'testapp',
+        _testType: 'icon' as const,
+        _variants: [
+          { name: 'Original Icon', _assets: { icon: 'original.png' } },
+          { _name: 'New Icon', _assets: { icon: 'new.png' } }
         ]
       };
 
@@ -213,7 +216,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(compliance.guidelines).toBeInstanceOf(Array);
       expect(compliance.guidelines?.length).toBeGreaterThan(0);
       
-      compliance.guidelines.forEach((guideline: unknown) => {
+      compliance.guidelines.forEach((_guideline: unknown) => {
         expect(guideline.guideline).toBeDefined();
         expect((guideline as any).status).toBe('pass');
         expect(guideline.details).toBeDefined();
@@ -286,10 +289,10 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
     it('should create support ticket with proper categorization', async () => {
       const ticketData = {
-        customerId: 'test_customer',
-        subject: 'Login issues with dashboard',
-        description: 'Cannot access my dashboard after recent update',
-        type: 'technical' as const
+        _customerId: 'test_customer',
+        _subject: 'Login issues with dashboard',
+        _description: 'Cannot access my dashboard after recent update',
+        _type: 'technical' as const
       };
 
       const ticket = await customerSuccessService.createSupportTicket(ticketData);
@@ -331,18 +334,18 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect((survey as any).expiresAt).toBeInstanceOf(Date);
 
       // Verify NPS questions structure
-      const npsQuestion = survey.questions.find((q: unknown) => q.id === 'nps_score');
+      const npsQuestion = survey.questions.find((_q: unknown) => q.id === 'nps_score');
       expect(npsQuestion).toBeDefined();
       expect((npsQuestion! as any).type).toBe('rating');
       expect((npsQuestion! as any).required).toBe(true);
-      expect((npsQuestion! as any).scale).toEqual({ _min: 0, max: 10 });
+      expect((npsQuestion! as any).scale).toEqual({ _min: 0, _max: 10 });
     });
 
     it('should create retention campaign', async () => {
       const campaignData = {
-        name: 'At-Risk Customer Retention',
-        type: 'at-risk' as const,
-        targetSegment: 'high-risk-customers'
+        _name: 'At-Risk Customer Retention',
+        _type: 'at-risk' as const,
+        _targetSegment: 'high-risk-customers'
       };
 
       const campaign = await customerSuccessService.createRetentionCampaign(campaignData);
@@ -360,7 +363,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       // Verify campaign sequence structure
       expect(campaign.sequence?.length).toBeGreaterThan(0);
-      campaign.sequence.forEach((step: unknown) => {
+      campaign.sequence.forEach((_step: unknown) => {
         expect(step.step).toBeGreaterThan(0);
         expect(['email', 'sms', 'call', 'in-app', 'gift', 'discount']).toContain(step.type);
         expect(step.delay).toBeGreaterThanOrEqual(0);
@@ -394,15 +397,15 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     it('should integrate launch campaigns with app store optimization', async () => {
       // Create launch campaign
       const campaign = await launchCampaignService.createCampaign({
-        name: 'App Store Launch Campaign',
-        type: 'product-launch',
-        channels: [
+        _name: 'App Store Launch Campaign',
+        _type: 'product-launch',
+        _channels: [
           {
             id: 'test_channel',
-            type: 'pr' as const,
-            budget: 5000,
-            targetAudience: 'Tech media',
-            _content: { headlines: ['Test'], descriptions: ['Test'], _images: [], _videos: [], _callToActions: [], _landingPages: [] },
+            _type: 'pr' as const,
+            _budget: 5000,
+            _targetAudience: 'Tech media',
+            _content: { headlines: ['Test'], _descriptions: ['Test'], _images: [], _videos: [], _callToActions: [], _landingPages: [] },
             _schedule: { startDate: new Date(), _endDate: new Date(), _frequency: 'once' as const, _timing: '09:00', _timezone: 'UTC' },
             _performance: { impressions: 0, _clicks: 0, _conversions: 0, _cost: 0, _roas: 0, _engagementRate: 0 }
           }
@@ -411,8 +414,8 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       // Create ASO listing
       const asoListing = await asoService.createAppStoreListing({
-        appName: 'RepairX Mobile',
-        platform: 'both'
+        _appName: 'RepairX Mobile',
+        _platform: 'both'
       });
 
       expect(campaign.id).toBeDefined();
@@ -433,9 +436,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       // Create retention campaign if at risk
       if (churnRisk.interventionRequired) {
         const campaign = await customerSuccessService.createRetentionCampaign({
-          name: 'Emergency Retention Campaign',
-          type: 'at-risk',
-          targetSegment: 'critical-risk-customers'
+          _name: 'Emergency Retention Campaign',
+          _type: 'at-risk',
+          _targetSegment: 'critical-risk-customers'
         });
 
         expect(campaign).toBeDefined();
@@ -459,7 +462,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     });
 
     it('should handle concurrent requests efficiently', async () => {
-      const requests = Array.from({ length: 10 }, (_, i) => 
+      const requests = Array.from({ _length: 10 }, (_, i) => 
         customerSuccessService.calculateHealthScore(`customer_${i}`)
       );
 
@@ -469,7 +472,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       expect(results).toHaveLength(10);
       expect(totalTime).toBeLessThan(1000); // All requests under 1 second
-      results.forEach((score: unknown) => {
+      results.forEach((_score: unknown) => {
         expect(score).toBeGreaterThanOrEqual(0);
         expect(score).toBeLessThanOrEqual(100);
       });
@@ -478,16 +481,16 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     it('should validate data integrity across all services', async () => {
       // Test campaign data integrity
       const campaign = await launchCampaignService.createCampaign({
-        name: 'Data Integrity Test',
-        budget: 10000
+        _name: 'Data Integrity Test',
+        _budget: 10000
       });
       expect(campaign.budget).toBe(10000);
       expect(campaign.metrics?.totalReach).toBe(0);
 
       // Test ASO data integrity  
       const asoListing = await asoService.createAppStoreListing({
-        appName: 'Test App',
-        platform: 'ios'
+        _appName: 'Test App',
+        _platform: 'ios'
       });
       expect(asoListing.platform).toBe('ios');
       expect((asoListing.compliance.ios as any).status).toBe('compliant');

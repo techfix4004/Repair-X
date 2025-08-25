@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 interface User {
-  id: string;
+  _id: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -20,17 +20,17 @@ interface AuthState {
 }
 
 interface AuthActions {
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
-  refreshToken: () => Promise<void>;
-  clearError: () => void;
-  setLoading: (loading: boolean) => void;
-  updateUser: (userData: Partial<User>) => void;
+  login: (email: string, _password: string) => Promise<void>;
+  _register: (data: RegisterData) => Promise<void>;
+  _logout: () => void;
+  _refreshToken: () => Promise<void>;
+  _clearError: () => void;
+  _setLoading: (loading: boolean) => void;
+  _updateUser: (userData: Partial<User>) => void;
 }
 
 interface RegisterData {
-  email: string;
+  _email: string;
   password: string;
   firstName: string;
   lastName: string;
@@ -43,13 +43,13 @@ type AuthStore = AuthState & AuthActions;
 // Mock API functions (replace with real API calls)
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '_http://localhost:3001/api/v1';
 
-async function apiLogin(email: string, password: string): Promise<{ user: User; token: string }> {
+async function apiLogin(email: string, _password: string): Promise<{ _user: User; token: string }> {
   const response = await fetch(`${apiBaseUrl}/auth/login`, {
-    method: 'POST',
-    headers: {
+    _method: 'POST',
+    _headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password }),
+    _body: JSON.stringify({ email, password }),
   });
 
   if (!response.ok) {
@@ -60,13 +60,13 @@ async function apiLogin(email: string, password: string): Promise<{ user: User; 
   return response.json();
 }
 
-async function apiRegister(data: RegisterData): Promise<{ user: User; token: string }> {
+async function apiRegister(_data: RegisterData): Promise<{ _user: User; token: string }> {
   const response = await fetch(`${apiBaseUrl}/auth/register`, {
-    method: 'POST',
-    headers: {
+    _method: 'POST',
+    _headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    _body: JSON.stringify(data),
   });
 
   if (!response.ok) {
@@ -77,10 +77,10 @@ async function apiRegister(data: RegisterData): Promise<{ user: User; token: str
   return response.json();
 }
 
-async function apiRefreshToken(token: string): Promise<{ token: string; user: User }> {
+async function apiRefreshToken(_token: string): Promise<{ _token: string; user: User }> {
   const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
-    method: 'POST',
-    headers: {
+    _method: 'POST',
+    _headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
@@ -94,71 +94,72 @@ async function apiRefreshToken(token: string): Promise<{ token: string; user: Us
 }
 
 // eslint-disable-next-line max-lines-per-function
+// eslint-disable-next-line max-lines-per-function
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   // Initial state
-  user: null,
-  token: null,
-  isLoading: false,
-  error: null,
-  isAuthenticated: false,
+  _user: null,
+  _token: null,
+  _isLoading: false,
+  _error: null,
+  _isAuthenticated: false,
 
   // Actions
-  login: async (email: string, password: string) => {
-    set({ isLoading: true, error: null });
+  _login: async (email: string, _password: string) => {
+    set({ _isLoading: true, _error: null });
     
     try {
       const response = await apiLogin(email, password);
       
       set({
-        user: response.user,
-        token: response.token,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
+        _user: response.user,
+        _token: response.token,
+        _isAuthenticated: true,
+        _isLoading: false,
+        _error: null,
       });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Login failed',
-        isLoading: false,
-        isAuthenticated: false,
+        _error: error instanceof Error ? error.message : 'Login failed',
+        _isLoading: false,
+        _isAuthenticated: false,
       });
       throw error;
     }
   },
 
-  register: async (data: RegisterData) => {
-    set({ isLoading: true, error: null });
+  _register: async (data: RegisterData) => {
+    set({ _isLoading: true, _error: null });
     
     try {
       const response = await apiRegister(data);
       
       set({
-        user: response.user,
-        token: response.token,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
+        _user: response.user,
+        _token: response.token,
+        _isAuthenticated: true,
+        _isLoading: false,
+        _error: null,
       });
     } catch (error) {
       set({
-        error: error instanceof Error ? error.message : 'Registration failed',
-        isLoading: false,
-        isAuthenticated: false,
+        _error: error instanceof Error ? error.message : 'Registration failed',
+        _isLoading: false,
+        _isAuthenticated: false,
       });
       throw error;
     }
   },
 
-  logout: () => {
+  _logout: () => {
     set({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      error: null,
+      _user: null,
+      _token: null,
+      _isAuthenticated: false,
+      _error: null,
     });
   },
 
-  refreshToken: async () => {
+  _refreshToken: async () => {
     const { token } = get();
     if (!token) {
       throw new Error('No token available');
@@ -168,9 +169,9 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       const response = await apiRefreshToken(token);
       
       set({
-        token: response.token,
-        user: response.user,
-        isAuthenticated: true,
+        _token: response.token,
+        _user: response.user,
+        _isAuthenticated: true,
       });
     } catch (error) {
       // If refresh fails, logout user
@@ -179,46 +180,46 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     }
   },
 
-  clearError: () => {
-    set({ error: null });
+  _clearError: () => {
+    set({ _error: null });
   },
 
-  setLoading: (loading: boolean) => {
-    set({ isLoading: loading });
+  _setLoading: (loading: boolean) => {
+    set({ _isLoading: loading });
   },
 
-  updateUser: (userData: Partial<User>) => {
+  _updateUser: (userData: Partial<User>) => {
     const { user } = get();
     if (user) {
       set({
-        user: { ...user, ...userData }
+        _user: { ...user, ...userData }
       });
     }
   },
 }));
 
 // Role-based route protection utilities
-export const hasRole = (user: User | null, allowedRoles: User['role'][]): boolean => {
+export const hasRole = (_user: User | null, _allowedRoles: User['role'][]): boolean => {
   return user ? allowedRoles.includes(user.role) : false;
 };
 
-export const isCustomer = (user: User | null): boolean => {
+export const isCustomer = (_user: User | null): boolean => {
   return hasRole(user, ['CUSTOMER']);
 };
 
-export const isTechnician = (user: User | null): boolean => {
+export const isTechnician = (_user: User | null): boolean => {
   return hasRole(user, ['TECHNICIAN']);
 };
 
-export const isAdmin = (user: User | null): boolean => {
+export const isAdmin = (_user: User | null): boolean => {
   return hasRole(user, ['ADMIN', 'SUPER_ADMIN']);
 };
 
-export const isSaasAdmin = (user: User | null): boolean => {
+export const isSaasAdmin = (_user: User | null): boolean => {
   return hasRole(user, ['SUPER_ADMIN']);
 };
 
-export const getDefaultRoute = (user: User | null): string => {
+export const getDefaultRoute = (_user: User | null): string => {
   if (!user) return '/auth/login';
   
   switch (user.role) {

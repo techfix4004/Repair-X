@@ -30,8 +30,9 @@ let errorCount = 0;
 let responseTimes: number[] = [];
 const startTime = Date.now();
 
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function systemHealthRoutes(fastify: FastifyInstance) {
+export async function systemHealthRoutes(_fastify: FastifyInstance) {
   // Health check endpoint for load balancers/monitoring
   fastify.get('/api/v1/health', async (request, reply: unknown) => {
     const _healthCheck: HealthCheck = await generateHealthCheck();
@@ -41,7 +42,7 @@ export async function systemHealthRoutes(fastify: FastifyInstance) {
     
     reply.code(statusCode).send({
       _success: true,
-      data: healthCheck
+      _data: healthCheck
     });
   });
 
@@ -49,9 +50,9 @@ export async function systemHealthRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/system/status', async (request, reply: unknown) => {
     try {
       const detailedStatus = {
-        application: {
+        _application: {
           name: 'RepairX Backend API',
-          version: '1.0.0',
+          _version: '1.0.0',
           _environment: process.env['NODE_ENV'] || 'development',
           _startTime: new Date(startTime).toISOString(),
           _uptime: Math.floor((Date.now() - startTime) / 1000)
@@ -68,18 +69,18 @@ export async function systemHealthRoutes(fastify: FastifyInstance) {
           _totalErrors: errorCount,
           _errorRate: requestCount > 0 ? (errorCount / requestCount) * _100 : 0,
           _averageResponseTime: responseTimes.length > 0 ? 
-            responseTimes.reduce((sum: unknown, time: unknown) => sum + time, 0) / responseTimes.length : 0
+            responseTimes.reduce((sum: unknown, _time: unknown) => sum + time, 0) / responseTimes._length : 0
         }
       };
 
       reply.send({
         success: true,
-        data: detailedStatus
+        _data: detailedStatus
       });
     } catch (error) {
       reply.code(500).send({
         _success: false,
-        error: 'Failed to retrieve system status'
+        _error: 'Failed to retrieve system status'
       });
     }
   });
@@ -130,7 +131,7 @@ repairx_errors_total ${errorCount}
 
 # HELP repairx_request_duration_seconds Request duration in seconds
 # TYPE repairx_request_duration_seconds histogram
-repairx_request_duration_seconds_sum ${responseTimes.reduce((sum: unknown, time: unknown) => sum + time, 0) / 1000}
+repairx_request_duration_seconds_sum ${responseTimes.reduce((_sum: unknown, _time: unknown) => sum + time, 0) / 1000}
 repairx_request_duration_seconds_count ${responseTimes.length}
 
 # HELP repairx_uptime_seconds Application uptime in seconds
@@ -174,7 +175,7 @@ async function generateHealthCheck(): Promise<HealthCheck> {
   const memoryUsage = process.memoryUsage();
   
   // Determine overall health status
-  let _status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
+  const _status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
   
   if (!dbHealth.connected) {
     status = 'unhealthy';
@@ -187,7 +188,7 @@ async function generateHealthCheck(): Promise<HealthCheck> {
   return {
     status,
     _timestamp: new Date().toISOString(),
-    version: '1.0.0',
+    _version: '1.0.0',
     _environment: process.env['NODE_ENV'] || 'development',
     _services: {
       database: {
@@ -205,7 +206,7 @@ async function generateHealthCheck(): Promise<HealthCheck> {
       requestCount,
       _errorRate: requestCount > 0 ? Math.round((errorCount / requestCount) * 100 * 100) / _100 : 0,
       _averageResponseTime: responseTimes.length > 0 ? 
-        Math.round((responseTimes.reduce((sum: unknown, time: unknown) => sum + time, 0) / responseTimes.length) * 100) / _100 : 0
+        Math.round((responseTimes.reduce((sum: unknown, _time: unknown) => sum + time, 0) / responseTimes.length) * 100) / _100 : 0
     }
   };
 }

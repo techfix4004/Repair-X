@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 export interface MultiTenantArchitecture {
-  id: string;
+  _id: string;
   tenantId: string;
   businessName: string;
   plan: 'starter' | 'professional' | 'enterprise' | 'custom';
@@ -100,7 +100,7 @@ export interface IntegrationConfig {
 }
 
 export interface CustomizationConfig {
-  workflows: WorkflowCustomization[];
+  _workflows: WorkflowCustomization[];
   fields: CustomField[];
   templates: TemplateCustomization[];
   permissions: PermissionCustomization[];
@@ -185,7 +185,7 @@ export interface NotificationRule {
 }
 
 export interface MarketplaceIntegration {
-  id: string;
+  _id: string;
   providerId: string;
   name: string;
   category: string;
@@ -228,7 +228,7 @@ export interface AuthConfig {
 }
 
 export interface RatingSystem {
-  averageRating: number;
+  _averageRating: number;
   totalRatings: number;
   ratings: Rating[];
   reviews: Review[];
@@ -459,66 +459,66 @@ export interface AnalyticsMetric {
 export class EnterpriseSaaSFeaturesService {
   // Multi-tenant architecture with scalable infrastructure
   async createTenant(tenantData: unknown): Promise<MultiTenantArchitecture> {
-    console.log(`🏢 Creating new tenant: ${(tenantData as any).businessName}`);
+    console.log(`🏢 Creating new _tenant: ${(tenantData as any).businessName}`);
     
     const tenantId = `tenant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Provision resources
     const resources = await this.provisionTenantResources(tenantId, (tenantData as any).plan);
     
-    const tenant: MultiTenantArchitecture = {
+    const _tenant: MultiTenantArchitecture = {
       id: tenantId,
       tenantId,
-      businessName: (tenantData as any).businessName,
-      plan: (tenantData as any).plan || 'starter',
-      features: this.getPlanFeatures((tenantData as any).plan || 'starter'),
+      _businessName: (tenantData as any).businessName,
+      _plan: (tenantData as any).plan || 'starter',
+      _features: this.getPlanFeatures((tenantData as any).plan || 'starter'),
       resources,
-      isolation: {
+      _isolation: {
         dataIsolation: 'schema',
-        computeIsolation: 'container',
-        networkIsolation: true,
-        backupIsolation: true
+        _computeIsolation: 'container',
+        _networkIsolation: true,
+        _backupIsolation: true
       },
-      configuration: {
+      _configuration: {
         branding: {
           logo: '',
-          primaryColor: '#0066CC',
-          secondaryColor: '#FF6600',
-          companyName: (tenantData as any).businessName,
-          subdomain: (tenantData as any).subdomain || tenantId,
-          favicon: '/favicon.ico'
+          _primaryColor: '#0066CC',
+          _secondaryColor: '#FF6600',
+          _companyName: (tenantData as any).businessName,
+          _subdomain: (tenantData as any).subdomain || tenantId,
+          _favicon: '/favicon.ico'
         },
-        integrations: [],
-        customization: {
+        _integrations: [],
+        _customization: {
           workflows: [],
-          fields: [],
-          templates: [],
-          permissions: []
+          _fields: [],
+          _templates: [],
+          _permissions: []
         },
-        security: {
+        _security: {
           mfaRequired: false,
-          passwordPolicy: {
+          _passwordPolicy: {
             minLength: 8,
-            requireUppercase: true,
-            requireLowercase: true,
-            requireNumbers: true,
-            requireSymbols: false,
-            expiryDays: 90
+            _requireUppercase: true,
+            _requireLowercase: true,
+            _requireNumbers: true,
+            _requireSymbols: false,
+            _expiryDays: 90
           },
-          sessionTimeout: 3600,
-          ipWhitelist: [],
-          auditLogging: true,
-          encryption: {
+          _sessionTimeout: 3600,
+          _ipWhitelist: [],
+          _auditLogging: true,
+          _encryption: {
             atRest: true,
-            inTransit: true,
-            keyRotation: true,
-            algorithm: 'AES-256'
+            _inTransit: true,
+            _keyRotation: true,
+            _algorithm: 'AES-256'
           }
         }
       },
-      status: 'trial',
-      createdAt: new Date(),
-      updatedAt: new Date()
+      _status: 'trial',
+      _createdAt: new Date(),
+      _updatedAt: new Date()
     };
 
     // Setup database schema
@@ -527,83 +527,83 @@ export class EnterpriseSaaSFeaturesService {
     // Configure tenant isolation
     await this.configureTenantIsolation(tenant);
 
-    console.log(`✅ Tenant created successfully: ${tenantId}`);
+    console.log(`✅ Tenant created _successfully: ${tenantId}`);
     return tenant;
   }
 
-  private getPlanFeatures(plan: string): TenantFeatures {
-    const planFeatures: Record<string, TenantFeatures> = {
-      starter: {
+  private getPlanFeatures(_plan: string): TenantFeatures {
+    const _planFeatures: Record<string, TenantFeatures> = {
+      _starter: {
         maxUsers: 5,
-        maxTechnicians: 3,
-        maxJobs: 100,
-        apiCalls: 1000,
-        storageGB: 1,
-        whiteLabel: false,
-        customDomain: false,
-        advancedReporting: false,
-        aiFeatures: false,
-        mobileApp: true
+        _maxTechnicians: 3,
+        _maxJobs: 100,
+        _apiCalls: 1000,
+        _storageGB: 1,
+        _whiteLabel: false,
+        _customDomain: false,
+        _advancedReporting: false,
+        _aiFeatures: false,
+        _mobileApp: true
       },
-      professional: {
+      _professional: {
         maxUsers: 25,
-        maxTechnicians: 15,
-        maxJobs: 1000,
-        apiCalls: 10000,
-        storageGB: 10,
-        whiteLabel: true,
-        customDomain: true,
-        advancedReporting: true,
-        aiFeatures: true,
-        mobileApp: true
+        _maxTechnicians: 15,
+        _maxJobs: 1000,
+        _apiCalls: 10000,
+        _storageGB: 10,
+        _whiteLabel: true,
+        _customDomain: true,
+        _advancedReporting: true,
+        _aiFeatures: true,
+        _mobileApp: true
       },
-      enterprise: {
+      _enterprise: {
         maxUsers: -1,
-        maxTechnicians: -1,
-        maxJobs: -1,
-        apiCalls: -1,
-        storageGB: 100,
-        whiteLabel: true,
-        customDomain: true,
-        advancedReporting: true,
-        aiFeatures: true,
-        mobileApp: true
+        _maxTechnicians: -1,
+        _maxJobs: -1,
+        _apiCalls: -1,
+        _storageGB: 100,
+        _whiteLabel: true,
+        _customDomain: true,
+        _advancedReporting: true,
+        _aiFeatures: true,
+        _mobileApp: true
       }
     };
 
     return planFeatures[plan] || planFeatures.starter;
   }
 
-  private async provisionTenantResources(tenantId: string, plan: string): Promise<TenantResources> {
+  private async provisionTenantResources(tenantId: string, _plan: string): Promise<TenantResources> {
     console.log(`⚙️ Provisioning resources for tenant ${tenantId} on ${plan} plan`);
     
     return {
-      database: {
+      _database: {
         connectionString: `postgresql://repairx:${tenantId}@db.repairx.com:5432/${tenantId}`,
-        schema: tenantId,
-        maxConnections: plan === 'enterprise' ? 100 : 20,
-        backupRetention: plan === 'enterprise' ? 30 : 7,
-        encryption: true
+        _schema: tenantId,
+        _maxConnections: plan === 'enterprise' ? 100 : 20,
+        _backupRetention: plan === 'enterprise' ? 30 : 7,
+        _encryption: true
       },
-      storage: {
+      _storage: {
         bucketName: `repairx-${tenantId}`,
-        region: 'us-east-1',
-        encryption: true,
-        cdn: plan !== 'starter',
-        maxSize: this.getPlanFeatures(plan).storageGB * 1024 * 1024 * 1024
+        _region: 'us-east-1',
+        _encryption: true,
+        _cdn: plan !== 'starter',
+        _maxSize: this.getPlanFeatures(plan).storageGB * 1024 * 1024 * 1024
       },
-      compute: {
+      _compute: {
         instanceType: plan === 'enterprise' ? 't3.large' : 't3.small',
-        maxCPU: plan === 'enterprise' ? 4 : 2,
-        maxMemory: plan === 'enterprise' ? 8192 : 4096,
-        autoScaling: plan === 'enterprise',
-        region: 'us-east-1'
+        _maxCPU: plan === 'enterprise' ? 4 : 2,
+        _maxMemory: plan === 'enterprise' ? 8192 : 4096,
+        _autoScaling: plan === 'enterprise',
+        _region: 'us-east-1'
       },
-      network: {
+      _network: {
         rateLimitRpm: this.getPlanFeatures(plan).apiCalls,
-        bandwidthGB: plan === 'enterprise' ? 1000 : 100,
-        cdn: plan !== 'starter',
-        sslCertificate: true
+        _bandwidthGB: plan === 'enterprise' ? 1000 : 100,
+        _cdn: plan !== 'starter',
+        _sslCertificate: true
       }
     };
   }
@@ -613,66 +613,66 @@ export class EnterpriseSaaSFeaturesService {
     // Database setup logic would go here
   }
 
-  private async configureTenantIsolation(tenant: MultiTenantArchitecture): Promise<void> {
+  private async configureTenantIsolation(_tenant: MultiTenantArchitecture): Promise<void> {
     console.log(`🔒 Configuring isolation for tenant ${tenant.tenantId}`);
     // Isolation configuration logic would go here
   }
 
   // Advanced subscription management with feature gating
-  async createSubscription(tenantId: string, planId: string): Promise<AdvancedSubscriptionManagement> {
+  async createSubscription(_tenantId: string, _planId: string): Promise<AdvancedSubscriptionManagement> {
     console.log(`💳 Creating subscription for tenant ${tenantId} on plan ${planId}`);
     
     const plan = await this.getSubscriptionPlan(planId);
     
-    const subscription: AdvancedSubscriptionManagement = {
+    const _subscription: AdvancedSubscriptionManagement = {
       id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       tenantId,
       plan,
-      billing: {
+      _billing: {
         paymentMethod: {
           type: 'card',
-          details: {},
-          isDefault: true
+          _details: {},
+          _isDefault: true
         },
-        billingCycle: 'monthly',
-        nextBilling: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        prorationHandling: 'immediate',
-        invoicing: {
+        _billingCycle: 'monthly',
+        _nextBilling: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        _prorationHandling: 'immediate',
+        _invoicing: {
           autoGenerate: true,
-          template: 'default',
-          sendTo: [],
-          paymentTerms: 30,
-          lateFeeRate: 0.05
+          _template: 'default',
+          _sendTo: [],
+          _paymentTerms: 30,
+          _lateFeeRate: 0.05
         }
       },
-      usage: {
+      _usage: {
         currentPeriod: {
           startDate: new Date(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          usage: [],
-          costs: []
+          _endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          _usage: [],
+          _costs: []
         },
-        historical: [],
-        alerts: [],
-        reporting: {
+        _historical: [],
+        _alerts: [],
+        _reporting: {
           frequency: 'monthly',
-          recipients: [],
-          format: 'dashboard',
-          includeForecasting: true
+          _recipients: [],
+          _format: 'dashboard',
+          _includeForecasting: true
         }
       },
-      featureGating: {
+      _featureGating: {
         gates: this.createFeatureGates(plan),
-        overrides: [],
-        experiments: []
+        _overrides: [],
+        _experiments: []
       },
-      analytics: {
+      _analytics: {
         mrr: plan.pricing.monthly,
-        arr: plan.pricing.yearly,
-        churnRate: 0,
-        ltv: 0,
-        cac: 0,
-        metrics: []
+        _arr: plan.pricing.yearly,
+        _churnRate: 0,
+        _ltv: 0,
+        _cac: 0,
+        _metrics: []
       }
     };
 
@@ -680,70 +680,70 @@ export class EnterpriseSaaSFeaturesService {
     return subscription;
   }
 
-  private async getSubscriptionPlan(planId: string): Promise<SubscriptionPlan> {
-    const plans: Record<string, SubscriptionPlan> = {
-      starter: {
+  private async getSubscriptionPlan(_planId: string): Promise<SubscriptionPlan> {
+    const _plans: Record<string, SubscriptionPlan> = {
+      _starter: {
         planId: 'starter',
-        name: 'Starter Plan',
-        tier: 'starter',
-        pricing: {
+        _name: 'Starter Plan',
+        _tier: 'starter',
+        _pricing: {
           monthly: 29,
-          yearly: 290,
-          setup: 0,
-          currency: 'USD',
-          discounts: [
-            { type: 'percentage', value: 20, condition: 'yearly', validUntil: undefined }
+          _yearly: 290,
+          _setup: 0,
+          _currency: 'USD',
+          _discounts: [
+            { type: 'percentage', _value: 20, _condition: 'yearly', _validUntil: undefined }
           ]
         },
-        features: {
+        _features: {
           users: 5,
-          technicians: 3,
-          jobs: 100,
-          storage: 1,
-          apiCalls: 1000,
-          whiteLabel: false,
-          customDomain: false,
-          priority: 'standard',
-          support: 'email'
+          _technicians: 3,
+          _jobs: 100,
+          _storage: 1,
+          _apiCalls: 1000,
+          _whiteLabel: false,
+          _customDomain: false,
+          _priority: 'standard',
+          _support: 'email'
         },
-        limits: {
+        _limits: {
           dailyApiCalls: 50,
-          monthlyJobs: 100,
-          storageGB: 1,
-          fileSize: 5,
-          customFields: 5
+          _monthlyJobs: 100,
+          _storageGB: 1,
+          _fileSize: 5,
+          _customFields: 5
         }
       },
-      professional: {
+      _professional: {
         planId: 'professional',
-        name: 'Professional Plan',
-        tier: 'professional',
-        pricing: {
+        _name: 'Professional Plan',
+        _tier: 'professional',
+        _pricing: {
           monthly: 99,
-          yearly: 990,
-          setup: 49,
-          currency: 'USD',
-          discounts: [
-            { type: 'percentage', value: 25, condition: 'yearly' }
+          _yearly: 990,
+          _setup: 49,
+          _currency: 'USD',
+          _discounts: [
+            { type: 'percentage', _value: 25, _condition: 'yearly' }
           ]
         },
-        features: {
+        _features: {
           users: 25,
-          technicians: 15,
-          jobs: 1000,
-          storage: 10,
-          apiCalls: 10000,
-          whiteLabel: true,
-          customDomain: true,
-          priority: 'priority',
-          support: 'phone'
+          _technicians: 15,
+          _jobs: 1000,
+          _storage: 10,
+          _apiCalls: 10000,
+          _whiteLabel: true,
+          _customDomain: true,
+          _priority: 'priority',
+          _support: 'phone'
         },
-        limits: {
+        _limits: {
           dailyApiCalls: 500,
-          monthlyJobs: 1000,
-          storageGB: 10,
-          fileSize: 25,
-          customFields: 25
+          _monthlyJobs: 1000,
+          _storageGB: 10,
+          _fileSize: 25,
+          _customFields: 25
         }
       }
     };
@@ -754,37 +754,37 @@ export class EnterpriseSaaSFeaturesService {
   private createFeatureGates(plan: SubscriptionPlan): FeatureGate[] {
     return [
       {
-        featureId: 'white-label',
-        enabled: plan.features.whiteLabel,
-        requiredPlan: 'professional',
-        rolloutPercentage: 100,
-        conditions: [
-          { type: 'plan', operator: 'equals', value: ['professional', 'enterprise'] }
+        _featureId: 'white-label',
+        _enabled: plan.features.whiteLabel,
+        _requiredPlan: 'professional',
+        _rolloutPercentage: 100,
+        _conditions: [
+          { type: 'plan', _operator: 'equals', _value: ['professional', 'enterprise'] }
         ]
       },
       {
-        featureId: 'ai-features',
-        enabled: plan.tier !== 'starter',
-        requiredPlan: 'professional',
-        rolloutPercentage: 90,
-        conditions: [
-          { type: 'plan', operator: 'equals', value: ['professional', 'enterprise'] }
+        _featureId: 'ai-features',
+        _enabled: plan.tier !== 'starter',
+        _requiredPlan: 'professional',
+        _rolloutPercentage: 90,
+        _conditions: [
+          { type: 'plan', _operator: 'equals', _value: ['professional', 'enterprise'] }
         ]
       },
       {
-        featureId: 'custom-domain',
-        enabled: plan.features.customDomain,
-        requiredPlan: 'professional',
-        rolloutPercentage: 100,
-        conditions: [
-          { type: 'plan', operator: 'equals', value: ['professional', 'enterprise'] }
+        _featureId: 'custom-domain',
+        _enabled: plan.features.customDomain,
+        _requiredPlan: 'professional',
+        _rolloutPercentage: 100,
+        _conditions: [
+          { type: 'plan', _operator: 'equals', _value: ['professional', 'enterprise'] }
         ]
       }
     ];
   }
 
   // Enterprise security with SOC 2 Type II compliance
-  async implementEnterpriseSecurityCompliance(tenantId: string): Promise<boolean> {
+  async implementEnterpriseSecurityCompliance(_tenantId: string): Promise<boolean> {
     console.log(`🔐 Implementing SOC 2 Type II compliance for tenant ${tenantId}`);
     
     // Implement security controls
@@ -807,31 +807,31 @@ export class EnterpriseSaaSFeaturesService {
     }
   }
 
-  private async enableAuditLogging(tenantId: string): Promise<boolean> {
+  private async enableAuditLogging(_tenantId: string): Promise<boolean> {
     console.log(`📋 Enabling audit logging for tenant ${tenantId}`);
     // Audit logging implementation
     return true;
   }
 
-  private async configureEncryption(tenantId: string): Promise<boolean> {
+  private async configureEncryption(_tenantId: string): Promise<boolean> {
     console.log(`🔒 Configuring encryption for tenant ${tenantId}`);
     // Encryption configuration
     return true;
   }
 
-  private async setupAccessControls(tenantId: string): Promise<boolean> {
+  private async setupAccessControls(_tenantId: string): Promise<boolean> {
     console.log(`🎫 Setting up access controls for tenant ${tenantId}`);
     // Access control setup
     return true;
   }
 
-  private async enableMonitoring(tenantId: string): Promise<boolean> {
+  private async enableMonitoring(_tenantId: string): Promise<boolean> {
     console.log(`📊 Enabling security monitoring for tenant ${tenantId}`);
     // Security monitoring setup
     return true;
   }
 
-  private async configureBackupRecovery(tenantId: string): Promise<boolean> {
+  private async configureBackupRecovery(_tenantId: string): Promise<boolean> {
     console.log(`💾 Configuring backup and recovery for tenant ${tenantId}`);
     // Backup and recovery configuration
     return true;
@@ -849,15 +849,15 @@ export const enterpriseSaaSFeaturesRoutes = {
       const tenant = await service.createTenant(tenantData);
       
       reply.code(201).send({
-        success: true,
-        data: tenant,
-        message: 'Tenant created successfully'
+        _success: true,
+        _data: tenant,
+        _message: 'Tenant created successfully'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to create tenant',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to create tenant',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -871,15 +871,15 @@ export const enterpriseSaaSFeaturesRoutes = {
       const subscription = await service.createSubscription(tenantId, planId);
       
       reply.code(201).send({
-        success: true,
-        data: subscription,
-        message: 'Subscription created successfully'
+        _success: true,
+        _data: subscription,
+        _message: 'Subscription created successfully'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to create subscription',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to create subscription',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   },
@@ -893,20 +893,20 @@ export const enterpriseSaaSFeaturesRoutes = {
       const result = await service.implementEnterpriseSecurityCompliance(tenantId);
       
       reply.code(200).send({
-        success: result,
-        message: result 
+        _success: result,
+        _message: result 
           ? 'Enterprise security compliance implemented successfully' 
           : 'Failed to implement all security controls'
       });
     } catch (error) {
       reply.code(500).send({
-        success: false,
-        error: 'Failed to implement security compliance',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        _success: false,
+        _error: 'Failed to implement security compliance',
+        _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   }
 };
 
 console.log('🏢 Enterprise SaaS Features System initialized');
-console.log('🎯 Features: Multi-tenant architecture, Advanced subscription management, Enterprise security compliance');
+console.log('🎯 _Features: Multi-tenant architecture, Advanced subscription management, Enterprise security compliance');

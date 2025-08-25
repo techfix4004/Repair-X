@@ -1,10 +1,13 @@
-/* eslint-disable no-undef */
+ 
+/// <reference types="jest" />
+ 
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
 import Fastify, { FastifyInstance } from 'fastify';
 import { registerPlugins } from '../plugins/index';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('Job Management API Tests', () => {
   let app: FastifyInstance;
@@ -16,8 +19,8 @@ describe('Job Management API Tests', () => {
     // Add basic job routes for testing
     app.get('/api/v1/jobs/customer', async () => {
       return {
-        success: true,
-        data: [
+        _success: true,
+        _data: [
           {
             id: '1',
             _deviceType: 'Test Device',
@@ -31,8 +34,8 @@ describe('Job Management API Tests', () => {
 
     app.get('/api/v1/jobs/technician', async () => {
       return {
-        success: true,
-        data: [
+        _success: true,
+        _data: [
           {
             id: '1',
             _jobNumber: 'JOB-001',
@@ -49,8 +52,8 @@ describe('Job Management API Tests', () => {
 
     app.post('/api/v1/jobs', async () => {
       return {
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           id: '2',
           _deviceType: 'New Device',
           _issue: 'New Issue',
@@ -69,8 +72,8 @@ describe('Job Management API Tests', () => {
 
   test('GET /api/v1/jobs/customer - should return customer jobs', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/jobs/customer'
+      _method: 'GET',
+      _url: '/api/v1/jobs/customer'
     });
 
     expect(response.statusCode).toBe(200);
@@ -81,8 +84,8 @@ describe('Job Management API Tests', () => {
 
   test('GET /api/v1/jobs/technician - should return technician jobs', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/jobs/technician'
+      _method: 'GET',
+      _url: '/api/v1/jobs/technician'
     });
 
     expect(response.statusCode).toBe(200);
@@ -95,14 +98,14 @@ describe('Job Management API Tests', () => {
     const _jobData = {
       _deviceType: 'iPhone 14',
       _issue: 'Screen repair',
-      description: 'Cracked screen needs replacement',
+      _description: 'Cracked screen needs replacement',
       _urgency: 'HIGH'
     };
 
     const response = await app.inject({
       method: 'POST',
-      url: '/api/v1/jobs',
-      payload: _jobData
+      _url: '/api/v1/jobs',
+      _payload: _jobData
     });
 
     expect(response.statusCode).toBe(200);

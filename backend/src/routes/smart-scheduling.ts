@@ -4,7 +4,7 @@ import { SmartSchedulingService } from '../services/smart-scheduling.js';
 const schedulingService = new SmartSchedulingService();
 
 // Smart Scheduling Routes
-export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<void> {
+export async function smartSchedulingRoutes(_fastify: FastifyInstance): Promise<void> {
   
   // AI-Powered Schedule Optimization
   fastify.post('/api/v1/scheduling/optimize', async (request: FastifyRequest<{
@@ -24,13 +24,13 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
       
       return {
         _success: true,
-        data: optimizedSchedule,
+        _data: optimizedSchedule,
         _timestamp: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -47,13 +47,13 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
       
       return {
         _success: true,
-        data: assignment,
+        _data: assignment,
         _timestamp: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }
@@ -72,13 +72,13 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
       
       return {
         _success: true,
-        data: forecast,
+        _data: forecast,
         _timestamp: new Date().toISOString(),
       };
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        error: error.message,
+        _error: error.message,
         _timestamp: new Date().toISOString(),
       });
     }

@@ -27,7 +27,7 @@ const EnterpriseCustomerSchema = z.object({
   _primaryContact: z.object({
     name: z.string().min(1),
     _title: z.string(),
-    email: z.string().email(),
+    _email: z.string().email(),
     _phone: z.string(),
     _department: z.string().optional(),
   }),
@@ -59,7 +59,7 @@ const EnterpriseCustomerSchema = z.object({
     _escalationContacts: z.array(z.object({
       level: z.number(),
       _name: z.string(),
-      email: z.string().email(),
+      _email: z.string().email(),
       _phone: z.string(),
     })).default([]),
   }),
@@ -74,7 +74,7 @@ const EnterpriseCustomerSchema = z.object({
   _billingInfo: z.object({
     billingContact: z.object({
       name: z.string(),
-      email: z.string().email(),
+      _email: z.string().email(),
       _phone: z.string(),
       _department: z.string().default('Accounting'),
     }),
@@ -100,9 +100,9 @@ const EnterpriseBranchSchema = z.object({
     _country: z.string(),
     _zipCode: z.string(),
   }),
-  contactInfo: z.object({
+  _contactInfo: z.object({
     phone: z.string(),
-    email: z.string().email(),
+    _email: z.string().email(),
     _manager: z.string(),
   }),
   _operatingHours: z.object({
@@ -125,7 +125,7 @@ const EnterpriseTicketSchema = z.object({
   _enterpriseCustomerId: z.string(),
   _branchId: z.string().optional(),
   _title: z.string().min(1),
-  description: z.string().min(1),
+  _description: z.string().min(1),
   _category: z.enum([
     'DEVICE_REPAIR',
     'BULK_SERVICE',
@@ -151,10 +151,10 @@ const EnterpriseTicketSchema = z.object({
   ]).default('OPEN'),
   _assignedTo: z.string().optional(),
   _createdBy: z.string(),
-  devices: z.array(z.object({
+  _devices: z.array(z.object({
     deviceType: z.string(),
-    model: z.string(),
-    serialNumber: z.string().optional(),
+    _model: z.string(),
+    _serialNumber: z.string().optional(),
     _assetTag: z.string().optional(),
     _quantity: z.number().min(1).default(1),
   })).default([]),
@@ -205,7 +205,7 @@ class EnterpriseCustomerService {
         _primaryContact: {
           name: 'John Smith',
           _title: 'IT Director',
-          email: 'john.smith@techcorp.com',
+          _email: 'john.smith@techcorp.com',
           _phone: '+1-555-123-4568',
           _department: 'Information Technology',
         },
@@ -238,13 +238,13 @@ class EnterpriseCustomerService {
             {
               level: 1,
               _name: 'Sarah Johnson',
-              email: 'sarah.johnson@techcorp.com',
+              _email: 'sarah.johnson@techcorp.com',
               _phone: '+1-555-123-4569',
             },
             {
               _level: 2,
               _name: 'Michael Davis',
-              email: 'michael.davis@techcorp.com',
+              _email: 'michael.davis@techcorp.com',
               _phone: '+1-555-123-4570',
             },
           ],
@@ -260,7 +260,7 @@ class EnterpriseCustomerService {
         _billingInfo: {
           billingContact: {
             name: 'Alice Chen',
-            email: 'alice.chen@techcorp.com',
+            _email: 'alice.chen@techcorp.com',
             _phone: '+1-555-123-4571',
             _department: 'Finance',
           },
@@ -287,9 +287,9 @@ class EnterpriseCustomerService {
           _country: 'US',
           _zipCode: '94105',
         },
-        contactInfo: {
+        _contactInfo: {
           phone: '+1-555-123-4567',
-          email: 'hq@techcorp.com',
+          _email: 'hq@techcorp.com',
           _manager: 'John Smith',
         },
         _operatingHours: {
@@ -320,9 +320,9 @@ class EnterpriseCustomerService {
           _country: 'US',
           _zipCode: '10001',
         },
-        contactInfo: {
+        _contactInfo: {
           phone: '+1-555-987-6543',
-          email: 'eastcoast@techcorp.com',
+          _email: 'eastcoast@techcorp.com',
           _manager: 'Sarah Johnson',
         },
         _operatingHours: {
@@ -350,25 +350,25 @@ class EnterpriseCustomerService {
         _enterpriseCustomerId: 'ent-001',
         _branchId: 'branch-001',
         _title: 'Bulk laptop repairs needed urgently',
-        description: 'We have 25 laptops that need screen replacements and general maintenance before our quarterly meeting next week.',
+        _description: 'We have 25 laptops that need screen replacements and general maintenance before our quarterly meeting next week.',
         _category: 'BULK_SERVICE',
         _priority: 'HIGH',
         _severity: 'HIGH',
         _status: 'IN_PROGRESS',
         _assignedTo: 'tech-001',
         _createdBy: 'john.smith@techcorp.com',
-        devices: [
+        _devices: [
           {
             deviceType: 'Laptop',
-            model: 'Dell Latitude 5520',
-            serialNumber: 'DL5520-001',
+            _model: 'Dell Latitude 5520',
+            _serialNumber: 'DL5520-001',
             _assetTag: 'TC-LAP-001',
             _quantity: 15,
           },
           {
             _deviceType: 'Laptop',
-            model: 'HP EliteBook 850',
-            serialNumber: 'HE850-001',
+            _model: 'HP EliteBook 850',
+            _serialNumber: 'HE850-001',
             _assetTag: 'TC-LAP-002',
             _quantity: 10,
           },
@@ -399,17 +399,17 @@ class EnterpriseCustomerService {
       },
     ];
 
-    sampleCustomers.forEach((customer: unknown) => {
+    sampleCustomers.forEach((_customer: unknown) => {
       this.enterpriseCustomers.set(customer.id, customer);
     });
 
-    sampleBranches.forEach((branch: unknown) => {
+    sampleBranches.forEach((_branch: unknown) => {
       const customerBranches = this.branches.get(branch.enterpriseCustomerId) || [];
       customerBranches.push(branch);
       this.branches.set(branch.enterpriseCustomerId, customerBranches);
     });
 
-    sampleTickets.forEach((ticket: unknown) => {
+    sampleTickets.forEach((_ticket: unknown) => {
       this.tickets.set(ticket.id, ticket);
     });
   }
@@ -420,13 +420,13 @@ class EnterpriseCustomerService {
 
     if (filters) {
       if (filters.status) {
-        customers = customers.filter((customer: unknown) => customer.status === filters.status);
+        customers = customers.filter((_customer: unknown) => customer.status === filters.status);
       }
       if (filters.size) {
-        customers = customers.filter((customer: unknown) => customer.size === filters.size);
+        customers = customers.filter((_customer: unknown) => customer.size === filters.size);
       }
       if (filters.industry) {
-        customers = customers.filter((customer: unknown) => 
+        customers = customers.filter((_customer: unknown) => 
           customer.industry.toLowerCase().includes(filters.industry!.toLowerCase())
         );
       }
@@ -435,7 +435,7 @@ class EnterpriseCustomerService {
     return customers.sort((a, b) => b.annualRevenue - a.annualRevenue);
   }
 
-  async getEnterpriseCustomer(customerId: string): Promise<any | null> {
+  async getEnterpriseCustomer(_customerId: string): Promise<any | null> {
     return this.enterpriseCustomers.get(customerId) || null;
   }
 
@@ -455,7 +455,7 @@ class EnterpriseCustomerService {
     return customer;
   }
 
-  async updateEnterpriseCustomer(customerId: string, _updateData: unknown): Promise<any> {
+  async updateEnterpriseCustomer(_customerId: string, _updateData: unknown): Promise<any> {
     const existingCustomer = this.enterpriseCustomers.get(customerId);
     if (!existingCustomer) {
       throw new Error('Enterprise customer not found');
@@ -474,7 +474,7 @@ class EnterpriseCustomerService {
   }
 
   // Branch Management
-  async getCustomerBranches(customerId: string): Promise<any[]> {
+  async getCustomerBranches(_customerId: string): Promise<any[]> {
     return this.branches.get(customerId) || [];
   }
 
@@ -496,7 +496,7 @@ class EnterpriseCustomerService {
   }
 
   // Ticket Management
-  async getCustomerTickets(customerId: string, _filters?: { 
+  async getCustomerTickets(_customerId: string, _filters?: { 
     _status?: string; 
     _priority?: string; 
     _branchId?: string;
@@ -508,16 +508,16 @@ class EnterpriseCustomerService {
 
     if (filters) {
       if (filters.status) {
-        tickets = tickets.filter((ticket: unknown) => ticket.status === filters.status);
+        tickets = tickets.filter((_ticket: unknown) => ticket.status === filters.status);
       }
       if (filters.priority) {
-        tickets = tickets.filter((ticket: unknown) => ticket.priority === filters.priority);
+        tickets = tickets.filter((_ticket: unknown) => ticket.priority === filters.priority);
       }
       if (filters.branchId) {
-        tickets = tickets.filter((ticket: unknown) => ticket.branchId === filters.branchId);
+        tickets = tickets.filter((_ticket: unknown) => ticket.branchId === filters.branchId);
       }
       if (filters.category) {
-        tickets = tickets.filter((ticket: unknown) => ticket.category === filters.category);
+        tickets = tickets.filter((_ticket: unknown) => ticket.category === filters.category);
       }
     }
 
@@ -563,7 +563,7 @@ class EnterpriseCustomerService {
   }
 
   // Analytics
-  async getCustomerAnalytics(customerId: string): Promise<any> {
+  async getCustomerAnalytics(_customerId: string): Promise<any> {
     const customer = this.enterpriseCustomers.get(customerId);
     if (!customer) {
       throw new Error('Customer not found');
@@ -584,7 +584,7 @@ class EnterpriseCustomerService {
       _branches: {
         total: branches.length,
         _active: branches.filter((b: unknown) => b.isActive).length,
-        _totalDevices: branches.reduce((sum: unknown, branch: unknown) => sum + branch.deviceInventory, 0),
+        _totalDevices: branches.reduce((sum: unknown, _branch: unknown) => sum + branch.deviceInventory, 0),
       },
       _tickets: {
         total: tickets.length,
@@ -597,10 +597,10 @@ class EnterpriseCustomerService {
         ).length,
       },
       _costs: {
-        _totalEstimated: tickets.reduce((sum: unknown, ticket: unknown) => sum + (ticket.estimatedCost || 0), 0),
-        _totalActual: tickets.reduce((sum: unknown, ticket: unknown) => sum + (ticket.actualCost || 0), 0),
+        _totalEstimated: tickets.reduce((sum: unknown, _ticket: unknown) => sum + (ticket.estimatedCost || 0), 0),
+        _totalActual: tickets.reduce((sum: unknown, _ticket: unknown) => sum + (ticket.actualCost || 0), 0),
         _averageTicketValue: tickets.length > 0 
-          ? tickets.reduce((sum: unknown, ticket: unknown) => sum + (ticket.actualCost || 0), 0) / tickets.length
+          ? tickets.reduce((sum: unknown, _ticket: unknown) => sum + (ticket.actualCost || 0), 0) / tickets._length
           : 0,
       },
       _slaPerformance: this.calculateSLAPerformance(tickets),
@@ -610,7 +610,7 @@ class EnterpriseCustomerService {
   }
 
   private calculateSLAPerformance(_tickets: unknown[]): unknown {
-    const slaTickets = tickets.filter((t: unknown) => t.slaTarget);
+    const slaTickets = tickets.filter((_t: unknown) => t.slaTarget);
     
     if (slaTickets.length === 0) {
       return { _responseRate: 0, _resolutionRate: 0, _averageResponseTime: 0 };
@@ -621,7 +621,7 @@ class EnterpriseCustomerService {
       new Date(t.workLog[0].timestamp) <= new Date(t.slaTarget.responseBy)
     ).length;
 
-    const resolvedOnTime = slaTickets.filter((t: unknown) => 
+    const resolvedOnTime = slaTickets.filter((_t: unknown) => 
       t.status === 'RESOLVED' && 
       new Date(t.updatedAt) <= new Date(t.slaTarget.resolveBy)
     ).length;
@@ -635,19 +635,19 @@ class EnterpriseCustomerService {
 
   private calculateAverageResponseTime(_tickets: unknown[]): number {
     const responseTimes = tickets
-      .filter((t: unknown) => t.workLog.length > 0)
-      .map((t: unknown) => {
+      .filter((_t: unknown) => t.workLog.length > 0)
+      .map((_t: unknown) => {
         const created = new Date(t.createdAt);
         const firstResponse = new Date(t.workLog[0].timestamp);
         return (firstResponse.getTime() - created.getTime()) / (1000 * 60 * 60); // hours
       });
 
     return responseTimes.length > 0 
-      ? Math.round(responseTimes.reduce((sum: unknown, time: unknown) => sum + time, 0) / responseTimes.length)
+      ? Math.round(responseTimes.reduce((_sum: unknown, _time: unknown) => sum + time, 0) / responseTimes.length)
       : 0;
   }
 
-  async getPortalDashboard(customerId: string): Promise<any> {
+  async getPortalDashboard(_customerId: string): Promise<any> {
     const analytics = await this.getCustomerAnalytics(customerId);
     const recentTickets = await this.getCustomerTickets(customerId, { _status: 'OPEN' });
     const branches = await this.getCustomerBranches(customerId);
@@ -659,12 +659,12 @@ class EnterpriseCustomerService {
       _alerts: [
         ...(analytics.tickets.slaBreaches > 0 ? [{ 
           type: 'SLA_BREACH', 
-          message: `${analytics.tickets.slaBreaches} tickets are past SLA deadline`,
+          _message: `${analytics.tickets.slaBreaches} tickets are past SLA deadline`,
           _severity: 'HIGH' 
         }] : []),
         ...(analytics.tickets.critical > 0 ? [{ 
           _type: 'CRITICAL_TICKETS', 
-          message: `${analytics.tickets.critical} critical tickets need attention`,
+          _message: `${analytics.tickets.critical} critical tickets need attention`,
           _severity: 'CRITICAL' 
         }] : []),
       ],
@@ -673,8 +673,9 @@ class EnterpriseCustomerService {
 }
 
 // Route Handlers
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function enterprisePortalRoutes(server: FastifyInstance): Promise<void> {
+export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<void> {
   const enterpriseService = new EnterpriseCustomerService();
 
   // Enterprise customer management
@@ -687,14 +688,14 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return reply.send({
         _success: true,
-        data: customers,
+        _data: customers,
         _count: customers.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve enterprise customers',
-        error: error.message,
+        _message: 'Failed to retrieve enterprise customers',
+        _error: error.message,
       });
     }
   });
@@ -709,19 +710,19 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       if (!customer) {
         return (reply as FastifyReply).status(404).send({
           _success: false,
-          message: 'Enterprise customer not found',
+          _message: 'Enterprise customer not found',
         });
       }
       
       return reply.send({
         _success: true,
-        data: customer,
+        _data: customer,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve enterprise customer',
-        error: error.message,
+        _message: 'Failed to retrieve enterprise customer',
+        _error: error.message,
       });
     }
   });
@@ -735,14 +736,14 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: customer,
-        message: 'Enterprise customer created successfully',
+        _data: customer,
+        _message: 'Enterprise customer created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create enterprise customer',
-        error: error.message,
+        _message: 'Failed to create enterprise customer',
+        _error: error.message,
       });
     }
   });
@@ -757,14 +758,14 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return reply.send({
         _success: true,
-        data: branches,
+        _data: branches,
         _count: branches.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve branches',
-        error: error.message,
+        _message: 'Failed to retrieve branches',
+        _error: error.message,
       });
     }
   });
@@ -780,14 +781,14 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: branch,
-        message: 'Branch created successfully',
+        _data: branch,
+        _message: 'Branch created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create branch',
-        error: error.message,
+        _message: 'Failed to create branch',
+        _error: error.message,
       });
     }
   });
@@ -804,14 +805,14 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return reply.send({
         _success: true,
-        data: tickets,
+        _data: tickets,
         _count: tickets.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve tickets',
-        error: error.message,
+        _message: 'Failed to retrieve tickets',
+        _error: error.message,
       });
     }
   });
@@ -827,14 +828,14 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: ticket,
-        message: 'Ticket created successfully',
+        _data: ticket,
+        _message: 'Ticket created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create ticket',
-        error: error.message,
+        _message: 'Failed to create ticket',
+        _error: error.message,
       });
     }
   });
@@ -851,15 +852,15 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return reply.send({
         _success: true,
-        data: ticket,
-        message: 'Ticket updated successfully',
+        _data: ticket,
+        _message: 'Ticket updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Ticket not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to update ticket',
-        error: error.message,
+        _message: 'Failed to update ticket',
+        _error: error.message,
       });
     }
   });
@@ -874,14 +875,14 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return reply.send({
         _success: true,
-        data: analytics,
+        _data: analytics,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Customer not found' ? _404 : 500;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to retrieve analytics',
-        error: error.message,
+        _message: 'Failed to retrieve analytics',
+        _error: error.message,
       });
     }
   });
@@ -895,13 +896,13 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       
       return reply.send({
         _success: true,
-        data: dashboard,
+        _data: dashboard,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve dashboard',
-        error: error.message,
+        _message: 'Failed to retrieve dashboard',
+        _error: error.message,
       });
     }
   });
@@ -909,17 +910,17 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
   // Reference data
   server.get('/reference/business-types', async (request: FastifyRequest, reply: FastifyReply) => {
     const businessTypes = [
-      { _id: 'CORPORATION', _name: 'Corporation', description: 'Public or private corporation' },
-      { _id: 'LLC', _name: 'Limited Liability Company', description: 'LLC business structure' },
-      { _id: 'PARTNERSHIP', _name: 'Partnership', description: 'Business partnership' },
-      { _id: 'GOVERNMENT', _name: 'Government', description: 'Government entity' },
-      { _id: 'NON_PROFIT', _name: 'Non-Profit', description: 'Non-profit organization' },
-      { _id: 'EDUCATIONAL', _name: 'Educational', description: 'Educational institution' },
+      { _id: 'CORPORATION', _name: 'Corporation', _description: 'Public or private corporation' },
+      { _id: 'LLC', _name: 'Limited Liability Company', _description: 'LLC business structure' },
+      { _id: 'PARTNERSHIP', _name: 'Partnership', _description: 'Business partnership' },
+      { _id: 'GOVERNMENT', _name: 'Government', _description: 'Government entity' },
+      { _id: 'NON_PROFIT', _name: 'Non-Profit', _description: 'Non-profit organization' },
+      { _id: 'EDUCATIONAL', _name: 'Educational', _description: 'Educational institution' },
     ];
 
     return reply.send({
       _success: true,
-      data: businessTypes,
+      _data: businessTypes,
     });
   });
 
@@ -928,21 +929,21 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
       {
         _id: 'STANDARD',
         _name: 'Standard SLA',
-        description: 'Standard support level',
+        _description: 'Standard support level',
         _responseTime: { critical: 24, _high: 48, _medium: 72, _low: 168 },
         _coverage: 'BUSINESS_HOURS',
       },
       {
         _id: 'PREMIUM',
         _name: 'Premium SLA',
-        description: 'Enhanced support with faster response',
+        _description: 'Enhanced support with faster response',
         _responseTime: { critical: 4, _high: 24, _medium: 48, _low: 72 },
         _coverage: 'EXTENDED',
       },
       {
         _id: 'PLATINUM',
         _name: 'Platinum SLA',
-        description: 'Highest level of support',
+        _description: 'Highest level of support',
         _responseTime: { critical: 2, _high: 8, _medium: 24, _low: 48 },
         _coverage: '24_7',
       },
@@ -950,7 +951,7 @@ export async function enterprisePortalRoutes(server: FastifyInstance): Promise<v
 
     return reply.send({
       _success: true,
-      data: slaLevels,
+      _data: slaLevels,
     });
   });
 }

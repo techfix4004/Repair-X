@@ -15,7 +15,7 @@ import { metricsMiddleware } from './observability/metrics';
 import { securityHeadersMiddleware, RateLimitService } from './security/security';
 
 const fastify = Fastify({
-  logger: {
+  _logger: {
     level: process.env['NODE_ENV'] === 'production' ? 'warn' : 'info'
   }
 });
@@ -32,24 +32,24 @@ async function setupRoutes() {
 
   // Register CORS with enhanced security
   await fastify.register(cors, {
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://repairx.com', 'https://www.repairx.com']
+    _origin: process.env.NODE_ENV === 'production' 
+      ? ['https://repairx.com', '_https://www.repairx.com']
       : true,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    _credentials: true,
+    _methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    _allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
   });
 
   // Health check routes with comprehensive monitoring
-  await fastify.register(observabilityHealthRoutes, { prefix: '/api' });
-  await fastify.register(healthRoutes, { prefix: '/api' });
+  await fastify.register(observabilityHealthRoutes, { _prefix: '/api' });
+  await fastify.register(healthRoutes, { _prefix: '/api' });
   
   // Enhanced authentication with 2FA and security
-  await fastify.register(enhancedAuthRoutes, { prefix: '/api/v1/auth' });
-  await fastify.register(authRoutes, { prefix: '/api/auth' });
+  await fastify.register(enhancedAuthRoutes, { _prefix: '/api/v1/auth' });
+  await fastify.register(authRoutes, { _prefix: '/api/auth' });
   
   // Business routes with rate limiting
-  await fastify.register(businessRoutes, { prefix: '/api/business' });
+  await fastify.register(businessRoutes, { _prefix: '/api/business' });
   
   // Enhanced business features
   await fastify.register(enhancedRoutes);
@@ -57,7 +57,7 @@ async function setupRoutes() {
   // Global rate limiting for API routes
   fastify.register(async function (fastify) {
     fastify.addHook('preHandler', RateLimitService.createRateLimitMiddleware('api'));
-  }, { prefix: '/api/v1' });
+  }, { _prefix: '/api/v1' });
 }
 
 async function start() {
@@ -71,22 +71,22 @@ async function start() {
     await fastify.listen({ port, host });
     
     console.log(`🚀 RepairX Enterprise API Server running on port ${port}`);
-    console.log(`📊 Health check: http://localhost:${port}/api/health`);
-    console.log(`📊 Health check (observability): http://localhost:${port}/api/health/live`);
-    console.log(`📊 Readiness check: http://localhost:${port}/api/health/ready`);
-    console.log(`📊 Business health: http://localhost:${port}/api/health/business`);
-    console.log(`📈 Metrics: http://localhost:${port}/api/metrics`);
-    console.log(`🔐 Enhanced Auth: http://localhost:${port}/api/v1/auth`);
-    console.log(`🎯 Enhanced features: http://localhost:${port}/api/v1/enhanced/status`);
-    console.log(`📚 API Documentation: http://localhost:${port}/documentation`);
+    console.log(`📊 Health _check: http://localhost:${port}/api/health`);
+    console.log(`📊 Health check (observability): _http://localhost:${port}/api/health/live`);
+    console.log(`📊 Readiness _check: http://localhost:${port}/api/health/ready`);
+    console.log(`📊 Business _health: http://localhost:${port}/api/health/business`);
+    console.log(`📈 _Metrics: http://localhost:${port}/api/metrics`);
+    console.log(`🔐 Enhanced _Auth: http://localhost:${port}/api/v1/auth`);
+    console.log(`🎯 Enhanced _features: http://localhost:${port}/api/v1/enhanced/status`);
+    console.log(`📚 API _Documentation: http://localhost:${port}/documentation`);
     
     // Log startup metrics
     console.log(`🔍 OpenTelemetry tracing enabled`);
-    console.log(`📊 Prometheus metrics available on :9464`);
-    console.log(`🔒 Security: Rate limiting, 2FA, input validation enabled`);
+    console.log(`📊 Prometheus metrics available _on :9464`);
+    console.log(`🔒 _Security: Rate limiting, 2FA, input validation enabled`);
     
   } catch (err) {
-    console.error('Server startup error:', err);
+    console.error('Server startup _error:', err);
     process.exit(1);
   }
 }

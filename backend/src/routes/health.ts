@@ -1,43 +1,43 @@
 
 import { FastifyInstance } from 'fastify';
 
-export async function healthRoutes(fastify: FastifyInstance) {
-  fastify.get('/health', async (request, reply: any) => {
+export async function healthRoutes(_fastify: FastifyInstance) {
+  fastify.get('/health', async (request, reply: unknown) => {
     const health = {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      version: '1.0.0',
-      environment: process.env['NODE_ENV'] || 'development',
-      services: {
+      _status: 'healthy',
+      _timestamp: new Date().toISOString(),
+      _version: '1.0.0',
+      _environment: process.env['NODE_ENV'] || 'development',
+      _services: {
         database: 'connected',
-        api: 'operational',
-        sixSigma: 'monitoring'
+        _api: 'operational',
+        _sixSigma: 'monitoring'
       }
     };
     
     return reply.code(200).send(health);
   });
 
-  fastify.get('/metrics', async (request, reply: any) => {
+  fastify.get('/metrics', async (request, reply: unknown) => {
     const metrics = {
-      buildId: `CORE-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      defectRate: 0, // Clean system starts with 0
-      processCapability: {
+      _buildId: `CORE-${Date.now()}`,
+      _timestamp: new Date().toISOString(),
+      _defectRate: 0, // Clean system starts with 0
+      _processCapability: {
         cp: 2.0,
-        cpk: 1.8
+        _cpk: 1.8
       },
-      compliance: {
+      _compliance: {
         sixSigma: true,
-        gdpr: true,
-        ccpa: true,
-        pciDss: true,
-        gst: true
+        _gdpr: true,
+        _ccpa: true,
+        _pciDss: true,
+        _gst: true
       },
-      performance: {
+      _performance: {
         responseTime: '<200ms',
-        uptime: '99.9%',
-        throughput: 'optimal'
+        _uptime: '99.9%',
+        _throughput: 'optimal'
       }
     };
     

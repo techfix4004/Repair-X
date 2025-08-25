@@ -3,12 +3,15 @@
  * Tests system integration and enterprise features
  */
 
+ 
+/// <reference types="jest" />
 /* eslint-disable no-undef */
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
 import Fastify, { FastifyInstance } from 'fastify';
 
+ 
 // eslint-disable-next-line max-lines-per-function
 describe('System Integration Tests', () => {
   let app: FastifyInstance;
@@ -19,21 +22,21 @@ describe('System Integration Tests', () => {
     // Mock integrated system routes
     app.get('/api/v1/system/health', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           status: 'healthy',
-          version: '1.0.0',
+          _version: '1.0.0',
           _uptime: process.uptime(),
           _checks: {
             database: 'connected',
             _redis: 'connected',
             _sms_gateway: 'active',
             _payment_gateway: 'active',
-            email_service: 'active'
+            _email_service: 'active'
           },
           _sixSigma: {
             defectRate: 0.0,
-            processCapability: { cp: 2.0, cpk: 1.8 },
+            _processCapability: { cp: 2.0, _cpk: 1.8 },
             _qualityCompliant: true
           }
         }
@@ -42,8 +45,8 @@ describe('System Integration Tests', () => {
 
     app.get('/api/v1/system/metrics', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           jobs: {
             total: 1250,
             _active: 45,
@@ -62,8 +65,8 @@ describe('System Integration Tests', () => {
           },
           _quality: {
             customerSatisfaction: 4.8,
-            defectRate: 0.0,
-            onTimeDelivery: 98.5
+            _defectRate: 0.0,
+            _onTimeDelivery: 98.5
           }
         }
       });
@@ -71,14 +74,14 @@ describe('System Integration Tests', () => {
 
     app.post('/api/v1/system/compliance-check', async (request, reply: unknown) => {
       return reply.send({
-        success: true,
-        data: {
+        _success: true,
+        _data: {
           compliances: {
             gdpr: { status: 'compliant', _lastCheck: new Date().toISOString() },
             _ccpa: { status: 'compliant', _lastCheck: new Date().toISOString() },
             _pciDss: { status: 'compliant', _lastCheck: new Date().toISOString() },
             _gst: { status: 'compliant', _lastCheck: new Date().toISOString() },
-            _sixSigma: { status: 'compliant', defectRate: 0.0 }
+            _sixSigma: { status: 'compliant', _defectRate: 0.0 }
           },
           _overallStatus: 'compliant',
           _recommendations: []
@@ -95,8 +98,8 @@ describe('System Integration Tests', () => {
 
   test('GET /api/v1/system/health - should return healthy system status', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/system/health'
+      _method: 'GET',
+      _url: '/api/v1/system/health'
     });
 
     expect(response.statusCode).toBe(200);
@@ -109,8 +112,8 @@ describe('System Integration Tests', () => {
 
   test('GET /api/v1/system/metrics - should return system metrics', async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: '/api/v1/system/metrics'
+      _method: 'GET',
+      _url: '/api/v1/system/metrics'
     });
 
     expect(response.statusCode).toBe(200);
@@ -124,8 +127,8 @@ describe('System Integration Tests', () => {
 
   test('POST /api/v1/system/compliance-check - should validate all compliance requirements', async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: '/api/v1/system/compliance-check'
+      _method: 'POST',
+      _url: '/api/v1/system/compliance-check'
     });
 
     expect(response.statusCode).toBe(200);
@@ -149,7 +152,7 @@ describe('System Integration Tests', () => {
     ];
 
     // Mock enterprise feature validation
-    enterpriseFeatures.forEach((feature: unknown) => {
+    enterpriseFeatures.forEach((_feature: unknown) => {
       expect(feature).toBeDefined();
       expect(typeof feature).toBe('string');
       expect(feature.length).toBeGreaterThan(5);
@@ -160,10 +163,10 @@ describe('System Integration Tests', () => {
 
   test('System should maintain Six Sigma quality standards', async () => {
     const qualityMetrics = {
-      defectRate: 0.0,
-      processCapability: { cp: 2.0, cpk: 1.8 },
-      customerSatisfaction: 4.8,
-      onTimeDelivery: 98.5
+      _defectRate: 0.0,
+      _processCapability: { cp: 2.0, _cpk: 1.8 },
+      _customerSatisfaction: 4.8,
+      _onTimeDelivery: 98.5
     };
 
     expect(qualityMetrics.defectRate).toBeLessThan(3.4);

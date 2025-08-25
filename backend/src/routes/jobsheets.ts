@@ -96,7 +96,7 @@ const _WORKFLOW_TRANSITIONS: Record<string, StateTransition> = {
       // Update booking status
       await prisma.booking.update({
         _where: { id: jobSheet.bookingId },
-        data: { status: 'IN_PROGRESS' }
+        _data: { status: 'IN_PROGRESS' }
       });
       // Send progress notification
       await sendSmsNotification(jobSheet.booking.customerId, 'work_started', {
@@ -195,7 +195,7 @@ const _WORKFLOW_TRANSITIONS: Record<string, StateTransition> = {
       // Update booking to completed
       await prisma.booking.update({
         _where: { id: jobSheet.bookingId },
-        data: { 
+        _data: { 
           status: 'COMPLETED',
           _completedAt: new Date()
         }
@@ -251,7 +251,7 @@ async function executeAutomatedActions(_jobSheet: unknown, _updateData: unknown,
 }
 
 // Mock implementations for automated functions (to be implemented with real integrations)
-async function sendSmsNotification(customerId: string, template: string, data: unknown): Promise<void> {
+async function sendSmsNotification(_customerId: string, _template: string, _data: unknown): Promise<void> {
   // Implementation would send actual SMS using the SMS service
   console.log(`SMS _notification: ${template} to customer ${customerId}`, data);
 }
@@ -343,8 +343,9 @@ function generateJobNumber(): string {
   return `JS-${year}-${randomNumber}`;
 }
 
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
+export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
   // Create a new job sheet
   server.post('/', {
     _schema: {
@@ -366,7 +367,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       const technicianId = request.user?.id;
       
       if (!technicianId) {
-        return (reply as FastifyReply).status(401).send({ error: 'Authentication required' });
+        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
       }
 
       // Verify booking exists and is assigned to this technician
@@ -380,7 +381,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!booking) {
-        return (reply as FastifyReply).status(404).send({ error: 'Booking not found or not assigned to you' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Booking not found or not assigned to you' });
       }
 
       // Check if job sheet already exists for this booking
@@ -389,13 +390,13 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (existingJobSheet) {
-        return (reply as FastifyReply).status(400).send({ error: 'Job sheet already exists for this booking' });
+        return (reply as FastifyReply).status(400).send({ _error: 'Job sheet already exists for this booking' });
       }
 
       const jobNumber = generateJobNumber();
 
       const jobSheet = await prisma.jobSheet.create({
-        data: {
+        _data: {
           jobNumber,
           _bookingId: request.body.bookingId,
           _deviceId: request.body.deviceId,
@@ -412,7 +413,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
           },
           _device: true,
           _technician: {
-            select: { id: true, _firstName: true, _lastName: true, email: true }
+            select: { id: true, _firstName: true, _lastName: true, _email: true }
           },
           _partsUsed: true
         }
@@ -421,18 +422,18 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       // Update booking status
       await prisma.booking.update({
         _where: { id: request.body.bookingId },
-        data: { status: 'IN_PROGRESS' }
+        _data: { status: 'IN_PROGRESS' }
       });
 
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: jobSheet,
-        message: 'Job sheet created successfully'
+        _data: jobSheet,
+        _message: 'Job sheet created successfully'
       });
     } catch (error) {
       server.log.error(error);
       return (reply as FastifyReply).status(500).send({ 
-        error: 'Failed to create job sheet',
+        _error: 'Failed to create job sheet',
         _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
@@ -452,7 +453,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       const userRole = request.user?.role;
       
       if (!technicianId) {
-        return (reply as FastifyReply).status(401).send({ error: 'Authentication required' });
+        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
       }
 
       const { status, priority, page = 1, limit = 10 } = request.query;
@@ -479,7 +480,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
               }
             },
             _device: {
-              select: { id: true, brand: true, model: true, _category: true, condition: true }
+              select: { id: true, _brand: true, _model: true, _category: true, _condition: true }
             },
             _technician: {
               select: { id: true, _firstName: true, _lastName: true }
@@ -498,7 +499,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.send({
         _success: true,
-        data: jobSheets,
+        _data: jobSheets,
         _pagination: {
           page,
           limit,
@@ -508,7 +509,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to fetch job sheets' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch job sheets' });
     }
   });
 
@@ -535,7 +536,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
               id: true, 
               _firstName: true, 
               _lastName: true, 
-              email: true, 
+              _email: true, 
               _phone: true,
               _technicianProfile: {
                 select: { 
@@ -551,7 +552,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ error: 'Job sheet not found' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found' });
       }
 
       // Authorization check
@@ -562,16 +563,16 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
         jobSheet.booking.customerId === _userId;
 
       if (!isAuthorized) {
-        return (reply as FastifyReply).status(403).send({ error: 'Access denied' });
+        return (reply as FastifyReply).status(403).send({ _error: 'Access denied' });
       }
 
       return reply.send({
         _success: true,
-        data: jobSheet
+        _data: jobSheet
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to fetch job sheet' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch job sheet' });
     }
   });
 
@@ -622,7 +623,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ error: 'Job sheet not found' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found' });
       }
 
       const isAuthorized = 
@@ -631,7 +632,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
         jobSheet.technicianId === technicianId;
 
       if (!isAuthorized) {
-        return (reply as FastifyReply).status(403).send({ error: 'Access denied' });
+        return (reply as FastifyReply).status(403).send({ _error: 'Access denied' });
       }
 
       // Special handling for status changes with 12-state workflow
@@ -648,8 +649,8 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
         if (validationError) {
           return (reply as FastifyReply).status(400).send({ 
-            error: 'Invalid state transition', 
-            message: validationError 
+            _error: 'Invalid state transition', 
+            _message: validationError 
           });
         }
 
@@ -692,14 +693,14 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
         if (bookingStatus !== jobSheet.booking.status) {
           await prisma.booking.update({
             _where: { id: jobSheet.bookingId },
-            data: { status: bookingStatus }
+            _data: { status: bookingStatus }
           });
         }
       }
 
       const updatedJobSheet = await prisma.jobSheet.update({
         _where: { id: jobSheetId },
-        data: updateData,
+        _data: updateData,
         _include: {
           booking: {
             include: { service: true, _customer: true }
@@ -724,8 +725,8 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.send({
         _success: true,
-        data: updatedJobSheet,
-        message: 'Job sheet updated successfully',
+        _data: updatedJobSheet,
+        _message: 'Job sheet updated successfully',
         _workflow: {
           previousState: jobSheet.status,
           _currentState: updatedJobSheet.status,
@@ -736,7 +737,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
     } catch (error) {
       server.log.error(error);
       return (reply as FastifyReply).status(500).send({ 
-        error: 'Failed to update job sheet',
+        _error: 'Failed to update job sheet',
         _details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
@@ -771,13 +772,13 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ error: 'Job sheet not found or access denied' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found or access denied' });
       }
 
       const totalCost = request.body.quantity * request.body.unitCost;
 
       const part = await prisma.jobSheetPart.create({
-        data: {
+        _data: {
           jobSheetId,
           _partName: request.body.partName,
           _partNumber: request.body.partNumber,
@@ -797,7 +798,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       await prisma.jobSheet.update({
         _where: { id: jobSheetId },
-        data: {
+        _data: {
           partsCost: totalPartsCost,
           _totalCost: Number(jobSheet.laborCost) + totalPartsCost
         }
@@ -805,12 +806,12 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: part,
-        message: 'Part added successfully'
+        _data: part,
+        _message: 'Part added successfully'
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to add part' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to add part' });
     }
   });
 
@@ -828,7 +829,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ error: 'Job sheet not found or access denied' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found or access denied' });
       }
 
       await prisma.jobSheetPart.delete({
@@ -844,7 +845,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       await prisma.jobSheet.update({
         _where: { id: jobSheetId },
-        data: {
+        _data: {
           partsCost: totalPartsCost,
           _totalCost: Number(jobSheet.laborCost) + totalPartsCost
         }
@@ -852,11 +853,11 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.send({
         _success: true,
-        message: 'Part removed successfully'
+        _message: 'Part removed successfully'
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to remove part' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to remove part' });
     }
   });
 
@@ -886,7 +887,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ error: 'Job sheet not found' });
+        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found' });
       }
 
       // Authorization check
@@ -897,7 +898,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
         jobSheet.booking.customerId === _userId;
 
       if (!isAuthorized) {
-        return (reply as FastifyReply).status(403).send({ error: 'Access denied' });
+        return (reply as FastifyReply).status(403).send({ _error: 'Access denied' });
       }
 
       // For now, return JSON that could be used to generate PDF
@@ -907,16 +908,16 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
         _date: jobSheet.createdAt,
         _customer: {
           name: `${jobSheet.booking.customer.firstName} ${jobSheet.booking.customer.lastName}`,
-          email: jobSheet.booking.customer.email,
+          _email: jobSheet.booking.customer.email,
           _phone: jobSheet.booking.customer.phone,
           _address: jobSheet.booking.address
         },
         _device: {
           brand: jobSheet.device.brand,
-          model: jobSheet.device.model,
-          serialNumber: jobSheet.device.serialNumber,
+          _model: jobSheet.device.model,
+          _serialNumber: jobSheet.device.serialNumber,
           _category: jobSheet.device.category,
-          condition: jobSheet.device.condition
+          _condition: jobSheet.device.condition
         },
         _technician: {
           name: `${jobSheet.technician.firstName} ${jobSheet.technician.lastName}`,
@@ -946,12 +947,12 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.type('application/json').send({
         _success: true,
-        data: pdfData,
-        message: 'Job sheet data ready for PDF generation'
+        _data: pdfData,
+        _message: 'Job sheet data ready for PDF generation'
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to generate job sheet PDF' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to generate job sheet PDF' });
     }
   });
 
@@ -962,7 +963,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       const userRole = request.user?.role;
 
       if (!technicianId) {
-        return (reply as FastifyReply).status(401).send({ error: 'Authentication required' });
+        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
       }
 
       const where = userRole === 'TECHNICIAN' ? { technicianId } : {};
@@ -1001,7 +1002,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
 
       return reply.send({
         _success: true,
-        data: {
+        _data: {
           totalJobSheets,
           activeJobSheets,
           completedJobSheets,
@@ -1014,7 +1015,7 @@ export async function jobSheetRoutes(server: FastifyInstance): Promise<void> {
       });
     } catch (error) {
       server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ error: 'Failed to fetch statistics' });
+      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch statistics' });
     }
   });
 }

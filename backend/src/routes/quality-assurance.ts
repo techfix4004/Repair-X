@@ -1,132 +1,133 @@
 
 import { FastifyInstance } from 'fastify';
 
-export async function qualityAssuranceRoutes(fastify: FastifyInstance) {
+// eslint-disable-next-line max-lines-per-function
+export async function qualityAssuranceRoutes(_fastify: FastifyInstance) {
   // Six Sigma Quality Dashboard
   fastify.get('/quality/dashboard', async (request, reply: unknown) => {
     const dashboard = {
-      summary: {
+      _summary: {
         defectRate: 2.1, // DPMO
-        processCapability: {
+        _processCapability: {
           cp: 1.45,
-          cpk: 1.38
+          _cpk: 1.38
         },
-        customerSatisfaction: 4.7,
-        netPromoterScore: 73,
-        firstTimeFixRate: 89.3
+        _customerSatisfaction: 4.7,
+        _netPromoterScore: 73,
+        _firstTimeFixRate: 89.3
       },
-      defectAnalysis: {
+      _defectAnalysis: {
         byCategory: {
-          'Electronics': { count: 12, rate: 1.8 },
-          'Appliances': { count: 8, rate: 2.3 },
-          'Automotive': { count: 15, rate: 2.7 },
-          'Home Maintenance': { count: 5, rate: 1.2 }
+          'Electronics': { count: 12, _rate: 1.8 },
+          'Appliances': { _count: 8, _rate: 2.3 },
+          'Automotive': { _count: 15, _rate: 2.7 },
+          'Home Maintenance': { _count: 5, _rate: 1.2 }
         },
-        trendingDown: true,
-        rootCauses: [
+        _trendingDown: true,
+        _rootCauses: [
           'Parts quality variation',
           'Training gaps identified',
           'Process documentation updates needed'
         ]
       },
-      improvementActions: {
+      _improvementActions: {
         active: [
           {
             id: 'QA_001',
-            title: 'Implement supplier quality audits',
-            status: 'in_progress',
-            expectedImpact: '15% defect reduction',
-            dueDate: '2025-08-25'
+            _title: 'Implement supplier quality audits',
+            _status: 'in_progress',
+            _expectedImpact: '15% defect reduction',
+            _dueDate: '2025-08-25'
           },
           {
-            id: 'QA_002', 
-            title: 'Advanced technician certification program',
-            status: 'planning',
-            expectedImpact: '25% skill improvement',
-            dueDate: '2025-09-15'
+            _id: 'QA_002', 
+            _title: 'Advanced technician certification program',
+            _status: 'planning',
+            _expectedImpact: '25% skill improvement',
+            _dueDate: '2025-09-15'
           }
         ],
-        completed: [
+        _completed: [
           {
             id: 'QA_003',
-            title: 'Automated quality checkpoints',
-            impact: '18% defect reduction achieved',
-            completedDate: '2025-08-05'
+            _title: 'Automated quality checkpoints',
+            _impact: '18% defect reduction achieved',
+            _completedDate: '2025-08-05'
           }
         ]
       }
     };
 
     return reply.code(200).send({
-      success: true,
-      data: dashboard
+      _success: true,
+      _data: dashboard
     });
   });
 
   // Real-time Quality Monitoring
   fastify.get('/quality/metrics/realtime', async (request, reply: unknown) => {
     const realtime = {
-      timestamp: new Date().toISOString(),
-      currentShift: {
+      _timestamp: new Date().toISOString(),
+      _currentShift: {
         defectRate: 1.8,
-        completedJobs: 47,
-        qualityScore: 96.2,
-        customerFeedback: 4.8
+        _completedJobs: 47,
+        _qualityScore: 96.2,
+        _customerFeedback: 4.8
       },
-      alerts: [
+      _alerts: [
         {
           level: 'warning',
-          message: 'Automotive category showing slight quality trend decline',
-          action: 'Additional QC review recommended'
+          _message: 'Automotive category showing slight quality trend decline',
+          _action: 'Additional QC review recommended'
         }
       ],
-      processControl: {
+      _processControl: {
         withinLimits: true,
-        controlChartStatus: 'stable',
-        variationReduced: '12% from last month'
+        _controlChartStatus: 'stable',
+        _variationReduced: '12% from last month'
       }
     };
 
     return reply.code(200).send({
-      success: true,
-      data: realtime
+      _success: true,
+      _data: realtime
     });
   });
 
   // Quality Improvement Recommendations
   fastify.get('/quality/recommendations', async (request, reply: unknown) => {
     const recommendations = {
-      immediate: [
+      _immediate: [
         {
           priority: 'high',
-          area: 'Process Optimization',
-          recommendation: 'Implement automated pre-check validation',
-          expectedBenefit: 'Reduce defects by 20%',
-          implementation: 'Configure quality gates in workflow system'
+          _area: 'Process Optimization',
+          _recommendation: 'Implement automated pre-check validation',
+          _expectedBenefit: 'Reduce defects by 20%',
+          _implementation: 'Configure quality gates in workflow system'
         }
       ],
-      strategic: [
+      _strategic: [
         {
           priority: 'medium',
-          area: 'Training Enhancement',
-          recommendation: 'Advanced certification for complex repairs',
-          expectedBenefit: 'Improve first-time fix rate to 95%',
-          timeline: '3 months'
+          _area: 'Training Enhancement',
+          _recommendation: 'Advanced certification for complex repairs',
+          _expectedBenefit: 'Improve first-time fix rate to 95%',
+          _timeline: '3 months'
         }
       ],
-      innovation: [
+      _innovation: [
         {
           area: 'AI Integration',
-          recommendation: 'Predictive quality analytics',
-          benefit: 'Prevent defects before they occur',
-          technology: 'Machine learning quality models'
+          _recommendation: 'Predictive quality analytics',
+          _benefit: 'Prevent defects before they occur',
+          _technology: 'Machine learning quality models'
         }
       ]
     };
 
     return reply.code(200).send({
-      success: true,
-      data: recommendations
+      _success: true,
+      _data: recommendations
     });
   });
 }

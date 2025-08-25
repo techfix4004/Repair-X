@@ -1,52 +1,53 @@
 import { FastifyInstance } from 'fastify';
 
-export async function marketingAutomationRoutes(fastify: FastifyInstance) {
+// eslint-disable-next-line max-lines-per-function
+export async function marketingAutomationRoutes(_fastify: FastifyInstance) {
   // Customer Acquisition Funnels
   fastify.get('/marketing/funnels', async (request, reply: unknown) => {
     const funnels = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         activeFunnels: [
           {
             id: 'funnel_001',
-            name: 'New Customer Acquisition',
-            status: 'active',
-            stages: [
-              { stage: 'awareness', visitors: 5432, conversionRate: 23.4 },
-              { stage: 'interest', leads: 1271, conversionRate: 34.7 },
-              { stage: 'consideration', prospects: 441, conversionRate: 45.2 },
-              { stage: 'conversion', customers: 199, conversionRate: 67.8 }
+            _name: 'New Customer Acquisition',
+            _status: 'active',
+            _stages: [
+              { stage: 'awareness', _visitors: 5432, _conversionRate: 23.4 },
+              { _stage: 'interest', _leads: 1271, _conversionRate: 34.7 },
+              { _stage: 'consideration', _prospects: 441, _conversionRate: 45.2 },
+              { _stage: 'conversion', _customers: 199, _conversionRate: 67.8 }
             ],
-            performance: {
+            _performance: {
               totalConversions: 199,
-              costPerAcquisition: 45.67,
-              customerLifetimeValue: 456.89,
-              roi: 901.2
+              _costPerAcquisition: 45.67,
+              _customerLifetimeValue: 456.89,
+              _roi: 901.2
             }
           },
           {
-            id: 'funnel_002',
-            name: 'Repeat Customer Campaign',
-            status: 'active',
-            stages: [
-              { stage: 'segmentation', customers: 2456, conversionRate: 67.3 },
-              { stage: 'engagement', active: 1653, conversionRate: 78.9 },
-              { stage: 'booking', bookings: 1304, conversionRate: 89.2 }
+            _id: 'funnel_002',
+            _name: 'Repeat Customer Campaign',
+            _status: 'active',
+            _stages: [
+              { stage: 'segmentation', _customers: 2456, _conversionRate: 67.3 },
+              { _stage: 'engagement', _active: 1653, _conversionRate: 78.9 },
+              { _stage: 'booking', _bookings: 1304, _conversionRate: 89.2 }
             ],
-            performance: {
+            _performance: {
               totalConversions: 1304,
-              costPerAcquisition: 12.34,
-              averageOrderValue: 234.56,
-              roi: 1567.8
+              _costPerAcquisition: 12.34,
+              _averageOrderValue: 234.56,
+              _roi: 1567.8
             }
           }
         ],
-        summary: {
+        _summary: {
           totalFunnels: 8,
-          activeFunnels: 6,
-          totalLeads: 12456,
-          conversionRate: 23.7,
-          avgCostPerLead: 34.89
+          _activeFunnels: 6,
+          _totalLeads: 12456,
+          _conversionRate: 23.7,
+          _avgCostPerLead: 34.89
         }
       }
     };
@@ -57,57 +58,57 @@ export async function marketingAutomationRoutes(fastify: FastifyInstance) {
   // Lead Scoring & Qualification
   fastify.get('/marketing/leads/scoring', async (request, reply: unknown) => {
     const leadScoring = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         scoringModel: {
-          demographic: { weight: 25, factors: ['age', 'location', 'income'] },
-          behavioral: { weight: 40, factors: ['website_visits', 'email_opens', 'service_history'] },
-          engagement: { weight: 35, factors: ['response_rate', 'referrals', 'reviews'] }
+          demographic: { weight: 25, _factors: ['age', 'location', 'income'] },
+          _behavioral: { weight: 40, _factors: ['website_visits', 'email_opens', 'service_history'] },
+          _engagement: { weight: 35, _factors: ['response_rate', 'referrals', 'reviews'] }
         },
-        leads: [
+        _leads: [
           {
             id: 'lead_001',
-            score: 92,
-            grade: 'A+',
-            profile: {
+            _score: 92,
+            _grade: 'A+',
+            _profile: {
               name: 'John Smith',
-              email: 'john@example.com',
-              phone: '+1-555-0123',
-              location: 'Toronto'
+              _email: 'john@example.com',
+              _phone: '+1-555-0123',
+              _location: 'Toronto'
             },
-            engagement: {
+            _engagement: {
               websiteVisits: 12,
-              emailOpens: 8,
-              lastActivity: '2024-07-20'
+              _emailOpens: 8,
+              _lastActivity: '2024-07-20'
             },
-            predictedValue: 567.89,
-            conversionProbability: 87.3
+            _predictedValue: 567.89,
+            _conversionProbability: 87.3
           },
           {
-            id: 'lead_002',
-            score: 76,
-            grade: 'B+',
-            profile: {
+            _id: 'lead_002',
+            _score: 76,
+            _grade: 'B+',
+            _profile: {
               name: 'Sarah Johnson',
-              email: 'sarah@example.com',
-              phone: '+1-555-0124',
-              location: 'Vancouver'
+              _email: 'sarah@example.com',
+              _phone: '+1-555-0124',
+              _location: 'Vancouver'
             },
-            engagement: {
+            _engagement: {
               websiteVisits: 8,
-              emailOpens: 5,
-              lastActivity: '2024-07-18'
+              _emailOpens: 5,
+              _lastActivity: '2024-07-18'
             },
-            predictedValue: 234.56,
-            conversionProbability: 64.7
+            _predictedValue: 234.56,
+            _conversionProbability: 64.7
           }
         ],
-        analytics: {
+        _analytics: {
           totalLeads: 1247,
-          qualifiedLeads: 456,
-          hotLeads: 89,
-          avgScore: 64.3,
-          conversionRate: 34.7
+          _qualifiedLeads: 456,
+          _hotLeads: 89,
+          _avgScore: 64.3,
+          _conversionRate: 34.7
         }
       }
     };
@@ -118,75 +119,75 @@ export async function marketingAutomationRoutes(fastify: FastifyInstance) {
   // A/B Testing & Optimization
   fastify.get('/marketing/ab-testing', async (request, reply: unknown) => {
     const abTesting = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         activeTests: [
           {
             id: 'test_001',
-            name: 'Email Subject Line Optimization',
-            status: 'running',
-            variants: [
+            _name: 'Email Subject Line Optimization',
+            _status: 'running',
+            _variants: [
               {
                 name: 'Control',
-                traffic: 50,
-                openRate: 23.4,
-                clickRate: 5.7,
-                conversions: 23
+                _traffic: 50,
+                _openRate: 23.4,
+                _clickRate: 5.7,
+                _conversions: 23
               },
               {
-                name: 'Variant A',
-                traffic: 50,
-                openRate: 28.9,
-                clickRate: 7.2,
-                conversions: 34
+                _name: 'Variant A',
+                _traffic: 50,
+                _openRate: 28.9,
+                _clickRate: 7.2,
+                _conversions: 34
               }
             ],
-            results: {
+            _results: {
               winner: 'Variant A',
-              improvement: 47.8,
-              confidence: 95.2,
-              significance: true
+              _improvement: 47.8,
+              _confidence: 95.2,
+              _significance: true
             },
-            duration: 14,
-            sampleSize: 2000
+            _duration: 14,
+            _sampleSize: 2000
           },
           {
-            id: 'test_002',
-            name: 'Landing Page CTA Button',
-            status: 'completed',
-            variants: [
+            _id: 'test_002',
+            _name: 'Landing Page CTA Button',
+            _status: 'completed',
+            _variants: [
               {
                 name: 'Blue Button',
-                traffic: 33,
-                conversionRate: 12.3,
-                conversions: 87
+                _traffic: 33,
+                _conversionRate: 12.3,
+                _conversions: 87
               },
               {
-                name: 'Green Button',
-                traffic: 33,
-                conversionRate: 15.7,
-                conversions: 112
+                _name: 'Green Button',
+                _traffic: 33,
+                _conversionRate: 15.7,
+                _conversions: 112
               },
               {
-                name: 'Orange Button',
-                traffic: 34,
-                conversionRate: 18.9,
-                conversions: 145
+                _name: 'Orange Button',
+                _traffic: 34,
+                _conversionRate: 18.9,
+                _conversions: 145
               }
             ],
-            results: {
+            _results: {
               winner: 'Orange Button',
-              improvement: 53.7,
-              confidence: 99.1,
-              significance: true
+              _improvement: 53.7,
+              _confidence: 99.1,
+              _significance: true
             }
           }
         ],
-        insights: {
+        _insights: {
           totalTests: 34,
-          significantWins: 23,
-          avgImprovement: 23.7,
-          totalRevenueLift: 45678.90
+          _significantWins: 23,
+          _avgImprovement: 23.7,
+          _totalRevenueLift: 45678.90
         }
       }
     };
@@ -197,66 +198,66 @@ export async function marketingAutomationRoutes(fastify: FastifyInstance) {
   // Campaign Performance Analytics
   fastify.get('/marketing/campaigns/performance', async (request, reply: unknown) => {
     const performance = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         campaigns: [
           {
             id: 'camp_001',
-            name: 'Summer Electronics Repair Special',
-            type: 'email',
-            status: 'active',
-            metrics: {
+            _name: 'Summer Electronics Repair Special',
+            _type: 'email',
+            _status: 'active',
+            _metrics: {
               sent: 5432,
-              delivered: 5234,
-              opened: 1847,
-              clicked: 423,
-              converted: 87,
-              revenue: 12456.78
+              _delivered: 5234,
+              _opened: 1847,
+              _clicked: 423,
+              _converted: 87,
+              _revenue: 12456.78
             },
-            rates: {
+            _rates: {
               deliveryRate: 96.4,
-              openRate: 35.3,
-              clickRate: 22.9,
-              conversionRate: 20.6,
-              roi: 467.8
+              _openRate: 35.3,
+              _clickRate: 22.9,
+              _conversionRate: 20.6,
+              _roi: 467.8
             },
-            audience: {
+            _audience: {
               segment: 'Electronics Customers',
-              size: 5432,
-              targeting: ['purchased_electronics', 'last_30_days']
+              _size: 5432,
+              _targeting: ['purchased_electronics', 'last_30_days']
             }
           },
           {
-            id: 'camp_002',
-            name: 'Appliance Maintenance Reminder',
-            type: 'sms',
-            status: 'completed',
-            metrics: {
+            _id: 'camp_002',
+            _name: 'Appliance Maintenance Reminder',
+            _type: 'sms',
+            _status: 'completed',
+            _metrics: {
               sent: 2345,
-              delivered: 2298,
-              clicked: 567,
-              converted: 234,
-              revenue: 23456.78
+              _delivered: 2298,
+              _clicked: 567,
+              _converted: 234,
+              _revenue: 23456.78
             },
-            rates: {
+            _rates: {
               deliveryRate: 98.0,
-              clickRate: 24.7,
-              conversionRate: 41.3,
-              roi: 589.2
+              _clickRate: 24.7,
+              _conversionRate: 41.3,
+              _roi: 589.2
             }
           }
         ],
-        channels: {
-          email: { campaigns: 12, avgOpenRate: 28.9, avgROI: 423.7 },
-          sms: { campaigns: 8, avgClickRate: 34.2, avgROI: 567.8 },
-          social: { campaigns: 6, avgEngagement: 12.3, avgROI: 234.5 },
-          ppc: { campaigns: 4, avgCTR: 5.7, avgROI: 345.6 }
+        _channels: {
+          email: { campaigns: 12, _avgOpenRate: 28.9, _avgROI: 423.7 },
+          _sms: { campaigns: 8, _avgClickRate: 34.2, _avgROI: 567.8 },
+          _social: { campaigns: 6, _avgEngagement: 12.3, _avgROI: 234.5 },
+          _ppc: { campaigns: 4, _avgCTR: 5.7, _avgROI: 345.6 }
         },
-        automation: {
+        _automation: {
           activeWorkflows: 15,
-          triggeredMessages: 12456,
-          automationRevenue: 67890.12,
-          avgResponseTime: '2.3 minutes'
+          _triggeredMessages: 12456,
+          _automationRevenue: 67890.12,
+          _avgResponseTime: '2.3 minutes'
         }
       }
     };
@@ -267,65 +268,65 @@ export async function marketingAutomationRoutes(fastify: FastifyInstance) {
   // Customer Retention & Loyalty
   fastify.get('/marketing/retention', async (request, reply: unknown) => {
     const retention = {
-      success: true,
-      data: {
+      _success: true,
+      _data: {
         overview: {
           totalCustomers: 2456,
-          activeCustomers: 1847,
-          churnRate: 8.2,
-          retentionRate: 91.8,
-          avgCustomerLifetime: 18.5 // months
+          _activeCustomers: 1847,
+          _churnRate: 8.2,
+          _retentionRate: 91.8,
+          _avgCustomerLifetime: 18.5 // months
         },
-        segments: [
+        _segments: [
           {
             name: 'VIP Customers',
-            count: 187,
-            retentionRate: 97.8,
-            avgValue: 890.45,
-            churnRisk: 'low'
+            _count: 187,
+            _retentionRate: 97.8,
+            _avgValue: 890.45,
+            _churnRisk: 'low'
           },
           {
-            name: 'Regular Customers', 
-            count: 1234,
-            retentionRate: 89.2,
-            avgValue: 234.56,
-            churnRisk: 'medium'
+            _name: 'Regular Customers', 
+            _count: 1234,
+            _retentionRate: 89.2,
+            _avgValue: 234.56,
+            _churnRisk: 'medium'
           },
           {
-            name: 'At-Risk Customers',
-            count: 123,
-            retentionRate: 67.4,
-            avgValue: 145.67,
-            churnRisk: 'high'
+            _name: 'At-Risk Customers',
+            _count: 123,
+            _retentionRate: 67.4,
+            _avgValue: 145.67,
+            _churnRisk: 'high'
           }
         ],
-        campaigns: [
+        _campaigns: [
           {
             name: 'Win-Back Campaign',
-            targeting: 'inactive_30_days',
-            reach: 234,
-            reactivated: 87,
-            reactivationRate: 37.2,
-            revenue: 12345.67
+            _targeting: 'inactive_30_days',
+            _reach: 234,
+            _reactivated: 87,
+            _reactivationRate: 37.2,
+            _revenue: 12345.67
           },
           {
-            name: 'Loyalty Rewards Program',
-            participants: 1456,
-            engagement: 78.9,
-            incrementalRevenue: 45678.90,
-            roi: 234.5
+            _name: 'Loyalty Rewards Program',
+            _participants: 1456,
+            _engagement: 78.9,
+            _incrementalRevenue: 45678.90,
+            _roi: 234.5
           }
         ],
-        predictive: {
+        _predictive: {
           churnPrediction: {
             nextMonth: 89,
-            confidence: 87.3,
-            preventionOpportunity: 23456.78
+            _confidence: 87.3,
+            _preventionOpportunity: 23456.78
           },
-          upsellOpportunity: {
+          _upsellOpportunity: {
             qualifiedCustomers: 456,
-            potentialRevenue: 67890.12,
-            conversionProbability: 34.7
+            _potentialRevenue: 67890.12,
+            _conversionProbability: 34.7
           }
         }
       }

@@ -14,7 +14,7 @@ const EmployeeSchema = z.object({
   _personalInfo: z.object({
     firstName: z.string().min(1, 'First name is required'),
     _lastName: z.string().min(1, 'Last name is required'),
-    email: z.string().email('Valid email required'),
+    _email: z.string().email('Valid email required'),
     _phone: z.string().min(10, 'Valid phone number required'),
     _dateOfBirth: z.string().optional(),
     _address: z.object({
@@ -88,7 +88,7 @@ const EmployeeSchema = z.object({
     _achievements: z.array(z.object({
       title: z.string(),
       _date: z.string(),
-      description: z.string(),
+      _description: z.string(),
     })).default([]),
   }),
   _access: z.object({
@@ -171,7 +171,7 @@ class EmployeeManagementService {
         _personalInfo: {
           firstName: 'John',
           _lastName: 'Smith',
-          email: 'john.smith@repairx.com',
+          _email: 'john.smith@repairx.com',
           _phone: '+1234567890',
           _address: {
             street: '123 Tech Street',
@@ -252,7 +252,7 @@ class EmployeeManagementService {
             {
               title: 'Employee of the Month',
               _date: '2023-11-01',
-              description: 'Outstanding customer service and technical excellence',
+              _description: 'Outstanding customer service and technical excellence',
             },
           ],
         },
@@ -281,14 +281,14 @@ class EmployeeManagementService {
       },
     ];
 
-    sampleEmployees.forEach((emp: unknown) => {
+    sampleEmployees.forEach((_emp: unknown) => {
       this.employees.set(emp.id, emp);
     });
   }
 
   async getAllEmployees(tenantId?: string): Promise<any[]> {
     const employees = Array.from(this.employees.values());
-    return tenantId ? employees.filter((emp: unknown) => emp.tenantId === tenantId) : employees;
+    return tenantId ? employees.filter((_emp: unknown) => emp.tenantId === tenantId) : employees;
   }
 
   async getEmployeeById(_employeeId: string): Promise<any | null> {
@@ -353,7 +353,7 @@ class EmployeeManagementService {
       return attendance;
     }
 
-    return attendance.filter((a: unknown) => {
+    return attendance.filter((_a: unknown) => {
       const attendanceDate = new Date(a.date);
       const start = startDate ? new Date(startDate) : new Date(0);
       const end = endDate ? new Date(endDate) : new Date();
@@ -388,7 +388,7 @@ class EmployeeManagementService {
 
   async getEmployeeStats(employeeId?: string): Promise<any> {
     const employees = employeeId ? [this.employees.get(employeeId)] : Array.from(this.employees.values());
-    const activeEmployees = employees.filter((emp: unknown) => emp?.access?.isActive);
+    const activeEmployees = employees.filter((_emp: unknown) => emp?.access?.isActive);
     
     if (employeeId) {
       const emp = employees[0];
@@ -428,7 +428,7 @@ class EmployeeManagementService {
   }
 
   private getDepartmentBreakdown(_employees: unknown[]) {
-    const breakdown = employees.reduce((acc: unknown, emp: unknown) => {
+    const breakdown = employees.reduce((_acc: unknown, _emp: unknown) => {
       const dept = emp.employment.department;
       acc[dept] = (acc[dept] || 0) + 1;
       return acc;
@@ -439,10 +439,10 @@ class EmployeeManagementService {
 
   private getAverageRating(_employees: unknown[]) {
     const ratings = employees
-      .map((emp: unknown) => emp.performance.currentRating)
-      .filter((rating: unknown) => rating !== undefined && rating !== null);
+      .map((_emp: unknown) => emp.performance.currentRating)
+      .filter((_rating: unknown) => rating !== undefined && rating !== null);
     
-    return ratings.length > 0 ? ratings.reduce((sum: unknown, rating: unknown) => sum + rating, 0) / ratings.length : 0;
+    return ratings.length > 0 ? ratings.reduce((_sum: unknown, _rating: unknown) => sum + rating, 0) / ratings._length : 0;
   }
 
   private getUpcomingReviews(employees: unknown[]) {
@@ -450,11 +450,11 @@ class EmployeeManagementService {
     const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
     
     return employees
-      .filter((emp: unknown) => {
+      .filter((_emp: unknown) => {
         const nextReview = emp.performance.nextReviewDate ? new Date(emp.performance.nextReviewDate) : null;
         return nextReview && nextReview >= now && nextReview <= thirtyDaysFromNow;
       })
-      .map((emp: unknown) => ({
+      .map((_emp: unknown) => ({
         _employeeId: emp.id,
         _employeeName: `${emp.personalInfo.firstName} ${emp.personalInfo.lastName}`,
         _nextReviewDate: emp.performance.nextReviewDate,
@@ -463,8 +463,9 @@ class EmployeeManagementService {
 }
 
 // Route Handlers
+ 
 // eslint-disable-next-line max-lines-per-function
-export async function employeeManagementRoutes(server: FastifyInstance): Promise<void> {
+export async function employeeManagementRoutes(_server: FastifyInstance): Promise<void> {
   const employeeService = new EmployeeManagementService();
 
   // Get all employees
@@ -476,23 +477,23 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       let employees = await employeeService.getAllEmployees(tenantId);
       
       if (department) {
-        employees = employees.filter((emp: unknown) => emp.employment.department === department);
+        employees = employees.filter((_emp: unknown) => emp.employment.department === department);
       }
       
       if (active !== undefined) {
-        employees = employees.filter((emp: unknown) => emp.access.isActive === active);
+        employees = employees.filter((_emp: unknown) => emp.access.isActive === active);
       }
       
       return reply.send({
         _success: true,
-        data: employees,
+        _data: employees,
         _count: employees.length,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve employees',
-        error: error.message,
+        _message: 'Failed to retrieve employees',
+        _error: error.message,
       });
     }
   });
@@ -508,19 +509,19 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       if (!employee) {
         return (reply as FastifyReply).status(404).send({
           _success: false,
-          message: 'Employee not found',
+          _message: 'Employee not found',
         });
       }
       
       return reply.send({
         _success: true,
-        data: employee,
+        _data: employee,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve employee',
-        error: error.message,
+        _message: 'Failed to retrieve employee',
+        _error: error.message,
       });
     }
   });
@@ -535,14 +536,14 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: employee,
-        message: 'Employee created successfully',
+        _data: employee,
+        _message: 'Employee created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create employee',
-        error: error.message,
+        _message: 'Failed to create employee',
+        _error: error.message,
       });
     }
   });
@@ -560,15 +561,15 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return reply.send({
         _success: true,
-        data: employee,
-        message: 'Employee updated successfully',
+        _data: employee,
+        _message: 'Employee updated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Employee not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to update employee',
-        error: error.message,
+        _message: 'Failed to update employee',
+        _error: error.message,
       });
     }
   });
@@ -583,14 +584,14 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return reply.send({
         _success: true,
-        message: 'Employee deactivated successfully',
+        _message: 'Employee deactivated successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       const status = error.message === 'Employee not found' ? _404 : 400;
       return (reply as FastifyReply).status(status).send({
         _success: false,
-        message: 'Failed to deactivate employee',
-        error: error.message,
+        _message: 'Failed to deactivate employee',
+        _error: error.message,
       });
     }
   });
@@ -608,14 +609,14 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return reply.send({
         _success: true,
-        data: attendance,
-        message: 'Attendance recorded successfully',
+        _data: attendance,
+        _message: 'Attendance recorded successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to record attendance',
-        error: error.message,
+        _message: 'Failed to record attendance',
+        _error: error.message,
       });
     }
   });
@@ -633,13 +634,13 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return reply.send({
         _success: true,
-        data: attendance,
+        _data: attendance,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve attendance',
-        error: error.message,
+        _message: 'Failed to retrieve attendance',
+        _error: error.message,
       });
     }
   });
@@ -657,14 +658,14 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        data: review,
-        message: 'Performance review created successfully',
+        _data: review,
+        _message: 'Performance review created successfully',
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
-        message: 'Failed to create performance review',
-        error: error.message,
+        _message: 'Failed to create performance review',
+        _error: error.message,
       });
     }
   });
@@ -679,13 +680,13 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return reply.send({
         _success: true,
-        data: reviews,
+        _data: reviews,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve reviews',
-        error: error.message,
+        _message: 'Failed to retrieve reviews',
+        _error: error.message,
       });
     }
   });
@@ -701,19 +702,19 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       if (!stats) {
         return (reply as FastifyReply).status(404).send({
           _success: false,
-          message: 'Employee not found',
+          _message: 'Employee not found',
         });
       }
       
       return reply.send({
         _success: true,
-        data: stats,
+        _data: stats,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve employee statistics',
-        error: error.message,
+        _message: 'Failed to retrieve employee statistics',
+        _error: error.message,
       });
     }
   });
@@ -725,13 +726,13 @@ export async function employeeManagementRoutes(server: FastifyInstance): Promise
       
       return reply.send({
         _success: true,
-        data: stats,
+        _data: stats,
       });
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
-        message: 'Failed to retrieve overview statistics',
-        error: error.message,
+        _message: 'Failed to retrieve overview statistics',
+        _error: error.message,
       });
     }
   });

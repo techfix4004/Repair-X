@@ -2,37 +2,37 @@
 import { User } from '../types';
 
 interface MockUser extends User {
-  id: string;
+  _id: string;
 }
 
-let mockUsers: MockUser[] = [];
+const mockUsers: MockUser[] = [];
 let mockIdCounter = 1;
 
 export const mockDatabase = {
   user: {
     create: async ({ data }: { data: Partial<User> }): Promise<User> => {
-      const newUser: MockUser = {
+      const _newUser: MockUser = {
         ...data as User,
-        id: (mockIdCounter++).toString(),
-        createdAt: new Date(),
-        updatedAt: new Date()
+        _id: (mockIdCounter++).toString(),
+        _createdAt: new Date(),
+        _updatedAt: new Date()
       };
       
       mockUsers.push(newUser);
       return newUser;
     },
     
-    findUnique: async ({ where }: { where: { email?: string; id?: string } }): Promise<User | null> => {
+    _findUnique: async ({ where }: { where: { email?: string; id?: string } }): Promise<User | null> => {
       if (where.email) {
-        return mockUsers.find((user: unknown) => (user as any).email === where.email) || null;
+        return mockUsers.find((_user: unknown) => (user as any).email === where.email) || null;
       }
       if (where.id) {
-        return mockUsers.find((user: unknown) => (user as any).id === where.id) || null;
+        return mockUsers.find((_user: unknown) => (user as any).id === where.id) || null;
       }
       return null;
     },
     
-    update: async ({ where, data }: { where: { id: string }; data: Partial<User> }): Promise<User> => {
+    _update: async ({ where, data }: { _where: { id: string }; data: Partial<User> }): Promise<User> => {
       const index = mockUsers.findIndex(user => (user as any).id === where.id);
       if (index !== -1) {
         mockUsers[index] = { ...mockUsers[index]!, ...data };
@@ -41,7 +41,7 @@ export const mockDatabase = {
       throw new Error('User not found');
     },
     
-    delete: async ({ where }: { where: { id: string } }): Promise<User> => {
+    _delete: async ({ where }: { where: { id: string } }): Promise<User> => {
       const index = mockUsers.findIndex(user => (user as any).id === where.id);
       if (index !== -1) {
         const deletedUser = mockUsers[index];

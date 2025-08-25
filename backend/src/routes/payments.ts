@@ -42,7 +42,7 @@ const paymentMethodSchema = z.object({
   type: z.enum(['CARD', 'WALLET', 'BANK_TRANSFER', 'CASH', 'INSTALLMENT']),
   _cardType: z.enum(['CREDIT', 'DEBIT', 'PREPAID']).optional(),
   _last4: z.string().length(4).optional(),
-  brand: z.string().optional(),
+  _brand: z.string().optional(),
   _expiryMonth: z.number().min(1).max(12).optional(),
   _expiryYear: z.number().min(2024).max(2040).optional(),
   _holderName: z.string().optional(),
@@ -58,11 +58,11 @@ const paymentMethodSchema = z.object({
 const paymentIntentSchema = z.object({
   _amount: z.number().positive(),
   _currency: z.string().length(3).default('USD'),
-  customerId: z.string(),
+  _customerId: z.string(),
   _jobSheetId: z.string().optional(),
   _quotationId: z.string().optional(),
   _invoiceId: z.string().optional(),
-  description: z.string(),
+  _description: z.string(),
   _metadata: z.record(z.string(), z.string()).optional(),
   _paymentMethod: paymentMethodSchema.optional(),
   _automaticPaymentMethods: z.boolean().default(true),
@@ -72,7 +72,7 @@ const paymentIntentSchema = z.object({
     jurisdiction: z.string(),
     _taxRate: z.number().min(0).max(1),
     _taxAmount: z.number().min(0),
-    gstin: z.string().optional(),
+    _gstin: z.string().optional(),
     _taxBreakdown: z.array(z.object({
       type: z.string(),
       _rate: z.number(),
@@ -85,17 +85,17 @@ const refundRequestSchema = z.object({
   _paymentId: z.string(),
   _amount: z.number().positive().optional(), // If not provided, full refund
   _reason: z.enum(['duplicate', 'fraudulent', 'requested_by_customer', 'service_not_delivered', 'other']),
-  description: z.string().optional(),
+  _description: z.string().optional(),
   _refundApplicationFee: z.boolean().default(false),
 });
 
 const paymentPlanSchema = z.object({
-  customerId: z.string(),
+  _customerId: z.string(),
   _totalAmount: z.number().positive(),
   _installments: z.number().min(2).max(24),
   _frequency: z.enum(['WEEKLY', 'MONTHLY', 'QUARTERLY']),
   _firstPaymentDate: z.string(),
-  description: z.string(),
+  _description: z.string(),
   _metadata: z.record(z.string(), z.string()).optional(),
 });
 
@@ -108,7 +108,7 @@ class PaymentGatewayService {
       _priority: 1,
       _supportedCurrencies: ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR'],
       _supportedCountries: ['US', 'CA', 'GB', 'AU', 'IN', 'EU'],
-      features: ['cards', 'wallets', 'bank_transfers', 'installments', 'recurring'],
+      _features: ['cards', 'wallets', 'bank_transfers', 'installments', 'recurring'],
       _config: {
         publicKey: process.env['STRIPE_PUBLIC_KEY'],
         _secretKey: process.env['STRIPE_SECRET_KEY'],
@@ -121,7 +121,7 @@ class PaymentGatewayService {
       _priority: 2,
       _supportedCurrencies: ['USD', 'EUR', 'GBP', 'CAD', 'AUD'],
       _supportedCountries: ['US', 'CA', 'GB', 'AU', 'EU'],
-      features: ['paypal', 'wallets', 'installments'],
+      _features: ['paypal', 'wallets', 'installments'],
       _config: {
         publicKey: process.env['PAYPAL_CLIENT_ID'],
         _secretKey: process.env['PAYPAL_CLIENT_SECRET'],
@@ -133,7 +133,7 @@ class PaymentGatewayService {
       _priority: 3,
       _supportedCurrencies: ['USD', 'CAD', 'GBP', 'AUD'],
       _supportedCountries: ['US', 'CA', 'GB', 'AU'],
-      features: ['cards', 'wallets', 'in_person'],
+      _features: ['cards', 'wallets', 'in_person'],
       _config: {
         publicKey: process.env['SQUARE_APPLICATION_ID'],
         _secretKey: process.env['SQUARE_ACCESS_TOKEN'],
@@ -141,7 +141,7 @@ class PaymentGatewayService {
     }
   ];
 
-  async createPaymentIntent(data: unknown): Promise<{ 
+  async createPaymentIntent(_data: unknown): Promise<{ 
     _id: string; 
     clientSecret: string; 
     status: string;
@@ -189,7 +189,7 @@ class PaymentGatewayService {
     }
   }
 
-  async processRefund(data: unknown): Promise<{
+  async processRefund(_data: unknown): Promise<{
     _id: string;
     status: string;
     amount: number;
@@ -215,7 +215,7 @@ class PaymentGatewayService {
     // Mock fraud detection
     const riskScore = Math.random() * 100;
     
-    let _riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
+    const _riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
     if (riskScore > 70) riskLevel = 'HIGH';
     else if (riskScore > 30) riskLevel = 'MEDIUM';
     
@@ -243,7 +243,7 @@ class PaymentGatewayService {
   private selectOptimalGateway(_currency: string, _amount: number): PaymentGatewayConfig {
     // Select the best gateway based on currency, amount, and features
     const availableGateways = this.gateways
-      .filter((g: unknown) => g.isActive && g.supportedCurrencies.includes(currency))
+      .filter((_g: unknown) => g.isActive && g.supportedCurrencies.includes(currency))
       .sort((a, b) => a.priority - b.priority);
     
     return availableGateways[0] || this.gateways[0]!;
@@ -268,34 +268,34 @@ class TaxCalculationService {
     // Mock tax calculation - replace with real tax service integration
     const taxRates: Record<string, { _rate: number; type: string; description: string }[]> = {
       'IN': [ // India GST
-        { rate: 0.18, _type: 'GST', description: 'Goods and Services Tax (18%)' }
+        { rate: 0.18, _type: 'GST', _description: 'Goods and Services Tax (18%)' }
       ],
       'CA': [ // Canada
-        { _rate: 0.05, _type: 'GST', description: 'Goods and Services Tax (5%)' },
-        { _rate: 0.10, _type: 'PST', description: 'Provincial Sales Tax (10%)' }
+        { _rate: 0.05, _type: 'GST', _description: 'Goods and Services Tax (5%)' },
+        { _rate: 0.10, _type: 'PST', _description: 'Provincial Sales Tax (10%)' }
       ],
       'US-CA': [ // California, USA
-        { _rate: 0.0725, _type: 'SALES_TAX', description: 'California State Sales Tax (7.25%)' },
-        { _rate: 0.01, _type: 'LOCAL_TAX', description: 'Local Sales Tax (1%)' }
+        { _rate: 0.0725, _type: 'SALES_TAX', _description: 'California State Sales Tax (7.25%)' },
+        { _rate: 0.01, _type: 'LOCAL_TAX', _description: 'Local Sales Tax (1%)' }
       ],
       'GB': [ // United Kingdom
-        { _rate: 0.20, _type: 'VAT', description: 'Value Added Tax (20%)' }
+        { _rate: 0.20, _type: 'VAT', _description: 'Value Added Tax (20%)' }
       ],
       'AU': [ // Australia
-        { _rate: 0.10, _type: 'GST', description: 'Goods and Services Tax (10%)' }
+        { _rate: 0.10, _type: 'GST', _description: 'Goods and Services Tax (10%)' }
       ]
     };
 
     const applicableTaxes = taxRates[jurisdiction] || [];
-    const breakdown = applicableTaxes.map((tax: unknown) => ({
+    const breakdown = applicableTaxes.map((_tax: unknown) => ({
       _type: tax.type,
       _rate: tax.rate,
       _amount: Math.round(amount * tax.rate * 100) / 100,
-      description: tax.description,
+      _description: tax.description,
     }));
 
-    const totalTaxAmount = breakdown.reduce((sum: unknown, tax: unknown) => sum + tax.amount, 0);
-    const totalTaxRate = breakdown.reduce((sum: unknown, tax: unknown) => sum + tax.rate, 0);
+    const totalTaxAmount = breakdown.reduce((_sum: unknown, _tax: unknown) => sum + tax.amount, 0);
+    const totalTaxRate = breakdown.reduce((_sum: unknown, _tax: unknown) => sum + tax.rate, 0);
 
     return {
       _taxRate: totalTaxRate,
@@ -303,11 +303,11 @@ class TaxCalculationService {
       _netAmount: amount,
       _grossAmount: amount + totalTaxAmount,
       breakdown,
-      gstin: jurisdiction === 'IN' ? 'MOCK_GSTIN_123456789' : undefined,
+      _gstin: jurisdiction === 'IN' ? 'MOCK_GSTIN_123456789' : undefined,
     };
   }
 
-  async validateGSTIN(gstin: string): Promise<{ _valid: boolean; details?: unknown }> {
+  async validateGSTIN(_gstin: string): Promise<{ _valid: boolean; details?: unknown }> {
     // Mock GSTIN validation - replace with actual GST portal API
     const validPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
     
@@ -323,6 +323,7 @@ class TaxCalculationService {
 }
 
 // Payment routes implementation
+ 
 // eslint-disable-next-line max-lines-per-function
 export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
   const paymentGateway = new PaymentGatewayService();
@@ -333,7 +334,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     _payments: {
       _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
       _findById: async (id: string) => ({ id, _status: 'succeeded', _amount: 10000 }),
-      _update: async (id: string, data: unknown) => ({ id, ...data }),
+      _update: async (id: string, _data: unknown) => ({ id, ...data }),
     },
     _refunds: {
       _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
@@ -364,7 +365,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       if (fraudCheck.riskLevel === 'HIGH') {
         return (reply as FastifyReply).status(400).send({
           _success: false,
-          error: 'Payment blocked due to high fraud risk',
+          _error: 'Payment blocked due to high fraud risk',
           _riskScore: fraudCheck.riskScore,
           _flags: fraudCheck.flags,
         });
@@ -380,7 +381,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       // Store payment record
       await mockDb.payments.create({
         _paymentIntentId: paymentIntent.id,
-        customerId: (paymentData as any).customerId,
+        _customerId: (paymentData as any).customerId,
         _amount: finalAmount,
         _currency: (paymentData as any).currency,
         _status: 'pending',
@@ -390,7 +391,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
 
       return {
         _success: true,
-        data: {
+        _data: {
           ...paymentIntent,
           taxCalculation,
           _fraudCheck: {
@@ -399,8 +400,8 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
           }
         }
       };
-    } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+    } catch (_error: unknown) {
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
   });
 
@@ -423,9 +424,9 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _confirmedAt: new Date(),
       });
 
-      return { _success: true, data: result };
+      return { _success: true, _data: result };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
   });
 
@@ -437,7 +438,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       // Get original payment
       const payment = await mockDb.payments.findById((refundData as any).paymentId);
       if (!payment) {
-        return (reply as FastifyReply).status(404).send({ _success: false, error: 'Payment not found' });
+        return (reply as FastifyReply).status(404).send({ _success: false, _error: 'Payment not found' });
       }
 
       // Process refund
@@ -456,9 +457,9 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _processedAt: new Date(),
       });
 
-      return { _success: true, data: refund };
+      return { _success: true, _data: refund };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
   });
 
@@ -475,7 +476,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         if (!gstinValidation.valid) {
           return (reply as FastifyReply).status(400).send({ 
             _success: false, 
-            error: 'Invalid GSTIN provided' 
+            _error: 'Invalid GSTIN provided' 
           });
         }
       }
@@ -484,13 +485,13 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
 
       return {
         _success: true,
-        data: {
+        _data: {
           ...taxCalculation,
           gstinValidation,
         }
       };
-    } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+    } catch (_error: unknown) {
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
   });
 
@@ -510,9 +511,9 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _createdAt: new Date(),
       });
 
-      return { _success: true, data: paymentPlan };
+      return { _success: true, _data: paymentPlan };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
   });
 
@@ -521,33 +522,33 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
-      const plan = await mockDb.paymentPlans.findById(request.params.id);
+      const plan = await mockDb._paymentPlans._findById(request.params.id);
       if (!plan) {
-        return (reply as FastifyReply).status(404).send({ _success: false, error: 'Payment plan not found' });
+        return (reply as FastifyReply).status(404).send({ _success: false, _error: 'Payment plan not found' });
       }
 
-      return { _success: true, data: plan };
+      return { _success: true, _data: plan };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: (error as Error).message });
     }
   });
 
   // Payment gateway configuration endpoint
   fastify.get('/api/v1/payments/gateways', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const gateways = paymentGateway['gateways'].map((gateway: unknown) => ({
+      const gateways = paymentGateway['gateways'].map((_gateway: unknown) => ({
         _name: gateway.name,
         _isActive: gateway.isActive,
         _supportedCurrencies: gateway.supportedCurrencies,
         _supportedCountries: gateway.supportedCountries,
-        features: gateway.features,
+        _features: gateway.features,
         // Never expose secret keys
         _hasConfiguration: !!(gateway.config.publicKey && gateway.config.secretKey),
       }));
 
-      return { _success: true, data: gateways };
+      return { _success: true, _data: gateways };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: (error as Error).message });
     }
   });
 
@@ -583,9 +584,9 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         }
       };
 
-      return { _success: true, data: analytics };
+      return { _success: true, _data: analytics };
     } catch (error: unknown) {
-      return (reply as FastifyReply).status(500).send({ _success: false, error: error.message });
+      return (reply as FastifyReply).status(500).send({ _success: false, _error: (error as Error).message });
     }
   });
 
@@ -595,13 +596,13 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     Body: unknown;
   }>, reply: FastifyReply) => {
     try {
-      const { gateway  } = (request.params as unknown);
+      const { gateway: gatewayName } = (request.params as { gateway: string });
       const payload = request.body;
 
       // Verify webhook signature (implementation depends on gateway)
       // const isValid = await verifyWebhookSignature(gateway, payload, request.headers);
       // if (!isValid) {
-      //   return (reply as FastifyReply).status(400).send({ error: 'Invalid webhook signature' });
+      //   return (reply as FastifyReply).status(400).send({ _error: 'Invalid webhook signature' });
       // }
 
       // Process webhook based on event type
@@ -610,8 +611,8 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       // Update payment status, handle disputes, etc.
       
       return (reply as FastifyReply).status(200).send({ _received: true });
-    } catch (error: unknown) {
-      return (reply as FastifyReply).status(400).send({ error: error.message });
+    } catch (_error: unknown) {
+      return (reply as FastifyReply).status(400).send({ _error: (error as Error).message });
     }
   });
 

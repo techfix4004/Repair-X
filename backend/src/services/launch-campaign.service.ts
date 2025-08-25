@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 export interface LaunchCampaign {
-  id: string;
+  _id: string;
   name: string;
   type: 'product-launch' | 'feature-launch' | 'market-expansion' | 'seasonal' | 'promotional';
   status: 'planning' | 'active' | 'completed' | 'paused' | 'cancelled';
@@ -21,7 +21,7 @@ export interface CampaignChannel {
   id: string;
   type: 'email' | 'sms' | 'social-media' | 'paid-ads' | 'pr' | 'content' | 'partnerships' | 'events';
   platform?: string; // e.g., 'facebook', 'google-ads', 'linkedin'
-  budget: number;
+  _budget: number;
   targetAudience: string;
   content: CampaignContent;
   schedule: CampaignSchedule;
@@ -41,7 +41,7 @@ export interface CampaignSchedule {
   startDate: Date;
   endDate: Date;
   frequency: 'once' | 'daily' | 'weekly' | 'monthly';
-  timing: string; // e.g., '09:00', '14:00'
+  timing: string; // e.g., '_09:00', '_14:00'
   timezone: string;
 }
 
@@ -60,7 +60,7 @@ export interface CampaignObjective {
   target: number;
   current: number;
   unit: string; // e.g., 'users', 'downloads', 'revenue', 'percentage'
-  deadline: Date;
+  _deadline: Date;
 }
 
 export interface CampaignMetrics {
@@ -130,7 +130,7 @@ export interface JournalistContact {
   email: string;
   publication: string;
   beat: string; // e.g., 'tech', 'startups', 'business'
-  reachScore: number;
+  _reachScore: number;
   relationshipLevel: 'cold' | 'warm' | 'hot';
   lastContact: Date;
 }
@@ -146,7 +146,7 @@ export interface OutreachSequence {
 export interface PersonalizationRule {
   field: string;
   source: string; // e.g., 'journalist.name', 'campaign.name'
-  fallback: string;
+  _fallback: string;
 }
 
 class LaunchCampaignService {
@@ -168,55 +168,55 @@ class LaunchCampaignService {
   }
 
   // Campaign Management
-  async createCampaign(campaignData: Partial<LaunchCampaign>): Promise<LaunchCampaign> {
-    const campaign: LaunchCampaign = {
+  async createCampaign(_campaignData: Partial<LaunchCampaign>): Promise<LaunchCampaign> {
+    const _campaign: LaunchCampaign = {
       id: `campaign_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name: (campaignData as any).name || 'New Launch Campaign',
-      type: (campaignData as any).type || 'product-launch',
-      status: 'planning',
-      startDate: (campaignData as any).startDate || new Date(),
-      endDate: (campaignData as any).endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      budget: (campaignData as any).budget || 10000,
-      channels: (campaignData as any).channels || [],
-      objectives: (campaignData as any).objectives || [],
-      metrics: this.initializeMetrics(),
-      timeline: (campaignData as any).timeline || [],
-      mediaOutreach: (campaignData as any).mediaOutreach || this.getDefaultMediaOutreach(),
-      createdAt: new Date(),
-      updatedAt: new Date()
+      _name: (campaignData as any).name || 'New Launch Campaign',
+      _type: (campaignData as any).type || 'product-launch',
+      _status: 'planning',
+      _startDate: (campaignData as any).startDate || new Date(),
+      _endDate: (campaignData as any).endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      _budget: (campaignData as any).budget || 10000,
+      _channels: (campaignData as any).channels || [],
+      _objectives: (campaignData as any).objectives || [],
+      _metrics: this.initializeMetrics(),
+      _timeline: (campaignData as any).timeline || [],
+      _mediaOutreach: (campaignData as any).mediaOutreach || this.getDefaultMediaOutreach(),
+      _createdAt: new Date(),
+      _updatedAt: new Date()
     };
 
     // In a real implementation, this would be saved to database
     return campaign;
   }
 
-  async getCampaign(campaignId: string): Promise<LaunchCampaign | null> {
+  async getCampaign(_campaignId: string): Promise<LaunchCampaign | null> {
     // Mock implementation - in production, fetch from database
     return {
-      id: campaignId,
-      name: 'RepairX Platform Launch',
-      type: 'product-launch',
-      status: 'active',
-      startDate: new Date(),
-      endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
-      budget: 50000,
-      channels: this.getDefaultChannels(),
-      objectives: this.getDefaultObjectives(),
-      metrics: this.getMockMetrics(),
-      timeline: this.getDefaultTimeline(),
-      mediaOutreach: this.getDefaultMediaOutreach(),
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date()
+      _id: campaignId,
+      _name: 'RepairX Platform Launch',
+      _type: 'product-launch',
+      _status: 'active',
+      _startDate: new Date(),
+      _endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+      _budget: 50000,
+      _channels: this.getDefaultChannels(),
+      _objectives: this.getDefaultObjectives(),
+      _metrics: this.getMockMetrics(),
+      _timeline: this.getDefaultTimeline(),
+      _mediaOutreach: this.getDefaultMediaOutreach(),
+      _createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      _updatedAt: new Date()
     };
   }
 
-  async updateCampaignStatus(campaignId: string, status: LaunchCampaign['status']): Promise<void> {
+  async updateCampaignStatus(_campaignId: string, _status: LaunchCampaign['status']): Promise<void> {
     // In production, update database
     console.log(`Campaign ${campaignId} status updated to ${status}`);
   }
 
   // Campaign Execution
-  async executeCampaign(campaignId: string): Promise<void> {
+  async executeCampaign(_campaignId: string): Promise<void> {
     const campaign = await this.getCampaign(campaignId);
     if (!campaign) throw new Error('Campaign not found');
 
@@ -234,7 +234,7 @@ class LaunchCampaignService {
     await this.updateCampaignStatus(campaignId, 'active');
   }
 
-  private async executeChannel(channel: CampaignChannel): Promise<void> {
+  private async executeChannel(_channel: CampaignChannel): Promise<void> {
     switch (channel.type) {
       case 'email':
         await this.executeEmailCampaign(channel);
@@ -251,51 +251,50 @@ class LaunchCampaignService {
       case 'pr':
         await this.executePRCampaign(channel);
         break;
-      default:
-        console.log(`Executing ${channel.type} campaign`);
+      console.log(`Executing ${channel.type} campaign`);
     }
   }
 
-  private async executeEmailCampaign(channel: CampaignChannel): Promise<void> {
+  private async executeEmailCampaign(_channel: CampaignChannel): Promise<void> {
     // Integration with email service
-    console.log('Executing email campaign:', {
-      budget: channel.budget,
-      audience: channel.targetAudience,
-      content: channel.content.headlines[0]
+    console.log('Executing email _campaign:', {
+      _budget: channel.budget,
+      _audience: channel.targetAudience,
+      _content: channel.content.headlines[0]
     });
   }
 
-  private async executeSMSCampaign(channel: CampaignChannel): Promise<void> {
+  private async executeSMSCampaign(_channel: CampaignChannel): Promise<void> {
     // Integration with SMS service
-    console.log('Executing SMS campaign:', {
-      budget: channel.budget,
-      audience: channel.targetAudience
+    console.log('Executing SMS _campaign:', {
+      _budget: channel.budget,
+      _audience: channel.targetAudience
     });
   }
 
-  private async executeSocialMediaCampaign(channel: CampaignChannel): Promise<void> {
+  private async executeSocialMediaCampaign(_channel: CampaignChannel): Promise<void> {
     // Integration with social media APIs
-    console.log('Executing social media campaign:', {
-      platform: channel.platform,
-      budget: channel.budget
+    console.log('Executing social media _campaign:', {
+      _platform: channel.platform,
+      _budget: channel.budget
     });
   }
 
-  private async executePaidAdsCampaign(channel: CampaignChannel): Promise<void> {
+  private async executePaidAdsCampaign(_channel: CampaignChannel): Promise<void> {
     // Integration with ad platforms (Google Ads, Facebook Ads, etc.)
-    console.log('Executing paid ads campaign:', {
-      platform: channel.platform,
-      budget: channel.budget
+    console.log('Executing paid ads _campaign:', {
+      _platform: channel.platform,
+      _budget: channel.budget
     });
   }
 
-  private async executePRCampaign(channel: CampaignChannel): Promise<void> {
+  private async executePRCampaign(_channel: CampaignChannel): Promise<void> {
     // Execute PR activities
     console.log('Executing PR campaign');
   }
 
   // Media Outreach
-  private async executeMediaOutreach(outreach: MediaOutreachConfig): Promise<void> {
+  private async executeMediaOutreach(_outreach: MediaOutreachConfig): Promise<void> {
     // Distribute press release
     await this.distributePressRelease(outreach.pressRelease);
 
@@ -307,8 +306,8 @@ class LaunchCampaignService {
     }
   }
 
-  private async distributePressRelease(pressRelease: PressReleaseConfig): Promise<void> {
-    console.log('Distributing press release:', pressRelease.headline);
+  private async distributePressRelease(_pressRelease: PressReleaseConfig): Promise<void> {
+    console.log('Distributing press _release:', pressRelease.headline);
     
     // Mock distribution to wire services
     const wireServices = ['PR Newswire', 'Business Wire', 'MarketWatch', 'Yahoo Finance'];
@@ -319,7 +318,7 @@ class LaunchCampaignService {
     }
   }
 
-  private shouldContact(journalist: JournalistContact): boolean {
+  private shouldContact(_journalist: JournalistContact): boolean {
     const daysSinceLastContact = journalist.lastContact 
       ? (Date.now() - journalist.lastContact.getTime()) / (1000 * 60 * 60 * 24)
       : 999;
@@ -328,14 +327,14 @@ class LaunchCampaignService {
   }
 
   private async executeOutreachSequence(
-    journalist: JournalistContact, 
-    sequence: OutreachSequence[]
+    _journalist: JournalistContact, 
+    _sequence: OutreachSequence[]
   ): Promise<void> {
     for (const step of sequence.sort((a, b) => a.step - b.step)) {
       await this.sendOutreachEmail(journalist, step);
       
       // For testing, execute immediately instead of scheduling with timeout
-      const nextStep = sequence.find((s: unknown) => s.step === step.step + 1);
+      const nextStep = sequence.find((_s: unknown) => s.step === step.step + 1);
       if (nextStep && process.env['NODE_ENV'] === 'test') {
         // Execute immediately in test environment
         await this.sendOutreachEmail(journalist, nextStep);
@@ -348,15 +347,15 @@ class LaunchCampaignService {
     }
   }
 
-  private async sendOutreachEmail(journalist: JournalistContact, step: OutreachSequence): Promise<void> {
+  private async sendOutreachEmail(_journalist: JournalistContact, _step: OutreachSequence): Promise<void> {
     const personalizedContent = this.personalizeTemplate(step.template, journalist);
     
     // Send email (integrate with email service)
     console.log(`Sending ${step.type} email to ${journalist.name} at ${journalist.publication}`);
-    console.log(`Content: ${personalizedContent.substring(0, 100)}...`);
+    console.log(`_Content: ${personalizedContent.substring(0, 100)}...`);
   }
 
-  private personalizeTemplate(template: string, journalist: JournalistContact): string {
+  private personalizeTemplate(_template: string, _journalist: JournalistContact): string {
     return template
       .replace(/\{journalist\.name\}/g, journalist.name)
       .replace(/\{journalist\.publication\}/g, journalist.publication)
@@ -364,7 +363,7 @@ class LaunchCampaignService {
   }
 
   // Analytics and Reporting
-  async getCampaignAnalytics(campaignId: string): Promise<CampaignMetrics> {
+  async getCampaignAnalytics(_campaignId: string): Promise<CampaignMetrics> {
     const campaign = await this.getCampaign(campaignId);
     if (!campaign) throw new Error('Campaign not found');
 
@@ -373,140 +372,140 @@ class LaunchCampaignService {
     return metrics;
   }
 
-  private async calculateCampaignMetrics(campaign: LaunchCampaign): Promise<CampaignMetrics> {
+  private async calculateCampaignMetrics(_campaign: LaunchCampaign): Promise<CampaignMetrics> {
     // Aggregate metrics from all channels
-    const totalImpressions = campaign.channels.reduce((sum: unknown, channel: unknown) => sum + channel.performance.impressions, 0);
-    const totalClicks = campaign.channels.reduce((sum: unknown, channel: unknown) => sum + channel.performance.clicks, 0);
-    const totalConversions = campaign.channels.reduce((sum: unknown, channel: unknown) => sum + channel.performance.conversions, 0);
-    const totalCost = campaign.channels.reduce((sum: unknown, channel: unknown) => sum + channel.performance.cost, 0);
+    const totalImpressions = campaign.channels.reduce((_sum: unknown, _channel: unknown) => sum + channel.performance.impressions, 0);
+    const totalClicks = campaign.channels.reduce((_sum: unknown, _channel: unknown) => sum + channel.performance.clicks, 0);
+    const totalConversions = campaign.channels.reduce((_sum: unknown, _channel: unknown) => sum + channel.performance.conversions, 0);
+    const totalCost = campaign.channels.reduce((_sum: unknown, _channel: unknown) => sum + channel.performance.cost, 0);
 
     return {
-      totalReach: totalImpressions * 0.7, // Estimate unique reach
+      _totalReach: totalImpressions * 0.7, // Estimate unique reach
       totalImpressions,
       totalClicks,
       totalConversions,
-      costPerConversion: totalConversions > 0 ? totalCost / totalConversions : 0,
-      returnOnInvestment: totalCost > 0 ? ((totalConversions * 100) - totalCost) / totalCost * 100 : 0,
-      brandAwarenessLift: 15.2, // Mock value - would be measured via surveys
-      customerAcquisitionCost: totalConversions > 0 ? totalCost / totalConversions : 0
+      _costPerConversion: totalConversions > 0 ? totalCost / totalConversions : 0,
+      _returnOnInvestment: totalCost > 0 ? ((totalConversions * 100) - totalCost) / totalCost * _100 : 0,
+      _brandAwarenessLift: 15.2, // Mock value - would be measured via surveys
+      _customerAcquisitionCost: totalConversions > 0 ? totalCost / totalConversions : 0
     };
   }
 
   // Default Data Generators
   private initializeMetrics(): CampaignMetrics {
     return {
-      totalReach: 0,
-      totalImpressions: 0,
-      totalClicks: 0,
-      totalConversions: 0,
-      costPerConversion: 0,
-      returnOnInvestment: 0,
-      brandAwarenessLift: 0,
-      customerAcquisitionCost: 0
+      _totalReach: 0,
+      _totalImpressions: 0,
+      _totalClicks: 0,
+      _totalConversions: 0,
+      _costPerConversion: 0,
+      _returnOnInvestment: 0,
+      _brandAwarenessLift: 0,
+      _customerAcquisitionCost: 0
     };
   }
 
   private getMockMetrics(): CampaignMetrics {
     return {
-      totalReach: 125000,
-      totalImpressions: 450000,
-      totalClicks: 18750,
-      totalConversions: 1247,
-      costPerConversion: 28.50,
-      returnOnInvestment: 342.7,
-      brandAwarenessLift: 18.4,
-      customerAcquisitionCost: 35.20
+      _totalReach: 125000,
+      _totalImpressions: 450000,
+      _totalClicks: 18750,
+      _totalConversions: 1247,
+      _costPerConversion: 28.50,
+      _returnOnInvestment: 342.7,
+      _brandAwarenessLift: 18.4,
+      _customerAcquisitionCost: 35.20
     };
   }
 
   private getDefaultChannels(): CampaignChannel[] {
     return [
       {
-        id: 'email_channel_1',
-        type: 'email',
-        budget: 15000,
-        targetAudience: 'Small business owners, facility managers',
-        content: {
-          headlines: ['Revolutionize Your Repair Business', 'RepairX: The Future of Service Management'],
-          descriptions: ['Comprehensive repair service platform with AI-powered automation'],
-          images: ['/campaign/email-hero-1.jpg'],
-          videos: [],
-          callToActions: ['Start Free Trial', 'Book Demo'],
-          landingPages: ['/signup?utm_source=email&utmcampaign=launch']
+        _id: 'email_channel_1',
+        _type: 'email',
+        _budget: 15000,
+        _targetAudience: 'Small business owners, facility managers',
+        _content: {
+          headlines: ['Revolutionize Your Repair Business', '_RepairX: The Future of Service Management'],
+          _descriptions: ['Comprehensive repair service platform with AI-powered automation'],
+          _images: ['/campaign/email-hero-1.jpg'],
+          _videos: [],
+          _callToActions: ['Start Free Trial', 'Book Demo'],
+          _landingPages: ['/signup?utm_source=email&utmcampaign=launch']
         },
-        schedule: {
+        _schedule: {
           startDate: new Date(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          frequency: 'weekly',
-          timing: '10:00',
-          timezone: 'UTC'
+          _endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          _frequency: 'weekly',
+          _timing: '10:00',
+          _timezone: 'UTC'
         },
-        performance: {
+        _performance: {
           impressions: 125000,
-          clicks: 5250,
-          conversions: 368,
-          cost: 12500,
-          roas: 4.2,
-          engagementRate: 4.2
+          _clicks: 5250,
+          _conversions: 368,
+          _cost: 12500,
+          _roas: 4.2,
+          _engagementRate: 4.2
         }
       },
       {
-        id: 'social_channel_1',
-        type: 'social-media',
-        platform: 'linkedin',
-        budget: 20000,
-        targetAudience: 'Business decision makers, operations managers',
-        content: {
+        _id: 'social_channel_1',
+        _type: 'social-media',
+        _platform: 'linkedin',
+        _budget: 20000,
+        _targetAudience: 'Business decision makers, operations managers',
+        _content: {
           headlines: ['Transform Your Repair Operations'],
-          descriptions: ['AI-powered repair management platform trusted by 1000+ businesses'],
-          images: ['/campaign/social-hero-1.jpg'],
-          videos: ['/campaign/demo-video.mp4'],
-          callToActions: ['Learn More', 'Get Started'],
-          landingPages: ['/demo?utm_source=linkedin&utmcampaign=launch']
+          _descriptions: ['AI-powered repair management platform trusted by 1000+ businesses'],
+          _images: ['/campaign/social-hero-1.jpg'],
+          _videos: ['/campaign/demo-video.mp4'],
+          _callToActions: ['Learn More', 'Get Started'],
+          _landingPages: ['/demo?utm_source=linkedin&utmcampaign=launch']
         },
-        schedule: {
+        _schedule: {
           startDate: new Date(),
-          endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
-          frequency: 'daily',
-          timing: '14:00',
-          timezone: 'UTC'
+          _endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+          _frequency: 'daily',
+          _timing: '14:00',
+          _timezone: 'UTC'
         },
-        performance: {
+        _performance: {
           impressions: 275000,
-          clicks: 11000,
-          conversions: 715,
-          cost: 18750,
-          roas: 6.8,
-          engagementRate: 4.0
+          _clicks: 11000,
+          _conversions: 715,
+          _cost: 18750,
+          _roas: 6.8,
+          _engagementRate: 4.0
         }
       },
       {
-        id: 'pr_channel_1',
-        type: 'pr',
-        budget: 10000,
-        targetAudience: 'Industry journalists, tech reporters',
-        content: {
+        _id: 'pr_channel_1',
+        _type: 'pr',
+        _budget: 10000,
+        _targetAudience: 'Industry journalists, tech reporters',
+        _content: {
           headlines: ['RepairX Launches Enterprise Repair Management Platform'],
-          descriptions: ['First AI-powered repair service platform with Six Sigma quality automation'],
-          images: ['/campaign/press-kit-1.jpg'],
-          videos: [],
-          callToActions: ['Read Press Release', 'Contact Media'],
-          landingPages: ['/press-release?utm_source=pr&utmcampaign=launch']
+          _descriptions: ['First AI-powered repair service platform with Six Sigma quality automation'],
+          _images: ['/campaign/press-kit-1.jpg'],
+          _videos: [],
+          _callToActions: ['Read Press Release', 'Contact Media'],
+          _landingPages: ['/press-release?utm_source=pr&utmcampaign=launch']
         },
-        schedule: {
+        _schedule: {
           startDate: new Date(),
-          endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
-          frequency: 'once',
-          timing: '09:00',
-          timezone: 'UTC'
+          _endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+          _frequency: 'once',
+          _timing: '09:00',
+          _timezone: 'UTC'
         },
-        performance: {
+        _performance: {
           impressions: 50000,
-          clicks: 2500,
-          conversions: 164,
-          cost: 8500,
-          roas: 3.1,
-          engagementRate: 5.0
+          _clicks: 2500,
+          _conversions: 164,
+          _cost: 8500,
+          _roas: 3.1,
+          _engagementRate: 5.0
         }
       }
     ];
@@ -515,28 +514,28 @@ class LaunchCampaignService {
   private getDefaultObjectives(): CampaignObjective[] {
     return [
       {
-        id: 'awareness_obj_1',
-        type: 'awareness',
-        target: 500000,
-        current: 450000,
-        unit: 'impressions',
-        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        _id: 'awareness_obj_1',
+        _type: 'awareness',
+        _target: 500000,
+        _current: 450000,
+        _unit: 'impressions',
+        _deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       },
       {
-        id: 'acquisition_obj_1',
-        type: 'acquisition',
-        target: 1000,
-        current: 1247,
-        unit: 'new_users',
-        deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
+        _id: 'acquisition_obj_1',
+        _type: 'acquisition',
+        _target: 1000,
+        _current: 1247,
+        _unit: 'new_users',
+        _deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
       },
       {
-        id: 'conversion_obj_1',
-        type: 'conversion',
-        target: 3.5,
-        current: 4.2,
-        unit: 'percentage',
-        deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
+        _id: 'conversion_obj_1',
+        _type: 'conversion',
+        _target: 3.5,
+        _current: 4.2,
+        _unit: 'percentage',
+        _deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
       }
     ];
   }
@@ -544,104 +543,104 @@ class LaunchCampaignService {
   private getDefaultTimeline(): CampaignMilestone[] {
     return [
       {
-        id: 'milestone_1',
-        name: 'Campaign Launch',
-        description: 'Execute initial campaign across all channels',
-        dueDate: new Date(),
-        status: 'completed',
-        assignedTo: 'Marketing Team',
-        dependencies: [],
-        deliverables: ['Email campaign', 'Social media posts', 'Press release']
+        _id: 'milestone_1',
+        _name: 'Campaign Launch',
+        _description: 'Execute initial campaign across all channels',
+        _dueDate: new Date(),
+        _status: 'completed',
+        _assignedTo: 'Marketing Team',
+        _dependencies: [],
+        _deliverables: ['Email campaign', 'Social media posts', 'Press release']
       },
       {
-        id: 'milestone_2',
-        name: 'Week 1 Optimization',
-        description: 'Analyze performance and optimize campaigns',
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        status: 'in-progress',
-        assignedTo: 'Performance Marketing',
-        dependencies: ['milestone_1'],
-        deliverables: ['Performance report', 'Optimization plan']
+        _id: 'milestone_2',
+        _name: 'Week 1 Optimization',
+        _description: 'Analyze performance and optimize campaigns',
+        _dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        _status: 'in-progress',
+        _assignedTo: 'Performance Marketing',
+        _dependencies: ['milestone_1'],
+        _deliverables: ['Performance report', 'Optimization plan']
       },
       {
-        id: 'milestone_3',
-        name: 'Media Outreach Results',
-        description: 'Complete first wave of media outreach',
-        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-        status: 'pending',
-        assignedTo: 'PR Team',
-        dependencies: ['milestone_1'],
-        deliverables: ['Media coverage report', 'Follow-up strategy']
+        _id: 'milestone_3',
+        _name: 'Media Outreach Results',
+        _description: 'Complete first wave of media outreach',
+        _dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        _status: 'pending',
+        _assignedTo: 'PR Team',
+        _dependencies: ['milestone_1'],
+        _deliverables: ['Media coverage report', 'Follow-up strategy']
       }
     ];
   }
 
   private getDefaultMediaOutreach(): MediaOutreachConfig {
     return {
-      enabled: true,
-      targets: [
+      _enabled: true,
+      _targets: [
         {
           id: 'tech_media',
-          category: 'tech',
-          publications: ['TechCrunch', 'VentureBeat', 'Ars Technica'],
-          reach: 2500000,
-          relevanceScore: 0.9
+          _category: 'tech',
+          _publications: ['TechCrunch', 'VentureBeat', 'Ars Technica'],
+          _reach: 2500000,
+          _relevanceScore: 0.9
         },
         {
-          id: 'business_media',
-          category: 'business',
-          publications: ['Forbes', 'Fast Company', 'Inc.com'],
-          reach: 5000000,
-          relevanceScore: 0.8
+          _id: 'business_media',
+          _category: 'business',
+          _publications: ['Forbes', 'Fast Company', 'Inc.com'],
+          _reach: 5000000,
+          _relevanceScore: 0.8
         }
       ],
-      pressRelease: {
+      _pressRelease: {
         headline: 'RepairX Launches AI-Powered Enterprise Repair Management Platform',
-        subheadline: 'Revolutionary platform combines Six Sigma quality with intelligent automation',
-        body: 'RepairX today announced the launch of its comprehensive enterprise repair management platform...',
-        quotes: [
+        _subheadline: 'Revolutionary platform combines Six Sigma quality with intelligent automation',
+        _body: 'RepairX today announced the launch of its comprehensive enterprise repair management platform...',
+        _quotes: [
           {
             speaker: 'John Smith',
-            title: 'CEO',
-            company: 'RepairX',
-            quote: 'RepairX represents the future of repair service management with AI-powered automation and Six Sigma quality standards.'
+            _title: 'CEO',
+            _company: 'RepairX',
+            _quote: 'RepairX represents the future of repair service management with AI-powered automation and Six Sigma quality standards.'
           }
         ],
-        mediaKit: [
+        _mediaKit: [
           {
             type: 'image',
-            title: 'RepairX Platform Screenshot',
-            url: '/press/platform-screenshot.jpg',
-            description: 'Main dashboard of RepairX platform'
+            _title: 'RepairX Platform Screenshot',
+            _url: '/press/platform-screenshot.jpg',
+            _description: 'Main dashboard of RepairX platform'
           }
         ],
-        distributionList: ['PR Newswire', 'Business Wire']
+        _distributionList: ['PR Newswire', 'Business Wire']
       },
-      journalistDatabase: [
+      _journalistDatabase: [
         {
           id: 'journalist_1',
-          name: 'Sarah Johnson',
-          email: 'sarah.johnson@techcrunch.com',
-          publication: 'TechCrunch',
-          beat: 'Enterprise Software',
-          reachScore: 850000,
-          relationshipLevel: 'warm',
-          lastContact: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000)
+          _name: 'Sarah Johnson',
+          _email: 'sarah.johnson@techcrunch.com',
+          _publication: 'TechCrunch',
+          _beat: 'Enterprise Software',
+          _reachScore: 850000,
+          _relationshipLevel: 'warm',
+          _lastContact: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000)
         }
       ],
-      outreachSequence: [
+      _outreachSequence: [
         {
           step: 1,
-          type: 'initial',
-          delayDays: 0,
-          template: 'Hi {journalist.name}, I wanted to share an exclusive story about RepairX...',
-          personalization: []
+          _type: 'initial',
+          _delayDays: 0,
+          _template: 'Hi {journalist.name}, I wanted to share an exclusive story about RepairX...',
+          _personalization: []
         },
         {
-          step: 2,
-          type: 'follow-up',
-          delayDays: 3,
-          template: 'Hi {journalist.name}, Following up on my previous email about RepairX...',
+          _step: 2,
+          _type: 'follow-up',
+          _delayDays: 3,
+          _template: 'Hi {journalist.name}, Following up on my previous email about RepairX...',
           personalization: []
         }
       ]
