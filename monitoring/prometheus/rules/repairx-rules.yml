@@ -158,4 +158,4 @@ groups:
           category: security
         annotations:
           summary: "Unusual data transfer volume detected"
-          description: "High data transfer rate of {{ $value | humanizeBytes }} per second"
+          description: "High data transfer rate of {{ $value }} bytes per second"
