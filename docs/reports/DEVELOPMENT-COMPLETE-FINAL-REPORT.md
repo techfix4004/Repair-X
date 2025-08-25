@@ -167,7 +167,7 @@ RepairX has achieved full production readiness as a comprehensive enterprise rep
 ### Immediate Actions (Ready to Execute)
 1. **Deploy Production Infrastructure**
    ```bash
-   ./deploy-production.sh
+   ./deploy.sh
    ```
 
 2. **Submit Mobile Apps to Stores**

@@ -135,8 +135,8 @@ RepairX maintains strict quality standards with continuous monitoring:
 
 1. **Configure production environment**
 ```bash
-cp .env.prod.example .env.prod
-# Edit .env.prod with your production values
+cp .env.example .env
+# Edit .env with your production values
 ```
 
 2. **Deploy to production**
@@ -147,10 +147,10 @@ cp .env.prod.example .env.prod
 3. **Verify deployment**
 ```bash
 # Check service status
-docker-compose -f docker-compose.prod.yml ps
+docker-compose ps
 
 # View logs
-docker-compose -f docker-compose.prod.yml logs -f
+docker-compose logs -f
 ```
 
 ### Production Services

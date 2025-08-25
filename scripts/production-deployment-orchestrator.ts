@@ -81,7 +81,7 @@ class ProductionDeploymentOrchestrator {
     
     // Validate environment
     const envValidation = this.runCommand(
-      'cd /home/runner/work/Repair-X/Repair-X && [ -f .env.production ] && echo "Production env found"',
+      'cd /home/runner/work/Repair-X/Repair-X && [ -f .env ] && echo "Production env found"',
       'Validate production environment file'
     );
     if (!envValidation.success) {
@@ -115,7 +115,7 @@ class ProductionDeploymentOrchestrator {
 
     // Run production deployment script
     const deployResult = this.runCommand(
-      'cd /home/runner/work/Repair-X/Repair-X && chmod +x deploy-production.sh && ./deploy-production.sh',
+      'cd /home/runner/work/Repair-X/Repair-X && chmod +x deploy.sh && ./deploy.sh',
       'Execute production deployment script'
     );
     if (!deployResult.success) {
