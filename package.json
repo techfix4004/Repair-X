@@ -24,7 +24,11 @@
     "docker:dev": "docker-compose up -d",
     "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
     "deploy": "bash deploy.sh",
-    "automation:full": "npm run quality:check && npm run visual:test"
+    "automation:full": "npm run quality:check && npm run visual:test",
+    "deploy:production": "tsx scripts/production-deployment-orchestrator.ts --env=production --branch=main --no-mock --strict-prod",
+    "test:e2e": "tsx scripts/production-deployment-orchestrator.ts --test-only --env=production --roles=developer,user,client,technician,admin --no-mock --all-workflows --check-db --check-api --check-ui --real-email-sms --verify-business-logic --verify-job-sheets --verify-navigation --verify-payments --verify-headers --verify-navbar --strict",
+    "report:generate": "tsx scripts/production-deployment-orchestrator.ts --report-only --output=prod-readiness-final.log --fail-on-error --include=all-logs,screenshots,db-diff,api-traces",
+    "production:full": "tsx scripts/production-deployment-orchestrator.ts"
   },
   "keywords": [
     "repair",
@@ -48,7 +52,7 @@
     "concurrently": "^8.2.2",
     "eslint": "^9.33.0",
     "playwright": "^1.54.2",
-    "tsx": "^4.20.3",
+    "tsx": "^4.20.5",
     "typescript": "^5.3.3"
   },
   "dependencies": {

@@ -24,14 +24,14 @@ interface ApiErrorResponse {
 
 // Create a utility function using the interface
 const createErrorResponse = (message: string): ApiErrorResponse => ({
-  _success: false,
+  success: false,
   message,
 });
 
 // Use the function to avoid unused warnings
 console.log('API utility loaded', createErrorResponse);
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '_http://localhost:3001/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
 
 class ApiClient {
   private baseUrl: string;
@@ -49,14 +49,14 @@ class ApiClient {
     const _config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { _Authorization: `Bearer ${token}` }),
-        ...(options.headers || {}),
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(_options.headers || {}),
       },
-      ...options,
+      ..._options,
     };
 
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+      const response = await fetch(`${this.baseUrl}${_endpoint}`, _config);
       const data = await response.json();
 
       if (!response.ok) {
@@ -84,30 +84,30 @@ class ApiClient {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async post<T>(_endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(_endpoint, {
-      _method: 'POST',
-      _body: data ? JSON.stringify(data) : undefined,
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async put<T>(_endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(_endpoint, {
-      _method: 'PUT',
-      _body: data ? JSON.stringify(data) : undefined,
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async delete<T>(_endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(_endpoint, {
-      _method: 'DELETE',
+      method: 'DELETE',
     });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async patch<T>(_endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(_endpoint, {
-      _method: 'PATCH',
-      _body: data ? JSON.stringify(data) : undefined,
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
     });
   }
 }
@@ -160,7 +160,7 @@ export const businessSettingsApi = {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _update: (id: string, _data: unknown) =>
-    api.put(`/business-settings/${id}`, data),
+    api.put(`/business-settings/${id}`, _data),
   
   _delete: (id: string) =>
     api.delete(`/business-settings/${id}`),
@@ -183,7 +183,7 @@ export const smsApi = {
     api.post('/sms/send', data),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getMessages: (params?: unknown) =>
+  _getMessages: (params?: Record<string, any>) =>
     api.get('/sms/messages', params),
   
   _getStats: (period?: '24h' | '7d' | '30d') =>
@@ -199,7 +199,7 @@ export const expenseApi = {
     api.post('/expenses/categories', data),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getExpenses: (params?: unknown) =>
+  _getExpenses: (params?: Record<string, any>) =>
     api.get('/expenses', params),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -208,7 +208,7 @@ export const expenseApi = {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _approveExpense: (id: string, _data: unknown) =>
-    api.post(`/expenses/${id}/approve`, data),
+    api.post(`/expenses/${id}/approve`, _data),
   
   _getStats: (period?: '7d' | '30d' | '90d' | 'ytd', categoryId?: string) =>
     api.get('/expenses/stats', { period, categoryId }),
@@ -216,7 +216,7 @@ export const expenseApi = {
 
 export const quotationApi = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getAll: (params?: unknown) =>
+  _getAll: (params?: Record<string, any>) =>
     api.get('/quotations', params),
   
   _getById: (id: string) =>
@@ -228,11 +228,11 @@ export const quotationApi = {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _processApproval: (id: string, _data: unknown) =>
-    api.post(`/quotations/${id}/approve`, data),
+    api.post(`/quotations/${id}/approve`, _data),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _customerResponse: (id: string, _data: unknown) =>
-    api.post(`/quotations/${id}/customer-response`, data),
+    api.post(`/quotations/${id}/customer-response`, _data),
   
   _convertToJob: (id: string) =>
     api.post(`/quotations/${id}/convert-to-job`),
@@ -240,7 +240,7 @@ export const quotationApi = {
 
 export const jobSheetApi = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getAll: (params?: unknown) =>
+  _getAll: (params?: Record<string, any>) =>
     api.get('/jobsheets', params),
   
   _getById: (id: string) =>
@@ -252,14 +252,14 @@ export const jobSheetApi = {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _update: (id: string, _data: unknown) =>
-    api.put(`/jobsheets/${id}`, data),
+    api.put(`/jobsheets/${id}`, _data),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _addPart: (id: string, _data: unknown) =>
-    api.post(`/jobsheets/${id}/parts`, data),
+    api.post(`/jobsheets/${id}/parts`, _data),
   
   _removePart: (jobSheetId: string, _partId: string) =>
-    api.delete(`/jobsheets/${jobSheetId}/parts/${partId}`),
+    api.delete(`/jobsheets/${jobSheetId}/parts/${_partId}`),
   
   _generatePdf: (id: string) =>
     api.get(`/jobsheets/${id}/pdf`),
@@ -270,7 +270,7 @@ export const jobSheetApi = {
 
 export const deviceApi = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getAll: (params?: unknown) =>
+  _getAll: (params?: Record<string, any>) =>
     api.get('/devices', params),
   
   _getById: (id: string) =>
@@ -282,7 +282,7 @@ export const deviceApi = {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _update: (id: string, _data: unknown) =>
-    api.put(`/devices/${id}`, data),
+    api.put(`/devices/${id}`, _data),
   
   _delete: (id: string) =>
     api.delete(`/devices/${id}`),
@@ -290,7 +290,7 @@ export const deviceApi = {
 
 export const bookingApi = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getAll: (params?: unknown) =>
+  _getAll: (params?: Record<string, any>) =>
     api.get('/bookings', params),
   
   _getById: (id: string) =>
@@ -302,7 +302,7 @@ export const bookingApi = {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _update: (id: string, _data: unknown) =>
-    api.put(`/bookings/${id}`, data),
+    api.put(`/bookings/${id}`, _data),
   
   _cancel: (id: string, reason?: string) =>
     api.post(`/bookings/${id}/cancel`, { reason }),
@@ -310,7 +310,7 @@ export const bookingApi = {
 
 export const userApi = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _getAll: (params?: unknown) =>
+  _getAll: (params?: Record<string, any>) =>
     api.get('/users', params),
   
   _getById: (id: string) =>
@@ -318,7 +318,7 @@ export const userApi = {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _update: (id: string, _data: unknown) =>
-    api.put(`/users/${id}`, data),
+    api.put(`/users/${id}`, _data),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _updateProfile: (data: unknown) =>
@@ -330,12 +330,12 @@ export const userApi = {
 
 // Error handling utilities
 export const handleApiError = (_error: unknown): string => {
-  if (error instanceof ApiErrorClass) {
-    return error.message;
+  if (_error instanceof ApiErrorClass) {
+    return _error.message;
   }
   
-  if (error instanceof Error) {
-    return error.message;
+  if (_error instanceof Error) {
+    return _error.message;
   }
   
   return 'An unexpected error occurred';

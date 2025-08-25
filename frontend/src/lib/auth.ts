@@ -43,13 +43,13 @@ type AuthStore = AuthState & AuthActions;
 // Mock API functions (replace with real API calls)
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '_http://localhost:3001/api/v1';
 
-async function apiLogin(email: string, _password: string): Promise<{ _user: User; token: string }> {
+async function apiLogin(email: string, _password: string): Promise<{ user: User; token: string }> {
   const response = await fetch(`${apiBaseUrl}/auth/login`, {
-    _method: 'POST',
-    _headers: {
+    method: 'POST',
+    headers: {
       'Content-Type': 'application/json',
     },
-    _body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password: _password }),
   });
 
   if (!response.ok) {
@@ -60,13 +60,13 @@ async function apiLogin(email: string, _password: string): Promise<{ _user: User
   return response.json();
 }
 
-async function apiRegister(_data: RegisterData): Promise<{ _user: User; token: string }> {
+async function apiRegister(_data: RegisterData): Promise<{ user: User; token: string }> {
   const response = await fetch(`${apiBaseUrl}/auth/register`, {
-    _method: 'POST',
-    _headers: {
+    method: 'POST',
+    headers: {
       'Content-Type': 'application/json',
     },
-    _body: JSON.stringify(data),
+    body: JSON.stringify(_data),
   });
 
   if (!response.ok) {
@@ -77,10 +77,10 @@ async function apiRegister(_data: RegisterData): Promise<{ _user: User; token: s
   return response.json();
 }
 
-async function apiRefreshToken(_token: string): Promise<{ _token: string; user: User }> {
+async function apiRefreshToken(token: string): Promise<{ token: string; user: User }> {
   const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
-    _method: 'POST',
-    _headers: {
+    method: 'POST',
+    headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
@@ -97,54 +97,54 @@ async function apiRefreshToken(_token: string): Promise<{ _token: string; user: 
 // eslint-disable-next-line max-lines-per-function
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   // Initial state
-  _user: null,
-  _token: null,
-  _isLoading: false,
-  _error: null,
-  _isAuthenticated: false,
+  user: null,
+  token: null,
+  isLoading: false,
+  error: null,
+  isAuthenticated: false,
 
   // Actions
-  _login: async (email: string, _password: string) => {
-    set({ _isLoading: true, _error: null });
+  login: async (email: string, _password: string) => {
+    set({ isLoading: true, error: null });
     
     try {
-      const response = await apiLogin(email, password);
+      const response = await apiLogin(email, _password);
       
       set({
-        _user: response.user,
-        _token: response.token,
-        _isAuthenticated: true,
-        _isLoading: false,
-        _error: null,
+        user: response.user,
+        token: response.token,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
       });
     } catch (error) {
       set({
-        _error: error instanceof Error ? error.message : 'Login failed',
-        _isLoading: false,
-        _isAuthenticated: false,
+        error: error instanceof Error ? error.message : 'Login failed',
+        isLoading: false,
+        isAuthenticated: false,
       });
       throw error;
     }
   },
 
   _register: async (data: RegisterData) => {
-    set({ _isLoading: true, _error: null });
+    set({ isLoading: true, error: null });
     
     try {
       const response = await apiRegister(data);
       
       set({
-        _user: response.user,
-        _token: response.token,
-        _isAuthenticated: true,
-        _isLoading: false,
-        _error: null,
+        user: response.user,
+        token: response.token,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
       });
     } catch (error) {
       set({
-        _error: error instanceof Error ? error.message : 'Registration failed',
-        _isLoading: false,
-        _isAuthenticated: false,
+        error: error instanceof Error ? error.message : 'Registration failed',
+        isLoading: false,
+        isAuthenticated: false,
       });
       throw error;
     }
@@ -152,10 +152,10 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
   _logout: () => {
     set({
-      _user: null,
-      _token: null,
-      _isAuthenticated: false,
-      _error: null,
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      error: null,
     });
   },
 
@@ -169,57 +169,57 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       const response = await apiRefreshToken(token);
       
       set({
-        _token: response.token,
-        _user: response.user,
-        _isAuthenticated: true,
+        token: response.token,
+        user: response.user,
+        isAuthenticated: true,
       });
     } catch (error) {
       // If refresh fails, logout user
-      get().logout();
+      get()._logout();
       throw error;
     }
   },
 
   _clearError: () => {
-    set({ _error: null });
+    set({ error: null });
   },
 
   _setLoading: (loading: boolean) => {
-    set({ _isLoading: loading });
+    set({ isLoading: loading });
   },
 
   _updateUser: (userData: Partial<User>) => {
     const { user } = get();
     if (user) {
       set({
-        _user: { ...user, ...userData }
+        user: { ...user, ...userData }
       });
     }
   },
 }));
 
 // Role-based route protection utilities
-export const hasRole = (_user: User | null, _allowedRoles: User['role'][]): boolean => {
-  return user ? allowedRoles.includes(user.role) : false;
+export const hasRole = (user: User | null, _allowedRoles: User['role'][]): boolean => {
+  return user ? _allowedRoles.includes(user.role) : false;
 };
 
-export const isCustomer = (_user: User | null): boolean => {
+export const isCustomer = (user: User | null): boolean => {
   return hasRole(user, ['CUSTOMER']);
 };
 
-export const isTechnician = (_user: User | null): boolean => {
+export const isTechnician = (user: User | null): boolean => {
   return hasRole(user, ['TECHNICIAN']);
 };
 
-export const isAdmin = (_user: User | null): boolean => {
+export const isAdmin = (user: User | null): boolean => {
   return hasRole(user, ['ADMIN', 'SUPER_ADMIN']);
 };
 
-export const isSaasAdmin = (_user: User | null): boolean => {
+export const isSaasAdmin = (user: User | null): boolean => {
   return hasRole(user, ['SUPER_ADMIN']);
 };
 
-export const getDefaultRoute = (_user: User | null): string => {
+export const getDefaultRoute = (user: User | null): string => {
   if (!user) return '/auth/login';
   
   switch (user.role) {
@@ -247,11 +247,11 @@ export const useAuth = () => {
     error,
     isAuthenticated,
     login,
-    register,
-    logout,
-    refreshToken,
-    clearError,
-    updateUser,
+    _register: register,
+    _logout: logout,
+    _refreshToken: refreshToken,
+    _clearError: clearError,
+    _updateUser: updateUser,
   } = useAuthStore();
 
   return {
