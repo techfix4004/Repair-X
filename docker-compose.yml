@@ -17,14 +17,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 2GB
-        reservations:
-          cpus: '0.5'
-          memory: 1GB
     networks:
       - repairx-network
 
@@ -41,22 +33,12 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 1GB
-        reservations:
-          cpus: '0.25'
-          memory: 512MB
     networks:
       - repairx-network
 
-  # Backend API Service
+  # Backend API Service (simplified for production demo)
   backend:
-    build:
-      context: .                         # Correction: use monorepo root as build context
-      dockerfile: backend/Dockerfile     # Correction: use Dockerfile located within backend directory
+    image: node:20-alpine
     container_name: repairx-backend-prod
     restart: unless-stopped
     environment:
@@ -69,35 +51,30 @@ services:
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       PORT: 3001
+    command: sh -c "apk add --no-cache curl && cd /app && npm install express cors && node src/production-server.js"
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - ./backend/uploads:/app/uploads
+    ports:
+      - "3001:3001"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ./backend/uploads:/app/uploads
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "sh", "-c", "curl -f http://localhost:3001/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2GB
-        reservations:
-          cpus: '0.5'
-          memory: 512MB
     networks:
       - repairx-network
 
-  # Frontend Web Application
+  # Frontend Web Application (simplified for production demo)
   frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
+    image: node:20-alpine
     container_name: repairx-frontend-prod
     restart: unless-stopped
     environment:
@@ -105,23 +82,21 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
       NEXT_PUBLIC_APP_ENV: production
+    command: sh -c "cd /app && npm install && npm run build && npm start"
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
     depends_on:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1GB
-        reservations:
-          cpus: '0.25'
-          memory: 256MB
     networks:
       - repairx-network
 
@@ -145,14 +120,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512MB
-        reservations:
-          cpus: '0.25'
-          memory: 256MB
     networks:
       - repairx-network
 

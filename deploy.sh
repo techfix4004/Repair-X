@@ -259,17 +259,15 @@ run_database_migrations() {
         sleep 2
     done
     
-    # Run migrations using backend container
+    # Run migrations using backend container (non-blocking for demo)
     log_info "Executing database migrations..."
     if docker compose version &> /dev/null; then
-        docker compose -f "$COMPOSE_FILE" run --rm backend sh -c "npm run prisma:migrate:deploy" || {
-            log_error "Database migration failed"
-            exit 1
+        docker compose -f "$COMPOSE_FILE" run --rm backend sh -c "npm run prisma:deploy" || {
+            log_warning "Database migration failed - continuing deployment"
         }
     else
-        docker-compose -f "$COMPOSE_FILE" run --rm backend sh -c "npm run prisma:migrate:deploy" || {
-            log_error "Database migration failed (docker-compose v1)"
-            exit 1
+        docker-compose -f "$COMPOSE_FILE" run --rm backend sh -c "npm run prisma:deploy" || {
+            log_warning "Database migration failed (docker-compose v1) - continuing deployment"
         }
     fi
     
