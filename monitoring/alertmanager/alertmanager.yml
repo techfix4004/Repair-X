@@ -49,7 +49,7 @@ receivers:
           Time: {{ .StartsAt }}
           {{ end }}
     slack_configs:
-      - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+      - api_url: 'https://hooks.slack.com/services/your/critical/webhook'  # <-- REPLACE with your actual Slack webhook!
         channel: '#critical-alerts'
         title: '🚨 Critical Alert'
         text: '{{ range .Alerts }}{{ .Annotations.summary }}: {{ .Annotations.description }}{{ end }}'
@@ -70,7 +70,7 @@ receivers:
           Time: {{ .StartsAt }}
           {{ end }}
     slack_configs:
-      - api_url: 'YOUR_SECURITY_SLACK_WEBHOOK_URL'
+      - api_url: 'https://hooks.slack.com/services/your/security/webhook'  # <-- REPLACE with your actual Slack webhook!
         channel: '#security-alerts'
         title: '🔒 Security Alert'
         text: '{{ range .Alerts }}{{ .Annotations.summary }}: {{ .Annotations.description }}{{ end }}'
