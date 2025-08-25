@@ -57,7 +57,7 @@ services:
       - ./backend:/app
       - ./backend/uploads:/app/uploads
     ports:
-      - "3001:3001"
+      - "3010:3001"   # CHANGED: Host port now 3010 to avoid conflict with srt-grafana-1
     depends_on:
       postgres:
         condition: service_healthy
