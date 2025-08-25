@@ -1,0 +1,55 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* RepairX Brand Colors */
+  --color-primary: #2563EB;
+  --color-primary-dark: #1D4ED8;
+  --color-text-dark: #1A1A1A;
+  --color-text-secondary: #5B5B5B;
+  --color-success: #22C55E;
+  --color-warning: #F59E42;
+  --color-error: #EF4444;
+  --color-background: #FFFFFF;
+  --color-surface: #F8F9FA;
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-text-dark: var(--color-text-dark);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Custom color utilities */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #15181F;
+    --color-surface: #23272F;
+    --color-text-dark: #F0F2F5;
+    --color-text-secondary: #B0B3B8;
+  }
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-dark);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}

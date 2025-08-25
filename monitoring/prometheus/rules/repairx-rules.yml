@@ -1,0 +1,161 @@
+groups:
+  - name: repairx.critical
+    rules:
+      # Service availability rules
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.instance }} is down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute."
+
+      # API response time rules
+      - alert: APIHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="repairx-backend"}[5m])) > 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API latency detected"
+          description: "API 95th percentile latency is {{ $value }}s on {{ $labels.instance }}"
+
+      # Error rate rules
+      - alert: APIHighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API error rate detected"
+          description: "API error rate is {{ $value | humanizePercentage }} on {{ $labels.instance }}"
+
+      # Database connectivity
+      - alert: DatabaseDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "PostgreSQL database on {{ $labels.instance }} is down"
+
+      # Redis connectivity
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis on {{ $labels.instance }} is down"
+
+  - name: repairx.warning
+    rules:
+      # Memory usage rules
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85% on {{ $labels.instance }}"
+
+      # CPU usage rules
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 85% on {{ $labels.instance }}"
+
+      # Disk space rules
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space detected"
+          description: "Disk space is below 10% on {{ $labels.instance }} filesystem {{ $labels.mountpoint }}"
+
+      # Database connection pool
+      - alert: DatabaseConnectionPoolHigh
+        expr: pg_stat_activity_count / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database connection pool usage"
+          description: "Database connection pool usage is above 80% on {{ $labels.instance }}"
+
+  - name: repairx.business
+    rules:
+      # Business KPI rules
+      - alert: LowJobCompletionRate
+        expr: (sum(rate(repairx_jobs_completed_total[1h])) / sum(rate(repairx_jobs_created_total[1h]))) < 0.95
+        for: 10m
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "Low job completion rate"
+          description: "Job completion rate is {{ $value | humanizePercentage }} over the last hour"
+
+      - alert: HighCustomerChurnRate
+        expr: rate(repairx_customer_churn_total[24h]) > 0.05
+        for: 1h
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "High customer churn rate"
+          description: "Customer churn rate is {{ $value | humanizePercentage }} over the last 24 hours"
+
+      # Revenue metrics
+      - alert: LowDailyRevenue
+        expr: sum(increase(repairx_revenue_total[24h])) < 10000
+        for: 1h
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "Low daily revenue"
+          description: "Daily revenue is ${{ $value }} which is below threshold"
+
+  - name: repairx.security
+    rules:
+      # Security-related alerts
+      - alert: SuspiciousFailedLogins
+        expr: rate(repairx_failed_login_attempts_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "High rate of failed login attempts"
+          description: "{{ $value }} failed login attempts per second from {{ $labels.source_ip }}"
+
+      - alert: UnauthorizedAPIAccess
+        expr: rate(http_requests_total{status="401"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High rate of unauthorized API access"
+          description: "{{ $value }} unauthorized requests per second on {{ $labels.instance }}"
+
+      - alert: SuspiciousDataExfiltration
+        expr: rate(http_response_size_bytes[5m]) > 1000000000  # 1GB per second
+        for: 1m
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "Unusual data transfer volume detected"
+          description: "High data transfer rate of {{ $value | humanizeBytes }} per second"

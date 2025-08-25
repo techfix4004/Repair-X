@@ -1,0 +1,55 @@
+{
+  "cli": {
+    "version": ">= 5.2.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
+    },
+    "production": {
+      "ios": {
+        "resourceClass": "m1-medium"
+      }
+    },
+    "production-ios": {
+      "extends": "production",
+      "ios": {
+        "distribution": "store",
+        "autoIncrement": true
+      }
+    },
+    "production-android": {
+      "extends": "production",
+      "android": {
+        "buildType": "aab",
+        "gradleCommand": ":app:bundleRelease"
+      }
+    }
+  },
+  "submit": {
+    "production": {},
+    "production-ios": {
+      "ios": {
+        "appleId": "admin@repairx.com",
+        "ascAppId": "repairx-mobile-app",
+        "appleTeamId": "REPAIRX_TEAM_ID"
+      }
+    },
+    "production-android": {
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "production"
+      }
+    }
+  }
+}

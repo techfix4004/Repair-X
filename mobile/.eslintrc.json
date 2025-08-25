@@ -1,0 +1,10 @@
+{
+  "extends": ["expo"],
+  "ignorePatterns": ["lib/**/*", "node_modules/**/*"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-empty-object-type": "off", 
+    "@typescript-eslint/no-wrapper-object-types": "off",
+    "no-unused-vars": "warn"
+  }
+}

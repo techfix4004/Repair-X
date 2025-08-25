@@ -1,0 +1,101 @@
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@repairx.com'
+  smtp_auth_username: 'alerts@repairx.com'
+  smtp_auth_password: 'your-email-password'
+
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'web.hook'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 10s
+      repeat_interval: 5m
+    - match:
+        category: security
+      receiver: 'security-alerts'
+      group_wait: 5s
+      repeat_interval: 2m
+    - match:
+        category: business
+      receiver: 'business-alerts'
+      group_wait: 30s
+      repeat_interval: 1h
+
+receivers:
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://backend:3001/api/v1/alerts/webhook'
+        send_resolved: true
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'critical@repairx.com'
+        subject: '🚨 Critical Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Instance: {{ .Labels.instance }}
+          Time: {{ .StartsAt }}
+          {{ end }}
+    slack_configs:
+      - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+        channel: '#critical-alerts'
+        title: '🚨 Critical Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}: {{ .Annotations.description }}{{ end }}'
+    webhook_configs:
+      - url: 'http://backend:3001/api/v1/alerts/critical'
+        send_resolved: true
+
+  - name: 'security-alerts'
+    email_configs:
+      - to: 'security@repairx.com'
+        subject: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Security Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Instance: {{ .Labels.instance }}
+          Time: {{ .StartsAt }}
+          {{ end }}
+    slack_configs:
+      - api_url: 'YOUR_SECURITY_SLACK_WEBHOOK_URL'
+        channel: '#security-alerts'
+        title: '🔒 Security Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}: {{ .Annotations.description }}{{ end }}'
+    webhook_configs:
+      - url: 'http://backend:3001/api/v1/alerts/security'
+        send_resolved: true
+
+  - name: 'business-alerts'
+    email_configs:
+      - to: 'business@repairx.com'
+        subject: '📊 Business Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Business Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          Time: {{ .StartsAt }}
+          {{ end }}
+    webhook_configs:
+      - url: 'http://backend:3001/api/v1/alerts/business'
+        send_resolved: true
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']

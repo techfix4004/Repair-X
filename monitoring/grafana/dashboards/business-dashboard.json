@@ -1,0 +1,305 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "RepairX - Executive Business Dashboard",
+    "tags": ["repairx", "business", "kpi"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "1m",
+    "schemaVersion": 27,
+    "version": 1,
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Revenue Overview",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "sum(increase(repairx_revenue_total[24h]))",
+            "refId": "A",
+            "legendFormat": "Daily Revenue"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 8000},
+                {"color": "green", "value": 15000}
+              ]
+            }
+          }
+        },
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Active Customers",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "repairx_active_customers_total",
+            "refId": "A",
+            "legendFormat": "Active Customers"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 1000},
+                {"color": "green", "value": 5000}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Job Completion Rate",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "(sum(rate(repairx_jobs_completed_total[1h])) / sum(rate(repairx_jobs_created_total[1h]))) * 100",
+            "refId": "A",
+            "legendFormat": "Completion Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 85},
+                {"color": "green", "value": 95}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Customer Satisfaction (CSAT)",
+        "type": "stat",
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        },
+        "targets": [
+          {
+            "expr": "avg(repairx_customer_satisfaction_score)",
+            "refId": "A",
+            "legendFormat": "CSAT Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "min": 0,
+            "max": 10,
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 7},
+                {"color": "green", "value": 8.5}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Revenue Trend (7 days)",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(repairx_revenue_total[1h])) * 24",
+            "refId": "A",
+            "legendFormat": "Daily Revenue Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Service Performance",
+        "type": "timeseries",
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"repairx-backend\"}[5m]))",
+            "refId": "A",
+            "legendFormat": "95th Percentile Response Time"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"repairx-backend\"}[5m]))",
+            "refId": "B",
+            "legendFormat": "50th Percentile Response Time"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Top Service Categories by Revenue",
+        "type": "piechart",
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 18
+        },
+        "targets": [
+          {
+            "expr": "sum by (category) (increase(repairx_revenue_by_category_total[24h]))",
+            "refId": "A",
+            "legendFormat": "{{category}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Technician Utilization",
+        "type": "bargauge",
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 18
+        },
+        "targets": [
+          {
+            "expr": "(sum by (technician) (repairx_technician_active_jobs) / sum by (technician) (repairx_technician_capacity)) * 100",
+            "refId": "A",
+            "legendFormat": "{{technician}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 80},
+                {"color": "red", "value": 95}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Geographic Distribution",
+        "type": "geomap",
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 18
+        },
+        "targets": [
+          {
+            "expr": "sum by (region) (repairx_customers_by_region_total)",
+            "refId": "A",
+            "legendFormat": "{{region}}"
+          }
+        ]
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "links": []
+  }
+}

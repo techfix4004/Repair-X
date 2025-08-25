@@ -1,0 +1,1120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String?
+  role      UserRole @default(CUSTOMER)
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Customer-specific fields
+  customerProfile CustomerProfile?
+  bookings       Booking[]
+  reviews        Review[]
+  payments       Payment[]
+  devices        Device[]
+
+  // Technician-specific fields
+  technicianProfile TechnicianProfile?
+  assignedBookings  Booking[] @relation("TechnicianBookings")
+  technicianReviews Review[] @relation("TechnicianReviews")
+  jobSheets         JobSheet[] @relation("TechnicianJobSheets")
+
+  // SMS system relations
+  smsMessages       SmsMessage[]
+
+  // Expense system relations
+  submittedExpenses Expense[] @relation("SubmittedExpenses")
+  approvedExpenses  Expense[] @relation("ApprovedExpenses")
+
+  // Quotation system relations
+  customerQuotations   Quotation[] @relation("CustomerQuotations")
+  preparedQuotations   Quotation[] @relation("PreparedQuotations")
+  quotationApprovals   QuotationApproval[] @relation("QuotationApprovals")
+  quotationRevisions   QuotationRevision[] @relation("QuotationRevisions")
+
+  // Document system relations
+  generatedDocuments   GeneratedDocument[] @relation("GeneratedDocuments")
+
+  @@map("users")
+}
+
+model CustomerProfile {
+  id         String @id @default(cuid())
+  userId     String @unique
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  address    Address?
+  preferences Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customer_profiles")
+}
+
+model TechnicianProfile {
+  id           String @id @default(cuid())
+  userId       String @unique
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bio          String?
+  experience   Int? // years of experience
+  hourlyRate   Decimal @db.Decimal(10, 2)
+  isVerified   Boolean @default(false)
+  rating       Decimal? @db.Decimal(3, 2)
+  totalReviews Int @default(0)
+  
+  skills       TechnicianSkill[]
+  serviceAreas ServiceArea[]
+  availability TechnicianAvailability[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("technician_profiles")
+}
+
+model Address {
+  id             String @id @default(cuid())
+  street         String
+  city           String
+  state          String
+  zipCode        String
+  country        String @default("US")
+  latitude       Decimal? @db.Decimal(10, 8)
+  longitude      Decimal? @db.Decimal(11, 8)
+  
+  customerProfileId String? @unique
+  customerProfile   CustomerProfile? @relation(fields: [customerProfileId], references: [id])
+  
+  bookings       Booking[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+// Service Management
+model ServiceCategory {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+  icon        String?
+  isActive    Boolean @default(true)
+  
+  services    Service[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("service_categories")
+}
+
+model Service {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  basePrice   Decimal @db.Decimal(10, 2)
+  estimatedDuration Int // in minutes
+  isActive    Boolean @default(true)
+  
+  categoryId  String
+  category    ServiceCategory @relation(fields: [categoryId], references: [id])
+  
+  bookings    Booking[]
+  technicianSkills TechnicianSkill[]
+  providerCapabilities ProviderCapability[] @relation("ProviderCapabilities")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("services")
+}
+
+model TechnicianSkill {
+  id            String @id @default(cuid())
+  technicianId  String
+  technician    TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  serviceId     String
+  service       Service @relation(fields: [serviceId], references: [id])
+  
+  experienceLevel SkillLevel @default(INTERMEDIATE)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([technicianId, serviceId])
+  @@map("technician_skills")
+}
+
+model ServiceArea {
+  id           String @id @default(cuid())
+  technicianId String
+  technician   TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  
+  city         String
+  state        String
+  zipCode      String?
+  radius       Int // in kilometers
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("service_areas")
+}
+
+// Device/Equipment Management
+model Device {
+  id          String @id @default(cuid())
+  
+  brand       String
+  model       String
+  serialNumber String?
+  yearManufactured Int?
+  category    String // Electronics, Appliance, Automotive, etc.
+  subcategory String? // Phone, Laptop, Refrigerator, etc.
+  
+  // Physical characteristics
+  color       String?
+  condition   DeviceCondition @default(FAIR)
+  
+  // Ownership
+  customerId  String
+  customer    User @relation(fields: [customerId], references: [id])
+  
+  // Device specifications
+  specifications Json? // Store device-specific details
+  purchaseDate DateTime?
+  warrantyExpiry DateTime?
+  
+  bookings    Booking[]
+  jobSheets   JobSheet[]
+  quotations  Quotation[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("devices")
+}
+
+// Job Sheet Management
+model JobSheet {
+  id          String @id @default(cuid())
+  jobNumber   String @unique // Generated job number (e.g., JS-2024-001234)
+  
+  bookingId   String @unique
+  booking     Booking @relation(fields: [bookingId], references: [id])
+  
+  deviceId    String
+  device      Device @relation(fields: [deviceId], references: [id])
+  
+  technicianId String?
+  technician   User? @relation("TechnicianJobSheets", fields: [technicianId], references: [id])
+  
+  // Job details
+  problemDescription String
+  diagnosisNotes     String?
+  repairActions      Json? // Array of repair steps taken
+  partsUsed          JobSheetPart[]
+  
+  // Quality checkpoints
+  qualityChecks      Json? // Six Sigma quality checkpoints
+  testingResults     Json? // Post-repair testing results
+  
+  // Time tracking
+  estimatedHours     Decimal @db.Decimal(5, 2)
+  actualHours        Decimal? @db.Decimal(5, 2)
+  
+  startedAt          DateTime?
+  completedAt        DateTime?
+  
+  status             JobSheetStatus @default(CREATED)
+  priority           Priority @default(MEDIUM)
+  
+  // Customer communication
+  customerApprovalRequired Boolean @default(false)
+  customerApprovedAt       DateTime?
+  
+  // Pricing
+  laborCost          Decimal @db.Decimal(10, 2)
+  partsCost          Decimal? @db.Decimal(10, 2)
+  totalCost          Decimal? @db.Decimal(10, 2)
+  
+  // Documentation
+  beforePhotos       Json? // Array of photo URLs
+  afterPhotos        Json? // Array of photo URLs
+  warrantyCoverage   String? // Warranty provided on repair
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations to new systems
+  expenses     Expense[]
+  quotation    Quotation?
+  outsourcedJob OutsourcedJob?
+  generatedDocuments GeneratedDocument[]
+
+  @@map("job_sheets")
+}
+
+// Parts used in job sheets
+model JobSheetPart {
+  id          String @id @default(cuid())
+  
+  jobSheetId  String
+  jobSheet    JobSheet @relation(fields: [jobSheetId], references: [id], onDelete: Cascade)
+  
+  partName    String
+  partNumber  String?
+  quantity    Int @default(1)
+  unitCost    Decimal @db.Decimal(10, 2)
+  totalCost   Decimal @db.Decimal(10, 2)
+  supplier    String?
+  
+  createdAt DateTime @default(now())
+
+  @@map("job_sheet_parts")
+}
+
+// Booking Management (Enhanced)
+model Booking {
+  id          String @id @default(cuid())
+  
+  customerId  String
+  customer    User @relation(fields: [customerId], references: [id])
+  
+  technicianId String?
+  technician   User? @relation("TechnicianBookings", fields: [technicianId], references: [id])
+  
+  serviceId   String
+  service     Service @relation(fields: [serviceId], references: [id])
+  
+  deviceId    String?
+  device      Device? @relation(fields: [deviceId], references: [id])
+  
+  addressId   String
+  address     Address @relation(fields: [addressId], references: [id])
+  
+  scheduledAt DateTime
+  completedAt DateTime?
+  
+  status      BookingStatus @default(PENDING)
+  priority    Priority @default(MEDIUM)
+  
+  description String?
+  notes       String?
+  
+  estimatedPrice Decimal @db.Decimal(10, 2)
+  finalPrice     Decimal? @db.Decimal(10, 2)
+  
+  // Enhanced fields for job workflow
+  problemSummary  String?
+  customerRequestDetails Json? // Detailed customer requirements
+  
+  payment     Payment?
+  review      Review?
+  messages    Message[]
+  attachments BookingAttachment[]
+  jobSheet    JobSheet?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations to new systems
+  smsMessages SmsMessage[]
+  generatedDocuments GeneratedDocument[]
+
+  @@map("bookings")
+}
+
+model Payment {
+  id              String @id @default(cuid())
+  
+  bookingId       String @unique
+  booking         Booking @relation(fields: [bookingId], references: [id])
+  
+  userId          String
+  user            User @relation(fields: [userId], references: [id])
+  
+  amount          Decimal @db.Decimal(10, 2)
+  currency        String @default("USD")
+  
+  status          PaymentStatus @default(PENDING)
+  method          PaymentMethod
+  
+  stripePaymentIntentId String?
+  
+  paidAt          DateTime?
+  refundedAt      DateTime?
+  refundAmount    Decimal? @db.Decimal(10, 2)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
+}
+
+// Communication
+model Message {
+  id        String @id @default(cuid())
+  
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  senderId  String
+  sender    User @relation(fields: [senderId], references: [id])
+  
+  content   String
+  type      MessageType @default(TEXT)
+  
+  readAt    DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("messages")
+}
+
+// Reviews and Ratings
+model Review {
+  id          String @id @default(cuid())
+  
+  bookingId   String @unique
+  booking     Booking @relation(fields: [bookingId], references: [id])
+  
+  customerId  String
+  customer    User @relation(fields: [customerId], references: [id])
+  
+  technicianId String
+  technician   User @relation("TechnicianReviews", fields: [technicianId], references: [id])
+  
+  rating      Int // 1-5 stars
+  comment     String?
+  
+  isVisible   Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+// File Management
+model BookingAttachment {
+  id        String @id @default(cuid())
+  
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  filename  String
+  originalName String
+  mimeType  String
+  size      Int
+  url       String
+  
+  uploadedBy String
+  uploader   User @relation(fields: [uploadedBy], references: [id])
+  
+  createdAt DateTime @default(now())
+
+  @@map("booking_attachments")
+}
+
+// Technician Availability
+model TechnicianAvailability {
+  id            String @id @default(cuid())
+  
+  technicianId  String
+  technician    TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  
+  dayOfWeek     Int // 0-6 (Sunday-Saturday)
+  startTime     String // HH:mm format
+  endTime       String // HH:mm format
+  
+  isAvailable   Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([technicianId, dayOfWeek, startTime])
+  @@map("technician_availability")
+}
+
+// Business Settings Management (20+ Categories)
+model BusinessSettings {
+  id          String @id @default(cuid())
+  
+  category    BusinessSettingCategory
+  subcategory String? // For nested settings within categories
+  key         String
+  value       Json // Flexible storage for different data types
+  dataType    SettingDataType @default(STRING)
+  
+  // Metadata
+  label       String
+  description String?
+  isRequired  Boolean @default(false)
+  isActive    Boolean @default(true)
+  
+  // Validation rules
+  validationRules Json? // Store validation rules as JSON
+  
+  // Organization/tenant level
+  tenantId    String? // For multi-tenant support
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([category, key, tenantId])
+  @@map("business_settings")
+}
+
+// SMS Management System
+model SmsAccount {
+  id            String @id @default(cuid())
+  
+  providerName  String // Twilio, AWS SNS, etc.
+  accountSid    String
+  authToken     String // Encrypted
+  fromNumber    String
+  
+  creditsRemaining Int @default(0)
+  creditsUsed      Int @default(0)
+  autoTopUp        Boolean @default(false)
+  topUpThreshold   Int @default(100)
+  topUpAmount      Int @default(1000)
+  
+  isActive      Boolean @default(true)
+  isPrimary     Boolean @default(false)
+  
+  smsMessages   SmsMessage[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sms_accounts")
+}
+
+model SmsMessage {
+  id            String @id @default(cuid())
+  
+  accountId     String
+  account       SmsAccount @relation(fields: [accountId], references: [id])
+  
+  toNumber      String
+  fromNumber    String
+  message       String
+  
+  status        SmsStatus @default(PENDING)
+  externalId    String? // Provider message ID
+  
+  deliveredAt   DateTime?
+  failedAt      DateTime?
+  errorMessage  String?
+  
+  // Cost tracking
+  cost          Decimal? @db.Decimal(10, 4)
+  currency      String @default("USD")
+  
+  // Template and automation
+  templateName  String?
+  triggerEvent  String?
+  
+  // Related entities
+  bookingId     String?
+  booking       Booking? @relation(fields: [bookingId], references: [id])
+  
+  userId        String?
+  user          User? @relation(fields: [userId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sms_messages")
+}
+
+// Expense Management System
+model ExpenseCategory {
+  id          String @id @default(cuid())
+  
+  name        String
+  description String?
+  parentId    String? // For hierarchical categories
+  parent      ExpenseCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    ExpenseCategory[] @relation("CategoryHierarchy")
+  
+  // Budget settings
+  monthlyBudget Decimal? @db.Decimal(10, 2)
+  isActive    Boolean @default(true)
+  
+  expenses    Expense[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, parentId])
+  @@map("expense_categories")
+}
+
+model Expense {
+  id            String @id @default(cuid())
+  
+  categoryId    String
+  category      ExpenseCategory @relation(fields: [categoryId], references: [id])
+  
+  submittedBy   String
+  submitter     User @relation("SubmittedExpenses", fields: [submittedBy], references: [id])
+  
+  approvedBy    String?
+  approver      User? @relation("ApprovedExpenses", fields: [approvedBy], references: [id])
+  
+  amount        Decimal @db.Decimal(10, 2)
+  currency      String @default("USD")
+  
+  description   String
+  notes         String?
+  
+  expenseDate   DateTime
+  status        ExpenseStatus @default(PENDING)
+  
+  // Receipt information
+  receiptUrl    String?
+  receiptText   String? // OCR extracted text
+  merchant      String?
+  
+  // Tax and compliance
+  taxAmount     Decimal? @db.Decimal(10, 2)
+  taxDeductible Boolean @default(false)
+  
+  // Reimbursement
+  isReimbursable Boolean @default(true)
+  reimbursedAt   DateTime?
+  reimbursementAmount Decimal? @db.Decimal(10, 2)
+  
+  // Related entities
+  jobSheetId    String?
+  jobSheet      JobSheet? @relation(fields: [jobSheetId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("expenses")
+}
+
+// Quotation System with Multi-Approval Workflow
+model Quotation {
+  id            String @id @default(cuid())
+  quoteNumber   String @unique
+  
+  customerId    String
+  customer      User @relation("CustomerQuotations", fields: [customerId], references: [id])
+  
+  deviceId      String?
+  device        Device? @relation(fields: [deviceId], references: [id])
+  
+  preparedBy    String
+  preparedByUser User @relation("PreparedQuotations", fields: [preparedBy], references: [id])
+  
+  // Quote details
+  title         String
+  description   String
+  notes         String?
+  
+  // Pricing
+  subtotal      Decimal @db.Decimal(10, 2)
+  taxAmount     Decimal? @db.Decimal(10, 2)
+  discountAmount Decimal? @db.Decimal(10, 2)
+  totalAmount   Decimal @db.Decimal(10, 2)
+  
+  // Validity
+  validUntil    DateTime
+  
+  // Status and workflow
+  status        QuotationStatus @default(DRAFT)
+  revisionNumber Int @default(1)
+  
+  // Customer interaction
+  customerViewedAt DateTime?
+  customerApprovedAt DateTime?
+  customerRejectedAt DateTime?
+  rejectionReason   String?
+  
+  // Digital signature
+  customerSignature Json? // Signature data
+  signedAt          DateTime?
+  
+  // Conversion
+  convertedToJobAt  DateTime?
+  jobSheetId        String? @unique
+  jobSheet          JobSheet? @relation(fields: [jobSheetId], references: [id])
+  
+  // Line items and approvals
+  items         QuotationItem[]
+  approvals     QuotationApproval[]
+  revisions     QuotationRevision[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id            String @id @default(cuid())
+  
+  quotationId   String
+  quotation     Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  
+  itemType      QuoteItemType @default(SERVICE)
+  name          String
+  description   String?
+  
+  quantity      Decimal @db.Decimal(10, 3)
+  unitPrice     Decimal @db.Decimal(10, 2)
+  totalPrice    Decimal @db.Decimal(10, 2)
+  
+  // Additional details
+  partNumber    String?
+  warranty      String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("quotation_items")
+}
+
+model QuotationApproval {
+  id            String @id @default(cuid())
+  
+  quotationId   String
+  quotation     Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  
+  approverRole  QuotationApproverRole
+  approverId    String?
+  approver      User? @relation("QuotationApprovals", fields: [approverId], references: [id])
+  
+  requiredAmount Decimal? @db.Decimal(10, 2) // Minimum amount requiring this approval
+  status        ApprovalStatus @default(PENDING)
+  
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  comments      String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("quotation_approvals")
+}
+
+model QuotationRevision {
+  id            String @id @default(cuid())
+  
+  quotationId   String
+  quotation     Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  
+  revisionNumber Int
+  changes       Json // Store what changed
+  revisedBy     String
+  reviser       User @relation("QuotationRevisions", fields: [revisedBy], references: [id])
+  
+  reason        String?
+  
+  createdAt DateTime @default(now())
+
+  @@unique([quotationId, revisionNumber])
+  @@map("quotation_revisions")
+}
+
+// Outsourcing Marketplace
+model ServiceProvider {
+  id            String @id @default(cuid())
+  
+  businessName  String
+  contactName   String
+  email         String @unique
+  phone         String
+  
+  // Business details
+  businessType  ProviderBusinessType
+  description   String?
+  website       String?
+  
+  // Verification
+  isVerified    Boolean @default(false)
+  verificationDate DateTime?
+  licenseNumber String?
+  insuranceCertificate String?
+  
+  // Performance metrics
+  rating        Decimal? @db.Decimal(3, 2)
+  totalJobs     Int @default(0)
+  completedJobs Int @default(0)
+  
+  // Financial
+  commissionRate Decimal @db.Decimal(5, 2) // Percentage
+  paymentTerms  String?
+  
+  // Service areas and capabilities
+  serviceAreas  ProviderServiceArea[]
+  capabilities  ProviderCapability[]
+  outsourcedJobs OutsourcedJob[]
+  
+  isActive      Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("service_providers")
+}
+
+model ProviderServiceArea {
+  id           String @id @default(cuid())
+  
+  providerId   String
+  provider     ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  
+  city         String
+  state        String
+  zipCode      String?
+  radius       Int // kilometers
+  
+  createdAt DateTime @default(now())
+
+  @@map("provider_service_areas")
+}
+
+model ProviderCapability {
+  id           String @id @default(cuid())
+  
+  providerId   String
+  provider     ServiceProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  
+  serviceId    String
+  service      Service @relation("ProviderCapabilities", fields: [serviceId], references: [id])
+  
+  skillLevel   SkillLevel @default(INTERMEDIATE)
+  hourlyRate   Decimal? @db.Decimal(10, 2)
+  
+  createdAt DateTime @default(now())
+
+  @@unique([providerId, serviceId])
+  @@map("provider_capabilities")
+}
+
+model OutsourcedJob {
+  id            String @id @default(cuid())
+  
+  jobSheetId    String @unique
+  jobSheet      JobSheet @relation(fields: [jobSheetId], references: [id])
+  
+  providerId    String
+  provider      ServiceProvider @relation(fields: [providerId], references: [id])
+  
+  agreedPrice   Decimal @db.Decimal(10, 2)
+  commissionAmount Decimal @db.Decimal(10, 2)
+  
+  status        OutsourceStatus @default(ASSIGNED)
+  
+  assignedAt    DateTime @default(now())
+  completedAt   DateTime?
+  
+  // Provider feedback
+  providerNotes String?
+  qualityRating Int? // 1-5
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("outsourced_jobs")
+}
+
+// Document Templates and Print Management
+model DocumentTemplate {
+  id            String @id @default(cuid())
+  
+  name          String
+  type          DocumentType
+  description   String?
+  
+  // Template content
+  htmlTemplate  String
+  cssStyles     String?
+  
+  // Variables and fields
+  availableFields Json // List of fields that can be used
+  
+  // Branding
+  includeLogo   Boolean @default(true)
+  includeHeader Boolean @default(true)
+  includeFooter Boolean @default(true)
+  
+  // Settings
+  isDefault     Boolean @default(false)
+  isActive      Boolean @default(true)
+  
+  // Multi-tenant support
+  tenantId      String?
+  
+  // Generated documents
+  documents     GeneratedDocument[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, type, tenantId])
+  @@map("document_templates")
+}
+
+model GeneratedDocument {
+  id            String @id @default(cuid())
+  
+  templateId    String
+  template      DocumentTemplate @relation(fields: [templateId], references: [id])
+  
+  // Document details
+  filename      String
+  filePath      String
+  fileSize      Int
+  mimeType      String
+  
+  // Related entities
+  jobSheetId    String?
+  jobSheet      JobSheet? @relation(fields: [jobSheetId], references: [id])
+  
+  quotationId   String?
+  quotation     Quotation? @relation(fields: [quotationId], references: [id])
+  
+  bookingId     String?
+  booking       Booking? @relation(fields: [bookingId], references: [id])
+  
+  // Generation context
+  generatedBy   String
+  generator     User @relation("GeneratedDocuments", fields: [generatedBy], references: [id])
+  
+  generatedData Json // Data used to generate the document
+  
+  createdAt DateTime @default(now())
+
+  @@map("generated_documents")
+}
+
+// Enums
+enum UserRole {
+  CUSTOMER
+  TECHNICIAN
+  DISPATCHER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+  APPLE_PAY
+  GOOGLE_PAY
+  BANK_TRANSFER
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum DeviceCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
+  DAMAGED
+}
+
+enum JobSheetStatus {
+  CREATED
+  IN_DIAGNOSIS
+  AWAITING_APPROVAL
+  APPROVED
+  IN_PROGRESS
+  PARTS_ORDERED
+  TESTING
+  QUALITY_CHECK
+  COMPLETED
+  CUSTOMER_APPROVED
+  DELIVERED
+  CANCELLED
+}
+
+// Business Settings Enums
+enum BusinessSettingCategory {
+  TAX_SETTINGS
+  PRINT_SETTINGS
+  WORKFLOW_CONFIGURATION
+  EMAIL_SETTINGS
+  SMS_SETTINGS
+  EMPLOYEE_MANAGEMENT
+  CUSTOMER_DATABASE
+  INVOICE_SETTINGS
+  QUOTATION_SETTINGS
+  PAYMENT_SETTINGS
+  ADDRESS_LOCATION_SETTINGS
+  REMINDER_SYSTEM
+  BUSINESS_INFORMATION
+  SEQUENCE_SETTINGS
+  EXPENSE_MANAGEMENT
+  PARTS_INVENTORY_SETTINGS
+  OUTSOURCING_SETTINGS
+  QUALITY_SETTINGS
+  SECURITY_SETTINGS
+  INTEGRATION_SETTINGS
+}
+
+enum SettingDataType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+  DATE
+  ARRAY
+}
+
+// SMS Management Enums
+enum SmsStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+// Expense Management Enums
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REIMBURSED
+}
+
+// Quotation System Enums
+enum QuotationStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  SENT_TO_CUSTOMER
+  CUSTOMER_APPROVED
+  CUSTOMER_REJECTED
+  EXPIRED
+  CONVERTED_TO_JOB
+}
+
+enum QuoteItemType {
+  SERVICE
+  PART
+  LABOR
+  MATERIAL
+  TRAVEL
+  DIAGNOSTIC
+}
+
+enum QuotationApproverRole {
+  SUPERVISOR
+  MANAGER
+  SENIOR_MANAGER
+  DIRECTOR
+  OWNER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  DELEGATED
+}
+
+// Outsourcing Marketplace Enums
+enum ProviderBusinessType {
+  INDIVIDUAL
+  PARTNERSHIP
+  LLC
+  CORPORATION
+  FRANCHISE
+}
+
+enum OutsourceStatus {
+  ASSIGNED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+// Document Management Enums
+enum DocumentType {
+  JOB_SHEET
+  QUOTATION
+  INVOICE
+  RECEIPT
+  WARRANTY_CERTIFICATE
+  SERVICE_REPORT
+  CUSTOMER_AGREEMENT
+}

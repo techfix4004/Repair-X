@@ -1,0 +1,43 @@
+{
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest/globals": true
+  },
+  "extends": [
+    "@typescript-eslint/recommended",
+    "plugin:jest/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "jest"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-duplicate-imports": "error",
+    "max-lines-per-function": ["warn", { "max": 250 }],
+    "no-console": "off",
+    "no-undef": "off",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-prototype-builtins": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.ts", "**/*.test.ts"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "max-lines-per-function": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "no-undef": "off"
+      }
+    }
+  ]
+}
