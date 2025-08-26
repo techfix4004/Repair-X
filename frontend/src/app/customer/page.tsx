@@ -284,11 +284,3 @@ export default function CustomerDashboard() {
     </div>
   );
 }
-
-// Simple class name utility
-function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter((cls) => typeof cls === 'string' && cls.length > 0).join(' ');
-}
-
-// Use the cn utility to avoid unused warning
-console.log(cn('test'));
