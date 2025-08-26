@@ -11,7 +11,7 @@ export function Dialog({ open, onOpenChange, children, ...props }: DialogProps) 
   if (!open) return null
   
   return (
-    <div className="fixed inset-0 z-50 bg-black/80" onClick={() => onOpenChange?.(false)}>
+    <div className="fixed inset-0 z-50 bg-black/80" onClick={() => onOpenChange?.(false)} {...props}>
       <div className="fixed left-[50%] top-[50%] z-50 translate-x-[-50%] translate-y-[-50%]" onClick={e => e.stopPropagation()}>
         {children}
       </div>
