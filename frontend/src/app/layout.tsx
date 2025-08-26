@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AppProviders } from '@/components/providers/AppProviders';
 
 export const metadata: Metadata = {
-  title: "RepairX - Your Trusted Repair Service Platform",
-  description: "Connect with skilled technicians for electronics, appliances, automotive, and home maintenance repairs. Professional, reliable, and convenient repair services.",
+  title: "RepairX - Enterprise Repair Management Platform",
+  description: "Professional SaaS platform for repair service management with advanced analytics, multi-role dashboards, and AI-powered features.",
 };
 
 export default function RootLayout({
@@ -11,9 +12,18 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="font-inter antialiased bg-surface text-text-dark min-h-screen">
-        {/* TODO: Add global navigation, header, and role-based layout here */}
-        {children}
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" 
+          rel="stylesheet" 
+        />
+      </head>
+      <body className="font-inter antialiased">
+        <AppProviders>
+          {children}
+        </AppProviders>
       </body>
     </html>
   );
