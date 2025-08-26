@@ -8,7 +8,7 @@ interface User {
   email: string;
   name: string;
   role: string;
-  _password?: string;
+  password?: string;
 }
 
 // Mock database for initial implementation
@@ -18,21 +18,21 @@ const users: User[] = [
     _email: 'admin@repairx.com',
     _name: 'RepairX Admin',
     _role: 'admin',
-    _password: bcrypt.hashSync('admin123', 10)
+    password: bcrypt.hashSync('admin123', 10)
   },
   {
     _id: '2', 
     _email: 'technician@repairx.com',
     _name: 'RepairX Technician',
     _role: 'technician',
-    _password: bcrypt.hashSync('tech123', 10)
+    password: bcrypt.hashSync('tech123', 10)
   },
   {
     _id: '3',
     _email: 'customer@repairx.com', 
     _name: 'RepairX Customer',
     _role: 'customer',
-    _password: bcrypt.hashSync('customer123', 10)
+    password: bcrypt.hashSync('customer123', 10)
   }
 ];
 
@@ -43,24 +43,24 @@ export async function authRoutes(_fastify: FastifyInstance) {
     _schema: {
       body: {
         type: 'object',
-        _required: ['email', '_password'],
+        _required: ['email', 'password'],
         _properties: {
           email: { type: 'string' },
-          _password: { type: 'string' }
+          password: { type: 'string' }
         }
       }
     }
   }, async (request, reply: unknown) => {
-    const { email, _password } = (request.body as unknown);
+    const { email, password } = (request.body as unknown);
     
     // Find user
     const user = users.find((_u: unknown) => u.email === email);
-    if (!user || !(user as any)._password) {
+    if (!user || !(user as any).password) {
       return reply.code(401).send({ _error: 'Invalid credentials' });
     }
     
-    // Verify _password
-    const isValid = await bcrypt.compare(_password, (user as any)._password);
+    // Verify password
+    const isValid = await bcrypt.compare(password, (user as any).password);
     if (!isValid) {
       return reply.code(401).send({ _error: 'Invalid credentials' });
     }
@@ -91,17 +91,17 @@ export async function authRoutes(_fastify: FastifyInstance) {
     _schema: {
       body: {
         type: 'object',
-        _required: ['email', '_password', 'name', 'role'],
+        _required: ['email', 'password', 'name', 'role'],
         _properties: {
           email: { type: 'string' },
-          _password: { type: 'string' },
+          password: { type: 'string' },
           _name: { type: 'string' },
           _role: { type: 'string' }
         }
       }
     }
   }, async (request, reply: unknown) => {
-    const { email, _password, name, role } = (request.body as unknown);
+    const { email, password, name, role } = (request.body as unknown);
     
     // Check if user exists
     if (users.find((_u: unknown) => u.email === email)) {
@@ -109,13 +109,13 @@ export async function authRoutes(_fastify: FastifyInstance) {
     }
     
     // Create new user
-    const hashedPassword = await bcrypt.hash(_password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const _newUser: User = {
       id: (users.length + 1).toString(),
       email,
       name,
       role,
-      _password: hashedPassword
+      password: hashedPassword
     };
     
     users.push(newUser);

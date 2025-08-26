@@ -54,8 +54,8 @@ const APIIntegrationSchema = z.object({
   _endpoints: z.array(z.object({
     id: z.string(),
     _name: z.string(),
-    _method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']),
-    _url: z.string(),
+    method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']),
+    url: z.string(),
     _description: z.string(),
     _requestSchema: z.unknown().optional(),
     _responseSchema: z.unknown().optional(),
@@ -153,7 +153,7 @@ const APIKeySchema = z.object({
 const WebhookSchema = z.object({
   _id: z.string().optional(),
   _name: z.string().min(1, 'Webhook name is required'),
-  _url: z.string().url('Valid webhook URL is required'),
+  url: z.string().url('Valid webhook URL is required'),
   _events: z.array(z.enum([
     'JOB_CREATED',
     'JOB_UPDATED',
@@ -298,16 +298,16 @@ class APIMarketplaceService {
           {
             id: 'create_payment_intent',
             _name: 'Create Payment Intent',
-            _method: 'POST',
-            _url: 'https://api.stripe.com/v1/payment_intents',
+            method: 'POST',
+            url: 'https://api.stripe.com/v1/payment_intents',
             _description: 'Create a payment intent for a specific amount',
             _rateLimit: { requests: 100, _period: '1 second' },
           },
           {
             _id: 'retrieve_payment_intent',
             _name: 'Retrieve Payment Intent',
-            _method: 'GET',
-            _url: 'https://api.stripe.com/v1/payment_intents/{id}',
+            method: 'GET',
+            url: 'https://api.stripe.com/v1/payment_intents/{id}',
             _description: 'Retrieve details of a payment intent',
           },
         ],
@@ -378,16 +378,16 @@ class APIMarketplaceService {
           {
             id: 'sendemail',
             _name: 'Send Email',
-            _method: 'POST',
-            _url: 'https://api.sendgrid.com/v3/mail/send',
+            method: 'POST',
+            url: 'https://api.sendgrid.com/v3/mail/send',
             _description: 'Send transactional and marketing emails',
             _rateLimit: { requests: 600, _period: '1 minute' },
           },
           {
             _id: 'email_stats',
             _name: 'Email Statistics',
-            _method: 'GET',
-            _url: 'https://api.sendgrid.com/v3/stats',
+            method: 'GET',
+            url: 'https://api.sendgrid.com/v3/stats',
             _description: 'Get email delivery statistics',
           },
         ],
@@ -481,7 +481,7 @@ class APIMarketplaceService {
       {
         _id: 'webhook-001',
         _name: 'Job Status Updates',
-        _url: 'https://client-system.example.com/webhooks/job-status',
+        url: 'https://client-system.example.com/webhooks/job-status',
         _events: ['JOB_CREATED', 'JOB_UPDATED', 'JOB_COMPLETED'],
         _authentication: {
           type: 'SIGNATURE',

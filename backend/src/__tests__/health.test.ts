@@ -26,8 +26,8 @@ describe('Backend Basic Tests', () => {
 
   test('Health check endpoint', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/health'
+      method: 'GET',
+      url: '/health'
     });
 
     expect(response.statusCode).toBe(200);

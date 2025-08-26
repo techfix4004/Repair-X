@@ -66,7 +66,7 @@ export async function registerPlugins(_server: FastifyInstance): Promise<void> {
         },
         _license: {
           name: 'MIT',
-          _url: 'https://opensource.org/licenses/MIT',
+          url: 'https://opensource.org/licenses/MIT',
         },
       },
       _servers: [

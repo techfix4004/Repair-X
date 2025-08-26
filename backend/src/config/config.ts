@@ -9,7 +9,7 @@ export const config = {
   _HOST: process.env['HOST'] || '0.0.0.0',
 
   // Database
-  _DATABASE_URL: process.env['DATABASE_URL'] || 'postgresql://repairx_user:repairx_password@localhost:5432/repairx_db?schema=public',
+  _DATABASE_URL: process.env['DATABASE_URL'] || 'postgresql://repairx_user:repairxpassword@localhost:5432/repairx_db?schema=public',
 
   // JWT
   _JWT_SECRET: process.env['JWT_SECRET'] || 'your-super-secret-jwt-key-change-in-production',

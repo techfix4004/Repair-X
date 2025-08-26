@@ -38,7 +38,7 @@ const TestSuiteSchema = z.object({
   _testCases: z.array(z.object({
     id: z.string(),
     _name: z.string(),
-    _url: z.string(),
+    url: z.string(),
     _selector: z.string().optional(), // CSS selector to test specific elements
     _actions: z.array(z.object({
       type: z.enum(['CLICK', 'HOVER', 'SCROLL', 'TYPE', 'WAIT', 'NAVIGATE']),
@@ -173,7 +173,7 @@ class VisualRegressionTestingService {
           {
             id: 'test-001',
             _name: 'Landing Page',
-            _url: '/',
+            url: '/',
             _actions: [
               { type: 'WAIT', _delay: 2000 },
             ],
@@ -183,7 +183,7 @@ class VisualRegressionTestingService {
           {
             _id: 'test-002',
             _name: 'Login Page',
-            _url: '/login',
+            url: '/login',
             _actions: [
               { type: 'WAIT', _delay: 1000 },
             ],
@@ -193,7 +193,7 @@ class VisualRegressionTestingService {
           {
             _id: 'test-003',
             _name: 'Dashboard - Customer',
-            _url: '/dashboard/customer',
+            url: '/dashboard/customer',
             _actions: [
               { type: 'WAIT', _delay: 3000 },
             ],
@@ -203,7 +203,7 @@ class VisualRegressionTestingService {
           {
             _id: 'test-004',
             _name: 'Job Creation Flow',
-            _url: '/jobs/create',
+            url: '/jobs/create',
             _actions: [
               { type: 'CLICK', _target: '#device-type', _delay: 500 },
               { _type: 'CLICK', _target: '[data-value="smartphone"]', _delay: 500 },
@@ -254,7 +254,7 @@ class VisualRegressionTestingService {
           {
             id: 'ios-001',
             _name: 'App Launch Screen',
-            _url: '/',
+            url: '/',
             _actions: [
               { type: 'WAIT', _delay: 5000 },
             ],
@@ -263,7 +263,7 @@ class VisualRegressionTestingService {
           {
             _id: 'ios-002',
             _name: 'Customer Dashboard',
-            _url: '/customer-dashboard',
+            url: '/customer-dashboard',
             _actions: [
               { type: 'WAIT', _delay: 3000 },
               { _type: 'SCROLL', _target: 'body', _value: '500', _delay: 1000 },

@@ -88,7 +88,7 @@ const UserAcceptanceSchema = z.object({
     acceptedAt: z.string(),
     _ipAddress: z.string(),
     _userAgent: z.string(),
-    _method: z.enum(['CHECKBOX', 'DIGITAL_SIGNATURE', 'CLICK_THROUGH', 'IMPLICIT']),
+    method: z.enum(['CHECKBOX', 'DIGITAL_SIGNATURE', 'CLICK_THROUGH', 'IMPLICIT']),
     _location: z.object({
       country: z.string().optional(),
       _region: z.string().optional(),
@@ -282,7 +282,7 @@ class TermsConditionsService {
           acceptedAt: '2025-08-10T12:00:00Z',
           _ipAddress: '192.168.1.100',
           _userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          _method: 'CHECKBOX',
+          method: 'CHECKBOX',
           _location: {
             country: 'US',
             _region: 'CA',
@@ -301,7 +301,7 @@ class TermsConditionsService {
           acceptedAt: '2025-08-10T12:05:00Z',
           _ipAddress: '192.168.1.100',
           _userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          _method: 'CHECKBOX',
+          method: 'CHECKBOX',
           _location: {
             country: 'US',
             _region: 'CA',

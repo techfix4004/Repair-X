@@ -40,7 +40,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         _required: ['email', 'password'],
         _properties: {
           email: { type: 'string', _format: 'email' },
-          _password: { type: 'string', _minLength: 6 },
+          password: { type: 'string', _minLength: 6 },
           _totp: { type: 'string', _pattern: '^[0-9]{6}$' }
         }
       }

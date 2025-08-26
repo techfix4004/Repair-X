@@ -95,7 +95,7 @@ export interface AppIcon {
 
 export interface IconVariant {
   size: string; // e.g., "1024x1024", "512x512"
-  _url: string;
+  url: string;
   platform: 'ios' | 'android';
   usage: 'app-store' | 'device' | 'notification' | 'spotlight';
 }
@@ -431,7 +431,7 @@ class AppStoreOptimizationService {
     for (let i = 0; i < features.length; i++) {
       const _screenshot: Screenshot = {
         id: `screenshot_${i + 1}`,
-        _url: `/app-store/screenshots/${features[i]?.toLowerCase().replace(/ /g, '-') || 'default'}.png`,
+        url: `/app-store/screenshots/${features[i]?.toLowerCase().replace(/ /g, '-') || 'default'}.png`,
         _deviceType: 'iPhone 15 Pro',
         _orientation: 'portrait',
         _title: `${features[i] || 'Feature'} - RepairX`,
@@ -623,7 +623,7 @@ class AppStoreOptimizationService {
         required: [
           {
             id: 'iphone_1',
-            _url: '/app-store/screenshots/iphone-dashboard.png',
+            url: '/app-store/screenshots/iphone-dashboard.png',
             _deviceType: 'iPhone 15 Pro',
             _orientation: 'portrait',
             _title: 'Customer Dashboard',
@@ -632,7 +632,7 @@ class AppStoreOptimizationService {
           },
           {
             _id: 'iphone_2',
-            _url: '/app-store/screenshots/iphone-tracking.png',
+            url: '/app-store/screenshots/iphone-tracking.png',
             _deviceType: 'iPhone 15 Pro',
             _orientation: 'portrait',
             _title: 'Job Tracking',
@@ -641,7 +641,7 @@ class AppStoreOptimizationService {
           },
           {
             _id: 'iphone_3',
-            _url: '/app-store/screenshots/iphone-technician.png',
+            url: '/app-store/screenshots/iphone-technician.png',
             _deviceType: 'iPhone 15 Pro',
             _orientation: 'portrait',
             _title: 'Technician Tools',
@@ -655,7 +655,7 @@ class AppStoreOptimizationService {
         required: [
           {
             id: 'android_1',
-            _url: '/app-store/screenshots/android-dashboard.png',
+            url: '/app-store/screenshots/android-dashboard.png',
             _deviceType: 'Pixel 8 Pro',
             _orientation: 'portrait',
             _title: 'Customer Dashboard',
@@ -664,7 +664,7 @@ class AppStoreOptimizationService {
           },
           {
             _id: 'android_2',
-            _url: '/app-store/screenshots/android-tracking.png',
+            url: '/app-store/screenshots/android-tracking.png',
             _deviceType: 'Pixel 8 Pro',
             _orientation: 'portrait',
             _title: 'Service Tracking',
@@ -675,7 +675,7 @@ class AppStoreOptimizationService {
         _optional: [],
         _featureGraphic: {
           id: 'android_feature',
-          _url: '/app-store/graphics/android-feature-graphic.png',
+          url: '/app-store/graphics/android-feature-graphic.png',
           _deviceType: 'Feature Graphic',
           _orientation: 'landscape',
           _title: 'RepairX Platform Overview',
@@ -691,9 +691,9 @@ class AppStoreOptimizationService {
       _appIcon: {
         baseIcon: '/app-store/icons/repairx-icon-1024.png',
         _variants: [
-          { size: '1024x1024', _url: '/app-store/icons/repairx-icon-1024.png', _platform: 'ios', _usage: 'app-store' },
-          { _size: '512x512', _url: '/app-store/icons/repairx-icon-512.png', _platform: 'android', _usage: 'app-store' },
-          { _size: '180x180', _url: '/app-store/icons/repairx-icon-180.png', _platform: 'ios', _usage: 'device' }
+          { size: '1024x1024', url: '/app-store/icons/repairx-icon-1024.png', _platform: 'ios', _usage: 'app-store' },
+          { _size: '512x512', url: '/app-store/icons/repairx-icon-512.png', _platform: 'android', _usage: 'app-store' },
+          { _size: '180x180', url: '/app-store/icons/repairx-icon-180.png', _platform: 'ios', _usage: 'device' }
         ]
       },
       _featureGraphic: '/app-store/graphics/android-feature-graphic.png',
@@ -701,7 +701,7 @@ class AppStoreOptimizationService {
         {
           id: 'promo_1',
           _type: 'hero',
-          _url: '/app-store/promotional/hero-banner.png',
+          url: '/app-store/promotional/hero-banner.png',
           _title: 'RepairX Hero Banner',
           _description: 'Main promotional banner showcasing platform benefits',
           _dimensions: '1200x630',
@@ -712,7 +712,7 @@ class AppStoreOptimizationService {
         {
           platform: 'facebook',
           _type: 'post',
-          _url: '/app-store/social/facebook-post.png',
+          url: '/app-store/social/facebook-post.png',
           _dimensions: '1200x630',
           _title: 'Facebook Launch Post'
         }

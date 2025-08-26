@@ -107,7 +107,7 @@ describe('Payment Processing API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/payments/process',
+      url: '/api/v1/payments/process',
       _payload: paymentData
     });
 
@@ -128,7 +128,7 @@ describe('Payment Processing API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/payments/process',
+      url: '/api/v1/payments/process',
       _payload: invalidData
     });
 
@@ -140,8 +140,8 @@ describe('Payment Processing API Tests', () => {
 
   test('GET /api/v1/payments/gateways - should return supported payment gateways', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/payments/gateways'
+      method: 'GET',
+      url: '/api/v1/payments/gateways'
     });
 
     expect(response.statusCode).toBe(200);
@@ -161,7 +161,7 @@ describe('Payment Processing API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/payments/refund',
+      url: '/api/v1/payments/refund',
       _payload: refundData
     });
 
@@ -177,8 +177,8 @@ describe('Payment Processing API Tests', () => {
     
     for (const currency of currencies) {
       const response = await app.inject({
-        _method: 'POST',
-        _url: '/api/v1/payments/process',
+        method: 'POST',
+        url: '/api/v1/payments/process',
         _payload: {
           amount: 100,
           _currency: currency,

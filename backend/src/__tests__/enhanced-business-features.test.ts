@@ -16,8 +16,8 @@ describe('RepairX Enhanced Business Features Tests', () => {
   describe('Enhanced Features Status', () => {
     test('should return enhanced features status', async () => {
       const response = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/enhanced/status'
+        method: 'GET',
+        url: '/api/v1/enhanced/status'
       });
 
       expect(response.statusCode).toBe(200);
@@ -43,7 +43,7 @@ describe('RepairX Enhanced Business Features Tests', () => {
 
       const response = await fastify.inject({
         method: 'POST',
-        _url: '/api/v1/jobs/advanced',
+        url: '/api/v1/jobs/advanced',
         _payload: _jobData
       });
 
@@ -61,8 +61,8 @@ describe('RepairX Enhanced Business Features Tests', () => {
 
     test('should get job analytics', async () => {
       const response = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/jobs/analytics'
+        method: 'GET',
+        url: '/api/v1/jobs/analytics'
       });
 
       expect(response.statusCode).toBe(200);
@@ -84,7 +84,7 @@ describe('RepairX Enhanced Business Features Tests', () => {
 
       const response = await fastify.inject({
         method: 'PUT',
-        _url: '/api/v1/jobs/job_123/transition',
+        url: '/api/v1/jobs/job_123/transition',
         _payload: transitionData
       });
 
@@ -100,8 +100,8 @@ describe('RepairX Enhanced Business Features Tests', () => {
   describe('Quality Assurance System', () => {
     test('should return Six Sigma quality dashboard', async () => {
       const response = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/quality/dashboard'
+        method: 'GET',
+        url: '/api/v1/quality/dashboard'
       });
 
       expect(response.statusCode).toBe(200);
@@ -117,8 +117,8 @@ describe('RepairX Enhanced Business Features Tests', () => {
 
     test('should return real-time quality metrics', async () => {
       const response = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/quality/metrics/realtime'
+        method: 'GET',
+        url: '/api/v1/quality/metrics/realtime'
       });
 
       expect(response.statusCode).toBe(200);
@@ -132,8 +132,8 @@ describe('RepairX Enhanced Business Features Tests', () => {
 
     test('should return quality improvement recommendations', async () => {
       const response = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/quality/recommendations'
+        method: 'GET',
+        url: '/api/v1/quality/recommendations'
       });
 
       expect(response.statusCode).toBe(200);
@@ -166,8 +166,8 @@ describe('RepairX Enhanced Business Features Tests', () => {
     test('should maintain backward compatibility', async () => {
       // Test that core system still works
       const response = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/health'
+        method: 'GET',
+        url: '/api/health'
       });
 
       expect(response.statusCode).toBe(200);
@@ -178,18 +178,18 @@ describe('RepairX Enhanced Business Features Tests', () => {
     test('should provide comprehensive API coverage', async () => {
       // Test that all enhanced features work together
       const statusResponse = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/enhanced/status'
+        method: 'GET',
+        url: '/api/v1/enhanced/status'
       });
 
       const jobAnalytics = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/jobs/analytics'
+        method: 'GET',
+        url: '/api/v1/jobs/analytics'
       });
 
       const qualityDashboard = await fastify.inject({
-        _method: 'GET',
-        _url: '/api/v1/quality/dashboard'
+        method: 'GET',
+        url: '/api/v1/quality/dashboard'
       });
 
       expect(statusResponse.statusCode).toBe(200);

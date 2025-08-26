@@ -90,7 +90,7 @@ const PartSchema = z.object({
   _documents: z.array(z.object({
     type: z.enum(['DATASHEET', 'MANUAL', 'WARRANTY', 'CERTIFICATE', 'OTHER']),
     _filename: z.string(),
-    _url: z.string(),
+    url: z.string(),
   })).default([]),
   _tenantId: z.string().optional(),
 });
@@ -181,7 +181,7 @@ const PurchaseOrderSchema = z.object({
   }),
   _shippingInfo: z.object({
     address: z.string(),
-    _method: z.string().optional(),
+    method: z.string().optional(),
     _trackingNumber: z.string().optional(),
     _estimatedDelivery: z.string().optional(),
   }).optional(),

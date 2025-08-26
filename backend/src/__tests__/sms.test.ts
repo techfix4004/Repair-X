@@ -109,7 +109,7 @@ describe('SMS Management API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/sms/send',
+      url: '/api/v1/sms/send',
       _payload: smsData
     });
 
@@ -130,7 +130,7 @@ describe('SMS Management API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/sms/send',
+      url: '/api/v1/sms/send',
       _payload: invalidData
     });
 
@@ -142,8 +142,8 @@ describe('SMS Management API Tests', () => {
 
   test('GET /api/v1/sms/credits - should return SMS credit information', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/sms/credits'
+      method: 'GET',
+      url: '/api/v1/sms/credits'
     });
 
     expect(response.statusCode).toBe(200);
@@ -165,7 +165,7 @@ describe('SMS Management API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/sms/templates',
+      url: '/api/v1/sms/templates',
       _payload: templateData
     });
 
@@ -181,8 +181,8 @@ describe('SMS Management API Tests', () => {
     const messageId = 'sms_123456789';
 
     const response = await app.inject({
-      _method: 'GET',
-      _url: `/api/v1/sms/delivery/${messageId}`
+      method: 'GET',
+      url: `/api/v1/sms/delivery/${messageId}`
     });
 
     expect(response.statusCode).toBe(200);
@@ -202,8 +202,8 @@ describe('SMS Management API Tests', () => {
 
     for (const state of jobStates) {
       const response = await app.inject({
-        _method: 'POST',
-        _url: '/api/v1/sms/send',
+        method: 'POST',
+        url: '/api/v1/sms/send',
         _payload: {
           recipient: '+1234567890',
           _message: `Your job status updated to: ${state}`,

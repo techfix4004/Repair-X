@@ -366,7 +366,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
       const campaignId = `campaign_${Date.now()}`;
       
       // Create campaign
-      const _campaign: MarketingCampaign = {
+      const campaign: MarketingCampaign = {
         id: campaignId,
         _name: (campaignData as any).name,
         _type: 'email',
@@ -438,7 +438,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
         ],
         _topLinks: [
           { url: '/book-service', _clicks: 156, _conversions: 31 },
-          { _url: '/pricing', _clicks: 78, _conversions: 16 },
+          { url: '/pricing', _clicks: 78, _conversions: 16 },
         ],
         _deviceBreakdown: {
           desktop: 45.2,
@@ -680,8 +680,8 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
 }
 
 // Helper functions
-async function processCampaign(_campaign: MarketingCampaign): Promise<void> {
-  console.log(`Processing _campaign: ${_campaign.name}`);
+async function processCampaign(campaign: MarketingCampaign): Promise<void> {
+  console.log(`Processing campaign: ${campaign.name}`);
   
   // In a real implementation, this _would:
   // 1. Fetch audience based on segments and filters
@@ -691,11 +691,11 @@ async function processCampaign(_campaign: MarketingCampaign): Promise<void> {
   // 5. Update campaign metrics
   
   // Simulate campaign processing
-  _campaign.metrics.sent = _campaign.audience.targetCount;
-  _campaign.metrics.delivered = Math.floor(_campaign.audience.targetCount * 0.97);
-  _campaign.metrics.opened = Math.floor(_campaign.metrics.delivered * 0.45);
-  _campaign.metrics.clicked = Math.floor(_campaign.metrics.opened * 0.12);
-  _campaign.metrics.converted = Math.floor(_campaign.metrics.clicked * 0.08);
+  campaign.metrics.sent = campaign.audience.targetCount;
+  campaign.metrics.delivered = Math.floor(campaign.audience.targetCount * 0.97);
+  campaign.metrics.opened = Math.floor(campaign.metrics.delivered * 0.45);
+  campaign.metrics.clicked = Math.floor(campaign.metrics.opened * 0.12);
+  campaign.metrics.converted = Math.floor(campaign.metrics.clicked * 0.08);
 }
 
 async function processAutomationTrigger(

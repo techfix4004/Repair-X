@@ -610,7 +610,7 @@ class LaunchCampaignService {
           {
             type: 'image',
             _title: 'RepairX Platform Screenshot',
-            _url: '/press/platform-screenshot.jpg',
+            url: '/press/platform-screenshot.jpg',
             _description: 'Main dashboard of RepairX platform'
           }
         ],
