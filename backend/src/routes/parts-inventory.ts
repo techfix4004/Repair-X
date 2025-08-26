@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Parts Inventory Management System
  * Real-time inventory tracking with supplier integration

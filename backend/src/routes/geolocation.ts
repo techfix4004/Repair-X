@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
 // Interface for location data

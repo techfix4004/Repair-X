@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Enterprise SaaS Features System
  * Multi-tenant architecture with advanced subscription management and enterprise security

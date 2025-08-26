@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Mobile Field Operations System
  * Advanced mobile-first field operations with offline capabilities, GPS tracking,

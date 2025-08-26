@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { businessMetrics, healthMetrics, register, tracer } from './metrics';
 

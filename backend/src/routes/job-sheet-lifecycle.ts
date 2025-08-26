@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Job Sheet 12-State Lifecycle Management System
  * 

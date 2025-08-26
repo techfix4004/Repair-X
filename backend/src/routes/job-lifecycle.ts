@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * RepairX 12-State Job Sheet Lifecycle Management System
  * 

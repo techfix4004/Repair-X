@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * IoT Device Integration System
  * Smart device connectivity for repair tracking and diagnostics

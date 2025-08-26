@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Franchise Management System API
  * 

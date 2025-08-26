@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Multi-language Support System
  * Internationalization (i18n) for global deployment

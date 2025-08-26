@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';

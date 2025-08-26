@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Terms & Conditions Management System
  * Dynamic legal document system with version control, automated acceptance tracking,

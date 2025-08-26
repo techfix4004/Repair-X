@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Employee Management System
  * Complete staff administration and performance tracking

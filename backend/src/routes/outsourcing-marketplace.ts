@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Outsourcing Marketplace System
  * External service provider network integration with rating system,

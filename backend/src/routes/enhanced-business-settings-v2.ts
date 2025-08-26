@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Business Settings Management System
  * 

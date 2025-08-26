@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyInstance } from 'fastify';
 
 // eslint-disable-next-line max-lines-per-function

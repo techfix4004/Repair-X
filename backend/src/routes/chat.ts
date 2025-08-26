@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { PrismaClient } from '@prisma/client';

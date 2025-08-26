@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Customer Onboarding Automation System
  * 

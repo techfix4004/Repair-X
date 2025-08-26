@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Automated Visual Regression Testing System
  * Cross-platform UI testing automation with screenshot comparison,

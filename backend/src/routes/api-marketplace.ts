@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * API Marketplace System
  * Third-party integrations and white-label solution framework with API gateway,

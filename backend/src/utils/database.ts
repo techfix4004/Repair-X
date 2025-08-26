@@ -14,8 +14,8 @@ export const mockDatabase = {
       const newUser: MockUser = {
         ...data as User,
         _id: (mockIdCounter++).toString(),
-        _createdAt: new Date(),
-        _updatedAt: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
       
       mockUsers.push(newUser);

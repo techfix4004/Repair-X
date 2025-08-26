@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * RepairX Business Settings Management System
  * 

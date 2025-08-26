@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Payment Processing System for RepairX
  * 

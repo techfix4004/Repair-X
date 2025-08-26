@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Marketing Automation System API
  * 

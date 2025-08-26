@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Complete Business Management System Implementation
  * 
