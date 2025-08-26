@@ -15,7 +15,7 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
     }
   }>, reply: FastifyReply) => {
     try {
-      const { startDate, endDate, technicianId  } = (request.body as unknown);
+      const { startDate, endDate, technicianId  } = ((request as any).body as unknown);
       
       const optimizedSchedule = await schedulingService.optimizeSchedule({
         _start: new Date(startDate),
@@ -41,7 +41,7 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
     Params: { jobId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { jobId  } = (request.params as unknown);
+      const { jobId  } = ((request as any).params as unknown);
       
       const assignment = await schedulingService.dynamicJobAssignment(_jobId);
       
@@ -66,7 +66,7 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
     }
   }>, reply: FastifyReply) => {
     try {
-      const { period = 'month' } = request.query;
+      const { period = 'month' } = (request as any).query;
       
       const forecast = await schedulingService.predictCapacityNeeds(period);
       

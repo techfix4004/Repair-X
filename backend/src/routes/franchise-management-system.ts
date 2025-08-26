@@ -96,7 +96,7 @@ export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
 
   // Franchisee Performance Monitoring
   fastify.get('/franchise/performance/:locationId', async (request, reply: unknown) => {
-    const { locationId  } = (request.params as unknown);
+    const { locationId  } = ((request as any).params as unknown);
     
     const performance = {
       _success: true,
@@ -143,7 +143,7 @@ export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
 
   // Compliance Tracking
   fastify.get('/franchise/compliance/:locationId', async (request, reply: unknown) => {
-    const { locationId  } = (request.params as unknown);
+    const { locationId  } = ((request as any).params as unknown);
     
     const compliance = {
       _success: true,

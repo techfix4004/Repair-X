@@ -51,7 +51,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
 
   // Financial Performance Reports
   fastify.get('/reports/financial', async (request, reply: unknown) => {
-    const { startDate, endDate, groupBy  } = (request.query as unknown);
+    const { startDate, endDate, groupBy  } = ((request as any).query as unknown);
     
     const financialReport = {
       _success: true,
@@ -155,7 +155,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
 
   // Custom Report Builder
   fastify.post('/reports/custom', async (request, reply: unknown) => {
-    const { reportConfig  } = (request.body as unknown);
+    const { reportConfig  } = ((request as any).body as unknown);
     
     const customReport = {
       _success: true,

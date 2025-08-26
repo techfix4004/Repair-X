@@ -54,7 +54,7 @@ Thank you for your business!`;
 // Route handlers
 async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { includeInactive = false     } = request.query as any;
+    const { includeInactive = false     } = (request as any).query as any;
     
     const _whereClause: unknown = {};
     if (!includeInactive) {
@@ -104,7 +104,7 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
       _children: categories.filter((cat: unknown) => cat.parentId === parent.id)
     }));
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: hierarchicalCategories,
       _count: categories.length
@@ -121,7 +121,7 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
 
 async function createExpenseCategory(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const data = expenseCategorySchema.parse(request.body);
+    const data = expenseCategorySchema.parse((request as any).body);
 
     // Validate parent category exists if provided
     if (data.parentId) {
@@ -200,7 +200,7 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
       submittedBy,
       startDate,
       endDate,
-      minAmount, maxAmount  } = request.query as any;
+      minAmount, maxAmount  } = (request as any).query as any;
     
     const skip = (page - 1) * limit;
     
@@ -296,7 +296,7 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
       })
     ]);
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: expenses,
       _pagination: {
@@ -324,7 +324,7 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
 // eslint-disable-next-line max-lines-per-function
 async function createExpense(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const data = expenseSchema.parse(request.body);
+    const data = expenseSchema.parse((request as any).body);
     const _userId = (request as any).user?.id; // From auth middleware
 
     if (!_userId) {
@@ -435,8 +435,8 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
 // eslint-disable-next-line max-lines-per-function
 async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { id  } = (request.params as unknown);
-    const data = expenseApprovalSchema.parse(request.body);
+    const { id  } = ((request as any).params as unknown);
+    const data = expenseApprovalSchema.parse((request as any).body);
     const _userId = (request as any).user?.id; // From auth middleware
 
     if (!_userId) {
@@ -520,7 +520,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
       _approverId: _userId 
     }, 'Expense approval processed');
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: updatedExpense,
       _message: `Expense ${data.action === 'approve' ? 'approved' : 'rejected'} successfully`
@@ -547,7 +547,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
 // eslint-disable-next-line max-lines-per-function
 async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { period = '30d', categoryId  } = request.query as any;
+    const { period = '30d', categoryId  } = (request as any).query as any;
     
     let _startDate: Date;
     const now = new Date();
@@ -629,7 +629,7 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
       return acc;
     }, {} as Record<string, { _amount: number; count: number }>);
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: {
         period,

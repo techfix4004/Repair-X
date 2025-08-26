@@ -11,26 +11,26 @@ import { config } from '../config/config';
 // eslint-disable-next-line max-lines-per-function
 export async function registerPlugins(_server: FastifyInstance): Promise<void> {
   // Security plugins
-  await server.register(helmet, {
-    _contentSecurityPolicy: {
+  await _server.register(helmet, {
+    contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        _styleSrc: ["'self'", "'unsafe-inline'"],
-        _scriptSrc: ["'self'"],
-        _imgSrc: ["'self'", "_data:", "_https:"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", "_data:", "_https:"],
       },
     },
   });
 
-  await server.register(cors, {
-    _origin: config.NODE_ENV === 'development' ? true : ['https://repairx.com'],
-    _credentials: true,
+  await _server.register(cors, {
+    origin: config._NODE_ENV === 'development' ? true : ['https://repairx.com'],
+    credentials: true,
   });
 
-  await server.register(rateLimit, {
-    _max: config.RATE_LIMIT_MAX,
-    _timeWindow: config.RATE_LIMIT_TIMEWINDOW,
-    _errorResponseBuilder: () => {
+  await _server.register(rateLimit, {
+    max: config._RATE_LIMIT_MAX,
+    timeWindow: config._RATE_LIMIT_TIMEWINDOW,
+    errorResponseBuilder: () => {
       return {
         _code: 'RATE_LIMIT_EXCEEDED',
         _error: 'Too Many Requests',
@@ -41,19 +41,19 @@ export async function registerPlugins(_server: FastifyInstance): Promise<void> {
   });
 
   // File upload support
-  await server.register(multipart, {
+  await _server.register(multipart, {
     _limits: {
       fieldNameSize: 100,
       _fieldSize: 100,
       _fields: 10,
-      _fileSize: config.MAX_FILE_SIZE,
-      _files: config.MAX_FILES_COUNT,
+      fileSize: config._MAX_FILE_SIZE,
+      files: config._MAX_FILES_COUNT,
       _headerPairs: 2000,
     },
   });
 
   // API Documentation
-  await server.register(swagger, {
+  await _server.register(swagger, {
     _openapi: {
       openapi: '3.0.0',
       _info: {
@@ -71,7 +71,7 @@ export async function registerPlugins(_server: FastifyInstance): Promise<void> {
       },
       _servers: [
         {
-          url: `http://${config.HOST}:${config.PORT}`,
+          url: `http://${config._HOST}:${config._PORT}`,
           _description: 'Development server',
         },
       ],
@@ -79,25 +79,25 @@ export async function registerPlugins(_server: FastifyInstance): Promise<void> {
         securitySchemes: {
           bearerAuth: {
             type: 'http',
-            _scheme: 'bearer',
-            _bearerFormat: 'JWT',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
           },
         },
       },
     },
   });
 
-  await server.register(swaggerUi, {
-    _routePrefix: '/documentation',
-    _uiConfig: {
+  await _server.register(swaggerUi, {
+    routePrefix: '/documentation',
+    uiConfig: {
       docExpansion: 'full',
-      _deepLinking: false,
+      deepLinking: false,
     },
-    _staticCSP: true,
-    _transformStaticCSP: (header: string) => header,
-    _transformSpecification: (swaggerObject: object) => {
+    staticCSP: true,
+    transformStaticCSP: (header: string) => header,
+    transformSpecification: (swaggerObject: object) => {
       return swaggerObject;
     },
-    _transformSpecificationClone: true,
+    transformSpecificationClone: true,
   });
 }

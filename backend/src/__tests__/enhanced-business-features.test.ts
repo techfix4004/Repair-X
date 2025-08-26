@@ -44,7 +44,7 @@ describe('RepairX Enhanced Business Features Tests', () => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/api/v1/jobs/advanced',
-        _payload: _jobData
+        payload: _jobData
       });
 
       expect(response.statusCode).toBe(201);
@@ -85,7 +85,7 @@ describe('RepairX Enhanced Business Features Tests', () => {
       const response = await fastify.inject({
         method: 'PUT',
         url: '/api/v1/jobs/job_123/transition',
-        _payload: transitionData
+        payload: transitionData
       });
 
       expect(response.statusCode).toBe(200);

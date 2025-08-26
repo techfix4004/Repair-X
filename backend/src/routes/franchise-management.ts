@@ -259,7 +259,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         }
       ];
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: {
           locations,
@@ -287,7 +287,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
   // Get Specific Franchise Location
   fastify.get('/api/v1/franchise/locations/:locationId', async (request, reply: unknown) => {
     try {
-      const { locationId  } = (request.params as unknown);
+      const { locationId  } = ((request as any).params as unknown);
       
       // Mock location details - in production, fetch from database
       const location = {
@@ -326,7 +326,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         }
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: location
       });
@@ -342,7 +342,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
   // Create New Franchise Location
   fastify.post('/api/v1/franchise/locations', async (request, reply: unknown) => {
     try {
-      const locationData = request.body as Partial<FranchiseLocation>;
+      const locationData = (request as any).body as Partial<FranchiseLocation>;
       
       const _newLocation: FranchiseLocation = {
         id: `loc_${Date.now()}`,
@@ -374,7 +374,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         }
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: newLocation,
         _message: 'Franchise location created successfully'
@@ -438,7 +438,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         ]
       };
 
-      reply.send({
+      (reply as any).send({
         _success: true,
         _data: dashboard
       });
@@ -511,7 +511,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         }
       ];
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: {
           agreements,
@@ -536,7 +536,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
   // Training and Compliance Management
   fastify.get('/api/v1/franchise/compliance/:locationId', async (request, reply: unknown) => {
     try {
-      const { locationId  } = (request.params as unknown);
+      const { locationId  } = ((request as any).params as unknown);
 
       const complianceData = {
         _locationId: locationId,
@@ -609,7 +609,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         ]
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: complianceData
       });
@@ -689,7 +689,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
         }
       };
 
-      reply.send({
+      (reply as any).send({
         _success: true,
         _data: territoryAnalysis
       });

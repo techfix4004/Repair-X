@@ -40,7 +40,7 @@ export async function systemHealthRoutes(_fastify: FastifyInstance) {
     const statusCode = healthCheck.status === 'healthy' ? _200 : 
                       healthCheck.status === 'degraded' ? 200 : 503;
     
-    reply.code(statusCode).send({
+    (reply as any).code(statusCode).send({
       _success: true,
       _data: healthCheck
     });
@@ -73,12 +73,12 @@ export async function systemHealthRoutes(_fastify: FastifyInstance) {
         }
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: detailedStatus
       });
     } catch (error) {
-      reply.code(500).send({
+      (reply as any).code(500).send({
         _success: false,
         _error: 'Failed to retrieve system status'
       });
@@ -92,18 +92,18 @@ export async function systemHealthRoutes(_fastify: FastifyInstance) {
       const dbHealthy = await isDatabaseHealthy();
       
       if (dbHealthy) {
-        reply.send({
+        (reply as any).send({
           _status: 'ready',
           _timestamp: new Date().toISOString()
         });
       } else {
-        reply.code(503).send({
+        (reply as any).code(503).send({
           _status: 'not ready',
           _reason: 'Database not available'
         });
       }
     } catch (error) {
-      reply.code(503).send({
+      (reply as any).code(503).send({
         _status: 'not ready',
         _reason: 'Service initialization failed'
       });
@@ -112,7 +112,7 @@ export async function systemHealthRoutes(_fastify: FastifyInstance) {
 
   // Liveness probe for Kubernetes/container orchestration
   fastify.get('/api/v1/alive', async (request, reply: unknown) => {
-    reply.send({
+    (reply as any).send({
       _status: 'alive',
       _timestamp: new Date().toISOString(),
       _uptime: Math.floor((Date.now() - startTime) / 1000)

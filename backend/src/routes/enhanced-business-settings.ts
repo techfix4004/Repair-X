@@ -566,7 +566,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     },
   }, async (request: FastifyRequest<{ _Body: unknown }>, reply: FastifyReply) => {
     try {
-      await businessSettings.updateTaxSettings(request.body);
+      await businessSettings.updateTaxSettings((request as any).body);
       return { _success: true, _message: 'Tax settings updated successfully' };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
@@ -577,7 +577,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     Body: { amount: number; jurisdiction: string } 
   }>, reply: FastifyReply) => {
     try {
-      const { amount, jurisdiction  } = (request.body as unknown);
+      const { amount, jurisdiction  } = ((request as any).body as unknown);
       const result = await businessSettings.calculateTax(amount, jurisdiction);
       return { _success: true, _data: result };
     } catch (error: unknown) {
@@ -599,8 +599,8 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     Params: { type: string }; Body: { template: string } 
   }>, reply: FastifyReply) => {
     try {
-      const { type  } = (request.params as unknown);
-      const { template  } = (request.body as unknown);
+      const { type  } = ((request as any).params as unknown);
+      const { template  } = ((request as any).body as unknown);
       await businessSettings.updatePrintTemplate(type, template);
       return { _success: true, _message: 'Template updated successfully' };
     } catch (error: unknown) {
@@ -620,7 +620,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
 
   fastify.put('/api/v1/business-settings/workflow', async (request: FastifyRequest<{ _Body: unknown }>, reply: FastifyReply) => {
     try {
-      const validation = await businessSettings.validateWorkflow((request.body as unknown).jobSheetWorkflow);
+      const validation = await businessSettings.validateWorkflow(((request as any).body as unknown).jobSheetWorkflow);
       
       if (!validation.valid) {
         return (reply as FastifyReply).status(400).send({ 
@@ -631,7 +631,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
         return;
       }
 
-      await businessSettings.updateWorkflowConfig(request.body);
+      await businessSettings.updateWorkflowConfig((request as any).body);
       return { _success: true, _message: 'Workflow configuration updated successfully' };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
@@ -643,7 +643,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     Body: { jobId: string; fromState: string; toState: string } 
   }>, reply: FastifyReply) => {
     try {
-      const { _jobId, fromState, toState  } = (request.body as unknown);
+      const { _jobId, fromState, toState  } = ((request as any).body as unknown);
       await businessSettings.executeWorkflowTransition(_jobId, fromState, toState);
       return { _success: true, _message: 'Workflow transition executed successfully' };
     } catch (error: unknown) {

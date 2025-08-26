@@ -508,7 +508,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
     },
   }, async (request: FastifyRequest<{ _Body: z.infer<typeof CustomerOnboardingSchema> }>, reply: FastifyReply) => {
     try {
-      const customerData = request.body;
+      const customerData = (request as any).body;
       
       // Create user account
       const _userId = `customer_${Date.now()}`;
@@ -561,7 +561,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
     },
   }, async (request: FastifyRequest<{ _Body: z.infer<typeof TechnicianOnboardingSchema> }>, reply: FastifyReply) => {
     try {
-      const technicianData = request.body;
+      const technicianData = (request as any).body;
       
       // Create technician account
       const _userId = `technician_${Date.now()}`;
@@ -615,8 +615,8 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
     }>, 
     reply: FastifyReply) => {
     try {
-      const { userId  } = (request.params as unknown);
-      const { stepId, completed, data = {} } = request.body;
+      const { userId  } = ((request as any).params as unknown);
+      const { stepId, completed, data = {} } = (request as any).body;
       
       // Update progress logic
       const updatedProgress = await updateOnboardingProgress(_userId, stepId, completed, data);
@@ -626,7 +626,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
         await triggerOnboardingAutomation(_userId, stepId, data);
       }
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _progress: updatedProgress,
       });
@@ -643,7 +643,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
     request: FastifyRequest<{ Params: { userId: string } }>, 
     reply: FastifyReply) => {
     try {
-      const { userId  } = (request.params as unknown);
+      const { userId  } = ((request as any).params as unknown);
       
       // Mock progress data
       const _progress: OnboardingProgress = {
@@ -664,7 +664,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
         },
       };
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         progress,
         _currentStep: CustomerOnboardingWorkflow.steps.find((s: unknown) => s.id === progress.currentStep),
@@ -717,7 +717,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
         },
       };
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         analytics,
       });

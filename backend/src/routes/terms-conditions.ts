@@ -640,10 +640,10 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     }
   }>, reply: FastifyReply) => {
     try {
-      const { tenantId, ...filters } = request.query;
+      const { tenantId, ...filters } = (request as any).query;
       const documents = await termsService.getAllDocuments(tenantId, filters);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: documents,
         _count: documents.length,
@@ -662,7 +662,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const documentData = request.body;
+      const documentData = (request as any).body;
       const document = await termsService.createDocument(documentData);
       
       return (reply as FastifyReply).status(201).send({
@@ -684,7 +684,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Params: { documentId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { documentId  } = (request.params as unknown);
+      const { documentId  } = ((request as any).params as unknown);
       const document = await termsService.getDocumentById(documentId);
       
       if (!document) {
@@ -694,7 +694,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
         });
       }
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: document,
       });
@@ -713,12 +713,12 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { documentId  } = (request.params as unknown);
-      const updateData = request.body;
+      const { documentId  } = ((request as any).params as unknown);
+      const updateData = (request as any).body;
       
       const document = await termsService.updateDocument(documentId, updateData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: document,
         _message: 'Legal document updated successfully',
@@ -739,12 +739,12 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Body: { approvedBy: string }
   }>, reply: FastifyReply) => {
     try {
-      const { documentId  } = (request.params as unknown);
-      const { approvedBy  } = (request.body as unknown);
+      const { documentId  } = ((request as any).params as unknown);
+      const { approvedBy  } = ((request as any).body as unknown);
       
       const document = await termsService.publishDocument(documentId, approvedBy);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: document,
         _message: 'Document published successfully',
@@ -763,7 +763,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const acceptanceData = request.body;
+      const acceptanceData = (request as any).body;
       const acceptance = await termsService.recordAcceptance(acceptanceData);
       
       return (reply as FastifyReply).status(201).send({
@@ -786,12 +786,12 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Querystring: { documentType?: string }
   }>, reply: FastifyReply) => {
     try {
-      const { userId  } = (request.params as unknown);
-      const { documentType  } = (request.query as unknown);
+      const { userId  } = ((request as any).params as unknown);
+      const { documentType  } = ((request as any).query as unknown);
       
       const acceptances = await termsService.getUserAcceptances(_userId, documentType);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: acceptances,
       });
@@ -809,10 +809,10 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Params: { userId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { userId  } = (request.params as unknown);
+      const { userId  } = ((request as any).params as unknown);
       const compliance = await termsService.checkUserCompliance(_userId);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: compliance,
       });
@@ -831,12 +831,12 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
     try {
-      const { documentType  } = (request.params as unknown);
-      const { tenantId  } = (request.query as unknown);
+      const { documentType  } = ((request as any).params as unknown);
+      const { tenantId  } = ((request as any).query as unknown);
       
       const versions = await termsService.getDocumentVersions(documentType, tenantId);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: versions,
       });
@@ -854,10 +854,10 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Params: { documentId1: string; documentId2: string }
   }>, reply: FastifyReply) => {
     try {
-      const { documentId1, documentId2  } = (request.params as unknown);
+      const { documentId1, documentId2  } = ((request as any).params as unknown);
       const comparison = await termsService.compareVersions(documentId1, documentId2);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: comparison,
       });
@@ -875,10 +875,10 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     Querystring: { tenantId?: string; auditType?: string }
   }>, reply: FastifyReply) => {
     try {
-      const { tenantId, auditType  } = (request.query as unknown);
+      const { tenantId, auditType  } = ((request as any).query as unknown);
       const report = await termsService.generateComplianceReport(tenantId, auditType);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: report,
       });
@@ -908,7 +908,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       { _id: 'GDPR_COMPLIANCE', _name: 'GDPR Compliance Document', _icon: '🇪🇺' },
     ];
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: types,
     });

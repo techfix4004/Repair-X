@@ -831,10 +831,10 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     }
   }>, reply: FastifyReply) => {
     try {
-      const { tenantId, ...filters } = request.query;
+      const { tenantId, ...filters } = (request as any).query;
       const providers = await marketplaceService.getAllProviders(tenantId, filters);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: providers,
         _count: providers.length,
@@ -853,7 +853,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const providerData = request.body;
+      const providerData = (request as any).body;
       const provider = await marketplaceService.createProvider(providerData);
       
       return (reply as FastifyReply).status(201).send({
@@ -875,7 +875,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     Params: { providerId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { providerId  } = (request.params as unknown);
+      const { providerId  } = ((request as any).params as unknown);
       const provider = await marketplaceService.getProviderById(providerId);
       
       if (!provider) {
@@ -885,7 +885,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
         });
       }
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: provider,
       });
@@ -904,12 +904,12 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { providerId  } = (request.params as unknown);
-      const updateData = request.body;
+      const { providerId  } = ((request as any).params as unknown);
+      const updateData = (request as any).body;
       
       const provider = await marketplaceService.updateProvider(providerId, updateData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: provider,
         _message: 'Service provider updated successfully',
@@ -935,10 +935,10 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     }
   }>, reply: FastifyReply) => {
     try {
-      const jobRequirements = request.body;
+      const jobRequirements = (request as any).body;
       const providers = await marketplaceService.getOptimalProviders(jobRequirements);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: providers,
         _count: providers.length,
@@ -961,7 +961,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     }
   }>, reply: FastifyReply) => {
     try {
-      const { _jobId, providerId, assignmentDetails  } = (request.body as unknown);
+      const { _jobId, providerId, assignmentDetails  } = ((request as any).body as unknown);
       const assignment = await marketplaceService.assignJobToProvider(_jobId, providerId, assignmentDetails);
       
       return (reply as FastifyReply).status(201).send({
@@ -984,13 +984,13 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     Querystring: { startDate?: string; endDate?: string }
   }>, reply: FastifyReply) => {
     try {
-      const { providerId  } = (request.params as unknown);
-      const { startDate, endDate  } = (request.query as unknown);
+      const { providerId  } = ((request as any).params as unknown);
+      const { startDate, endDate  } = ((request as any).query as unknown);
       
       const period = startDate && endDate ? { _start: startDate, _end: endDate } : undefined;
       const performance = await marketplaceService.getProviderPerformance(providerId, period);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: performance,
       });
@@ -1008,7 +1008,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     try {
       const analytics = await marketplaceService.getMarketplaceAnalytics();
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: analytics,
       });
@@ -1034,7 +1034,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       { _id: 'electrical-repair', _name: 'Electrical Services', _icon: '⚡' },
     ];
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: categories,
     });

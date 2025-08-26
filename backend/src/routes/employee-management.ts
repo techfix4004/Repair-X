@@ -473,7 +473,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Querystring: { tenantId?: string; department?: string; active?: boolean }
   }>, reply: FastifyReply) => {
     try {
-      const { tenantId, department, active  } = (request.query as unknown);
+      const { tenantId, department, active  } = ((request as any).query as unknown);
       let employees = await employeeService.getAllEmployees(tenantId);
       
       if (department) {
@@ -484,7 +484,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
         employees = employees.filter((_emp: unknown) => emp.access.isActive === active);
       }
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: employees,
         _count: employees.length,
@@ -503,7 +503,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
+      const { id  } = ((request as any).params as unknown);
       const employee = await employeeService.getEmployeeById(id);
       
       if (!employee) {
@@ -513,7 +513,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
         });
       }
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: employee,
       });
@@ -531,7 +531,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const employeeData = request.body;
+      const employeeData = (request as any).body;
       const employee = await employeeService.createEmployee(employeeData);
       
       return (reply as FastifyReply).status(201).send({
@@ -554,12 +554,12 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
-      const updateData = request.body;
+      const { id  } = ((request as any).params as unknown);
+      const updateData = (request as any).body;
       
       const employee = await employeeService.updateEmployee(id, updateData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: employee,
         _message: 'Employee updated successfully',
@@ -579,10 +579,10 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
+      const { id  } = ((request as any).params as unknown);
       await employeeService.deleteEmployee(id);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _message: 'Employee deactivated successfully',
       });
@@ -602,12 +602,12 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
-      const attendanceData = { ...(request.body as unknown), _employeeId: id };
+      const { id  } = ((request as any).params as unknown);
+      const attendanceData = { ...((request as any).body as unknown), _employeeId: id };
       
       const attendance = await employeeService.recordAttendance(attendanceData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: attendance,
         _message: 'Attendance recorded successfully',
@@ -627,12 +627,12 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Querystring: { startDate?: string; endDate?: string }
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
-      const { startDate, endDate  } = (request.query as unknown);
+      const { id  } = ((request as any).params as unknown);
+      const { startDate, endDate  } = ((request as any).query as unknown);
       
       const attendance = await employeeService.getEmployeeAttendance(id, startDate, endDate);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: attendance,
       });
@@ -651,8 +651,8 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
-      const reviewData = { ...(request.body as unknown), _employeeId: id };
+      const { id  } = ((request as any).params as unknown);
+      const reviewData = { ...((request as any).body as unknown), _employeeId: id };
       
       const review = await employeeService.createPerformanceReview(reviewData);
       
@@ -675,10 +675,10 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
+      const { id  } = ((request as any).params as unknown);
       const reviews = await employeeService.getEmployeeReviews(id);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: reviews,
       });
@@ -696,7 +696,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
-      const { id  } = (request.params as unknown);
+      const { id  } = ((request as any).params as unknown);
       const stats = await employeeService.getEmployeeStats(id);
       
       if (!stats) {
@@ -706,7 +706,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
         });
       }
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: stats,
       });
@@ -724,7 +724,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
     try {
       const stats = await employeeService.getEmployeeStats();
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: stats,
       });

@@ -62,7 +62,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
     },
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const userData = registerSchema.parse(request.body);
+      const userData = registerSchema.parse((request as any).body);
 
       // Check if user already exists
       const existingUser = await (prisma as any).user.findUnique({
@@ -70,7 +70,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
       });
 
       if (existingUser) {
-        return reply.code(409).send({
+        return (reply as any).code(409).send({
           _code: 'USER_EXISTS',
           _message: 'User with this email already exists',
         });
@@ -99,14 +99,14 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
         config.JWT_SECRET
       );
 
-      return reply.code(201).send({
+      return (reply as any).code(201).send({
         _message: 'User registered successfully',
         user,
         token,
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return reply.code(400).send({
+        return (reply as any).code(400).send({
           _code: 'VALIDATION_ERROR',
           _message: 'Invalid input data',
           _errors: error.issues,
@@ -114,7 +114,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
       }
       
       server.log.error(error);
-      return reply.code(500).send({
+      return (reply as any).code(500).send({
         _code: 'INTERNAL_ERROR',
         _message: 'Internal server error',
       });
@@ -156,7 +156,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
     },
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { email, password  } = (loginSchema.parse(request.body) as unknown);
+      const { email, password  } = (loginSchema.parse((request as any).body) as unknown);
 
       // Find user
       const user = await (prisma as any).user.findUnique({
@@ -164,7 +164,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
       });
 
       if (!user) {
-        return reply.code(401).send({
+        return (reply as any).code(401).send({
           _code: 'INVALID_CREDENTIALS',
           _message: 'Invalid email or password',
         });
@@ -174,7 +174,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
       const isValidPassword = await bcrypt.compare(password, (user as any).password);
 
       if (!isValidPassword) {
-        return reply.code(401).send({
+        return (reply as any).code(401).send({
           _code: 'INVALID_CREDENTIALS',
           _message: 'Invalid email or password',
         });
@@ -185,7 +185,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
         config.JWT_SECRET
       );
 
-      return reply.send({
+      return (reply as any).send({
         _message: 'Login successful',
         _user: {
           id: (user as any).id,
@@ -198,7 +198,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return reply.code(400).send({
+        return (reply as any).code(400).send({
           _code: 'VALIDATION_ERROR',
           _message: 'Invalid input data',
           _errors: error.issues,
@@ -206,7 +206,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
       }
       
       server.log.error(error);
-      return reply.code(500).send({
+      return (reply as any).code(500).send({
         _code: 'INTERNAL_ERROR',
         _message: 'Internal server error',
       });

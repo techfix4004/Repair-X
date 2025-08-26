@@ -9,12 +9,12 @@
 /// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
  
 // eslint-disable-next-line max-lines-per-function
 describe('Business Settings API Tests', () => {
-  let _app: FastifyInstance;
+  let app: FastifyInstance;
 
   beforeAll(async () => {
     app = Fastify();
@@ -133,13 +133,13 @@ describe('Business Settings API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/business-settings/tax',
-      _payload: taxConfig
+      payload: taxConfig
     });
 
     expect(response.statusCode).toBe(201);
     const body = JSON.parse(response.payload);
     expect(body.success).toBe(true);
-    expect(body.data?.gstin).toBe(taxConfig.gstin);
+    expect(body.data?._gstin).toBe(taxConfig._gstin);
     expect(body.data.taxRates.gst).toBe(18);
   });
 

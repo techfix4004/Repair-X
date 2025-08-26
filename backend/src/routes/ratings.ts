@@ -9,7 +9,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
   // Submit a rating for a completed job
   fastify.post('/', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { _jobId, customerId, technicianId, rating, comment  } = (request.body as unknown);
+      const { _jobId, customerId, technicianId, rating, comment  } = ((request as any).body as unknown);
 
       // Validate rating (1-5 stars)
       if (!rating || rating < 1 || rating > 5) {
@@ -72,7 +72,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
         _data: { averageRating }
       });
 
-      reply.send({
+      (reply as any).send({
         _success: true,
         _rating: rating_record,
         _message: 'Rating submitted successfully'
@@ -87,7 +87,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
   // Get ratings for a job
   fastify.get('/job/:jobId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { _jobId  } = (request.params as unknown);
+      const { _jobId  } = ((request as any).params as unknown);
 
       const ratings = await prisma.rating.findMany({
         _where: { _jobId },
@@ -99,7 +99,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
         _orderBy: { createdAt: 'desc' }
       });
 
-      reply.send({ ratings });
+      (reply as any).send({ ratings });
 
     } catch (error) {
       console.error('Get ratings _error:', error);
@@ -110,8 +110,8 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
   // Get ratings for a technician
   fastify.get('/technician/:technicianId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { technicianId  } = (request.params as unknown);
-      const query = request.query as unknown;
+      const { technicianId  } = ((request as any).params as unknown);
+      const query = (request as any).query as unknown;
       const page = parseInt(query.page) || 1;
       const limit = parseInt(query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -146,7 +146,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
         ? ratings.reduce((_sum: number, _r: unknown) => sum + r.rating, 0) / ratings._length 
         : 0;
 
-      reply.send({
+      (reply as any).send({
         ratings,
         _pagination: {
           page,
@@ -170,8 +170,8 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
   // Get customer's rating history
   fastify.get('/customer/:customerId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
-      const query = request.query as unknown;
+      const { customerId  } = ((request as any).params as unknown);
+      const query = (request as any).query as unknown;
       const page = parseInt(query.page) || 1;
       const limit = parseInt(query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -195,7 +195,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
         _where: { customerId }
       });
 
-      reply.send({
+      (reply as any).send({
         ratings,
         _pagination: {
           page,

@@ -51,18 +51,18 @@ export async function authRoutes(_fastify: FastifyInstance) {
       }
     }
   }, async (request, reply: unknown) => {
-    const { email, password } = (request.body as unknown);
+    const { email, password } = ((request as any).body as unknown);
     
     // Find user
     const user = users.find((_u: unknown) => u.email === email);
     if (!user || !(user as any).password) {
-      return reply.code(401).send({ _error: 'Invalid credentials' });
+      return (reply as any).code(401).send({ _error: 'Invalid credentials' });
     }
     
     // Verify password
     const isValid = await bcrypt.compare(password, (user as any).password);
     if (!isValid) {
-      return reply.code(401).send({ _error: 'Invalid credentials' });
+      return (reply as any).code(401).send({ _error: 'Invalid credentials' });
     }
     
     // Generate JWT
@@ -79,7 +79,7 @@ export async function authRoutes(_fastify: FastifyInstance) {
       _role: (user as any).role
     };
     
-    return reply.code(200).send({
+    return (reply as any).code(200).send({
       _success: true,
       _data: {
         user: userResponse, token }
@@ -101,11 +101,11 @@ export async function authRoutes(_fastify: FastifyInstance) {
       }
     }
   }, async (request, reply: unknown) => {
-    const { email, password, name, role } = (request.body as unknown);
+    const { email, password, name, role } = ((request as any).body as unknown);
     
     // Check if user exists
     if (users.find((_u: unknown) => u.email === email)) {
-      return reply.code(400).send({ _error: 'User already exists' });
+      return (reply as any).code(400).send({ _error: 'User already exists' });
     }
     
     // Create new user
@@ -134,7 +134,7 @@ export async function authRoutes(_fastify: FastifyInstance) {
       _role: newUser.role
     };
     
-    return reply.code(201).send({
+    return (reply as any).code(201).send({
       _success: true,
       _data: {
         user: userResponse, token }
@@ -147,7 +147,7 @@ export async function authRoutes(_fastify: FastifyInstance) {
       try {
         const authHeader = request.headers.authorization;
         if (!authHeader) {
-          return reply.code(401).send({ _error: 'No token provided' });
+          return (reply as any).code(401).send({ _error: 'No token provided' });
         }
         
         const token = authHeader.replace('Bearer ', '');
@@ -155,12 +155,12 @@ export async function authRoutes(_fastify: FastifyInstance) {
         
         const user = users.find((u: unknown) => u.id === (decoded as { _id: string }).id);
         if (!user) {
-          return reply.code(401).send({ _error: 'User not found' });
+          return (reply as any).code(401).send({ _error: 'User not found' });
         }
         
         (request as any).user = user;
       } catch (error) {
-        return reply.code(401).send({ _error: 'Invalid token' });
+        return (reply as any).code(401).send({ _error: 'Invalid token' });
       }
     }
   }, async (request, reply: unknown) => {
@@ -173,7 +173,7 @@ export async function authRoutes(_fastify: FastifyInstance) {
       _role: (user as any).role
     };
     
-    return reply.code(200).send({
+    return (reply as any).code(200).send({
       _success: true,
       _data: { user: userResponse }
     });

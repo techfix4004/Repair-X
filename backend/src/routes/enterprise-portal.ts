@@ -683,10 +683,10 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Querystring: { status?: string; size?: string; industry?: string }
   }>, reply: FastifyReply) => {
     try {
-      const filters = request.query;
+      const filters = (request as any).query;
       const customers = await enterpriseService.getAllEnterpriseCustomers(filters);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: customers,
         _count: customers.length,
@@ -704,7 +704,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
+      const { customerId  } = ((request as any).params as unknown);
       const customer = await enterpriseService.getEnterpriseCustomer(customerId);
       
       if (!customer) {
@@ -714,7 +714,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
         });
       }
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: customer,
       });
@@ -731,7 +731,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const customerData = request.body;
+      const customerData = (request as any).body;
       const customer = await enterpriseService.createEnterpriseCustomer(customerData);
       
       return (reply as FastifyReply).status(201).send({
@@ -753,10 +753,10 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
+      const { customerId  } = ((request as any).params as unknown);
       const branches = await enterpriseService.getCustomerBranches(customerId);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: branches,
         _count: branches.length,
@@ -775,8 +775,8 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
-      const branchData = { ...(request.body as unknown), _enterpriseCustomerId: customerId };
+      const { customerId  } = ((request as any).params as unknown);
+      const branchData = { ...((request as any).body as unknown), _enterpriseCustomerId: customerId };
       const branch = await enterpriseService.createBranch(branchData);
       
       return (reply as FastifyReply).status(201).send({
@@ -799,11 +799,11 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Querystring: { status?: string; priority?: string; branchId?: string; category?: string }
   }>, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
-      const filters = request.query;
+      const { customerId  } = ((request as any).params as unknown);
+      const filters = (request as any).query;
       const tickets = await enterpriseService.getCustomerTickets(customerId, filters);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: tickets,
         _count: tickets.length,
@@ -822,8 +822,8 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
-      const ticketData = { ...(request.body as unknown), _enterpriseCustomerId: customerId };
+      const { customerId  } = ((request as any).params as unknown);
+      const ticketData = { ...((request as any).body as unknown), _enterpriseCustomerId: customerId };
       const ticket = await enterpriseService.createTicket(ticketData);
       
       return (reply as FastifyReply).status(201).send({
@@ -845,12 +845,12 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
-      const { ticketId  } = (request.params as unknown);
-      const updateData = request.body;
+      const { ticketId  } = ((request as any).params as unknown);
+      const updateData = (request as any).body;
       
       const ticket = await enterpriseService.updateTicket(ticketId, updateData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: ticket,
         _message: 'Ticket updated successfully',
@@ -870,10 +870,10 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
+      const { customerId  } = ((request as any).params as unknown);
       const analytics = await enterpriseService.getCustomerAnalytics(customerId);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: analytics,
       });
@@ -891,10 +891,10 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { customerId  } = (request.params as unknown);
+      const { customerId  } = ((request as any).params as unknown);
       const dashboard = await enterpriseService.getPortalDashboard(customerId);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: dashboard,
       });
@@ -918,7 +918,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       { _id: 'EDUCATIONAL', _name: 'Educational', _description: 'Educational institution' },
     ];
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: businessTypes,
     });
@@ -949,7 +949,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       },
     ];
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: slaLevels,
     });

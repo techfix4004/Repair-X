@@ -56,14 +56,14 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
       ]
     };
 
-    return reply.send({
+    return (reply as any).send({
       success: true,
       _data: dashboardData,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error fetching ASO _dashboard:', error);
-    return reply.code(500).send({
+    return (reply as any).code(500).send({
       _success: false,
       _message: 'Failed to fetch ASO dashboard',
       _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
@@ -88,10 +88,10 @@ server.get('/:appId/performance', {
   }
 }, async (request: FastifyRequest<{ Params: { appId: string } }>, reply: FastifyReply) => {
   try {
-    const { appId  } = (request.params as unknown);
+    const { appId  } = ((request as any).params as unknown);
     const performance = await asoService.getPerformanceAnalytics(appId, '30d');
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: {
         performance,
@@ -117,7 +117,7 @@ server.get('/:appId/performance', {
     });
   } catch (error) {
     console.error('Error fetching performance _analytics:', error);
-    return reply.code(500).send({
+    return (reply as any).code(500).send({
       _success: false,
       _message: 'Failed to fetch performance analytics',
       _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
@@ -150,8 +150,8 @@ server.post('/:appId/screenshots/generate', {
   }
 }, async (request: FastifyRequest<{ Params: { appId: string }; Body: unknown }>, reply: FastifyReply) => {
   try {
-    const { appId  } = (request.params as unknown);
-    const { devices, features, branding  } = (request.body as unknown);
+    const { appId  } = ((request as any).params as unknown);
+    const { devices, features, branding  } = ((request as any).body as unknown);
 
     const screenshots = await asoService.generateScreenshots(appId, {
       _devices: devices || ['iPhone 15 Pro', 'Pixel 8 Pro'],
@@ -159,7 +159,7 @@ server.post('/:appId/screenshots/generate', {
       _branding: branding || {}
     });
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: {
         screenshots,
@@ -171,7 +171,7 @@ server.post('/:appId/screenshots/generate', {
     });
   } catch (error) {
     console.error('Error generating _screenshots:', error);
-    return reply.code(500).send({
+    return (reply as any).code(500).send({
       _success: false,
       _message: 'Failed to generate screenshots',
       _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'

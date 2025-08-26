@@ -493,7 +493,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
   // Create new job sheet
   server.post('/jobs', async (request: FastifyRequest<{ _Body: unknown }>, reply: FastifyReply) => {
     try {
-      const job = await lifecycleService.createJobSheet(request.body);
+      const job = await lifecycleService.createJobSheet((request as any).body);
       return (reply as FastifyReply).status(201).send({
         _success: true,
         _message: 'Job sheet created successfully',
@@ -511,8 +511,8 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
   // Get job sheet by ID
   server.get('/jobs/:jobId', async (request: FastifyRequest<{ Params: { _jobId: string } }>, reply: FastifyReply) => {
     try {
-      const job = await lifecycleService.getJobSheet(request.params.jobId);
-      return reply.send({
+      const job = await lifecycleService.getJobSheet((request as any).params.jobId);
+      return (reply as any).send({
         _success: true,
         _data: job,
       });
@@ -532,10 +532,10 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
   }>, reply: FastifyReply) => {
     try {
       const result = await lifecycleService.transitionState({
-        _jobId: request.params.jobId,
-        ...(request.body as unknown),
+        _jobId: (request as any).params.jobId,
+        ...((request as any).body as unknown),
       });
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _message: 'State transition completed',
         _data: result,
@@ -555,8 +555,8 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
     Body: unknown;
   }>, reply: FastifyReply) => {
     try {
-      const job = await lifecycleService.updateJobSheet(request.params.jobId, request.body);
-      return reply.send({
+      const job = await lifecycleService.updateJobSheet((request as any).params.jobId, (request as any).body);
+      return (reply as any).send({
         _success: true,
         _message: 'Job sheet updated successfully',
         _data: job,
@@ -573,8 +573,8 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
   // Get jobs by state
   server.get('/jobs/state/:state', async (request: FastifyRequest<{ Params: { _state: JobState } }>, reply: FastifyReply) => {
     try {
-      const jobs = await lifecycleService.getJobsByState(request.params.state);
-      return reply.send({
+      const jobs = await lifecycleService.getJobsByState((request as any).params.state);
+      return (reply as any).send({
         _success: true,
         _data: jobs,
         _total: jobs.length,
@@ -592,7 +592,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
   server.get('/jobs/analytics/dashboard', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const analytics = await lifecycleService.getJobAnalytics();
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: analytics,
       });
@@ -611,7 +611,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
       const config = lifecycleService.getStateConfiguration();
       const visualization = lifecycleService.getWorkflowVisualization();
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           stateConfig: config,

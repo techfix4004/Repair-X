@@ -261,10 +261,10 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
   // Intelligent Job Assignment API
   fastify.post('/api/v1/ai/job-assignment', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const _jobData = request.body as JobAssignmentData;
+      const _jobData = (request as any).body as JobAssignmentData;
       const result = await aiService.intelligentJobAssignment(_jobData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: result,
         _message: 'AI job assignment completed successfully'
@@ -281,10 +281,10 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
   // Predictive Analytics API
   fastify.post('/api/v1/ai/predictive-analytics', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const _jobData = request.body as JobAssignmentData;
+      const _jobData = (request as any).body as JobAssignmentData;
       const prediction = await aiService.predictiveAnalytics(_jobData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: prediction,
         _message: 'Predictive analysis completed successfully'
@@ -301,10 +301,10 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
   // Smart Pricing API
   fastify.post('/api/v1/ai/smart-pricing', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const _jobData = request.body as JobAssignmentData;
+      const _jobData = (request as any).body as JobAssignmentData;
       const pricing = await aiService.smartPricingOptimization(_jobData);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: pricing,
         _message: 'Smart pricing analysis completed successfully'
@@ -321,10 +321,10 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
   // Quality Prediction API
   fastify.post('/api/v1/ai/quality-prediction', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { _jobData, technician } = (request.body as { _jobData: JobAssignmentData; technician: TechnicianProfile });
+      const { _jobData, technician } = ((request as any).body as { _jobData: JobAssignmentData; technician: TechnicianProfile });
       const prediction = await aiService.qualityPrediction(_jobData, technician);
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: prediction,
         _message: 'Quality prediction completed successfully'
@@ -343,7 +343,7 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
     try {
       const optimization = await aiService.workflowOptimization();
       
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: optimization,
         _message: 'Workflow optimization analysis completed successfully'

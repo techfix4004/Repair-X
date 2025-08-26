@@ -3,7 +3,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 export default async function customerSuccessRoutes(fastify: FastifyInstance) {
   // Customer satisfaction and success metrics
   fastify.post('/api/v1/customer/feedback', async (request: FastifyRequest, reply: FastifyReply) => {
-    return reply.send({
+    return (reply as any).send({
       success: true,
       message: 'Feedback recorded successfully',
       data: {
@@ -15,7 +15,7 @@ export default async function customerSuccessRoutes(fastify: FastifyInstance) {
   });
 
   fastify.get('/api/v1/customer/success-metrics', async (request: FastifyRequest, reply: FastifyReply) => {
-    return reply.send({
+    return (reply as any).send({
       success: true,
       data: {
         customerSatisfaction: 94.2,

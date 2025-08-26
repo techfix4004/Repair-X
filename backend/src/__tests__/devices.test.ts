@@ -10,10 +10,10 @@ import { registerPlugins } from '../plugins/index';
  
 // eslint-disable-next-line max-lines-per-function
 describe('Device Registration API Tests', () => {
-  let _app: FastifyInstance;
+  let app: FastifyInstance;
 
   beforeAll(async () => {
-    app = Fastify({ _logger: false });
+    app = Fastify({ logger: false });
     await registerPlugins(app);
     
     // Add device routes for testing
@@ -73,7 +73,7 @@ describe('Device Registration API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/devices',
-      _payload: deviceData
+      payload: deviceData
     });
 
     expect(response.statusCode).toBe(200);
@@ -94,7 +94,7 @@ describe('Device Registration API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/devices',
-      _payload: invalidData
+      payload: invalidData
     });
 
     expect(response.statusCode).toBe(400);

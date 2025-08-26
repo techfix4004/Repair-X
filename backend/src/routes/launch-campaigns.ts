@@ -20,7 +20,7 @@ server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
       await launchCampaignService.getCampaign('repairx_launch_2024'),
     ];
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: {
         campaigns: campaigns.filter((c: unknown) => c !== null),
@@ -31,7 +31,7 @@ server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
     });
   } catch (error) {
     console.error('Error fetching launch _campaigns:', error);
-    return reply.code(500).send({
+    return (reply as any).code(500).send({
       _success: false,
       _message: 'Failed to fetch launch campaigns',
       _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
@@ -56,23 +56,23 @@ server.get('/:campaignId', {
   }
 }, async (request: FastifyRequest<{ Params: { campaignId: string } }>, reply: FastifyReply) => {
   try {
-    const { campaignId  } = (request.params as unknown);
+    const { campaignId  } = ((request as any).params as unknown);
     const campaign = await launchCampaignService.getCampaign(campaignId);
 
     if (!campaign) {
-      return reply.code(404).send({
+      return (reply as any).code(404).send({
         _success: false,
         _message: 'Campaign not found'
       });
     }
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: campaign
     });
   } catch (error) {
     console.error('Error fetching _campaign:', error);
-    return reply.code(500).send({
+    return (reply as any).code(500).send({
       _success: false,
       _message: 'Failed to fetch campaign',
       _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
@@ -101,18 +101,18 @@ server.post('/', {
   }
 }, async (request: FastifyRequest<{ _Body: unknown }>, reply: FastifyReply) => {
   try {
-    const campaignData = request.body;
+    const campaignData = (request as any).body;
 
     const campaign = await launchCampaignService.createCampaign(campaignData as unknown);
 
-    return reply.code(201).send({
+    return (reply as any).code(201).send({
       _success: true,
       _data: campaign,
       _message: 'Campaign created successfully'
     });
   } catch (error) {
     console.error('Error creating _campaign:', error);
-    return reply.code(500).send({
+    return (reply as any).code(500).send({
       _success: false,
       _message: 'Failed to create campaign',
       _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
@@ -172,14 +172,14 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
       ]
     };
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: dashboardData,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error fetching campaign _dashboard:', error);
-    return reply.code(500).send({
+    return (reply as any).code(500).send({
       _success: false,
       _message: 'Failed to fetch campaign dashboard',
       _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'

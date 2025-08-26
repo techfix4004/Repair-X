@@ -15,7 +15,7 @@ import { metricsMiddleware } from './observability/metrics';
 import { securityHeadersMiddleware, RateLimitService } from './security/security';
 
 const fastify = Fastify({
-  _logger: {
+  logger: {
     level: process.env['NODE_ENV'] === 'production' ? 'warn' : 'info'
   }
 });
@@ -32,7 +32,7 @@ async function setupRoutes() {
 
   // Register CORS with enhanced security
   await fastify.register(cors, {
-    _origin: process.env.NODE_ENV === 'production' 
+    origin: process.env.NODE_ENV === 'production' 
       ? ['https://repairx.com', '_https://www.repairx.com']
       : true,
     _credentials: true,
@@ -56,7 +56,7 @@ async function setupRoutes() {
 
   // Global rate limiting for API routes
   fastify.register(async function (fastify) {
-    fastify.addHook('preHandler', RateLimitService.createRateLimitMiddleware('api'));
+    fastify.addHook('preHandler', RateLimitService.createRateLimitMiddleware('_api'));
   }, { _prefix: '/api/v1' });
 }
 

@@ -47,11 +47,11 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
     }
   }, async (request: FastifyRequest<{ Body: LoginRequest }>, reply: FastifyReply) => {
     const span = tracer.startSpan('auth_login');
-    const { email, password, totp } = request.body;
+    const { email, password, totp } = (request as any).body;
     
     try {
       // Validate and sanitize input
-      const validation = ValidationService.validateInput(request.body, request);
+      const validation = ValidationService.validateInput((request as any).body, request);
       if (!validation.valid) {
         AuditService.logSensitiveAction('login', 'user', 'failure', request, undefined, {
           _reason: 'malicious_input',
@@ -69,7 +69,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         });
       }
 
-      const sanitizedBody = ValidationService.sanitizeInput(request.body) as LoginRequest;
+      const sanitizedBody = ValidationService.sanitizeInput((request as any).body) as LoginRequest;
       
       // Attempt authentication
       const result = await AuthService.authenticateUser(sanitizedBody.email, sanitizedBody.password, sanitizedBody.totp);
@@ -121,7 +121,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         _maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
       });
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           user: {
@@ -167,7 +167,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
     const span = tracer.startSpan('auth_refresh_token');
     
     try {
-      const { refreshToken } = request.body;
+      const { refreshToken } = (request as any).body;
       
       const result = await AuthService.refreshAccessToken(refreshToken);
       
@@ -204,7 +204,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         _maxAge: 7 * 24 * 60 * 60 * 1000
       });
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           accessToken: result.accessToken,
@@ -239,7 +239,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
     const span = tracer.startSpan('auth_setup_2fa');
     
     try {
-      const { userId } = request.body;
+      const { userId } = (request as any).body;
       
       const result = await AuthService.setup2FA(userId);
       
@@ -258,7 +258,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         'setup_2fa.user_id': userId
       });
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           secret: result.secret,
@@ -294,7 +294,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
     const span = tracer.startSpan('auth_verify_2fa');
     
     try {
-      const { userId, token } = request.body;
+      const { userId, token } = (request as any).body;
       
       const verified = await AuthService.verify2FA(userId, token);
       
@@ -321,7 +321,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         'verify_2fa.user_id': userId
       });
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _message: '2FA has been enabled successfully'
       });
@@ -354,7 +354,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
     const span = tracer.startSpan('auth_disable_2fa');
     
     try {
-      const { userId, token } = request.body;
+      const { userId, token } = (request as any).body;
       
       const disabled = await AuthService.disable2FA(userId, token);
       
@@ -381,7 +381,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
         'disable_2fa.user_id': userId
       });
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _message: '2FA has been disabled successfully'
       });
@@ -411,7 +411,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       
       span.setAttributes({ 'logout.result': 'success' });
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _message: 'Logged out successfully'
       });
@@ -443,7 +443,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
 
       AuditService.logSensitiveAction('view_audit_log', 'audit', 'success', request);
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           entries: auditLog.slice(-100), // Return last 100 entries

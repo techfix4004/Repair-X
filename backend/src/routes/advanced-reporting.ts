@@ -176,7 +176,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         ]
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: _dashboard,
         _timestamp: new Date().toISOString()
@@ -193,7 +193,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Financial Performance Report
   fastify.post('/api/v1/reports/financial-performance', async (request, reply: unknown) => {
     try {
-      const filters = request.body as ReportFilter;
+      const filters = (request as any).body as ReportFilter;
       
       const financialReport = {
         _period: (filters as any).startDate, endDate,
@@ -241,7 +241,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         }
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: financialReport,
         _timestamp: new Date().toISOString()
@@ -258,7 +258,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Customer Analytics Report
   fastify.post('/api/v1/reports/customer-analytics', async (request, reply: unknown) => {
     try {
-      const filters = request.body as ReportFilter;
+      const filters = (request as any).body as ReportFilter;
 
       const customerAnalytics = {
         _summary: {
@@ -304,7 +304,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         }
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: customerAnalytics,
         _timestamp: new Date().toISOString()
@@ -321,7 +321,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Operational Performance Report
   fastify.post('/api/v1/reports/operational-performance', async (request, reply: unknown) => {
     try {
-      const filters = request.body as ReportFilter;
+      const filters = (request as any).body as ReportFilter;
 
       const operationalReport = {
         _efficiency: {
@@ -364,7 +364,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         }
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: operationalReport,
         _timestamp: new Date().toISOString()
@@ -381,7 +381,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Custom Report Builder
   fastify.post('/api/v1/reports/custom', async (request, reply: unknown) => {
     try {
-      const { reportType, filters, fields, groupBy, chartType } = (request.body as {
+      const { reportType, filters, fields, groupBy, chartType } = ((request as any).body as {
         _reportType: string;
         filters: ReportFilter;
         fields: string[];
@@ -420,7 +420,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         } : null
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: customReport,
         _timestamp: new Date().toISOString()
@@ -437,7 +437,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Report Export
   fastify.post('/api/v1/reports/export', async (request, reply: unknown) => {
     try {
-      const { reportId, format, includeCharts } = (request.body as {
+      const { reportId, format, includeCharts } = ((request as any).body as {
         _reportId: string;
         format: 'pdf' | 'excel' | 'csv';
         includeCharts?: boolean;
@@ -460,7 +460,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         console.log(`Export ${exportResult.exportId} completed`);
       }, 5000);
 
-      reply.send({
+      (reply as any).send({
         _success: true,
         _data: exportResult,
         _message: 'Report export initiated successfully'
@@ -477,7 +477,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Report Scheduling
   fastify.post('/api/v1/reports/_schedule', async (request, reply: unknown) => {
     try {
-      const { reportType, _schedule, recipients, filters } = (request.body as {
+      const { reportType, _schedule, recipients, filters } = ((request as any).body as {
         _reportType: string;
         _schedule: {
           frequency: 'daily' | 'weekly' | 'monthly';
@@ -501,7 +501,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         _lastRun: null
       };
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: scheduledReport,
         _message: 'Report scheduled successfully'

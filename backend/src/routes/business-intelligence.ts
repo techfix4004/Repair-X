@@ -13,7 +13,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
     Params: { jobId: string }
   }>, reply: FastifyReply) => {
     try {
-      const { jobId  } = (request.params as unknown);
+      const { jobId  } = ((request as any).params as unknown);
       
       const recommendations = await biService.intelligentJobAssignment(_jobId);
       
@@ -40,7 +40,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
     }
   }>, reply: FastifyReply) => {
     try {
-      const { deviceCategory, issueDescription, complexity  } = (request.body as unknown);
+      const { deviceCategory, issueDescription, complexity  } = ((request as any).body as unknown);
       
       const prediction = await biService.predictRepairTime(
         deviceCategory,
@@ -71,7 +71,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
     }
   }>, reply: FastifyReply) => {
     try {
-      const { startDate, endDate, period = 'month' } = request.query;
+      const { startDate, endDate, period = 'month' } = (request as any).query;
       
       // Calculate date range based on period if not provided
       let _start: Date, _end: Date;
@@ -171,8 +171,8 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
     Querystring: { period?: 'week' | 'month' | 'quarter' }
   }>, reply: FastifyReply) => {
     try {
-      const { technicianId  } = (request.params as unknown);
-      const { period = 'month' } = request.query;
+      const { technicianId  } = ((request as any).params as unknown);
+      const { period = 'month' } = (request as any).query;
       
       // Calculate date range
       const end = new Date();
@@ -240,7 +240,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
     }
   }>, reply: FastifyReply) => {
     try {
-      const { segment = 'all', period = 'month' } = request.query;
+      const { segment = 'all', period = 'month' } = (request as any).query;
       
       const end = new Date();
       const start = new Date();

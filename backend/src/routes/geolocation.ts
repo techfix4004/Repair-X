@@ -28,7 +28,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
   // Get address from coordinates (reverse geocoding)
   fastify.post('/reverse-geocode', async (request: FastifyRequest<{Body: GeolocationRequest}>, reply: FastifyReply) => {
     try {
-      const { latitude, longitude  } = (request.body as unknown);
+      const { latitude, longitude  } = ((request as any).body as unknown);
 
       if (!latitude || !longitude) {
         return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
@@ -44,7 +44,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
         _coordinates: { latitude, longitude }
       };
 
-      reply.send({
+      (reply as any).send({
         _success: true,
         _data: mockAddress
       });
@@ -57,7 +57,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
   // Check if location is within service area
   fastify.post('/check-service-area', async (request: FastifyRequest<{Body: ServiceAreaRequest}>, reply: FastifyReply) => {
     try {
-      const { latitude, longitude, radiusKm = 50      } = request.body as any;
+      const { latitude, longitude, radiusKm = 50      } = (request as any).body as any;
 
       if (!latitude || !longitude) {
         return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
@@ -91,7 +91,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const isServiceable = availableAreas.length > 0;
       const nearestArea = availableAreas.length > 0 ? availableAreas[0] : null;
 
-      reply.send({
+      (reply as any).send({
         _success: true,
         _data: {
           isServiceable,
@@ -110,7 +110,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
   // Find nearby technicians
   fastify.post('/nearby-technicians', async (request: FastifyRequest<{Body: ServiceAreaRequest}>, reply: FastifyReply) => {
     try {
-      const { latitude, longitude, radiusKm = 25      } = request.body as any;
+      const { latitude, longitude, radiusKm = 25      } = (request as any).body as any;
 
       if (!latitude || !longitude) {
         return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
@@ -139,7 +139,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
         }
       ];
 
-      reply.send({
+      (reply as any).send({
         success: true,
         _data: {
           technicians: mockTechnicians,
@@ -162,7 +162,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
     mode?: 'driving' | 'walking' | 'transit';
   }}>, reply: FastifyReply) => {
     try {
-      const { origin, destination, mode = 'driving'      } = request.body as any;
+      const { origin, destination, mode = 'driving'      } = (request as any).body as any;
 
       if (!origin || !destination) {
         return (reply as FastifyReply).status(400).send({ _error: 'Origin and destination coordinates are required' });
@@ -177,7 +177,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const baseTime = mode === 'driving' ? _2 : mode === 'walking' ? 15 : 5; // minutes per km
       const estimatedMinutes = Math.round(distance * baseTime);
 
-      reply.send({
+      (reply as any).send({
         _success: true,
         _data: {
           distanceKm: Math.round(distance * 10) / 10,

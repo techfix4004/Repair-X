@@ -96,7 +96,7 @@ async function getSmsAccounts(request: FastifyRequest, reply: FastifyReply) {
       ]
     });
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: accounts,
       _count: accounts.length
@@ -113,7 +113,7 @@ async function getSmsAccounts(request: FastifyRequest, reply: FastifyReply) {
 
 async function createSmsAccount(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const data = smsAccountSchema.parse(request.body);
+    const data = smsAccountSchema.parse((request as any).body);
 
     // If setting as primary, unset other primary accounts
     if (data.isPrimary) {
@@ -165,7 +165,7 @@ async function createSmsAccount(request: FastifyRequest, reply: FastifyReply) {
 // eslint-disable-next-line max-lines-per-function
 async function sendSms(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const data = sendSmsSchema.parse(request.body);
+    const data = sendSmsSchema.parse((request as any).body);
 
     // Get primary SMS account or first active account
     const account = await prisma.smsAccount.findFirst({
@@ -237,7 +237,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
           request.log.info({ accountId: account.id }, 'SMS credits low, auto top-up triggered');
         }
 
-        return reply.send({
+        return (reply as any).send({
           _success: true,
           _data: {
             messageId: smsMessage.id,
@@ -297,7 +297,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
 
 async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { page = 1, limit = 50, status, bookingId, _userId  } = request.query as any;
+    const { page = 1, limit = 50, status, bookingId, _userId  } = (request as any).query as any;
     
     const skip = (page - 1) * limit;
     
@@ -352,7 +352,7 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
       prisma.smsMessage.count({ _where: whereClause })
     ]);
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: messages,
       _pagination: {
@@ -376,7 +376,7 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
 // eslint-disable-next-line max-lines-per-function
 async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { period = '7d' } = request.query as { period?: string };
+    const { period = '7d' } = (request as any).query as { period?: string };
     
     let _startDate: Date;
     const now = new Date();
@@ -433,7 +433,7 @@ async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
     const totalCredits = accountStats.reduce((_sum: number, _account: unknown) => sum + account.creditsRemaining, 0);
     const totalCreditsUsed = accountStats.reduce((_sum: number, _account: unknown) => sum + account.creditsUsed, 0);
 
-    return reply.send({
+    return (reply as any).send({
       _success: true,
       _data: {
         period,
