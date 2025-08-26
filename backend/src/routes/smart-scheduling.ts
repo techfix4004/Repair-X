@@ -4,7 +4,7 @@ import { SmartSchedulingService } from '../services/smart-scheduling.js';
 const schedulingService = new SmartSchedulingService();
 
 // Smart Scheduling Routes
-export async function smartSchedulingRoutes(_fastify: FastifyInstance): Promise<void> {
+export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<void> {
   
   // AI-Powered Schedule Optimization
   fastify.post('/api/v1/scheduling/optimize', async (request: FastifyRequest<{

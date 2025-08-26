@@ -366,7 +366,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
       const campaignId = `campaign_${Date.now()}`;
       
       // Create campaign
-      const _campaign: MarketingCampaign = {
+      const campaign: MarketingCampaign = {
         id: campaignId,
         _name: (campaignData as any).name,
         _type: 'email',
@@ -438,7 +438,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
         ],
         _topLinks: [
           { url: '/book-service', _clicks: 156, _conversions: 31 },
-          { _url: '/pricing', _clicks: 78, _conversions: 16 },
+          { url: '/pricing', _clicks: 78, _conversions: 16 },
         ],
         _deviceBreakdown: {
           desktop: 45.2,
@@ -680,8 +680,8 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
 }
 
 // Helper functions
-async function processCampaign(_campaign: MarketingCampaign): Promise<void> {
-  console.log(`Processing _campaign: ${campaign.name}`);
+async function processCampaign(campaign: MarketingCampaign): Promise<void> {
+  console.log(`Processing campaign: ${campaign.name}`);
   
   // In a real implementation, this _would:
   // 1. Fetch audience based on segments and filters

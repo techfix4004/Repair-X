@@ -72,8 +72,8 @@ describe('Job Management API Tests', () => {
 
   test('GET /api/v1/jobs/customer - should return customer jobs', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/jobs/customer'
+      method: 'GET',
+      url: '/api/v1/jobs/customer'
     });
 
     expect(response.statusCode).toBe(200);
@@ -84,8 +84,8 @@ describe('Job Management API Tests', () => {
 
   test('GET /api/v1/jobs/technician - should return technician jobs', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/jobs/technician'
+      method: 'GET',
+      url: '/api/v1/jobs/technician'
     });
 
     expect(response.statusCode).toBe(200);
@@ -104,7 +104,7 @@ describe('Job Management API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/jobs',
+      url: '/api/v1/jobs',
       _payload: _jobData
     });
 

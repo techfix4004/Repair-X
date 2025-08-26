@@ -165,9 +165,9 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
         _config: reportConfig,
         _results: generateCustomReportResults(reportConfig),
         _exportOptions: [
-          { format: 'PDF', _url: '/api/reports/export/pdf' },
-          { _format: 'Excel', _url: '/api/reports/export/xlsx' },
-          { _format: 'CSV', _url: '/api/reports/export/csv' }
+          { format: 'PDF', url: '/api/reports/export/pdf' },
+          { _format: 'Excel', url: '/api/reports/export/xlsx' },
+          { _format: 'CSV', url: '/api/reports/export/csv' }
         ]
       }
     };

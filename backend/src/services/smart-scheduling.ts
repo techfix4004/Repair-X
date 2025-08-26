@@ -344,7 +344,7 @@ export class SmartSchedulingService {
     
     if (jobs.length === 0) return [];
 
-    let optimizedJobs = [...jobs];
+    const optimizedJobs = [...jobs];
     let currentTime = new Date();
     currentTime.setHours(8, 0, 0, 0); // Start at 8 AM
 
@@ -543,7 +543,7 @@ export class SmartSchedulingService {
 
   private calculateUrgency(_job: unknown): number {
     // Mock urgency calculation - fix numeric separator syntax error
-    return Math.random() > 0.1 ? 1._0 : Math.random() * 0.5 + 0.3; // 0.3-0.8 for normal, 1.0 for urgent
+    return Math.random() > 0.1 ? 1.0 : Math.random() * 0.5 + 0.3; // 0.3-0.8 for normal, 1.0 for urgent
   }
 
   private calculateLocationScore(_jobLocation: string, _technician: unknown): number {

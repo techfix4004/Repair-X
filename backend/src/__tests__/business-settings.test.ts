@@ -106,8 +106,8 @@ describe('Business Settings API Tests', () => {
 
   test('GET /api/v1/business-settings - should return all 20+ setting categories', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/business-settings'
+      method: 'GET',
+      url: '/api/v1/business-settings'
     });
 
     expect(response.statusCode).toBe(200);
@@ -132,7 +132,7 @@ describe('Business Settings API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/business-settings/tax',
+      url: '/api/v1/business-settings/tax',
       _payload: taxConfig
     });
 
@@ -145,8 +145,8 @@ describe('Business Settings API Tests', () => {
 
   test('GET /api/v1/business-settings/workflow - should return 12-state job sheet workflow', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/business-settings/workflow'
+      method: 'GET',
+      url: '/api/v1/business-settings/workflow'
     });
 
     expect(response.statusCode).toBe(200);

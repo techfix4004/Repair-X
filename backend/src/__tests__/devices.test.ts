@@ -72,7 +72,7 @@ describe('Device Registration API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/devices',
+      url: '/api/v1/devices',
       _payload: deviceData
     });
 
@@ -93,7 +93,7 @@ describe('Device Registration API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/devices',
+      url: '/api/v1/devices',
       _payload: invalidData
     });
 
@@ -105,8 +105,8 @@ describe('Device Registration API Tests', () => {
 
   test('GET /api/v1/devices - should return list of devices', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/devices'
+      method: 'GET',
+      url: '/api/v1/devices'
     });
 
     expect(response.statusCode).toBe(200);

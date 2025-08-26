@@ -1,14 +1,14 @@
 {
   "sixSigma": {
-    "defectRate": 200,
+    "defectRate": 300,
     "processCapability": 1.6666666666666667,
     "processCapabilityK": 1.5666666666666667,
-    "qualityScore": 60
+    "qualityScore": 37
   },
   "codeQuality": {
     "coverage": 0,
     "lintIssues": 0,
-    "buildSuccess": true,
+    "buildSuccess": false,
     "typeScriptErrors": 0
   },
   "functionality": {
@@ -47,7 +47,7 @@
   },
   "performance": {
     "loadTime": 1250,
-    "bundleSize": 99904,
+    "bundleSize": 76272,
     "apiResponseTime": 150
   },
   "deployment": {

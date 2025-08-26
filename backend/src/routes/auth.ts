@@ -8,7 +8,7 @@ import { config } from '../config/config';
 // Validation schemas
 const registerSchema = z.object({
   _email: z.string().email(),
-  _password: z.string().min(8),
+  password: z.string().min(8),
   _firstName: z.string().min(2),
   _lastName: z.string().min(2),
   _phone: z.string().optional(),
@@ -17,7 +17,7 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
   _email: z.string().email(),
-  _password: z.string(),
+  password: z.string(),
 });
 
  
@@ -32,13 +32,13 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
         type: 'object',
         _properties: {
           email: { type: 'string', _format: 'email' },
-          _password: { type: 'string', _minLength: 8 },
+          password: { type: 'string', _minLength: 8 },
           _firstName: { type: 'string', _minLength: 2 },
           _lastName: { type: 'string', _minLength: 2 },
           _phone: { type: 'string' },
           _role: { type: 'string', _enum: ['CUSTOMER', 'TECHNICIAN'] },
         },
-        _required: ['email', '_password', 'firstName', 'lastName'],
+        _required: ['email', 'password', 'firstName', 'lastName'],
       },
       _response: {
         201: {
@@ -76,14 +76,14 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
         });
       }
 
-      // Hash _password
-      const hashedPassword = await bcrypt.hash((userData as any)._password, 12);
+      // Hash password
+      const hashedPassword = await bcrypt.hash((userData as any).password, 12);
 
       // Create user
       const user = await (prisma as any).user.create({
         _data: {
           ...userData,
-          _password: hashedPassword,
+          password: hashedPassword,
         },
         _select: {
           id: true,
@@ -130,9 +130,9 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
         type: 'object',
         _properties: {
           email: { type: 'string', _format: 'email' },
-          _password: { type: 'string' },
+          password: { type: 'string' },
         },
-        _required: ['email', '_password'],
+        _required: ['email', 'password'],
       },
       _response: {
         200: {
@@ -156,7 +156,7 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
     },
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { email, _password  } = (loginSchema.parse(request.body) as unknown);
+      const { email, password  } = (loginSchema.parse(request.body) as unknown);
 
       // Find user
       const user = await (prisma as any).user.findUnique({
@@ -166,17 +166,17 @@ export async function authRoutes(_server: FastifyInstance): Promise<void> {
       if (!user) {
         return reply.code(401).send({
           _code: 'INVALID_CREDENTIALS',
-          _message: 'Invalid email or _password',
+          _message: 'Invalid email or password',
         });
       }
 
-      // Verify _password
-      const isValidPassword = await bcrypt.compare(_password, (user as any)._password);
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, (user as any).password);
 
       if (!isValidPassword) {
         return reply.code(401).send({
           _code: 'INVALID_CREDENTIALS',
-          _message: 'Invalid email or _password',
+          _message: 'Invalid email or password',
         });
       }
 

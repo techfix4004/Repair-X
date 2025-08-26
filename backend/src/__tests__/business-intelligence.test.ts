@@ -1,6 +1,6 @@
  
 /// <reference types="jest" />
-/* eslint-disable no-undef */
+ 
 /// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import dotenv from 'dotenv';
@@ -11,7 +11,7 @@ dotenv.config();
  
 // eslint-disable-next-line max-lines-per-function
 describe('AI-Powered Business Intelligence API', () => {
-  let _authToken: string;
+  let authToken: string;
   let testJobId: string;
 
   beforeAll(async () => {
@@ -48,11 +48,11 @@ describe('AI-Powered Business Intelligence API', () => {
       };
 
       // Mock the API response since we're testing the structure and logic
-      expect(mockResponse.success).toBe(true);
-      expect(mockResponse.data?.recommendedTechnicians).toHaveLength(1);
-      expect(mockResponse.data.recommendedTechnicians[0]?.score).toBeGreaterThan(0.8);
-      expect((mockResponse.data.recommendedTechnicians[0]?.factors as any).skillMatch).toBeDefined();
-      expect(Array.isArray(mockResponse.data.reasoning)).toBe(true);
+      expect(mockResponse._success).toBe(true);
+      expect(mockResponse._data?.recommendedTechnicians).toHaveLength(1);
+      expect(mockResponse._data.recommendedTechnicians[0]?._score).toBeGreaterThan(0.8);
+      expect((mockResponse._data.recommendedTechnicians[0]?._factors as any).skillMatch).toBeDefined();
+      expect(Array.isArray(mockResponse._data._reasoning)).toBe(true);
     });
 
     test('should handle job not found gracefully', async () => {
@@ -62,8 +62,8 @@ describe('AI-Powered Business Intelligence API', () => {
         _timestamp: expect.any(String),
       };
 
-      expect(mockErrorResponse.success).toBe(false);
-      expect(mockErrorResponse.error).toBe('Job not found');
+      expect(mockErrorResponse._success).toBe(false);
+      expect(mockErrorResponse._error).toBe('Job not found');
     });
   });
 
@@ -92,11 +92,11 @@ describe('AI-Powered Business Intelligence API', () => {
         _timestamp: expect.any(String),
       };
 
-      expect(mockPrediction.success).toBe(true);
-      expect(mockPrediction.data?.estimatedHours).toBeGreaterThan(0);
-      expect(mockPrediction.data.confidenceInterval.min).toBeLessThan(mockPrediction.data.estimatedHours);
-      expect(mockPrediction.data.confidenceInterval.max).toBeGreaterThan(mockPrediction.data.estimatedHours);
-      expect(Array.isArray(mockPrediction.data.factors)).toBe(true);
+      expect(mockPrediction._success).toBe(true);
+      expect(mockPrediction._data?.estimatedHours).toBeGreaterThan(0);
+      expect(mockPrediction._data._confidenceInterval.min).toBeLessThan(mockPrediction._data.estimatedHours);
+      expect(mockPrediction._data._confidenceInterval._max).toBeGreaterThan(mockPrediction._data.estimatedHours);
+      expect(Array.isArray(mockPrediction._data._factors)).toBe(true);
     });
 
     test('should validate input parameters', async () => {
@@ -106,7 +106,7 @@ describe('AI-Powered Business Intelligence API', () => {
         _timestamp: expect.any(String),
       };
 
-      expect(invalidInputResponse.success).toBe(false);
+      expect(invalidInputResponse._success).toBe(false);
     });
   });
 
@@ -164,15 +164,15 @@ describe('AI-Powered Business Intelligence API', () => {
         _generatedAt: expect.any(String),
       };
 
-      expect(mockDashboard.success).toBe(true);
-      expect(mockDashboard.data.summary.totalRevenue).toBeGreaterThan(0);
-      expect(mockDashboard.data.summary.customerSatisfaction).toBeGreaterThan(0);
-      expect(mockDashboard.data.summary.customerSatisfaction).toBeLessThanOrEqual(5);
-      expect(Array.isArray(mockDashboard.data.trends.revenueByDay)).toBe(true);
-      expect(Array.isArray(mockDashboard.data.trends._serviceCategories)).toBe(true);
-      expect(Array.isArray(mockDashboard.data.trends._technicianPerformance)).toBe(true);
-      expect(mockDashboard.data.predictions._growthRate).toBeDefined();
-      expect(Array.isArray(mockDashboard.data.predictions._recommendedActions)).toBe(true);
+      expect(mockDashboard._success).toBe(true);
+      expect(mockDashboard._data.summary.totalRevenue).toBeGreaterThan(0);
+      expect(mockDashboard._data.summary._customerSatisfaction).toBeGreaterThan(0);
+      expect(mockDashboard._data.summary._customerSatisfaction).toBeLessThanOrEqual(5);
+      expect(Array.isArray(mockDashboard._data._trends.revenueByDay)).toBe(true);
+      expect(Array.isArray(mockDashboard._data._trends._serviceCategories)).toBe(true);
+      expect(Array.isArray(mockDashboard._data._trends._technicianPerformance)).toBe(true);
+      expect(mockDashboard._data._predictions._growthRate).toBeDefined();
+      expect(Array.isArray(mockDashboard._data._predictions._recommendedActions)).toBe(true);
     });
 
     test('should support different time periods', async () => {
@@ -187,7 +187,7 @@ describe('AI-Powered Business Intelligence API', () => {
           },
         };
         
-        expect(mockResponse.data.dateRange.period).toBe(period);
+        expect(mockResponse._data.dateRange.period).toBe(period);
       }
     });
   });
@@ -236,13 +236,13 @@ describe('AI-Powered Business Intelligence API', () => {
         _lastUpdated: expect.any(String),
       };
 
-      expect(mockRealtimeMetrics.success).toBe(true);
-      expect(mockRealtimeMetrics.data.liveStats.activeJobs).toBeGreaterThanOrEqual(0);
-      expect(mockRealtimeMetrics.data.liveStats._onlineTechnicians).toBeGreaterThanOrEqual(0);
-      expect(Array.isArray(mockRealtimeMetrics.data._recentActivity)).toBe(true);
-      expect(Array.isArray(mockRealtimeMetrics.data._topPerformers)).toBe(true);
-      expect(Array.isArray(mockRealtimeMetrics.data.alerts)).toBe(true);
-      expect(mockRealtimeMetrics.data?.systemHealth).toBeDefined();
+      expect(mockRealtimeMetrics._success).toBe(true);
+      expect(mockRealtimeMetrics._data.liveStats.activeJobs).toBeGreaterThanOrEqual(0);
+      expect(mockRealtimeMetrics._data.liveStats._onlineTechnicians).toBeGreaterThanOrEqual(0);
+      expect(Array.isArray(mockRealtimeMetrics._data._recentActivity)).toBe(true);
+      expect(Array.isArray(mockRealtimeMetrics._data._topPerformers)).toBe(true);
+      expect(Array.isArray(mockRealtimeMetrics._data._alerts)).toBe(true);
+      expect(mockRealtimeMetrics._data?._systemHealth).toBeDefined();
     });
   });
 
@@ -280,12 +280,12 @@ describe('AI-Powered Business Intelligence API', () => {
         _generatedAt: expect.any(String),
       };
 
-      expect(mockCustomerAnalytics.success).toBe(true);
-      expect(mockCustomerAnalytics.data?.segmentation).toBeDefined();
-      expect(mockCustomerAnalytics.data.metrics.lifetimeValue).toBeGreaterThan(0);
-      expect(mockCustomerAnalytics.data.metrics.satisfactionScore).toBeGreaterThan(0);
-      expect(mockCustomerAnalytics.data.metrics.satisfactionScore).toBeLessThanOrEqual(5);
-      expect(Array.isArray(mockCustomerAnalytics.data.insights)).toBe(true);
+      expect(mockCustomerAnalytics._success).toBe(true);
+      expect(mockCustomerAnalytics._data?.segmentation).toBeDefined();
+      expect(mockCustomerAnalytics._data._metrics._lifetimeValue).toBeGreaterThan(0);
+      expect(mockCustomerAnalytics._data._metrics._satisfactionScore).toBeGreaterThan(0);
+      expect(mockCustomerAnalytics._data._metrics._satisfactionScore).toBeLessThanOrEqual(5);
+      expect(Array.isArray(mockCustomerAnalytics._data._insights)).toBe(true);
     });
   });
 
@@ -329,14 +329,14 @@ describe('AI-Powered Business Intelligence API', () => {
         _generatedAt: expect.any(String),
       };
 
-      expect(mockOptimization.success).toBe(true);
-      expect(mockOptimization.data.currentMetrics.monthlyRevenue).toBeGreaterThan(0);
-      expect(Array.isArray(mockOptimization.data.opportunities)).toBe(true);
-      expect(mockOptimization.data.opportunities.length).toBeGreaterThan(0);
-      expect(mockOptimization.data.opportunities[0]?.confidence).toBeGreaterThan(0);
-      expect(mockOptimization.data.opportunities[0]?.confidence).toBeLessThanOrEqual(1);
-      expect(mockOptimization.data.predictions.nextMonthRevenue).toBeGreaterThan(0);
-      expect(Array.isArray(mockOptimization.data.actionPlan)).toBe(true);
+      expect(mockOptimization._success).toBe(true);
+      expect(mockOptimization._data.currentMetrics.monthlyRevenue).toBeGreaterThan(0);
+      expect(Array.isArray(mockOptimization._data._opportunities)).toBe(true);
+      expect(mockOptimization._data._opportunities.length).toBeGreaterThan(0);
+      expect(mockOptimization._data._opportunities[0]?._confidence).toBeGreaterThan(0);
+      expect(mockOptimization._data._opportunities[0]?._confidence).toBeLessThanOrEqual(1);
+      expect(mockOptimization._data._predictions.nextMonthRevenue).toBeGreaterThan(0);
+      expect(Array.isArray(mockOptimization._data._actionPlan)).toBe(true);
     });
   });
 
@@ -348,7 +348,7 @@ describe('AI-Powered Business Intelligence API', () => {
         _timestamp: expect.any(String),
       };
 
-      expect(invalidDateResponse.success).toBe(false);
+      expect(invalidDateResponse._success).toBe(false);
     });
 
     test('should handle database connection errors', async () => {
@@ -358,7 +358,7 @@ describe('AI-Powered Business Intelligence API', () => {
         _timestamp: expect.any(String),
       };
 
-      expect(dbErrorResponse.success).toBe(false);
+      expect(dbErrorResponse._success).toBe(false);
     });
 
     test('should handle insufficient data scenarios', async () => {
@@ -368,7 +368,7 @@ describe('AI-Powered Business Intelligence API', () => {
         _timestamp: expect.any(String),
       };
 
-      expect(insufficientDataResponse.success).toBe(false);
+      expect(insufficientDataResponse._success).toBe(false);
     });
   });
 

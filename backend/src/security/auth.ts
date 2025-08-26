@@ -44,7 +44,7 @@ export class AuthService {
     } as User],
   ]);
 
-  static async authenticateUser(_email: string, _password: string, totp?: string): Promise<{ _user: User; accessToken: string; refreshToken: string } | null> {
+  static async authenticateUser(_email: string, password: string, totp?: string): Promise<{ _user: User; accessToken: string; refreshToken: string } | null> {
     const span = tracer.startSpan('authenticate_user');
     
     try {
@@ -70,11 +70,11 @@ export class AuthService {
           user.lockedUntil = new Date(Date.now() + this.LOCKOUT_DURATION);
           businessMetrics.failedLogins.labels(email, 'max_attempts').inc();
         } else {
-          businessMetrics.failedLogins.labels(email, 'invalid_password').inc();
+          businessMetrics.failedLogins.labels(email, 'invalidpassword').inc();
         }
         
         span.setAttributes({ 
-          'auth.result': 'invalid_password',
+          'auth.result': 'invalidpassword',
           'auth.failed_attempts': user.failedLoginAttempts 
         });
         return null;
@@ -274,7 +274,7 @@ export class AuthService {
   }
 
   // Helper methods
-  private static validatePassword(_password: string, _user: User): boolean {
+  private static validatePassword(password: string, _user: User): boolean {
     // Mock password validation - in production, use bcrypt
     const _mockPasswords: { [key: string]: string } = {
       'admin@repairx.com': 'admin123',

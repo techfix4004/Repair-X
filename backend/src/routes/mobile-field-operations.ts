@@ -210,7 +210,7 @@ const FieldWorkRecordSchema = z.object({
     photos: z.array(z.object({
       id: z.string(),
       _filename: z.string(),
-      _url: z.string(),
+      url: z.string(),
       _type: z.enum(['BEFORE', 'PROGRESS', 'AFTER', 'PROBLEM', 'SOLUTION']),
       _description: z.string().optional(),
       _timestamp: z.string(),

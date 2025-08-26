@@ -24,8 +24,8 @@ describe('Geolocation Service', () => {
 
   test('should reverse geocode coordinates', async () => {
     const response = await app.inject({
-      _method: 'POST',
-      _url: '/reverse-geocode',
+      method: 'POST',
+      url: '/reverse-geocode',
       _payload: {
         latitude: 37.7749,
         _longitude: -122.4194
@@ -42,8 +42,8 @@ describe('Geolocation Service', () => {
 
   test('should check service area availability', async () => {
     const response = await app.inject({
-      _method: 'POST',
-      _url: '/check-service-area',
+      method: 'POST',
+      url: '/check-service-area',
       _payload: {
         latitude: 37.7749,
         _longitude: -122.4194,
@@ -60,8 +60,8 @@ describe('Geolocation Service', () => {
 
   test('should find nearby technicians', async () => {
     const response = await app.inject({
-      _method: 'POST',
-      _url: '/nearby-technicians',
+      method: 'POST',
+      url: '/nearby-technicians',
       _payload: {
         latitude: 37.7749,
         _longitude: -122.4194,
@@ -78,8 +78,8 @@ describe('Geolocation Service', () => {
 
   test('should calculate travel time between coordinates', async () => {
     const response = await app.inject({
-      _method: 'POST',
-      _url: '/travel-time',
+      method: 'POST',
+      url: '/travel-time',
       _payload: {
         origin: { latitude: 37.7749, _longitude: -122.4194 },
         _destination: { latitude: 37.7849, _longitude: -122.4094 },
@@ -97,8 +97,8 @@ describe('Geolocation Service', () => {
 
   test('should return error for invalid coordinates', async () => {
     const response = await app.inject({
-      _method: 'POST',
-      _url: '/reverse-geocode',
+      method: 'POST',
+      url: '/reverse-geocode',
       _payload: {
         latitude: null,
         _longitude: -122.4194

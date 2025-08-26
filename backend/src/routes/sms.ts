@@ -6,7 +6,7 @@ import { prisma } from '../utils/database';
 const smsAccountSchema = z.object({
   _providerName: z.string().min(1),
   _accountSid: z.string().min(1),
-  _authToken: z.string().min(1),
+  authToken: z.string().min(1),
   _fromNumber: z.string().min(1),
   _creditsRemaining: z.number().int().min(0).default(0),
   _autoTopUp: z.boolean().default(false),

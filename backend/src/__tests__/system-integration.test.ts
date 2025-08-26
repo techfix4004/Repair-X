@@ -98,8 +98,8 @@ describe('System Integration Tests', () => {
 
   test('GET /api/v1/system/health - should return healthy system status', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/system/health'
+      method: 'GET',
+      url: '/api/v1/system/health'
     });
 
     expect(response.statusCode).toBe(200);
@@ -112,8 +112,8 @@ describe('System Integration Tests', () => {
 
   test('GET /api/v1/system/metrics - should return system metrics', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/system/metrics'
+      method: 'GET',
+      url: '/api/v1/system/metrics'
     });
 
     expect(response.statusCode).toBe(200);
@@ -127,8 +127,8 @@ describe('System Integration Tests', () => {
 
   test('POST /api/v1/system/compliance-check - should validate all compliance requirements', async () => {
     const response = await app.inject({
-      _method: 'POST',
-      _url: '/api/v1/system/compliance-check'
+      method: 'POST',
+      url: '/api/v1/system/compliance-check'
     });
 
     expect(response.statusCode).toBe(200);

@@ -413,7 +413,7 @@ export class EnhancedMobileFieldOperationsService {
     const _photoCapture: PhotoCapture = {
       id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       _workflowState: workflowManager.currentState,
-      _url: `/photos/${workflowManager.jobId}/${Date.now()}.jpg`,
+      url: `/photos/${workflowManager.jobId}/${Date.now()}.jpg`,
       _thumbnail: `/thumbnails/${workflowManager.jobId}/${Date.now()}_thumb.jpg`,
       _metadata: {
         gpsLocation: location,

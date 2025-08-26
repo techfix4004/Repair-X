@@ -30,7 +30,7 @@ describe('Authentication Routes', () => {
       expect(response.statusCode).toBe(201);
       const body = JSON.parse(response.body);
       expect(body.message).toBe('User registered successfully');
-      expect(body.(user as any).email).toBe((userData as any).email);
+      expect(body.user.email).toBe(userData.email);
       expect(body.token).toBeDefined();
     });
 

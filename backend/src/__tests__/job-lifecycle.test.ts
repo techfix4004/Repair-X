@@ -128,7 +128,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/jobs',
+      url: '/api/v1/jobs',
       _payload: _jobData
     });
 
@@ -149,7 +149,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'PUT',
-      _url: `/api/v1/jobs/${_jobId}/state`,
+      url: `/api/v1/jobs/${_jobId}/state`,
       _payload: stateUpdate
     });
 
@@ -169,7 +169,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'PUT',
-      _url: `/api/v1/jobs/${_jobId}/state`,
+      url: `/api/v1/jobs/${_jobId}/state`,
       _payload: invalidState
     });
 
@@ -181,8 +181,8 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
   test('GET /api/v1/jobs/:_jobId/workflow - should return workflow configuration', async () => {
     const response = await app.inject({
-      _method: 'GET',
-      _url: '/api/v1/jobs/job_123/workflow'
+      method: 'GET',
+      url: '/api/v1/jobs/job_123/workflow'
     });
 
     expect(response.statusCode).toBe(200);
@@ -203,7 +203,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
 
     const response = await app.inject({
       method: 'POST',
-      _url: '/api/v1/jobs/job_123/quality-check',
+      url: '/api/v1/jobs/job_123/quality-check',
       _payload: qualityData
     });
 
@@ -218,8 +218,8 @@ describe('Job Sheet Lifecycle API Tests', () => {
   test('All 12 job states should be supported', async () => {
     for (const state of jobStates) {
       const response = await app.inject({
-        _method: 'PUT',
-        _url: '/api/v1/jobs/job_123/state',
+        method: 'PUT',
+        url: '/api/v1/jobs/job_123/state',
         _payload: { state }
       });
 
