@@ -14,7 +14,7 @@ RUN \
 # Copy the rest of the source code
 COPY . .
 
-# Build the Next.js app (standalone output)
+# Build the Next.js app (standalone output if configured, see next.config.js)
 RUN npm run build
 
 # --- Production Runner Stage ---
@@ -28,7 +28,7 @@ ENV NODE_ENV=production
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/next.config.js* ./ # support JS or TS config
+COPY --from=builder /app/next.config.js* ./
 COPY --from=builder /app/next.config.ts* ./
 COPY --from=builder /app/node_modules ./node_modules
 
