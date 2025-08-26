@@ -32,7 +32,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/uploads ./uploads
-COPY --from=builder /app/.env ./.env
 
 # Expose app port (customize if needed)
 EXPOSE 3001
