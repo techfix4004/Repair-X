@@ -36,9 +36,12 @@ services:
     networks:
       - repairx-network
 
-  # Backend API Service (simplified for production demo)
+  # Backend API Service (production-ready)
   backend:
-    image: node:20-alpine
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: repairx-backend-prod:latest
     container_name: repairx-backend-prod
     restart: unless-stopped
     environment:
@@ -54,14 +57,13 @@ services:
       LOCAL_STORAGE_BASE_URL: ${LOCAL_STORAGE_BASE_URL}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       PORT: 3001
-    command: sh -c "cd /app && npm install express cors && node src/production-server.js"
     working_dir: /app
     volumes:
       - ./backend:/app
       - ./backend/uploads:/app/uploads
       - local_storage_data:/app/data
     ports:
-      - "3010:3001"   # CHANGED: Host port now 3010 to avoid conflict with srt-grafana-1
+      - "3010:3001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -76,9 +78,12 @@ services:
     networks:
       - repairx-network
 
-  # Frontend Web Application (simplified for production demo)
+  # Frontend Web Application (production-ready)
   frontend:
-    image: node:20-alpine
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: repairx-frontend-prod:latest
     container_name: repairx-frontend-prod
     restart: unless-stopped
     environment:
@@ -86,10 +91,6 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
       NEXT_PUBLIC_APP_ENV: production
-    command: sh -c "cd /app && npm install && npm run build && npm start"
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
     ports:
       - "3000:3000"
     depends_on:
