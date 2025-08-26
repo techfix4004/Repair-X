@@ -47,7 +47,7 @@
   },
   "performance": {
     "loadTime": 1250,
-    "bundleSize": 99904,
+    "bundleSize": 84080,
     "apiResponseTime": 150
   },
   "deployment": {
