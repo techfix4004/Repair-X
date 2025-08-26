@@ -18,7 +18,7 @@ COPY . .
 RUN npx prisma generate || true
 
 # Build for production (compiles TypeScript to dist/)
-RUN ./node_modules/.bin/tsc --project tsconfig.build.json
+RUN npm run build:tsc
 
 # --- Production Runner Stage ---
 FROM node:20-alpine AS runner

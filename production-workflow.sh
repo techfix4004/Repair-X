@@ -106,7 +106,22 @@ test_e2e_production() {
     
     # Test 4: Service containers status
     log_info "Testing service containers status..."
-    local services=("repairx-postgres-prod" "repairx-redis-prod" "repairx-backend-prod" "repairx-frontend-prod" "repairx-nginx-prod")
+    local services=(
+        "repairx-postgres-prod" 
+        "repairx-redis-prod" 
+        "repairx-backend-prod" 
+        "repairx-frontend-prod" 
+        "repairx-nginx-prod"
+        "repairx-prometheus-prod"
+        "repairx-grafana-prod"
+        "repairx-alertmanager-prod"
+        "repairx-jaeger-prod"
+        "repairx-node-exporter-prod"
+        "repairx-cadvisor-prod"
+        "repairx-blackbox-exporter-prod"
+        "repairx-redis-exporter-prod"
+        "repairx-postgres-exporter-prod"
+    )
     local services_healthy=true
     
     for service in "${services[@]}"; do
@@ -127,6 +142,12 @@ test_e2e_production() {
         "http://localhost:9090/-/healthy:Prometheus"
         "http://localhost:3002/api/health:Grafana"
         "http://localhost:16686/:Jaeger"
+        "http://localhost:9093/-/healthy:Alertmanager"
+        "http://localhost:9100/metrics:NodeExporter"
+        "http://localhost:8080/metrics:cAdvisor"
+        "http://localhost:9115/metrics:BlackboxExporter"
+        "http://localhost:9121/metrics:RedisExporter"
+        "http://localhost:9187/metrics:PostgresExporter"
     )
     
     for endpoint_info in "${monitoring_endpoints[@]}"; do

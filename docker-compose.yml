@@ -127,147 +127,180 @@ services:
     networks:
       - repairx-network
 
-  # TEMPORARILY DISABLED: Prometheus for metrics collection
-  # prometheus:
-  #   image: prom/prometheus:v2.48.1
-  #   container_name: repairx-prometheus-prod
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #     - ./monitoring/prometheus/rules:/etc/prometheus/rules
-  #     - prometheus_data:/prometheus
-  #   command:
-  #     - '--config.file=/etc/prometheus/prometheus.yml'
-  #     - '--storage.tsdb.path=/prometheus'
-  #     - '--web.console.libraries=/etc/prometheus/console_libraries'
-  #     - '--web.console.templates=/etc/prometheus/consoles'
-  #     - '--storage.tsdb.retention.time=30d'
-  #     - '--web.enable-lifecycle'
-  #     - '--web.enable-admin-api'
-  #   networks:
-  #     - repairx-network
-  #   depends_on:
-  #     - backend
-  #     - frontend
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:v2.48.1
+    container_name: repairx-prometheus-prod
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - repairx-network
+    depends_on:
+      - backend
+      - frontend
 
-  # TEMPORARILY DISABLED: Grafana for metrics visualization
-  # grafana:
-  #   image: grafana/grafana:10.2.2
-  #   container_name: repairx-grafana-prod
-  #   restart: unless-stopped
-  #   ports:
-  #     - "3002:3000"
-  #   environment:
-  #     GF_SECURITY_ADMIN_USER: admin
-  #     GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
-  #     GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
-  #     GF_ALERTING_ENABLED: false
-  #     GF_UNIFIED_ALERTING_ENABLED: true
-  #   volumes:
-  #     - grafana_data:/var/lib/grafana
-  #     - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
-  #     - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
-  #   networks:
-  #     - repairx-network
-  #   depends_on:
-  #     - prometheus
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: repairx-grafana-prod
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
+      GF_ALERTING_ENABLED: false
+      GF_UNIFIED_ALERTING_ENABLED: true
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - repairx-network
+    depends_on:
+      - prometheus
 
-  # TEMPORARILY DISABLED: AlertManager for alert management
-  # alertmanager:
-  #   image: prom/alertmanager:v0.26.0
-  #   container_name: repairx-alertmanager-prod
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9093:9093"
-  #   volumes:
-  #     - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-  #     - alertmanager_data:/alertmanager
-  #   command:
-  #     - '--config.file=/etc/alertmanager/alertmanager.yml'
-  #     - '--storage.path=/alertmanager'
-  #     - '--web.external-url=http://localhost:9093'
-  #   networks:
-  #     - repairx-network
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
+  # AlertManager for alert management
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: repairx-alertmanager-prod
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    networks:
+      - repairx-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # TEMPORARILY DISABLED: Jaeger for distributed tracing
-  # jaeger:
-  #   image: jaegertracing/all-in-one:1.52
-  #   container_name: repairx-jaeger-prod
-  #   restart: unless-stopped
-  #   ports:
-  #     - "16686:16686"  # Jaeger UI
-  #     - "14268:14268"  # Jaeger collector HTTP
-  #     - "14250:14250"  # Jaeger collector gRPC
-  #   environment:
-  #     COLLECTOR_OTLP_ENABLED: true
-  #     COLLECTOR_ZIPKIN_HOST_PORT: "9411"
-  #     SPAN_STORAGE_TYPE: badger
-  #     BADGER_EPHEMERAL: false
-  #     BADGER_DIRECTORY_VALUE: /badger/data
-  #     BADGER_DIRECTORY_KEY: /badger/key
-  #   volumes:
-  #     - jaeger_data:/badger
-  #   networks:
-  #     - repairx-network
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:16686/"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
+  # Jaeger for distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.52
+    container_name: repairx-jaeger-prod
+    restart: unless-stopped
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # Jaeger collector HTTP
+      - "14250:14250"  # Jaeger collector gRPC
+    environment:
+      COLLECTOR_OTLP_ENABLED: true
+      COLLECTOR_ZIPKIN_HOST_PORT: "9411"
+      SPAN_STORAGE_TYPE: badger
+      BADGER_EPHEMERAL: false
+      BADGER_DIRECTORY_VALUE: /badger/data
+      BADGER_DIRECTORY_KEY: /badger/key
+    volumes:
+      - jaeger_data:/badger
+    networks:
+      - repairx-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:16686/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # TEMPORARILY DISABLED: Node Exporter for system metrics
-  # node-exporter:
-  #   image: prom/node-exporter:v1.7.0
-  #   container_name: repairx-node-exporter-prod
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9100:9100"
-  #   volumes:
-  #     - /proc:/host/proc:ro
-  #     - /sys:/host/sys:ro
-  #     - /:/rootfs:ro
-  #   command:
-  #     - '--path.procfs=/host/proc'
-  #     - '--path.rootfs=/rootfs'
-  #     - '--path.sysfs=/host/sys'
-  #     - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-  #   networks:
-  #     - repairx-network
+  # Node Exporter for system metrics
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: repairx-node-exporter-prod
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - repairx-network
 
-  # TEMPORARILY DISABLED: Redis Exporter for Redis metrics
-  # redis-exporter:
-  #   image: oliver006/redis_exporter:v1.56.0
-  #   container_name: repairx-redis-exporter-prod
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9121:9121"
-  #   environment:
-  #     REDIS_ADDR: redis://:${REDIS_PASSWORD}@redis:6379
-  #   networks:
-  #     - repairx-network
-  #   depends_on:
-  #     - redis
+  # Redis Exporter for Redis metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.56.0
+    container_name: repairx-redis-exporter-prod
+    restart: unless-stopped
+    ports:
+      - "9121:9121"
+    environment:
+      REDIS_ADDR: redis://:${REDIS_PASSWORD:-}@redis:6379
+    networks:
+      - repairx-network
+    depends_on:
+      - redis
 
-  # TEMPORARILY DISABLED: PostgreSQL Exporter for database metrics
-  # postgres-exporter:
-  #   image: prometheuscommunity/postgres-exporter:v0.15.0
-  #   container_name: repairx-postgres-exporter-prod
-  #   restart: unless-stopped
-  #   ports:
-  #     - "9187:9187"
-  #   environment:
-  #     DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
-  #   networks:
-  #     - repairx-network
-  #   depends_on:
-  #     - postgres
+  # PostgreSQL Exporter for database metrics
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: repairx-postgres-exporter-prod
+    restart: unless-stopped
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+    networks:
+      - repairx-network
+    depends_on:
+      - postgres
+
+  # cAdvisor for container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: repairx-cadvisor-prod
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    networks:
+      - repairx-network
+    privileged: true
+
+  # Blackbox Exporter for synthetic monitoring
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.24.0
+    container_name: repairx-blackbox-exporter-prod
+    restart: unless-stopped
+    ports:
+      - "9115:9115"
+    volumes:
+      - ./monitoring/blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml
+    networks:
+      - repairx-network
+    command:
+      - '--config.file=/etc/blackbox_exporter/config.yml'
 
 volumes:
   postgres_data:
@@ -278,15 +311,15 @@ volumes:
     driver: local
   backend_uploads:
     driver: local
-  # TEMPORARILY DISABLED: Monitoring volumes
-  # prometheus_data:
-  #   driver: local
-  # grafana_data:
-  #   driver: local
-  # alertmanager_data:
-  #   driver: local
-  # jaeger_data:
-  #   driver: local
+  # Monitoring volumes
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  alertmanager_data:
+    driver: local
+  jaeger_data:
+    driver: local
 
 networks:
   repairx-network:
