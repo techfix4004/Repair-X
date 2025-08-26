@@ -17,7 +17,7 @@ COPY . .
 # If using Prisma, generate client (remove this if not using Prisma)
 RUN npx prisma generate || true
 
-# Build for production (e.g., compiles TypeScript to dist/)
+# Build for production (compiles TypeScript to dist/)
 RUN npm run build
 
 # --- Production Runner Stage ---
