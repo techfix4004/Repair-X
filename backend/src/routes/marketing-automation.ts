@@ -681,7 +681,7 @@ export default async function marketingRoutes(_fastify: FastifyInstance) {
 
 // Helper functions
 async function processCampaign(_campaign: MarketingCampaign): Promise<void> {
-  console.log(`Processing _campaign: ${campaign.name}`);
+  console.log(`Processing _campaign: ${_campaign.name}`);
   
   // In a real implementation, this _would:
   // 1. Fetch audience based on segments and filters
@@ -691,11 +691,11 @@ async function processCampaign(_campaign: MarketingCampaign): Promise<void> {
   // 5. Update campaign metrics
   
   // Simulate campaign processing
-  campaign.metrics.sent = campaign.audience.targetCount;
-  campaign.metrics.delivered = Math.floor(campaign.audience.targetCount * 0.97);
-  campaign.metrics.opened = Math.floor(campaign.metrics.delivered * 0.45);
-  campaign.metrics.clicked = Math.floor(campaign.metrics.opened * 0.12);
-  campaign.metrics.converted = Math.floor(campaign.metrics.clicked * 0.08);
+  _campaign.metrics.sent = _campaign.audience.targetCount;
+  _campaign.metrics.delivered = Math.floor(_campaign.audience.targetCount * 0.97);
+  _campaign.metrics.opened = Math.floor(_campaign.metrics.delivered * 0.45);
+  _campaign.metrics.clicked = Math.floor(_campaign.metrics.opened * 0.12);
+  _campaign.metrics.converted = Math.floor(_campaign.metrics.clicked * 0.08);
 }
 
 async function processAutomationTrigger(
