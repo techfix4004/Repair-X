@@ -8,12 +8,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="font-inter antialiased">
+      <body className="font-inter antialiased bg-surface text-text-dark min-h-screen">
+        {/* TODO: Add global navigation, header, and role-based layout here */}
         {children}
       </body>
     </html>
