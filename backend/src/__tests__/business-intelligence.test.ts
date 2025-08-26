@@ -1,6 +1,6 @@
  
 /// <reference types="jest" />
-/* eslint-disable no-undef */
+ 
 /// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import dotenv from 'dotenv';
