@@ -46,7 +46,7 @@ describe('RepairX Core System Tests', () => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/api/auth/login',
-        _payload: {
+        payload: {
           email: 'admin@repairx.com',
           password: 'admin123'
         }
@@ -63,7 +63,7 @@ describe('RepairX Core System Tests', () => {
       const response = await fastify.inject({
         method: 'POST',
         url: '/api/auth/login',
-        _payload: {
+        payload: {
           email: 'invalid@repairx.com',
           password: 'wrongpass'
         }

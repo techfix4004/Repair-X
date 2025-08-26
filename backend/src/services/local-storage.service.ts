@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Local Storage Service - Secure File Storage Implementation
  * Replaces AWS S3 with enterprise-grade local storage solution

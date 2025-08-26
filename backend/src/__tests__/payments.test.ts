@@ -9,7 +9,7 @@
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
  
 // eslint-disable-next-line max-lines-per-function
@@ -24,13 +24,13 @@ describe('Payment Processing API Tests', () => {
       const paymentData = request.body as any;
       
       if (!(paymentData as any).amount || !(paymentData as any).currency) {
-        return reply.code(400).send({
+        return (reply as any).code(400).send({
           _success: false,
           _error: 'Amount and currency are required'
         });
       }
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           transactionId: `txn_${Date.now()}`,
@@ -50,7 +50,7 @@ describe('Payment Processing API Tests', () => {
     });
 
     app.post('/api/v1/payments/refund', async (request, reply: unknown) => {
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           refundId: `ref_${Date.now()}`,
@@ -63,7 +63,7 @@ describe('Payment Processing API Tests', () => {
     });
 
     app.get('/api/v1/payments/gateways', async (request, reply: unknown) => {
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           gateways: [
@@ -108,7 +108,7 @@ describe('Payment Processing API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/payments/process',
-      _payload: paymentData
+      payload: paymentData
     });
 
     expect(response.statusCode).toBe(200);
@@ -129,7 +129,7 @@ describe('Payment Processing API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/payments/process',
-      _payload: invalidData
+      payload: invalidData
     });
 
     expect(response.statusCode).toBe(400);
@@ -162,7 +162,7 @@ describe('Payment Processing API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/payments/refund',
-      _payload: refundData
+      payload: refundData
     });
 
     expect(response.statusCode).toBe(200);
@@ -179,7 +179,7 @@ describe('Payment Processing API Tests', () => {
       const response = await app.inject({
         method: 'POST',
         url: '/api/v1/payments/process',
-        _payload: {
+        payload: {
           amount: 100,
           _currency: currency,
           _gateway: 'stripe'

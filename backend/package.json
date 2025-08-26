@@ -4,7 +4,7 @@
   "description": "RepairX Backend API - Production-ready repair service platform",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "build:tsc": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",

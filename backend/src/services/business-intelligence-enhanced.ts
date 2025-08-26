@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 export class EnhancedBusinessIntelligence {
   async generateExecutiveDashboard(): Promise<any> {

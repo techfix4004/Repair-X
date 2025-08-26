@@ -9,7 +9,7 @@
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
  
 // eslint-disable-next-line max-lines-per-function
@@ -35,7 +35,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     
     // Mock job sheet routes
     app.post('/api/v1/jobs', async (request, reply: unknown) => {
-      return reply.code(201).send({
+      return (reply as any).code(201).send({
         _success: true,
         _data: {
           jobId: `job_${Date.now()}`,
@@ -57,13 +57,13 @@ describe('Job Sheet Lifecycle API Tests', () => {
       const { state, reason  } = (request.body as Record<string, any>);
       
       if (!jobStates.includes(state)) {
-        return reply.code(400).send({
+        return (reply as any).code(400).send({
           _success: false,
           _error: 'Invalid job state'
         });
       }
 
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           _jobId,
@@ -78,7 +78,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     });
 
     app.get('/api/v1/jobs/:_jobId/workflow', async (request, reply: unknown) => {
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           availableStates: jobStates,
@@ -94,7 +94,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     });
 
     app.post('/api/v1/jobs/:_jobId/quality-check', async (request, reply: unknown) => {
-      return reply.send({
+      return (reply as any).send({
         _success: true,
         _data: {
           qualityScore: 98.5,
@@ -129,7 +129,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/jobs',
-      _payload: _jobData
+      payload: _jobData
     });
 
     expect(response.statusCode).toBe(201);
@@ -150,7 +150,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     const response = await app.inject({
       method: 'PUT',
       url: `/api/v1/jobs/${_jobId}/state`,
-      _payload: stateUpdate
+      payload: stateUpdate
     });
 
     expect(response.statusCode).toBe(200);
@@ -170,7 +170,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     const response = await app.inject({
       method: 'PUT',
       url: `/api/v1/jobs/${_jobId}/state`,
-      _payload: invalidState
+      payload: invalidState
     });
 
     expect(response.statusCode).toBe(400);
@@ -204,7 +204,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/jobs/job_123/quality-check',
-      _payload: qualityData
+      payload: qualityData
     });
 
     expect(response.statusCode).toBe(200);
@@ -220,7 +220,7 @@ describe('Job Sheet Lifecycle API Tests', () => {
       const response = await app.inject({
         method: 'PUT',
         url: '/api/v1/jobs/job_123/state',
-        _payload: { state }
+        payload: { state }
       });
 
       expect(response.statusCode).toBe(200);

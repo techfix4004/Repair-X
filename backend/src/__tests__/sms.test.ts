@@ -9,7 +9,7 @@
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
  
 // eslint-disable-next-line max-lines-per-function
@@ -110,7 +110,7 @@ describe('SMS Management API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/sms/send',
-      _payload: smsData
+      payload: smsData
     });
 
     expect(response.statusCode).toBe(200);
@@ -131,7 +131,7 @@ describe('SMS Management API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/sms/send',
-      _payload: invalidData
+      payload: invalidData
     });
 
     expect(response.statusCode).toBe(400);
@@ -166,7 +166,7 @@ describe('SMS Management API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/sms/templates',
-      _payload: templateData
+      payload: templateData
     });
 
     expect(response.statusCode).toBe(201);
@@ -204,7 +204,7 @@ describe('SMS Management API Tests', () => {
       const response = await app.inject({
         method: 'POST',
         url: '/api/v1/sms/send',
-        _payload: {
+        payload: {
           recipient: '+1234567890',
           _message: `Your job status updated to: ${state}`,
           _type: 'status_update'

@@ -26,7 +26,7 @@ describe('Geolocation Service', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/reverse-geocode',
-      _payload: {
+      payload: {
         latitude: 37.7749,
         _longitude: -122.4194
       }
@@ -44,7 +44,7 @@ describe('Geolocation Service', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/check-service-area',
-      _payload: {
+      payload: {
         latitude: 37.7749,
         _longitude: -122.4194,
         _radiusKm: 50
@@ -62,7 +62,7 @@ describe('Geolocation Service', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/nearby-technicians',
-      _payload: {
+      payload: {
         latitude: 37.7749,
         _longitude: -122.4194,
         _radiusKm: 25
@@ -80,7 +80,7 @@ describe('Geolocation Service', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/travel-time',
-      _payload: {
+      payload: {
         origin: { latitude: 37.7749, _longitude: -122.4194 },
         _destination: { latitude: 37.7849, _longitude: -122.4094 },
         _mode: 'driving'
@@ -99,7 +99,7 @@ describe('Geolocation Service', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/reverse-geocode',
-      _payload: {
+      payload: {
         latitude: null,
         _longitude: -122.4194
       }

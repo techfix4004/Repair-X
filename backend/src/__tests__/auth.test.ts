@@ -1,7 +1,7 @@
 /// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerPlugins } from '../plugins/index';
 
 // eslint-disable-next-line max-lines-per-function
@@ -13,7 +13,7 @@ describe('Authentication API Tests', () => {
     await registerPlugins(app);
     
     // Add auth routes for testing
-    app.post('/api/v1/auth/login', async (request: unknown, reply: unknown) => {
+    app.post('/api/v1/auth/login', async (request: FastifyRequest, reply: FastifyReply) => {
       const { email, password } = (request.body as Record<string, any>);
       
       // Mock authentication logic
@@ -53,7 +53,7 @@ describe('Authentication API Tests', () => {
       };
     });
 
-    app.post('/api/v1/auth/register', async (request: unknown, reply: unknown) => {
+    app.post('/api/v1/auth/register', async (request: FastifyRequest, reply: FastifyReply) => {
       const { email, password, name, role } = (request.body as Record<string, any>);
       
       if (!email || !password || !name) {
@@ -91,7 +91,7 @@ describe('Authentication API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/auth/login',
-      _payload: loginData
+      payload: loginData
     });
 
     expect(response.statusCode).toBe(200);
@@ -112,7 +112,7 @@ describe('Authentication API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/auth/login',
-      _payload: loginData
+      payload: loginData
     });
 
     expect(response.statusCode).toBe(401);
@@ -125,7 +125,7 @@ describe('Authentication API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/auth/login',
-      _payload: { email: 'test@test.com' } // Missing password
+      payload: { email: 'test@test.com' } // Missing password
     });
 
     expect(response.statusCode).toBe(400);
@@ -145,7 +145,7 @@ describe('Authentication API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/auth/register',
-      _payload: registerData
+      payload: registerData
     });
 
     expect(response.statusCode).toBe(200);
@@ -161,7 +161,7 @@ describe('Authentication API Tests', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/api/v1/auth/register',
-      _payload: { email: 'test@test.com' } // Missing password and name
+      payload: { email: 'test@test.com' } // Missing password and name
     });
 
     expect(response.statusCode).toBe(400);

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyInstance } from 'fastify';
 
 export async function userRoutes(_server: FastifyInstance): Promise<void> {

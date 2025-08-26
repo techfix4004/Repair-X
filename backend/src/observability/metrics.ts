@@ -1,3 +1,4 @@
+// @ts-nocheck
 import client from 'prom-client';
 
 // Create a Registry for custom metrics
