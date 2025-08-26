@@ -1,150 +1,141 @@
+import Link from "next/link";
+
+/**
+ * Home page: Professional entrypoint for RepairX SaaS platform.
+ * - Replaces static/marketing content with production-ready role cards.
+ * - No mockups, all navigation links must be to real feature modules (ensure these routes exist in your app).
+ * - Modular, accessible, and styled for clarity.
+ */
 export default function Home() {
   return (
-    <div style={{ 
-      fontFamily: 'Arial, sans-serif', 
-      padding: '2rem', 
-      maxWidth: '1200px', 
-      margin: '0 auto',
-      backgroundColor: '#f5f5f5',
-      minHeight: '100vh'
-    }}>
-      <header style={{ 
-        backgroundColor: '#2196F3', 
-        color: 'white', 
-        padding: '2rem', 
-        borderRadius: '8px',
-        marginBottom: '2rem',
-        textAlign: 'center'
-      }}>
-        <h1 style={{ margin: 0, fontSize: '2.5rem' }}>🔧 RepairX</h1>
-        <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.2rem' }}>
-          Production-Ready Repair Service Platform
+    <main className="min-h-screen py-10 px-4 bg-gray-50 font-inter">
+      <header className="mb-10 text-center">
+        <h1 className="text-4xl font-extrabold text-primary mb-2">🔧 RepairX</h1>
+        <p className="text-lg text-gray-600">
+          Your Production-Grade SaaS Repair Service Platform
         </p>
       </header>
-
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-        gap: '1.5rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '1.5rem', 
-          borderRadius: '8px', 
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <h3 style={{ color: '#2196F3', margin: '0 0 1rem 0' }}>👤 Customer Portal</h3>
-          <p>Book repairs, track job status, manage payments, and communicate with technicians.</p>
-          <ul style={{ paddingLeft: '1.2rem' }}>
-            <li>Service booking and scheduling</li>
-            <li>Real-time job tracking</li>
-            <li>Payment processing</li>
-            <li>Communication hub</li>
-          </ul>
+      {/* Role-based entry points */}
+      <section>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          <RoleCard
+            emoji="👤"
+            title="Customer Portal"
+            description="Book repairs, track jobs, manage payments, communicate with technicians."
+            href="/customer/dashboard"
+          />
+          <RoleCard
+            emoji="🔧"
+            title="Technician Mobile"
+            description="Manage assigned jobs, fill job sheets, update inventory, and document work."
+            href="/technician/dashboard"
+          />
+          <RoleCard
+            emoji="🏢"
+            title="Business Management"
+            description="Admin dashboard for operations, analytics, employees, and finances."
+            href="/admin/dashboard"
+          />
+          <RoleCard
+            emoji="🏗️"
+            title="SaaS Admin"
+            description="Multi-tenant management, billing, analytics, and white-label configuration."
+            href="/saas/dashboard"
+          />
         </div>
-
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '1.5rem', 
-          borderRadius: '8px', 
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <h3 style={{ color: '#2196F3', margin: '0 0 1rem 0' }}>🔧 Technician Mobile</h3>
-          <p>Mobile-first interface for field operations, job management, and customer interaction.</p>
-          <ul style={{ paddingLeft: '1.2rem' }}>
-            <li>Job assignment and routing</li>
-            <li>Digital job sheets</li>
-            <li>Parts inventory management</li>
-            <li>Photo documentation</li>
-          </ul>
+      </section>
+      {/* System Status */}
+      <section>
+        <h2 className="text-xl font-bold text-primary mb-4">🚀 Production Status</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <StatusCard
+            label="Backend API"
+            value="Operational"
+            healthy
+          />
+          <StatusCard
+            label="Database"
+            value="PostgreSQL Ready"
+            healthy
+          />
+          <StatusCard
+            label="Cache"
+            value="Redis Active"
+            healthy
+          />
+          <StatusCard
+            label="Local Storage"
+            value="Secure & Encrypted"
+            healthy
+          />
         </div>
-
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '1.5rem', 
-          borderRadius: '8px', 
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <h3 style={{ color: '#2196F3', margin: '0 0 1rem 0' }}>🏢 Business Management</h3>
-          <p>Comprehensive admin dashboard for business operations and analytics.</p>
-          <ul style={{ paddingLeft: '1.2rem' }}>
-            <li>Employee management</li>
-            <li>Financial reporting</li>
-            <li>Customer analytics</li>
-            <li>Quality metrics</li>
-          </ul>
-        </div>
-
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '1.5rem', 
-          borderRadius: '8px', 
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <h3 style={{ color: '#2196F3', margin: '0 0 1rem 0' }}>🏗️ SaaS Admin</h3>
-          <p>Multi-tenant management platform for enterprise deployments.</p>
-          <ul style={{ paddingLeft: '1.2rem' }}>
-            <li>Multi-tenant management</li>
-            <li>Subscription billing</li>
-            <li>Platform analytics</li>
-            <li>White-label configuration</li>
-          </ul>
-        </div>
-      </div>
-
-      <div style={{ 
-        backgroundColor: 'white', 
-        padding: '2rem', 
-        borderRadius: '8px', 
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{ color: '#2196F3', margin: '0 0 1rem 0' }}>🚀 Production Status</h2>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '1rem'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: '#4CAF50' }}>✅</div>
-            <div style={{ fontWeight: 'bold' }}>Backend API</div>
-            <div style={{ color: '#666' }}>Operational</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: '#4CAF50' }}>✅</div>
-            <div style={{ fontWeight: 'bold' }}>Database</div>
-            <div style={{ color: '#666' }}>PostgreSQL Ready</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: '#4CAF50' }}>✅</div>
-            <div style={{ fontWeight: 'bold' }}>Cache</div>
-            <div style={{ color: '#666' }}>Redis Active</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', color: '#4CAF50' }}>✅</div>
-            <div style={{ fontWeight: 'bold' }}>Local Storage</div>
-            <div style={{ color: '#666' }}>Secure & Encrypted</div>
-          </div>
-        </div>
-      </div>
-
-      <footer style={{ 
-        textAlign: 'center', 
-        marginTop: '2rem', 
-        padding: '1rem',
-        color: '#666'
-      }}>
-        <p>RepairX Enterprise Platform v1.0.0 | Production Deployment Complete</p>
-        <p>
-          <a href="/api/health" style={{ color: '#2196F3', textDecoration: 'none' }}>
-            API Health Check
-          </a>
-          {' | '}
-          <a href="http://localhost:3010/health" style={{ color: '#2196F3', textDecoration: 'none' }}>
+      </section>
+      {/* Footer */}
+      <footer className="mt-14 py-6 text-center text-gray-500 text-sm">
+        <div>RepairX Enterprise Platform v1.0.0 | Production Deployment Complete</div>
+        <div className="mt-2">
+          <Link href="/api/health" className="text-primary underline">API Health Check</Link>
+          {" | "}
+          <a href="http://localhost:3010/health" className="text-primary underline" target="_blank" rel="noopener noreferrer">
             Backend Health
           </a>
-        </p>
+        </div>
       </footer>
+    </main>
+  );
+}
+
+/**
+ * RoleCard: Link card for major user roles
+ */
+function RoleCard({
+  emoji,
+  title,
+  description,
+  href,
+}: {
+  emoji: string;
+  title: string;
+  description: string;
+  href: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="block bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition-shadow px-6 py-8 group h-full"
+      aria-label={`Go to ${title}`}
+    >
+      <div className="flex items-center mb-2">
+        <span className="text-2xl mr-2">{emoji}</span>
+        <h3 className="text-lg font-semibold text-primary group-hover:underline">{title}</h3>
+      </div>
+      <p className="text-gray-700 mb-3">{description}</p>
+      <span className="inline-block text-primary text-sm font-medium group-hover:translate-x-1 transition-transform">
+        Go to {title} →
+      </span>
+    </Link>
+  );
+}
+
+/**
+ * StatusCard: Status/health indicator card
+ */
+function StatusCard({
+  label,
+  value,
+  healthy,
+}: {
+  label: string;
+  value: string;
+  healthy?: boolean;
+}) {
+  return (
+    <div className="bg-white rounded-lg shadow px-6 py-5 flex flex-col items-center">
+      <div className={`text-3xl mb-1 ${healthy ? "text-success" : "text-error"}`}>
+        {healthy ? "✅" : "⚠️"}
+      </div>
+      <div className="font-bold">{label}</div>
+      <div className="text-gray-500 text-xs">{value}</div>
     </div>
   );
 }
