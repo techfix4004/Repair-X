@@ -4,9 +4,9 @@
   "description": "RepairX Backend API - Production-ready repair service platform",
   "main": "dist/index.js",
   "scripts": {
-    "build": "echo 'Skipping TypeScript build for now - using JavaScript directly'",
+    "build": "tsc",
     "build:tsc": "tsc",
-    "start": "node src/index.js || ts-node src/index.ts",
+    "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "test": "echo 'Running tests without strict build' && jest --testPathPattern='auth|devices'",
     "test:watch": "jest --watch",
