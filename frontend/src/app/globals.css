@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* RepairX Brand Colors */
   --color-primary: #2563EB;
   --color-primary-dark: #1D4ED8;
   --color-text-dark: #1A1A1A;
@@ -26,7 +25,6 @@
   --color-surface: var(--color-surface);
   --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
   
-  /* Custom color utilities */
   --color-blue-50: #eff6ff;
   --color-blue-100: #dbeafe;
   --color-blue-200: #bfdbfe;
