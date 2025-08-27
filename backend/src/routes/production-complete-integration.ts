@@ -66,8 +66,6 @@ class WorkflowManager {
 
 // Enhanced Field Operations with GPS and Route Optimization
 class EnhancedFieldOperations {
-  private prisma: PrismaClient;
-
   constructor() {
     // Using shared database connection
   }
