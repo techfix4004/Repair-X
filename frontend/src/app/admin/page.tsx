@@ -1,31 +1,24 @@
 /**
- * Admin Business Management Page - Enhanced with Complete Business Settings
+ * Admin Business Management Page - Enhanced with Modern UI/UX
  * 
- * Comprehensive enterprise dashboard with advanced analytics:
- * - Complete 20+ business setting categories with detailed modals
- * - Enhanced workflow designer with drag-and-drop business rule creation
- * - Real-time KPI dashboards with Six Sigma quality metrics
- * - Employee management with role-based permissions
- * - Financial reporting with tax compliance and profit analysis
- * - Customer relationship management with segmentation
+ * Comprehensive enterprise dashboard with advanced business logic:
+ * - Modern Material-UI dashboard with real-time analytics
+ * - Advanced comment and payment modals with rich features
+ * - Enhanced business settings with multi-tab configuration
+ * - Professional admin profile management
+ * - Real-time notifications and job management
+ * - Six Sigma quality metrics and performance tracking
  */
 
+'use client';
+
 import React from 'react';
-import { AdminDashboard } from '../../components/MultiRoleDashboard';
-import { EnhancedBusinessSettings } from '../../components/EnhancedBusinessSettings';
+import { AdminDashboard } from '../../components/advanced/AdminDashboard';
 
 export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Enhanced Business Settings Management System */}
-      <div className="p-6">
-        <EnhancedBusinessSettings tenantId="admin" />
-      </div>
-      
-      {/* Original Admin Dashboard (can be toggled or integrated) */}
-      <div className="mt-8 px-6">
-        <AdminDashboard />
-      </div>
+      <AdminDashboard organizationId="admin-org" />
     </div>
   );
 }
