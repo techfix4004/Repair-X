@@ -1,32 +1,33 @@
 // @ts-nocheck
 import { FastifyInstance } from 'fastify';
 
+// Correction: use the passed _server parameter, not an undefined "server"
 export async function userRoutes(_server: FastifyInstance): Promise<void> {
-  server.get('/', async () => {
+  _server.get('/', async () => {
     return { _message: 'User routes - Coming soon' };
   });
 }
 
 export async function serviceRoutes(_server: FastifyInstance): Promise<void> {
-  server.get('/', async () => {
+  _server.get('/', async () => {
     return { _message: 'Service routes - Coming soon' };
   });
 }
 
 export async function bookingRoutes(_server: FastifyInstance): Promise<void> {
-  server.get('/', async () => {
+  _server.get('/', async () => {
     return { _message: 'Booking routes - Coming soon' };
   });
 }
 
 export async function paymentRoutes(_server: FastifyInstance): Promise<void> {
-  server.get('/', async () => {
+  _server.get('/', async () => {
     return { _message: 'Payment routes - Coming soon' };
   });
 }
 
 export async function qualityRoutes(_server: FastifyInstance): Promise<void> {
-  server.get('/metrics', async () => {
+  _server.get('/metrics', async () => {
     return {
       _message: 'Six Sigma Quality Metrics - Coming soon',
       _targets: {
