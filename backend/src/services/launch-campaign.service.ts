@@ -162,6 +162,7 @@ class LaunchCampaignService {
   private getMockMetrics(): CampaignMetrics {
     return {
       reach: 125000,
+      totalReach: 125000,
       impressions: 450000,
       totalImpressions: 450000,
       clicks: 18500,

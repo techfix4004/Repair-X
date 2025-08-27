@@ -226,9 +226,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       const submission = await asoService.submitToAppStore(appId, platform);
 
       expect(submission).toBeDefined();
-      expect((submission as any)._submissionId ?? submission.submissionId).toMatch(/^submission_\d+_ios$/);
-      expect((submission as any).status ?? submission._status).toBe('submitted');
-      expect((submission as any).estimatedReviewTime ?? submission._estimatedReviewTime).toBe('24-48 hours');
+      expect((submission as any)._submissionId).toMatch(/^submission_\d+_ios$/);
+      expect((submission as any).status).toBe('submitted');
+      expect((submission as any).estimatedReviewTime).toBe('24-48 hours');
     });
   });
 
@@ -250,12 +250,12 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       const churnRisk = await customerSuccessService.assessChurnRisk(customerId);
 
       expect(churnRisk).toBeDefined();
-      expect(['low', 'medium', 'high', 'critical']).toContain(churnRisk._riskLevel ?? churnRisk.riskLevel);
-      expect(churnRisk.riskFactors ?? churnRisk._riskFactors).toBeInstanceOf(Array);
-      expect(churnRisk.recommendations ?? churnRisk._recommendations).toBeInstanceOf(Array);
+      expect(['low', 'medium', 'high', 'critical']).toContain(churnRisk._riskLevel);
+      expect(churnRisk.riskFactors).toBeInstanceOf(Array);
+      expect(churnRisk.recommendations).toBeInstanceOf(Array);
       expect(typeof churnRisk.interventionRequired).toBe('boolean');
       if (churnRisk.interventionRequired) {
-        expect((churnRisk.recommendations ?? churnRisk._recommendations).length).toBeGreaterThan(0);
+        expect(churnRisk.recommendations.length).toBeGreaterThan(0);
       }
     });
 
@@ -329,9 +329,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       const npsQuestion = survey.questions.find((q: any) => q.id === 'nps_score');
       expect(npsQuestion).toBeDefined();
-      expect(npsQuestion.type ?? npsQuestion._type).toBe('rating');
-      expect(npsQuestion.required ?? npsQuestion._required).toBe(true);
-      expect(npsQuestion.scale ?? npsQuestion._scale).toEqual({ min: 0, max: 10 });
+      expect(npsQuestion.type).toBe('rating');
+      expect(npsQuestion.required).toBe(true);
+      expect(npsQuestion.scale).toEqual({ min: 0, max: 10 });
     });
 
     it('should create retention campaign', async () => {
@@ -395,6 +395,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
             id: 'test_channel',
             type: 'pr' as const,
             budget: 5000,
+            _budget: 5000,
+            status: 'active',
+            config: {},
             targetAudience: 'Tech media',
             content: { headlines: ['Test'], descriptions: ['Test'], images: [], videos: [], callToActions: [], landingPages: [] },
             schedule: { startDate: new Date(), endDate: new Date(), frequency: 'once' as const, timing: '09:00', timezone: 'UTC' },
@@ -433,7 +436,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       }
 
       expect(healthScore).toBeGreaterThanOrEqual(0);
-      expect(churnRisk._riskLevel ?? churnRisk.riskLevel).toBeDefined();
+      expect(churnRisk._riskLevel).toBeDefined();
     });
   });
 

@@ -320,6 +320,7 @@ export interface ComplianceStatus {
 // Additional interfaces for LaunchCampaign
 export interface CampaignMetrics {
   reach: number;
+  totalReach: number;
   impressions: number;
   totalImpressions: number;
   clicks: number;

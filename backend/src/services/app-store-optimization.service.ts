@@ -579,7 +579,7 @@ class AppStoreOptimizationService {
   }
 
   // Submission Management
-  async submitToAppStore(appId: string, _platform: 'ios' | 'android'): Promise<{
+  async submitToAppStore(appId: string, platform: 'ios' | 'android'): Promise<{
     _submissionId: string;
     status: string;
     estimatedReviewTime: string;
@@ -590,9 +590,9 @@ class AppStoreOptimizationService {
     console.log(`Submitting ${appId} to ${platform} app store`);
     
     return {
-      submissionId,
-      _status: 'submitted',
-      _estimatedReviewTime: platform === 'ios' ? '24-48 hours' : '1-3 days'
+      _submissionId: submissionId,
+      status: 'submitted',
+      estimatedReviewTime: platform === 'ios' ? '24-48 hours' : '1-3 days'
     };
   }
 
