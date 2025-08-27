@@ -4,8 +4,7 @@
  */
 
 /// <reference types="jest" />
-import { describe, test, it, expect, beforeAll, afterAll } from '@jest/globals';
-
+import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import Fastify, { FastifyInstance } from 'fastify';
 
 // eslint-disable-next-line max-lines-per-function
