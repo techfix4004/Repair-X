@@ -1,4 +1,5 @@
 import Fastify, { FastifyInstance } from 'fastify';
+import { registerPhase5Routes } from './routes/phase5-advanced-ai';
 
 const fastify: FastifyInstance = Fastify({
   logger: {
@@ -8,14 +9,8 @@ const fastify: FastifyInstance = Fastify({
 
 // Register plugins
 async function registerPlugins() {
-  await fastify.register(require('@fastify/cors'), {
-    origin: true,
-    credentials: true
-  });
-  
-  await fastify.register(require('@fastify/helmet'), {
-    global: true
-  });
+  // Register Phase 5 Advanced AI routes
+  await registerPhase5Routes(fastify);
 }
 
 // Simple health check
