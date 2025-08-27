@@ -19,7 +19,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 
 // Job Sheet State Definitions
-enum JobState {
+export enum JobState {
   CREATED = 'CREATED',
   IN_DIAGNOSIS = 'IN_DIAGNOSIS',
   AWAITING_APPROVAL = 'AWAITING_APPROVAL',
