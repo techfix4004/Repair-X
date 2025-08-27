@@ -17,7 +17,7 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Install only the dependencies needed for building
+# Install all dependencies
 COPY package.json package-lock.json* yarn.lock* pnpm-lock.yaml* ./
 RUN \
   if [ -f package-lock.json ]; then npm install --legacy-peer-deps; \
@@ -25,11 +25,11 @@ RUN \
   elif [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
   else npm install; fi
 
-# Copy source files
+# Copy source files (including prisma/)
 COPY . .
 
-# If using Prisma, generate client (remove this if not using Prisma)
-RUN npx prisma generate || true
+# Generate Prisma client (after code and dependencies are in place)
+RUN npx prisma generate
 
 # Build for production (compiles TypeScript to dist/)
 RUN npm run build
@@ -66,6 +66,10 @@ RUN if [ -f package-lock.json ]; then npm ci --omit=dev --legacy-peer-deps && np
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nodejs:nodejs /app/uploads ./uploads
+
+# --- CRITICAL: Copy generated Prisma client from builder ---
+COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma
 
 # Change to non-root user
 USER nodejs
