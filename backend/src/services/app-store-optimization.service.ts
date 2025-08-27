@@ -203,7 +203,8 @@ class AppStoreOptimizationService {
     await this.prisma.appStoreOptimization.update({
       where: { id: optimizationId },
       data: {
-        keywordRankings: rankings,
+        // Correction: cast to Prisma.JsonValue to resolve type error when storing array in JSON field
+        keywordRankings: rankings as unknown as object,
       },
     });
 
