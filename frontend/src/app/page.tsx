@@ -69,7 +69,7 @@ export default function Home() {
       emoji: '🏗️',
       title: 'SaaS Admin',
       description: 'Multi-tenant management, billing, analytics, and white-label configuration.',
-      href: '/saas/dashboard',
+      href: '/saas-admin/dashboard',
       icon: <AdminIcon />,
       color: 'warning' as const,
       features: ['Multi-tenant', 'White-label', 'Enterprise billing'],

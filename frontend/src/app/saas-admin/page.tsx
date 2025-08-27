@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * SaaS Admin Panel Page
  * 
@@ -12,13 +14,16 @@
  * - System-wide compliance monitoring
  */
 
-import React from 'react';
-import { SaaSAdminPanel } from '../../components/MultiRoleDashboard';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SaaSAdminPage() {
-  return (
-    <div>
-      <SaaSAdminPanel />
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to dashboard
+    router.push('/saas-admin/dashboard');
+  }, [router]);
+
+  return null;
 }
