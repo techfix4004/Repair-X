@@ -1,18 +1,16 @@
-// @ts-nocheck
-
 import { FastifyInstance } from 'fastify';
 
 export async function healthRoutes(fastify: FastifyInstance) {
   fastify.get('/health', async (request, reply: unknown) => {
     const health = {
-      _status: 'healthy',
-      _timestamp: new Date().toISOString(),
-      _version: '1.0.0',
-      _environment: process.env['NODE_ENV'] || 'development',
-      _services: {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      environment: process.env['NODE_ENV'] || 'development',
+      services: {
         database: 'connected',
-        _api: 'operational',
-        _sixSigma: 'monitoring'
+        api: 'operational',
+        sixSigma: 'monitoring'
       }
     };
     

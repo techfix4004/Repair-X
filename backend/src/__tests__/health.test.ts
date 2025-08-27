@@ -14,7 +14,7 @@ describe('Backend Basic Tests', () => {
     
     // Add basic health route
     app.get('/health', async () => {
-      return { _status: 'ok', _timestamp: new Date().toISOString() };
+      return { status: 'ok', timestamp: new Date().toISOString() };
     });
     
     await app.ready();
