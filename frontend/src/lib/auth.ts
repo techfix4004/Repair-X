@@ -1,14 +1,19 @@
 import { create } from 'zustand';
 
+type LoginType = 'USER_CLIENT' | 'ORGANIZATION' | 'SAAS_ADMIN';
+
 interface User {
   _id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: 'CUSTOMER' | 'TECHNICIAN' | 'DISPATCHER' | 'ADMIN' | 'SUPER_ADMIN';
+  role: 'CUSTOMER' | 'TECHNICIAN' | 'DISPATCHER' | 'ADMIN' | 'SUPER_ADMIN' | 'SAAS_ADMIN';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_VERIFICATION';
   phone?: string;
   tenantId?: string; // For multi-tenant SaaS
+  organizationName?: string;
+  loginType: LoginType;
+  permissions: string[];
 }
 
 interface AuthState {
@@ -17,109 +22,132 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  loginType: LoginType | null;
 }
 
 interface AuthActions {
-  login: (email: string, _password: string) => Promise<void>;
-  _register: (data: RegisterData) => Promise<void>;
-  _logout: () => void;
-  _refreshToken: () => Promise<void>;
-  _clearError: () => void;
-  _setLoading: (loading: boolean) => void;
-  _updateUser: (userData: Partial<User>) => void;
+  login: (email: string, password: string, loginType: LoginType) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => void;
+  refreshToken: () => Promise<void>;
+  clearError: () => void;
+  setLoading: (loading: boolean) => void;
+  updateUser: (userData: Partial<User>) => void;
 }
 
 interface RegisterData {
-  _email: string;
+  email?: string;
+  emailOrPhone?: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  confirmPassword?: string;
+  firstName?: string;
+  lastName?: string;
   phone?: string;
-  role?: 'CUSTOMER' | 'TECHNICIAN';
+  organizationName?: string;
+  contactPerson?: string;
+  tenantDomain?: string;
+  adminKey?: string;
+  loginType: LoginType;
+  role?: 'CUSTOMER' | 'TECHNICIAN' | 'ADMIN' | 'SAAS_ADMIN';
 }
 
 type AuthStore = AuthState & AuthActions;
 
-// Mock API functions (replace with real API calls)
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '_http://localhost:3001/api/v1';
+// API configuration for different login types
+const getApiBaseUrl = (loginType: LoginType): string => {
+  switch (loginType) {
+    case 'SAAS_ADMIN':
+      return process.env.NEXT_PUBLIC_SAAS_ADMIN_API_URL || 'http://localhost:3002/api/v1';
+    case 'ORGANIZATION':
+    case 'USER_CLIENT':
+    default:
+      return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+  }
+};
 
-async function apiLogin(email: string, _password: string): Promise<{ user: User; token: string }> {
+async function apiLogin(email: string, password: string, loginType: LoginType): Promise<{ user: User; token: string }> {
+  const apiBaseUrl = getApiBaseUrl(loginType);
+  
   const response = await fetch(`${apiBaseUrl}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password: _password }),
+    body: JSON.stringify({ 
+      email, 
+      password, 
+      loginType,
+      // Add specific fields based on login type
+      ...(loginType === 'USER_CLIENT' && { allowEmailOrPhone: true }),
+      ...(loginType === 'ORGANIZATION' && { requireOrganization: true }),
+      ...(loginType === 'SAAS_ADMIN' && { requireAdminAccess: true }),
+    }),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Login failed');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `${loginType} authentication failed`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return data;
 }
 
-async function apiRegister(_data: RegisterData): Promise<{ user: User; token: string }> {
+async function apiRegister(registerData: RegisterData): Promise<{ user: User; token: string }> {
+  const apiBaseUrl = getApiBaseUrl(registerData.loginType);
+  
   const response = await fetch(`${apiBaseUrl}/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(_data),
+    body: JSON.stringify(registerData),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Registration failed');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Registration failed');
   }
 
-  return response.json();
+  const data = await response.json();
+  return data;
 }
 
-async function apiRefreshToken(token: string): Promise<{ token: string; user: User }> {
-  const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Token refresh failed');
-  }
-
-  return response.json();
-}
-
-// eslint-disable-next-line max-lines-per-function
-// eslint-disable-next-line max-lines-per-function
-export const useAuthStore = create<AuthStore>()((set, get) => ({
+export const useAuth = create<AuthStore>((set, get) => ({
   // Initial state
   user: null,
-  token: null,
+  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
   isLoading: false,
   error: null,
   isAuthenticated: false,
+  loginType: typeof window !== 'undefined' ? localStorage.getItem('loginType') as LoginType : null,
 
   // Actions
-  login: async (email: string, _password: string) => {
+  login: async (email: string, password: string, loginType: LoginType) => {
     set({ isLoading: true, error: null });
     
     try {
-      const response = await apiLogin(email, _password);
+      const { user, token } = await apiLogin(email, password, loginType);
+      
+      // Store auth data
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('loginType', loginType);
+      }
       
       set({
-        user: response.user,
-        token: response.token,
+        user: { ...user, loginType },
+        token,
         isAuthenticated: true,
         isLoading: false,
         error: null,
+        loginType,
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
       set({
-        error: error instanceof Error ? error.message : 'Login failed',
+        error: errorMessage,
         isLoading: false,
         isAuthenticated: false,
       });
@@ -127,22 +155,31 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     }
   },
 
-  _register: async (data: RegisterData) => {
+  register: async (data: RegisterData) => {
     set({ isLoading: true, error: null });
     
     try {
-      const response = await apiRegister(data);
+      const { user, token } = await apiRegister(data);
+      
+      // Store auth data
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('loginType', data.loginType);
+      }
       
       set({
-        user: response.user,
-        token: response.token,
+        user: { ...user, loginType: data.loginType },
+        token,
         isAuthenticated: true,
         isLoading: false,
         error: null,
+        loginType: data.loginType,
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
       set({
-        error: error instanceof Error ? error.message : 'Registration failed',
+        error: errorMessage,
         isLoading: false,
         isAuthenticated: false,
       });
@@ -150,57 +187,103 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     }
   },
 
-  _logout: () => {
+  logout: () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('loginType');
+    }
+    
     set({
       user: null,
       token: null,
       isAuthenticated: false,
+      loginType: null,
       error: null,
     });
   },
 
-  _refreshToken: async () => {
-    const { token } = get();
-    if (!token) {
-      throw new Error('No token available');
-    }
+  refreshToken: async () => {
+    const { token, loginType } = get();
+    if (!token || !loginType) return;
 
     try {
-      const response = await apiRefreshToken(token);
-      
-      set({
-        token: response.token,
-        user: response.user,
-        isAuthenticated: true,
+      const apiBaseUrl = getApiBaseUrl(loginType);
+      const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
+
+      if (response.ok) {
+        const { user, token: newToken } = await response.json();
+        
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', newToken);
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+        
+        set({
+          user: { ...user, loginType },
+          token: newToken,
+          isAuthenticated: true,
+        });
+      } else {
+        // Token invalid, logout user
+        get().logout();
+      }
     } catch (error) {
-      // If refresh fails, logout user
-      get()._logout();
-      throw error;
+      console.error('Token refresh failed:', error);
+      get().logout();
     }
   },
 
-  _clearError: () => {
-    set({ error: null });
-  },
-
-  _setLoading: (loading: boolean) => {
-    set({ isLoading: loading });
-  },
-
-  _updateUser: (userData: Partial<User>) => {
-    const { user } = get();
-    if (user) {
-      set({
-        user: { ...user, ...userData }
-      });
+  clearError: () => set({ error: null }),
+  
+  setLoading: (loading: boolean) => set({ isLoading: loading }),
+  
+  updateUser: (userData: Partial<User>) => {
+    const currentUser = get().user;
+    if (currentUser) {
+      const updatedUser = { ...currentUser, ...userData };
+      set({ user: updatedUser });
+      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
     }
   },
 }));
 
+// Initialize auth state from localStorage on app start
+if (typeof window !== 'undefined') {
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+  const loginType = localStorage.getItem('loginType') as LoginType;
+  
+  if (token && userStr && loginType) {
+    try {
+      const user = JSON.parse(userStr);
+      useAuth.setState({
+        user: { ...user, loginType },
+        token,
+        isAuthenticated: true,
+        loginType,
+      });
+    } catch (error) {
+      console.error('Failed to parse stored user data:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('loginType');
+    }
+  }
+}
+
 // Role-based route protection utilities
-export const hasRole = (user: User | null, _allowedRoles: User['role'][]): boolean => {
-  return user ? _allowedRoles.includes(user.role) : false;
+export const hasRole = (user: User | null, allowedRoles: User['role'][]): boolean => {
+  return user ? allowedRoles.includes(user.role) : false;
 };
 
 export const isCustomer = (user: User | null): boolean => {
@@ -216,61 +299,23 @@ export const isAdmin = (user: User | null): boolean => {
 };
 
 export const isSaasAdmin = (user: User | null): boolean => {
-  return hasRole(user, ['SUPER_ADMIN']);
+  return hasRole(user, ['SAAS_ADMIN']);
 };
 
 export const getDefaultRoute = (user: User | null): string => {
   if (!user) return '/auth/login';
   
-  switch (user.role) {
-    case 'CUSTOMER':
-      return '/customer';
-    case 'TECHNICIAN':
-      return '/technician';
-    case 'DISPATCHER':
-      return '/admin';
-    case 'ADMIN':
-      return '/admin';
-    case 'SUPER_ADMIN':
-      return '/saas-admin';
-    _default:
+  switch (user.loginType) {
+    case 'USER_CLIENT':
+      return '/customer/dashboard';
+    case 'ORGANIZATION':
+      return '/admin/dashboard';
+    case 'SAAS_ADMIN':
+      return '/saas-admin/dashboard';
+    default:
       return '/';
   }
 };
 
-// Auth hooks for components
-export const useAuth = () => {
-  const {
-    user,
-    token,
-    isLoading,
-    error,
-    isAuthenticated,
-    login,
-    _register: register,
-    _logout: logout,
-    _refreshToken: refreshToken,
-    _clearError: clearError,
-    _updateUser: updateUser,
-  } = useAuthStore();
-
-  return {
-    user,
-    token,
-    isLoading,
-    error,
-    isAuthenticated,
-    login,
-    register,
-    logout,
-    refreshToken,
-    clearError,
-    updateUser,
-    _hasRole: (roles: User['role'][]) => hasRole(user, roles),
-    _isCustomer: isCustomer(user),
-    _isTechnician: isTechnician(user),
-    _isAdmin: isAdmin(user),
-    _isSaasAdmin: isSaasAdmin(user),
-    _getDefaultRoute: () => getDefaultRoute(user),
-  };
-};
+// Export types for external use
+export type { User, LoginType, RegisterData };

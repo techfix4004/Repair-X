@@ -1,9 +1,9 @@
 
 // Initialize observability first
-import './observability/telemetry';
+// import './observability/telemetry'; // Temporarily disabled
 
 import Fastify from 'fastify';
-import cors from '@fastify/cors';
+// import cors from '@fastify/cors'; // CORS handled in plugins
 import { healthRoutes } from './routes/health';
 import { healthRoutes as observabilityHealthRoutes } from './observability/health';
 import { authRoutes } from './routes/auth-clean';
@@ -28,18 +28,17 @@ async function setupRoutes() {
   fastify.addHook('onRequest', securityHeadersMiddleware);
   
   // Register metrics middleware
-  fastify.addHook('onRequest', metricsMiddleware);
+  // fastify.addHook('onRequest', metricsMiddleware); // Temporarily disabled
 
-  // Register CORS with enhanced security
-  // @ts-ignore - CORS configuration compatibility
-  await fastify.register(cors, {
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://repairx.com', '_https://www.repairx.com']
-      : true,
-    _credentials: true,
-    _methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    _allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-  });
+  // Register CORS with enhanced security (handled in plugins)
+  // await fastify.register(cors, {
+  //   origin: process.env.NODE_ENV === 'production' 
+  //     ? ['https://repairx.com', 'https://www.repairx.com']
+  //     : true,
+  //   credentials: true,
+  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  // });
 
   // Health check routes with comprehensive monitoring
   await fastify.register(observabilityHealthRoutes, { _prefix: '/api' });

@@ -5,7 +5,7 @@
  */
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { enhancedAIRoutes } from './enhanced-ai-business-intelligence';
+// import { enhancedAIRoutes } from './enhanced-ai-business-intelligence';
 import { enterpriseSaaSRoutes } from './enhanced-enterprise-saas';
 
 // Production Ready Mobile Print Integration
@@ -181,7 +181,7 @@ export async function productionReadinessRoutes(fastify: FastifyInstance) {
   const appStoreService = new AppStoreReadinessService();
 
   // Register enhanced AI and Enterprise SaaS routes
-  await enhancedAIRoutes(fastify);
+  // await enhancedAIRoutes(fastify);
   await enterpriseSaaSRoutes(fastify);
 
   // Mobile Print Operations

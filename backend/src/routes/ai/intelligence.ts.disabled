@@ -1,0 +1,463 @@
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+// import { aiBusinessIntelligenceService } from '../services/ai-business-intelligence.service';
+import { z } from 'zod';
+
+// Dynamic import for AI service to avoid TypeScript issues
+const getAIService = async () => {
+  try {
+    const { aiBusinessIntelligenceService } = await import('../services/ai-business-intelligence.service');
+    return aiBusinessIntelligenceService;
+  } catch (error) {
+    console.warn('AI service not available:', error);
+    return null;
+  }
+};
+
+// Schemas for request validation
+const DiagnosisRequestSchema = z.object({
+  deviceType: z.string().min(1),
+  symptoms: z.array(z.string()),
+  customerDescription: z.string().min(1),
+  deviceAge: z.number().optional(),
+  previousIssues: z.array(z.string()).optional()
+});
+
+const PredictiveMaintenanceSchema = z.object({
+  deviceId: z.string().min(1)
+});
+
+const CustomerAnalysisSchema = z.object({
+  customerId: z.string().min(1)
+});
+
+const TechnicianOptimizationSchema = z.object({
+  technicianId: z.string().min(1)
+});
+
+const PricingOptimizationSchema = z.object({
+  serviceId: z.string().min(1),
+  location: z.string().min(1),
+  timeSlot: z.string().datetime(),
+  urgency: z.enum(['low', 'medium', 'high', 'critical'])
+});
+
+export async function aiIntelligenceRoutes(fastify: FastifyInstance) {
+  // AI Diagnostic System
+  fastify.post('/ai/diagnosis', {
+    schema: {
+      description: 'AI-powered device diagnosis',
+      tags: ['AI Intelligence'],
+      body: DiagnosisRequestSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                confidence: { type: 'number' },
+                diagnosis: { type: 'string' },
+                recommendedActions: { type: 'array', items: { type: 'string' } },
+                estimatedCost: { type: 'number' },
+                estimatedDuration: { type: 'number' },
+                partsNeeded: { type: 'array', items: { type: 'string' } },
+                urgencyLevel: { type: 'string' },
+                reasoning: { type: 'array', items: { type: 'string' } }
+              }
+            }
+          }
+        }
+      }
+    },
+    handler: async (
+      request: FastifyRequest<{ Body: z.infer<typeof DiagnosisRequestSchema> }>,
+      reply: FastifyReply
+    ) => {
+      try {
+        const { deviceType, symptoms, customerDescription, deviceAge, previousIssues } = request.body;
+
+        const diagnosis = await aiBusinessIntelligenceService.performIntelligentDiagnosis(
+          deviceType,
+          symptoms,
+          customerDescription,
+          deviceAge,
+          previousIssues
+        );
+
+        reply.code(200).send({
+          success: true,
+          data: diagnosis
+        });
+      } catch (error) {
+        fastify.log.error('AI diagnosis error:', error as any);
+        reply.code(500).send({
+          success: false,
+          error: 'Failed to perform AI diagnosis',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  });
+
+  // Predictive Maintenance Alerts
+  fastify.get('/ai/predictive-maintenance/:deviceId', {
+    schema: {
+      description: 'Generate predictive maintenance alerts for a device',
+      tags: ['AI Intelligence'],
+      params: {
+        type: 'object',
+        properties: {
+          deviceId: { type: 'string' }
+        },
+        required: ['deviceId']
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  deviceId: { type: 'string' },
+                  predictedIssue: { type: 'string' },
+                  probability: { type: 'number' },
+                  timeframe: { type: 'string' },
+                  recommendedAction: { type: 'string' },
+                  severity: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    handler: async (
+      request: FastifyRequest<{ Params: { deviceId: string } }>,
+      reply: FastifyReply
+    ) => {
+      try {
+        const { deviceId } = request.params;
+
+        const alerts = await aiBusinessIntelligenceService.generatePredictiveMaintenanceAlerts(deviceId);
+
+        reply.code(200).send({
+          success: true,
+          data: alerts
+        });
+      } catch (error) {
+        fastify.log.error('Predictive maintenance error:', error as any);
+        reply.code(500).send({
+          success: false,
+          error: 'Failed to generate predictive maintenance alerts',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  });
+
+  // Customer Behavior Analysis
+  fastify.get('/ai/customer-analysis/:customerId', {
+    schema: {
+      description: 'Analyze customer behavior and generate insights',
+      tags: ['AI Intelligence'],
+      params: {
+        type: 'object',
+        properties: {
+          customerId: { type: 'string' }
+        },
+        required: ['customerId']
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                customerId: { type: 'string' },
+                segments: { type: 'array', items: { type: 'string' } },
+                churnProbability: { type: 'number' },
+                recommendedRetentionActions: { type: 'array', items: { type: 'string' } },
+                lifetimeValue: { type: 'number' },
+                nextServicePrediction: { type: 'string', nullable: true }
+              }
+            }
+          }
+        }
+      }
+    },
+    handler: async (
+      request: FastifyRequest<{ Params: { customerId: string } }>,
+      reply: FastifyReply
+    ) => {
+      try {
+        const { customerId } = request.params;
+
+        const analysis = await aiBusinessIntelligenceService.analyzeCustomerBehavior(customerId);
+
+        reply.code(200).send({
+          success: true,
+          data: analysis
+        });
+      } catch (error) {
+        fastify.log.error('Customer analysis error:', error as any);
+        reply.code(500).send({
+          success: false,
+          error: 'Failed to analyze customer behavior',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  });
+
+  // Technician Performance Optimization
+  fastify.get('/ai/technician-optimization/:technicianId', {
+    schema: {
+      description: 'Optimize technician performance and generate recommendations',
+      tags: ['AI Intelligence'],
+      params: {
+        type: 'object',
+        properties: {
+          technicianId: { type: 'string' }
+        },
+        required: ['technicianId']
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                technicianId: { type: 'string' },
+                efficiency: { type: 'number' },
+                strengths: { type: 'array', items: { type: 'string' } },
+                improvementAreas: { type: 'array', items: { type: 'string' } },
+                recommendedTraining: { type: 'array', items: { type: 'string' } },
+                workloadSuggestion: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    },
+    handler: async (
+      request: FastifyRequest<{ Params: { technicianId: string } }>,
+      reply: FastifyReply
+    ) => {
+      try {
+        const { technicianId } = request.params;
+
+        const optimization = await aiBusinessIntelligenceService.optimizeTechnicianPerformance(technicianId);
+
+        reply.code(200).send({
+          success: true,
+          data: optimization
+        });
+      } catch (error) {
+        fastify.log.error('Technician optimization error:', error);
+        reply.code(500).send({
+          success: false,
+          error: 'Failed to optimize technician performance',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  });
+
+  // Dynamic Pricing Optimization
+  fastify.post('/ai/pricing-optimization', {
+    schema: {
+      description: 'AI-powered dynamic pricing optimization',
+      tags: ['AI Intelligence'],
+      body: PricingOptimizationSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                recommendedPrice: { type: 'number' },
+                priceFactors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      factor: { type: 'string' },
+                      impact: { type: 'number' },
+                      reason: { type: 'string' }
+                    }
+                  }
+                },
+                confidence: { type: 'number' }
+              }
+            }
+          }
+        }
+      }
+    },
+    handler: async (
+      request: FastifyRequest<{ Body: z.infer<typeof PricingOptimizationSchema> }>,
+      reply: FastifyReply
+    ) => {
+      try {
+        const { serviceId, location, timeSlot, urgency } = request.body;
+
+        const pricingOptimization = await aiBusinessIntelligenceService.optimizePricing(
+          serviceId,
+          location,
+          new Date(timeSlot),
+          urgency
+        );
+
+        reply.code(200).send({
+          success: true,
+          data: pricingOptimization
+        });
+      } catch (error) {
+        fastify.log.error('Pricing optimization error:', error as any);
+        reply.code(500).send({
+          success: false,
+          error: 'Failed to optimize pricing',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  });
+
+  // Batch Customer Insights
+  fastify.post('/ai/batch-customer-insights', {
+    schema: {
+      description: 'Generate insights for multiple customers',
+      tags: ['AI Intelligence'],
+      body: {
+        type: 'object',
+        properties: {
+          customerIds: {
+            type: 'array',
+            items: { type: 'string' },
+            maxItems: 50
+          }
+        },
+        required: ['customerIds']
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  customerId: { type: 'string' },
+                  segments: { type: 'array', items: { type: 'string' } },
+                  churnProbability: { type: 'number' },
+                  lifetimeValue: { type: 'number' }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    handler: async (
+      request: FastifyRequest<{ Body: { customerIds: string[] } }>,
+      reply: FastifyReply
+    ) => {
+      try {
+        const { customerIds } = request.body;
+
+        const insights = await Promise.allSettled(
+          customerIds.map(customerId =>
+            aiBusinessIntelligenceService.analyzeCustomerBehavior(customerId)
+          )
+        );
+
+        const successfulInsights = insights
+          .filter(result => result.status === 'fulfilled')
+          .map(result => (result as PromiseFulfilledResult<any>).value);
+
+        reply.code(200).send({
+          success: true,
+          data: successfulInsights,
+          processed: successfulInsights.length,
+          total: customerIds.length
+        });
+      } catch (error) {
+        fastify.log.error('Batch customer insights error:', error as any);
+        reply.code(500).send({
+          success: false,
+          error: 'Failed to generate batch customer insights',
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  });
+
+  // AI Health Check
+  fastify.get('/ai/health', {
+    schema: {
+      description: 'Check AI services health status',
+      tags: ['AI Intelligence'],
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                status: { type: 'string' },
+                services: {
+                  type: 'object',
+                  properties: {
+                    diagnosis: { type: 'string' },
+                    predictiveMaintenance: { type: 'string' },
+                    customerAnalysis: { type: 'string' },
+                    pricingOptimization: { type: 'string' }
+                  }
+                },
+                lastUpdated: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    },
+    handler: async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        // In a real implementation, this would check the actual health of AI services
+        reply.code(200).send({
+          success: true,
+          data: {
+            status: 'healthy',
+            services: {
+              diagnosis: 'operational',
+              predictiveMaintenance: 'operational',
+              customerAnalysis: 'operational',
+              pricingOptimization: 'operational'
+            },
+            lastUpdated: new Date().toISOString()
+          }
+        });
+      } catch (error) {
+        fastify.log.error('AI health check error:', error as any);
+        reply.code(500).send({
+          success: false,
+          error: 'Failed to check AI services health'
+        });
+      }
+    }
+  });
+}

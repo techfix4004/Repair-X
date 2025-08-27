@@ -278,15 +278,15 @@ run_database_migrations() {
 deploy_services() {
     log_info "Deploying production services..."
     
-    # Stop existing services
+    # Stop existing services (but preserve data volumes)
     if docker compose version &> /dev/null; then
-        docker compose -f "$COMPOSE_FILE" down --volumes --remove-orphans || true
+        docker compose -f "$COMPOSE_FILE" down --remove-orphans || true
         docker compose -f "$COMPOSE_FILE" up -d || {
             log_error "Failed to start services"
             exit 1
         }
     else
-        docker-compose -f "$COMPOSE_FILE" down --volumes --remove-orphans || true
+        docker-compose -f "$COMPOSE_FILE" down --remove-orphans || true
         docker-compose -f "$COMPOSE_FILE" up -d || {
             log_error "Failed to start services (docker-compose v1)"
             exit 1
