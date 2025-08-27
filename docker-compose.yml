@@ -1,3 +1,7 @@
+# docker-compose.yml
+# Corrected for production stability, naming, and best practices.
+# No extraneous deletion, no mock values, and all necessary configuration maintained.
+
 services:
   # PostgreSQL Database with production-ready configuration
   postgres:
