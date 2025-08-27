@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "build:tsc": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "dev": "nodemon src/index.ts",
     "test": "echo 'Running tests without strict build' && jest --testPathPatterns='auth|devices'",
     "test:watch": "jest --watch",
@@ -51,7 +51,7 @@
     "@opentelemetry/resources": "^2.0.1",
     "@opentelemetry/sdk-node": "^0.203.0",
     "@opentelemetry/semantic-conventions": "^1.36.0",
-    "@prisma/client": "^6.13.0",
+    "@prisma/client": "^6.14.0",
     "@types/node": "^24.3.0",
     "@types/qrcode": "^1.5.5",
     "@types/speakeasy": "^2.0.10",
