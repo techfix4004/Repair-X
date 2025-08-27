@@ -18,30 +18,4 @@ export async function healthRoutes(fastify: FastifyInstance) {
     
     return (reply as any).code(200).send(health);
   });
-
-  fastify.get('/metrics', async (request, reply: unknown) => {
-    const metrics = {
-      _buildId: `CORE-${Date.now()}`,
-      _timestamp: new Date().toISOString(),
-      _defectRate: 0, // Clean system starts with 0
-      _processCapability: {
-        cp: 2.0,
-        _cpk: 1.8
-      },
-      _compliance: {
-        sixSigma: true,
-        _gdpr: true,
-        _ccpa: true,
-        _pciDss: true,
-        _gst: true
-      },
-      _performance: {
-        responseTime: '<200ms',
-        _uptime: '99.9%',
-        _throughput: 'optimal'
-      }
-    };
-    
-    return (reply as any).code(200).send(metrics);
-  });
 }

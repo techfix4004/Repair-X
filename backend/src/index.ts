@@ -6,9 +6,9 @@ import Fastify from 'fastify';
 // import cors from '@fastify/cors'; // CORS handled in plugins
 import { healthRoutes } from './routes/health';
 import { healthRoutes as observabilityHealthRoutes } from './observability/health';
-import { authRoutes } from './routes/auth-clean';
+// import { authRoutes } from './routes/auth-clean'; // Using enhanced auth instead
 import { enhancedAuthRoutes } from './routes/enhanced-auth';
-import { businessRoutes } from './routes/business-clean';
+// import { businessRoutes } from './routes/business-clean'; // Using enhanced routes instead
 import { enhancedRoutes } from './routes/enhanced-index';
 import { registerPlugins } from './plugins';
 import { metricsMiddleware } from './observability/metrics';
@@ -46,12 +46,8 @@ async function setupRoutes() {
   
   // Enhanced authentication with 2FA and security
   await fastify.register(enhancedAuthRoutes, { _prefix: '/api/v1/auth' });
-  await fastify.register(authRoutes, { _prefix: '/api/auth' });
   
-  // Business routes with rate limiting
-  await fastify.register(businessRoutes, { _prefix: '/api/business' });
-  
-  // Enhanced business features
+  // Enhanced business features (includes business routes)
   await fastify.register(enhancedRoutes);
 
   // Global rate limiting for API routes
