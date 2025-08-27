@@ -1,5 +1,6 @@
-import ConsolidatedAuthForms from '@/components/auth/ConsolidatedAuthForms';
+import { redirect } from 'next/navigation';
 
 export default function LoginPage() {
-  return <ConsolidatedAuthForms mode="login" />;
+  // Redirect to customer login as default
+  redirect('/auth/customer/login');
 }

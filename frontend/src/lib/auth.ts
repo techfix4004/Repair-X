@@ -1,17 +1,21 @@
 import { create } from 'zustand';
 
-type LoginType = 'USER_CLIENT' | 'ORGANIZATION' | 'SAAS_ADMIN';
+type LoginType = 'CUSTOMER' | 'ORGANIZATION' | 'SAAS_ADMIN';
 
 interface User {
-  _id: string;
+  id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: 'CUSTOMER' | 'TECHNICIAN' | 'DISPATCHER' | 'ADMIN' | 'SUPER_ADMIN' | 'SAAS_ADMIN';
+  role: 'CUSTOMER' | 'TECHNICIAN' | 'DISPATCHER' | 'ADMIN' | 'SUPER_ADMIN' | 'SAAS_ADMIN' | 'ORGANIZATION_OWNER' | 'ORGANIZATION_MANAGER';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_VERIFICATION';
   phone?: string;
-  tenantId?: string; // For multi-tenant SaaS
-  organizationName?: string;
+  organizationId?: string;
+  organization?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
   loginType: LoginType;
   permissions: string[];
 }
@@ -26,8 +30,7 @@ interface AuthState {
 }
 
 interface AuthActions {
-  login: (email: string, password: string, loginType: LoginType) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
   refreshToken: () => Promise<void>;
   clearError: () => void;
@@ -35,78 +38,69 @@ interface AuthActions {
   updateUser: (userData: Partial<User>) => void;
 }
 
-interface RegisterData {
+interface LoginCredentials {
   email?: string;
   emailOrPhone?: string;
   password: string;
-  confirmPassword?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  organizationName?: string;
-  contactPerson?: string;
-  tenantDomain?: string;
+  organizationSlug?: string;
   adminKey?: string;
-  loginType: LoginType;
-  role?: 'CUSTOMER' | 'TECHNICIAN' | 'ADMIN' | 'SAAS_ADMIN';
+  type: LoginType;
 }
 
 type AuthStore = AuthState & AuthActions;
 
 // API configuration for different login types
-const getApiBaseUrl = (loginType: LoginType): string => {
-  switch (loginType) {
+const getApiEndpoint = (type: LoginType): string => {
+  switch (type) {
     case 'SAAS_ADMIN':
-      return process.env.NEXT_PUBLIC_SAAS_ADMIN_API_URL || 'http://localhost:3002/api/v1';
+      return '/admin-backend/saas-admin/login';
+    case 'CUSTOMER':
+      return '/api/v1/auth/customer/login';
     case 'ORGANIZATION':
-    case 'USER_CLIENT':
+      return '/api/v1/auth/organization/login';
     default:
-      return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api/v1';
+      throw new Error('Invalid login type');
   }
 };
 
-async function apiLogin(email: string, password: string, loginType: LoginType): Promise<{ user: User; token: string }> {
-  const apiBaseUrl = getApiBaseUrl(loginType);
+async function apiLogin(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
+  const endpoint = getApiEndpoint(credentials.type);
   
-  const response = await fetch(`${apiBaseUrl}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ 
-      email, 
-      password, 
-      loginType,
-      // Add specific fields based on login type
-      ...(loginType === 'USER_CLIENT' && { allowEmailOrPhone: true }),
-      ...(loginType === 'ORGANIZATION' && { requireOrganization: true }),
-      ...(loginType === 'SAAS_ADMIN' && { requireAdminAccess: true }),
-    }),
-  });
+  const body: any = {
+    password: credentials.password,
+  };
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `${loginType} authentication failed`);
+  // Add type-specific fields
+  switch (credentials.type) {
+    case 'CUSTOMER':
+      body.emailOrPhone = credentials.emailOrPhone;
+      if (credentials.organizationSlug) {
+        body.organizationSlug = credentials.organizationSlug;
+      }
+      break;
+    case 'ORGANIZATION':
+      body.email = credentials.email;
+      if (credentials.organizationSlug) {
+        body.organizationSlug = credentials.organizationSlug;
+      }
+      break;
+    case 'SAAS_ADMIN':
+      body.email = credentials.email;
+      body.adminKey = credentials.adminKey;
+      break;
   }
 
-  const data = await response.json();
-  return data;
-}
-
-async function apiRegister(registerData: RegisterData): Promise<{ user: User; token: string }> {
-  const apiBaseUrl = getApiBaseUrl(registerData.loginType);
-  
-  const response = await fetch(`${apiBaseUrl}/auth/register`, {
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(registerData),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Registration failed');
+    throw new Error(errorData.message || `${credentials.type} authentication failed`);
   }
 
   const data = await response.json();
@@ -123,26 +117,27 @@ export const useAuth = create<AuthStore>((set, get) => ({
   loginType: typeof window !== 'undefined' ? localStorage.getItem('loginType') as LoginType : null,
 
   // Actions
-  login: async (email: string, password: string, loginType: LoginType) => {
+  login: async (credentials: LoginCredentials) => {
     set({ isLoading: true, error: null });
     
     try {
-      const { user, token } = await apiLogin(email, password, loginType);
+      const { user, token } = await apiLogin(credentials);
       
       // Store auth data
       if (typeof window !== 'undefined') {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('loginType', loginType);
+        const storagePrefix = credentials.type === 'SAAS_ADMIN' ? 'saas-admin-' : '';
+        localStorage.setItem(`${storagePrefix}token`, token);
+        localStorage.setItem(`${storagePrefix}user`, JSON.stringify(user));
+        localStorage.setItem('loginType', credentials.type);
       }
       
       set({
-        user: { ...user, loginType },
+        user: { ...user, loginType: credentials.type },
         token,
         isAuthenticated: true,
         isLoading: false,
         error: null,
-        loginType,
+        loginType: credentials.type,
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
@@ -155,42 +150,13 @@ export const useAuth = create<AuthStore>((set, get) => ({
     }
   },
 
-  register: async (data: RegisterData) => {
-    set({ isLoading: true, error: null });
-    
-    try {
-      const { user, token } = await apiRegister(data);
-      
-      // Store auth data
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('loginType', data.loginType);
-      }
-      
-      set({
-        user: { ...user, loginType: data.loginType },
-        token,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-        loginType: data.loginType,
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
-      set({
-        error: errorMessage,
-        isLoading: false,
-        isAuthenticated: false,
-      });
-      throw error;
-    }
-  },
-
   logout: () => {
+    const { loginType } = get();
+    
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      const storagePrefix = loginType === 'SAAS_ADMIN' ? 'saas-admin-' : '';
+      localStorage.removeItem(`${storagePrefix}token`);
+      localStorage.removeItem(`${storagePrefix}user`);
       localStorage.removeItem('loginType');
     }
     
@@ -208,8 +174,13 @@ export const useAuth = create<AuthStore>((set, get) => ({
     if (!token || !loginType) return;
 
     try {
-      const apiBaseUrl = getApiBaseUrl(loginType);
-      const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
+      const endpoint = loginType === 'SAAS_ADMIN' 
+        ? '/admin-backend/saas-admin/refresh'
+        : '/api/v1/auth/refresh';
+        
+      const storagePrefix = loginType === 'SAAS_ADMIN' ? 'saas-admin-' : '';
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -221,8 +192,8 @@ export const useAuth = create<AuthStore>((set, get) => ({
         const { user, token: newToken } = await response.json();
         
         if (typeof window !== 'undefined') {
-          localStorage.setItem('token', newToken);
-          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem(`${storagePrefix}token`, newToken);
+          localStorage.setItem(`${storagePrefix}user`, JSON.stringify(user));
         }
         
         set({
@@ -250,8 +221,11 @@ export const useAuth = create<AuthStore>((set, get) => ({
       const updatedUser = { ...currentUser, ...userData };
       set({ user: updatedUser });
       
+      const { loginType } = get();
+      const storagePrefix = loginType === 'SAAS_ADMIN' ? 'saas-admin-' : '';
+      
       if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        localStorage.setItem(`${storagePrefix}user`, JSON.stringify(updatedUser));
       }
     }
   },
@@ -259,24 +233,28 @@ export const useAuth = create<AuthStore>((set, get) => ({
 
 // Initialize auth state from localStorage on app start
 if (typeof window !== 'undefined') {
-  const token = localStorage.getItem('token');
-  const userStr = localStorage.getItem('user');
   const loginType = localStorage.getItem('loginType') as LoginType;
   
-  if (token && userStr && loginType) {
-    try {
-      const user = JSON.parse(userStr);
-      useAuth.setState({
-        user: { ...user, loginType },
-        token,
-        isAuthenticated: true,
-        loginType,
-      });
-    } catch (error) {
-      console.error('Failed to parse stored user data:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('loginType');
+  if (loginType) {
+    const storagePrefix = loginType === 'SAAS_ADMIN' ? 'saas-admin-' : '';
+    const token = localStorage.getItem(`${storagePrefix}token`);
+    const userStr = localStorage.getItem(`${storagePrefix}user`);
+    
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        useAuth.setState({
+          user: { ...user, loginType },
+          token,
+          isAuthenticated: true,
+          loginType,
+        });
+      } catch (error) {
+        console.error('Failed to parse stored user data:', error);
+        localStorage.removeItem(`${storagePrefix}token`);
+        localStorage.removeItem(`${storagePrefix}user`);
+        localStorage.removeItem('loginType');
+      }
     }
   }
 }
@@ -294,19 +272,27 @@ export const isTechnician = (user: User | null): boolean => {
   return hasRole(user, ['TECHNICIAN']);
 };
 
+export const isOrganizationMember = (user: User | null): boolean => {
+  return hasRole(user, ['ORGANIZATION_OWNER', 'ORGANIZATION_MANAGER', 'ADMIN', 'TECHNICIAN']);
+};
+
 export const isAdmin = (user: User | null): boolean => {
-  return hasRole(user, ['ADMIN', 'SUPER_ADMIN']);
+  return hasRole(user, ['ADMIN', 'SUPER_ADMIN', 'ORGANIZATION_OWNER', 'ORGANIZATION_MANAGER']);
 };
 
 export const isSaasAdmin = (user: User | null): boolean => {
   return hasRole(user, ['SAAS_ADMIN']);
 };
 
+export const hasOrganizationAccess = (user: User | null): boolean => {
+  return user ? (user.organizationId !== null || user.role === 'SAAS_ADMIN') : false;
+};
+
 export const getDefaultRoute = (user: User | null): string => {
-  if (!user) return '/auth/login';
+  if (!user) return '/auth/customer/login';
   
   switch (user.loginType) {
-    case 'USER_CLIENT':
+    case 'CUSTOMER':
       return '/customer/dashboard';
     case 'ORGANIZATION':
       return '/admin/dashboard';
@@ -317,5 +303,12 @@ export const getDefaultRoute = (user: User | null): string => {
   }
 };
 
+// Organization-bound access validation
+export const canAccessOrganization = (user: User | null, organizationId: string): boolean => {
+  if (!user) return false;
+  if (user.role === 'SAAS_ADMIN') return true; // SaaS admins can access all orgs
+  return user.organizationId === organizationId;
+};
+
 // Export types for external use
-export type { User, LoginType, RegisterData };
+export type { User, LoginType, LoginCredentials };
