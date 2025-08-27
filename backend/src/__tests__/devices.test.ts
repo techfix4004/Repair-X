@@ -20,35 +20,38 @@ describe('Device Registration API Tests', () => {
     app.post('/api/v1/devices', async (request, reply: unknown) => {
       const deviceData = request.body as any;
       
-      // Basic validation
-      if (!(deviceData as any).brand || !(deviceData as any).model) {
+      // Basic validation - handle both _brand and brand formats
+      const brand = (deviceData as any)._brand || (deviceData as any).brand;
+      const model = (deviceData as any)._model || (deviceData as any).model;
+      
+      if (!brand || !model) {
         return (reply as FastifyReply).status(400).send({
-          _success: false,
-          _error: 'Brand and model are required'
+          success: false,
+          error: 'Brand and model are required'
         });
       }
 
       return {
-        _success: true,
-        _data: {
+        success: true,
+        data: {
           id: 'device-123',
           ...deviceData,
-          _registeredAt: new Date().toISOString(),
+          registeredAt: new Date().toISOString(),
         }
       };
     });
 
     app.get('/api/v1/devices', async () => {
       return {
-        _success: true,
-        _data: [
+        success: true,
+        data: [
           {
             id: 'device-1',
-            _brand: 'Apple',
-            _model: 'iPhone 13',
-            _category: 'Smartphone',
-            _condition: 'Good',
-            _registeredAt: '2025-01-08T10:00:00Z',
+            brand: 'Apple',
+            model: 'iPhone 13',
+            category: 'Smartphone',
+            condition: 'Good',
+            registeredAt: '2025-01-08T10:00:00Z',
           }
         ]
       };

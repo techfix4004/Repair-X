@@ -30,10 +30,13 @@ fastify.get('/api/health', async (request, reply) => {
 
 // Enhanced auth endpoints
 fastify.post('/api/v1/auth/login', async (request, reply) => {
-  const { email, password, loginType, adminAccessKey } = request.body as any;
+  const { email, _email, password, loginType, adminAccessKey } = request.body as any;
+  
+  // Handle both email and _email formats for compatibility
+  const userEmail = email || _email;
   
   // Mock authentication for development
-  if (email && password) {
+  if (userEmail && password) {
     // For SaaS Admin, check admin access key
     if (loginType === 'SAAS_ADMIN' && !adminAccessKey) {
       reply.code(400);
@@ -45,11 +48,11 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
     
     const user = {
       id: `user_${Date.now()}`,
-      email,
+      email: userEmail,
       role: loginType === 'SAAS_ADMIN' ? 'SAAS_ADMIN' : 
-            loginType === 'ORGANIZATION' ? 'ADMIN' : 'CUSTOMER',
+            loginType === 'ORGANIZATION' ? 'ADMIN' : 'customer',
       loginType,
-      name: email.split('@')[0]
+      name: userEmail.split('@')[0]
     };
     
     const token = `jwt_mock_${user.id}`;
@@ -66,7 +69,43 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
   reply.code(401);
   return {
     success: false,
-    error: 'Invalid credentials'
+    error: 'Invalid email or password'
+  };
+});
+
+// Registration endpoint for tests
+fastify.post('/api/v1/auth/register', async (request, reply) => {
+  const { email, _email, password, _firstName, _lastName, _phone, _role } = request.body as any;
+  
+  // Handle both email and _email formats for compatibility
+  const userEmail = email || _email;
+  
+  if (userEmail && password && (_firstName || _lastName)) {
+    const user = {
+      id: `user_${Date.now()}`,
+      email: userEmail,
+      firstName: _firstName,
+      lastName: _lastName,
+      phone: _phone,
+      role: _role || 'customer',
+      name: `${_firstName} ${_lastName}`
+    };
+    
+    const token = `jwt_mock_${user.id}`;
+    
+    return {
+      success: true,
+      data: {
+        user,
+        token
+      }
+    };
+  }
+  
+  reply.code(400);
+  return {
+    success: false,
+    error: 'All required fields must be provided'
   };
 });
 
@@ -116,6 +155,59 @@ fastify.get('/api/v1/jobs', async (request, reply) => {
         customer: 'John Doe',
         device: 'iPhone 14',
         priority: 'HIGH'
+      }
+    ]
+  };
+});
+
+// Device management endpoints
+fastify.post('/api/v1/devices', async (request, reply) => {
+  const { _brand, brand, model, _serialNumber, category, condition } = request.body as any;
+  
+  // Handle both _brand and brand formats for compatibility
+  const deviceBrand = _brand || brand;
+  
+  if (!deviceBrand || !model) {
+    reply.code(400);
+    return {
+      success: false,
+      error: 'Brand and model are required'
+    };
+  }
+  
+  const device = {
+    id: `device_${Date.now()}`,
+    brand: deviceBrand,
+    model,
+    serialNumber: _serialNumber,
+    category: category || 'ELECTRONICS',
+    condition: condition || 'GOOD',
+    registeredAt: new Date().toISOString()
+  };
+  
+  return {
+    success: true,
+    data: device
+  };
+});
+
+fastify.get('/api/v1/devices', async (request, reply) => {
+  return {
+    success: true,
+    data: [
+      {
+        id: 'device_001',
+        brand: 'Apple',
+        model: 'iPhone 14',
+        category: 'ELECTRONICS',
+        condition: 'GOOD'
+      },
+      {
+        id: 'device_002',
+        brand: 'Samsung',
+        model: 'Galaxy S23',
+        category: 'ELECTRONICS',
+        condition: 'EXCELLENT'
       }
     ]
   };

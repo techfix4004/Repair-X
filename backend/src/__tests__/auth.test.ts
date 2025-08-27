@@ -14,10 +14,13 @@ describe('Authentication API Tests', () => {
     
     // Add auth routes for testing
     app.post('/api/v1/auth/login', async (request: FastifyRequest, reply: FastifyReply) => {
-      const { email, password } = (request.body as Record<string, any>);
+      const { email, _email, password } = (request.body as Record<string, any>);
+      
+      // Handle both email and _email formats for compatibility
+      const userEmail = email || _email;
       
       // Mock authentication logic
-      if (!email || !password) {
+      if (!userEmail || !password) {
         return reply.status(400).send({
           success: false,
           error: 'Email and password are required'
@@ -31,7 +34,7 @@ describe('Authentication API Tests', () => {
         'admin@test.com': { _role: 'admin', _name: 'Test Admin' }
       };
 
-      const user = validUsers[email as keyof typeof validUsers];
+      const user = validUsers[userEmail as keyof typeof validUsers];
       if (!user || password !== 'password123') {
         return reply.status(401).send({
           success: false,
@@ -41,22 +44,26 @@ describe('Authentication API Tests', () => {
 
       return {
         success: true,
-        _data: {
+        data: {
           user: {
-            id: 'user-123',
-            email,
-            _role: (user as any).role,
-            _name: (user as any).name
+            id: `test_user_${Date.now()}`,
+            email: userEmail,
+            role: user._role,
+            name: user._name
           },
-          _token: 'mock-jwt-token-12345'
+          token: `test_token_${Date.now()}`
         }
       };
     });
 
     app.post('/api/v1/auth/register', async (request: FastifyRequest, reply: FastifyReply) => {
-      const { email, password, name, role } = (request.body as Record<string, any>);
+      const { email, _email, password, _firstName, _lastName, name, _name, role } = (request.body as Record<string, any>);
       
-      if (!email || !password || !name) {
+      // Handle both email and _email formats for compatibility
+      const userEmail = email || _email;
+      const userName = name || _name || `${_firstName} ${_lastName}`;
+      
+      if (!userEmail || !password || (!name && !_name && !_firstName)) {
         return reply.status(400).send({
           success: false,
           error: 'Email, password, and name are required'
@@ -65,12 +72,14 @@ describe('Authentication API Tests', () => {
 
       return {
         success: true,
-        _data: {
+        data: {
           user: {
             id: 'user-456',
-            email,
-            _role: role || 'customer', name },
-          _token: 'mock-jwt-token-67890'
+            email: userEmail,
+            role: role || 'customer',
+            name: userName
+          },
+          token: 'mock-jwt-token-67890'
         }
       };
     });
@@ -99,7 +108,7 @@ describe('Authentication API Tests', () => {
     expect(body.success).toBe(true);
     expect(body.data).toHaveProperty('user');
     expect(body.data).toHaveProperty('token');
-    expect((body.data as any).user.email).toBe((loginData as any).email);
+    expect((body.data as any).user.email).toBe((loginData as any)._email);
     expect((body.data as any).user.role).toBe('customer');
   });
 
@@ -153,8 +162,8 @@ describe('Authentication API Tests', () => {
     expect(body.success).toBe(true);
     expect(body.data).toHaveProperty('user');
     expect(body.data).toHaveProperty('token');
-    expect((body.data as any).user.email).toBe((registerData as any).email);
-    expect((body.data as any).user.name).toBe((registerData as any).name);
+    expect((body.data as any).user.email).toBe((registerData as any)._email);
+    expect((body.data as any).user.name).toBe((registerData as any)._name);
   });
 
   test('POST /api/v1/auth/register - should require required fields', async () => {
