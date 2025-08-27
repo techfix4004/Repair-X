@@ -25,7 +25,7 @@ import customerOnboardingRoutes from './customer-onboarding';
 import marketingAutomationRoutes from './marketing-automation';
 
 
-import customerSuccessRoutes from './customer-success-fastify';
+
 import emailSettingsRoutes from './email-settings';
 import employeeManagementRoutes from './employee-management';
 import partsInventoryRoutes from './parts-inventory';
@@ -94,8 +94,7 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
 
 
 
-    // ✅ NEW: Customer Success Automation System
-    await server.register(customerSuccessRoutes);
+
 
     // ✅ NEW: Email Settings Management System (Category 4)
     await server.register(emailSettingsRoutes, { prefix: '/email-settings' });
