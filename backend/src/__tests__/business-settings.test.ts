@@ -3,15 +3,12 @@
  * Tests the 20+ business configuration categories as specified in requirements
  */
 
- 
 /// <reference types="jest" />
 /* eslint-disable no-undef */
-/// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
- 
 // eslint-disable-next-line max-lines-per-function
 describe('Business Settings API Tests', () => {
   let app: FastifyInstance;
@@ -55,7 +52,7 @@ describe('Business Settings API Tests', () => {
       return reply.code(201).send({
         _success: true,
         _data: {
-          gstin: 'TEST123456789',
+          _gstin: 'TEST123456789',
           _vatNumber: 'VAT123',
           _taxRates: {
             gst: 18,
@@ -112,11 +109,11 @@ describe('Business Settings API Tests', () => {
 
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.payload);
-    expect(body.success).toBe(true);
-    expect(body.data?.categories).toHaveLength(20);
-    expect(body.data?.categories).toContain('tax-settings');
-    expect(body.data?.categories).toContain('workflow-config');
-    expect(body.data?.categories).toContain('payment-settings');
+    expect(body._success).toBe(true);
+    expect(body._data?.categories).toHaveLength(20);
+    expect(body._data?.categories).toContain('tax-settings');
+    expect(body._data?.categories).toContain('workflow-config');
+    expect(body._data?.categories).toContain('payment-settings');
   });
 
   test('POST /api/v1/business-settings/tax - should configure tax settings', async () => {
@@ -138,9 +135,9 @@ describe('Business Settings API Tests', () => {
 
     expect(response.statusCode).toBe(201);
     const body = JSON.parse(response.payload);
-    expect(body.success).toBe(true);
-    expect(body.data?._gstin).toBe(taxConfig._gstin);
-    expect(body.data.taxRates.gst).toBe(18);
+    expect(body._success).toBe(true);
+    expect(body._data?._gstin).toBe(taxConfig._gstin);
+    expect(body._data._taxRates.gst).toBe(18);
   });
 
   test('GET /api/v1/business-settings/workflow - should return 12-state job sheet workflow', async () => {
@@ -151,11 +148,11 @@ describe('Business Settings API Tests', () => {
 
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.payload);
-    expect(body.success).toBe(true);
-    expect(body.data?.jobSheetWorkflow).toHaveLength(12);
-    expect(body.data.jobSheetWorkflow[0]).toBe('CREATED');
-    expect(body.data.jobSheetWorkflow[11]).toBe('CANCELLED');
-    expect(body.data.automationRules.autoAssignTechnician).toBe(true);
+    expect(body._success).toBe(true);
+    expect(body._data?.jobSheetWorkflow).toHaveLength(12);
+    expect(body._data.jobSheetWorkflow[0]).toBe('CREATED');
+    expect(body._data.jobSheetWorkflow[11]).toBe('CANCELLED');
+    expect(body._data._automationRules.autoAssignTechnician).toBe(true);
   });
 
   test('Business settings should support enterprise features', async () => {
@@ -168,7 +165,7 @@ describe('Business Settings API Tests', () => {
       'compliance-automation'
     ];
 
-    enterpriseFeatures.forEach((_feature: unknown) => {
+    enterpriseFeatures.forEach((feature: string) => {
       expect(feature).toBeDefined();
       expect(typeof feature).toBe('string');
     });
