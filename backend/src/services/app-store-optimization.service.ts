@@ -331,14 +331,19 @@ class AppStoreOptimizationService {
       },
     });
 
+    // Correction: Only assign valid values for status and winningVariant
     return {
       id: abTest.id,
       testName: abTest.testName,
       testType: abTest.testType,
-      status: abTest.status,
+      status: ['COMPLETED', 'RUNNING', 'PAUSED'].includes(abTest.status)
+        ? abTest.status as 'COMPLETED' | 'RUNNING' | 'PAUSED'
+        : 'RUNNING', // fallback to 'RUNNING'
       controlConversions: abTest.controlConversions,
       testConversions: abTest.testConversions,
-      winningVariant: abTest.winningVariant || undefined,
+      winningVariant: abTest.winningVariant === 'CONTROL' || abTest.winningVariant === 'VARIANT'
+        ? abTest.winningVariant
+        : undefined,
       confidence: abTest.confidence?.toNumber(),
       improvement: abTest.improvement?.toNumber(),
     };
@@ -404,11 +409,12 @@ class AppStoreOptimizationService {
       console.error('Error updating performance metrics:', error);
     }
 
+    // Correction: cast keywordRankings with unknown to avoid TS2352
     return {
       impressions,
       installs,
       conversionRate,
-      keywordRankings: optimization.keywordRankings as KeywordRanking[] || [],
+      keywordRankings: optimization.keywordRankings as unknown as KeywordRanking[] || [],
     };
   }
 
@@ -695,7 +701,8 @@ class AppStoreOptimizationService {
         impressions: optimization.impressions,
         installs: optimization.installs,
         conversionRate: optimization.conversionRate.toNumber(),
-        keywordRankings: optimization.keywordRankings as KeywordRanking[] || [],
+        // Correction: cast keywordRankings with unknown to avoid TS2352
+        keywordRankings: optimization.keywordRankings as unknown as KeywordRanking[] || [],
       },
       optimization: {
         targetKeywords: optimization.keywords,
