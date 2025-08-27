@@ -1,9 +1,6 @@
-// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/database';
 
 // Define interfaces for chat data
 interface SendMessageData {

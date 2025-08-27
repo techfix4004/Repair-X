@@ -158,7 +158,7 @@ export const healthMetrics = {
 // Start uptime tracking
 const startTime = Date.now();
 setInterval(() => {
-  healthMetrics.uptime.set((Date.now() - startTime) / 1000);
+  healthMetrics._uptime.set((Date.now() - startTime) / 1000);
 }, 10000);
 
 // HTTP middleware for request metrics

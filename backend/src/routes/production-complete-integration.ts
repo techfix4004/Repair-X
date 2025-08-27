@@ -1,13 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { enterpriseSaaSRoutes } from './enhanced-enterprise-saas';
 
 // Complete 12-State Workflow Management System
 class WorkflowManager {
-  private prisma: PrismaClient;
-
   constructor() {
-    this.prisma = new PrismaClient();
+    // Using shared database connection
   }
   async executeWorkflowTransition(jobId: string, fromState: string, toState: string): Promise<{
     success: boolean;
@@ -71,7 +69,7 @@ class EnhancedFieldOperations {
   private prisma: PrismaClient;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // Using shared database connection
   }
 
   async optimizeRoutes(technicianId: string, jobIds: string[]): Promise<{
@@ -81,7 +79,7 @@ class EnhancedFieldOperations {
     fuelSavings: number;
   }> {
     // Fetch jobs from database
-    const jobs = await this.prisma.jobSheet.findMany({
+    const jobs = await prisma.jobSheet.findMany({
       where: {
         id: { in: jobIds },
         assignedTechnicianId: technicianId
@@ -118,7 +116,7 @@ class EnhancedFieldOperations {
     estimatedArrival: string;
   }> {
     // This would integrate with real GPS tracking systems in production
-    const technician = await this.prisma.user.findUnique({
+    const technician = await prisma.user.findUnique({
       where: { id: technicianId },
       include: {
         technicianProfile: true
