@@ -61,7 +61,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 # Copy only production dependencies and build output
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json ./
-RUN npm ci --omit=dev --legacy-peer-deps && npm cache clean --force
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev --legacy-peer-deps && npm cache clean --force; fi
 
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
