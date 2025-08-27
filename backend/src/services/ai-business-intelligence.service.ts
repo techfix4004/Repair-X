@@ -143,7 +143,11 @@ export class AIBusinessIntelligenceService {
         include: {
           bookings: {
             include: {
-              jobSheet: true
+              jobSheet: {
+                include: {
+                  partsUsed: true // <-- Correction: include partsUsed relation in jobSheet
+                }
+              }
             },
             orderBy: { createdAt: 'desc' }
           }
@@ -247,7 +251,11 @@ export class AIBusinessIntelligenceService {
         include: {
           assignedBookings: {
             include: {
-              jobSheet: true,
+              jobSheet: {
+                include: {
+                  partsUsed: true // <-- Correction: include partsUsed relation in jobSheet for assignedBookings
+                }
+              },
               review: true
             },
             where: {
