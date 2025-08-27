@@ -1,6 +1,3 @@
- 
-/// <reference types="jest" />
-/* eslint-disable no-undef */
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
@@ -11,12 +8,12 @@ import type {
   CustomerIntervention, 
   SupportTicket, 
   SatisfactionSurvey, 
-  AppStoreOptimization, ABTest } from '../types/missing-interfaces';
+  AppStoreOptimization, ABTest 
+} from '../types/missing-interfaces';
 
- 
 // eslint-disable-next-line max-lines-per-function
 describe('Phase 8 Launch Automation & Marketing Systems', () => {
-  let _launchCampaignService: LaunchCampaignService;
+  let launchCampaignService: LaunchCampaignService;
   let asoService: AppStoreOptimizationService;
   let customerSuccessService: CustomerSuccessService;
 
@@ -41,9 +38,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       expect(campaign).toBeDefined();
       expect(campaign.id).toMatch(/^campaign_\d+_[a-z0-9]+$/);
-      expect(campaign.name).toBe((campaignData as any).name);
-      expect((campaign as any).type).toBe((campaignData as any).type);
-      expect(campaign.budget).toBe((campaignData as any).budget);
+      expect(campaign.name).toBe((campaignData as any)._name);
+      expect((campaign as any).type).toBe((campaignData as any)._type);
+      expect(campaign.budget).toBe((campaignData as any)._budget);
       expect((campaign as any).status).toBe('planning');
       expect(campaign.channels).toBeInstanceOf(Array);
       expect(campaign.objectives).toBeInstanceOf(Array);
@@ -66,12 +63,12 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(campaign!.objectives).toHaveLength(3);
       
       // Verify campaign channels
-      expect(campaign!.channels.map((_c: unknown) => c.type)).toEqual(
+      expect(campaign!.channels.map((c: any) => c.type)).toEqual(
         expect.arrayContaining(['email', 'social-media', 'pr'])
       );
       
       // Verify campaign objectives
-      expect(campaign!.objectives.map((_o: unknown) => o.type)).toEqual(
+      expect(campaign!.objectives.map((o: any) => o.type)).toEqual(
         expect.arrayContaining(['awareness', 'acquisition', 'conversion'])
       );
     });
@@ -92,8 +89,6 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
     it('should execute campaign with all channels', async () => {
       const campaignId = 'testcampaign';
-      
-      // Mock execution - should not throw error
       await expect(
         launchCampaignService.executeCampaign(campaignId)
       ).resolves.not.toThrow();
@@ -119,8 +114,8 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       expect(listing).toBeDefined();
       expect(listing.id).toMatch(/^aso_\d+_[a-z0-9]+$/);
-      expect((listing as any).appName).toBe((appData as any).appName);
-      expect((listing as any).platform).toBe((appData as any).platform);
+      expect((listing as any).appName).toBe((appData as any)._appName);
+      expect((listing as any).platform).toBe((appData as any)._platform);
       expect((listing as any).status).toBe('draft');
       expect(listing.metadata).toBeDefined();
       expect((listing as any).screenshots).toBeDefined();
@@ -143,7 +138,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(screenshots).toBeInstanceOf(Array);
       expect(screenshots).toHaveLength(5); // One per default feature
       
-      screenshots.forEach((_screenshot: unknown) => {
+      screenshots.forEach((screenshot: any) => {
         expect(screenshot.id).toBeDefined();
         expect(screenshot.url).toMatch(/^\/app-store\/screenshots\//);
         expect(screenshot.deviceType).toBe('iPhone 15 Pro');
@@ -170,7 +165,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(optimization.searchVolumeTargets).toBeInstanceOf(Array);
 
       // Verify keyword structure
-      optimization.primaryKeywords.forEach((_keyword: unknown) => {
+      optimization.primaryKeywords.forEach((keyword: any) => {
         expect(keyword.term).toBeDefined();
         expect(keyword.relevanceScore).toBeGreaterThan(0);
         expect(keyword.searchVolume).toBeGreaterThan(0);
@@ -184,7 +179,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
         _testType: 'icon' as const,
         _variants: [
           { name: 'Original Icon', _assets: { icon: 'original.png' } },
-          { _name: 'New Icon', _assets: { icon: 'new.png' } }
+          { name: 'New Icon', _assets: { icon: 'new.png' } }
         ]
       };
 
@@ -216,7 +211,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(compliance.guidelines).toBeInstanceOf(Array);
       expect(compliance.guidelines?.length).toBeGreaterThan(0);
       
-      compliance.guidelines.forEach((_guideline: unknown) => {
+      compliance.guidelines.forEach((guideline: any) => {
         expect(guideline.guideline).toBeDefined();
         expect((guideline as any).status).toBe('pass');
         expect(guideline.details).toBeDefined();
@@ -299,10 +294,10 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       expect(ticket).toBeDefined();
       expect(ticket.id).toMatch(/^ticket_\d+_[a-z0-9]+$/);
-      expect(ticket.customerId).toBe((ticketData as any).customerId);
-      expect(ticket.subject).toBe((ticketData as any).subject);
-      expect(ticket.description).toBe((ticketData as any).description);
-      expect((ticket as any).type).toBe((ticketData as any).type);
+      expect(ticket.customerId).toBe((ticketData as any)._customerId);
+      expect(ticket.subject).toBe((ticketData as any)._subject);
+      expect(ticket.description).toBe((ticketData as any)._description);
+      expect((ticket as any).type).toBe((ticketData as any)._type);
       expect((ticket as any).status).toBe('open');
       expect(['low', 'medium', 'high', 'critical']).toContain(ticket.priority);
       expect((ticket as any).category).toBeDefined();
@@ -334,7 +329,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect((survey as any).expiresAt).toBeInstanceOf(Date);
 
       // Verify NPS questions structure
-      const npsQuestion = survey.questions.find((_q: unknown) => q.id === 'nps_score');
+      const npsQuestion = survey.questions.find((q: any) => q.id === 'nps_score');
       expect(npsQuestion).toBeDefined();
       expect((npsQuestion! as any).type).toBe('rating');
       expect((npsQuestion! as any).required).toBe(true);
@@ -352,10 +347,10 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       expect(campaign).toBeDefined();
       expect(campaign.id).toMatch(/^retention_\d+_[a-z0-9]+$/);
-      expect(campaign.name).toBe((campaignData as any).name);
-      expect((campaign as any).type).toBe((campaignData as any).type);
+      expect(campaign.name).toBe((campaignData as any)._name);
+      expect((campaign as any).type).toBe((campaignData as any)._type);
       expect((campaign as any).status).toBe('draft');
-      expect(campaign.targetSegment).toBe((campaignData as any).targetSegment);
+      expect(campaign.targetSegment).toBe((campaignData as any)._targetSegment);
       expect(campaign.triggers).toBeInstanceOf(Array);
       expect(campaign.sequence).toBeInstanceOf(Array);
       expect(campaign.metrics).toBeDefined();
@@ -363,7 +358,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       // Verify campaign sequence structure
       expect(campaign.sequence?.length).toBeGreaterThan(0);
-      campaign.sequence.forEach((_step: unknown) => {
+      campaign.sequence.forEach((step: any) => {
         expect(step.step).toBeGreaterThan(0);
         expect(['email', 'sms', 'call', 'in-app', 'gift', 'discount']).toContain(step.type);
         expect(step.delay).toBeGreaterThanOrEqual(0);
@@ -462,7 +457,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     });
 
     it('should handle concurrent requests efficiently', async () => {
-      const requests = Array.from({ _length: 10 }, (_, i) => 
+      const requests = Array.from({ length: 10 }, (_, i) => 
         customerSuccessService.calculateHealthScore(`customer_${i}`)
       );
 
@@ -472,7 +467,7 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
       expect(results).toHaveLength(10);
       expect(totalTime).toBeLessThan(1000); // All requests under 1 second
-      results.forEach((_score: unknown) => {
+      results.forEach((score: number) => {
         expect(score).toBeGreaterThanOrEqual(0);
         expect(score).toBeLessThanOrEqual(100);
       });
