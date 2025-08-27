@@ -27,20 +27,20 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
   describe('Launch Campaign Execution System', () => {
     it('should create a new launch campaign', async () => {
       const campaignData = {
-        _name: 'Test Launch Campaign',
-        _type: 'product-launch' as const,
-        _budget: 25000,
-        _startDate: new Date(),
-        _endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        name: 'Test Launch Campaign',
+        type: 'product-launch' as const,
+        budget: 25000,
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       };
 
       const campaign = await launchCampaignService.createCampaign(campaignData);
 
       expect(campaign).toBeDefined();
       expect(campaign.id).toMatch(/^campaign_\d+_[a-z0-9]+$/);
-      expect(campaign.name).toBe((campaignData as any)._name);
-      expect((campaign as any).type).toBe((campaignData as any)._type);
-      expect(campaign.budget).toBe((campaignData as any)._budget);
+      expect(campaign.name).toBe(campaignData.name);
+      expect((campaign as any).type).toBe(campaignData.type);
+      expect(campaign.budget).toBe(campaignData.budget);
       expect((campaign as any).status).toBe('planning');
       expect(campaign.channels).toBeInstanceOf(Array);
       expect(campaign.objectives).toBeInstanceOf(Array);
@@ -99,23 +99,23 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
   describe('App Store Optimization System', () => {
     it('should create app store optimization listing', async () => {
       const appData = {
-        _appName: 'RepairX Test',
-        _platform: 'both' as const,
-        _title: 'RepairX - Professional Repair Services',
-        _description: 'Complete repair service platform',
-        _keywords: ['repair', 'service', 'maintenance'],
-        _screenshots: ['screenshot1.png', 'screenshot2.png'],
-        _icon: 'app_icon.png',
-        _category: 'Productivity',
-        _targetAudience: ['professionals', 'businesses']
+        appName: 'RepairX Test',
+        platform: 'both' as const,
+        title: 'RepairX - Professional Repair Services',
+        description: 'Complete repair service platform',
+        keywords: ['repair', 'service', 'maintenance'],
+        screenshots: ['screenshot1.png', 'screenshot2.png'],
+        icon: 'app_icon.png',
+        category: 'Productivity',
+        targetAudience: ['professionals', 'businesses']
       };
 
       const listing = await asoService.createAppStoreListing(appData);
 
       expect(listing).toBeDefined();
       expect(listing.id).toMatch(/^aso_\d+_[a-z0-9]+$/);
-      expect((listing as any).appName).toBe((appData as any)._appName);
-      expect((listing as any).platform).toBe((appData as any)._platform);
+      expect((listing as any).appName).toBe(appData.appName);
+      expect((listing as any).platform).toBe(appData.platform);
       expect((listing as any).status).toBe('draft');
       expect(listing.metadata).toBeDefined();
       expect((listing as any).screenshots).toBeDefined();
@@ -128,9 +128,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     it('should generate optimized screenshots', async () => {
       const appId = 'testapp';
       const config = {
-        _devices: ['iPhone 15 Pro', 'Pixel 8 Pro'],
-        _features: ['Dashboard', 'Tracking', 'Analytics'],
-        _branding: {}
+        devices: ['iPhone 15 Pro', 'Pixel 8 Pro'],
+        features: ['Dashboard', 'Tracking', 'Analytics'],
+        branding: {}
       };
 
       const screenshots = await asoService.generateScreenshots(appId, config);
@@ -175,11 +175,11 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
     it('should create A/B test for optimization', async () => {
       const config = {
-        _appId: 'testapp',
-        _testType: 'icon' as const,
-        _variants: [
-          { name: 'Original Icon', _assets: { icon: 'original.png' } },
-          { name: 'New Icon', _assets: { icon: 'new.png' } }
+        appId: 'testapp',
+        testType: 'icon' as const,
+        variants: [
+          { name: 'Original Icon', assets: { icon: 'original.png' } },
+          { name: 'New Icon', assets: { icon: 'new.png' } }
         ]
       };
 
@@ -284,20 +284,20 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
     it('should create support ticket with proper categorization', async () => {
       const ticketData = {
-        _customerId: 'test_customer',
-        _subject: 'Login issues with dashboard',
-        _description: 'Cannot access my dashboard after recent update',
-        _type: 'technical' as const
+        customerId: 'test_customer',
+        subject: 'Login issues with dashboard',
+        description: 'Cannot access my dashboard after recent update',
+        type: 'technical' as const
       };
 
       const ticket = await customerSuccessService.createSupportTicket(ticketData);
 
       expect(ticket).toBeDefined();
       expect(ticket.id).toMatch(/^ticket_\d+_[a-z0-9]+$/);
-      expect(ticket.customerId).toBe((ticketData as any)._customerId);
-      expect(ticket.subject).toBe((ticketData as any)._subject);
-      expect(ticket.description).toBe((ticketData as any)._description);
-      expect((ticket as any).type).toBe((ticketData as any)._type);
+      expect(ticket.customerId).toBe(ticketData.customerId);
+      expect(ticket.subject).toBe(ticketData.subject);
+      expect(ticket.description).toBe(ticketData.description);
+      expect((ticket as any).type).toBe(ticketData.type);
       expect((ticket as any).status).toBe('open');
       expect(['low', 'medium', 'high', 'critical']).toContain(ticket.priority);
       expect((ticket as any).category).toBeDefined();
@@ -333,24 +333,24 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       expect(npsQuestion).toBeDefined();
       expect((npsQuestion! as any).type).toBe('rating');
       expect((npsQuestion! as any).required).toBe(true);
-      expect((npsQuestion! as any).scale).toEqual({ _min: 0, _max: 10 });
+      expect((npsQuestion! as any).scale).toEqual({ min: 0, max: 10 });
     });
 
     it('should create retention campaign', async () => {
       const campaignData = {
-        _name: 'At-Risk Customer Retention',
-        _type: 'at-risk' as const,
-        _targetSegment: 'high-risk-customers'
+        name: 'At-Risk Customer Retention',
+        type: 'at-risk' as const,
+        targetSegment: 'high-risk-customers'
       };
 
       const campaign = await customerSuccessService.createRetentionCampaign(campaignData);
 
       expect(campaign).toBeDefined();
       expect(campaign.id).toMatch(/^retention_\d+_[a-z0-9]+$/);
-      expect(campaign.name).toBe((campaignData as any)._name);
-      expect((campaign as any).type).toBe((campaignData as any)._type);
+      expect(campaign.name).toBe(campaignData.name);
+      expect((campaign as any).type).toBe(campaignData.type);
       expect((campaign as any).status).toBe('draft');
-      expect(campaign.targetSegment).toBe((campaignData as any)._targetSegment);
+      expect(campaign.targetSegment).toBe(campaignData.targetSegment);
       expect(campaign.triggers).toBeInstanceOf(Array);
       expect(campaign.sequence).toBeInstanceOf(Array);
       expect(campaign.metrics).toBeDefined();
@@ -392,25 +392,25 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     it('should integrate launch campaigns with app store optimization', async () => {
       // Create launch campaign
       const campaign = await launchCampaignService.createCampaign({
-        _name: 'App Store Launch Campaign',
-        _type: 'product-launch',
-        _channels: [
+        name: 'App Store Launch Campaign',
+        type: 'product-launch',
+        channels: [
           {
             id: 'test_channel',
-            _type: 'pr' as const,
-            _budget: 5000,
-            _targetAudience: 'Tech media',
-            _content: { headlines: ['Test'], _descriptions: ['Test'], _images: [], _videos: [], _callToActions: [], _landingPages: [] },
-            _schedule: { startDate: new Date(), _endDate: new Date(), _frequency: 'once' as const, _timing: '09:00', _timezone: 'UTC' },
-            _performance: { impressions: 0, _clicks: 0, _conversions: 0, _cost: 0, _roas: 0, _engagementRate: 0 }
+            type: 'pr' as const,
+            budget: 5000,
+            targetAudience: 'Tech media',
+            content: { headlines: ['Test'], descriptions: ['Test'], images: [], videos: [], callToActions: [], landingPages: [] },
+            schedule: { startDate: new Date(), endDate: new Date(), frequency: 'once' as const, timing: '09:00', timezone: 'UTC' },
+            performance: { impressions: 0, clicks: 0, conversions: 0, cost: 0, roas: 0, engagementRate: 0 }
           }
         ]
       });
 
       // Create ASO listing
       const asoListing = await asoService.createAppStoreListing({
-        _appName: 'RepairX Mobile',
-        _platform: 'both'
+        appName: 'RepairX Mobile',
+        platform: 'both'
       });
 
       expect(campaign.id).toBeDefined();
@@ -431,9 +431,9 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       // Create retention campaign if at risk
       if (churnRisk.interventionRequired) {
         const campaign = await customerSuccessService.createRetentionCampaign({
-          _name: 'Emergency Retention Campaign',
-          _type: 'at-risk',
-          _targetSegment: 'critical-risk-customers'
+          name: 'Emergency Retention Campaign',
+          type: 'at-risk',
+          targetSegment: 'critical-risk-customers'
         });
 
         expect(campaign).toBeDefined();
@@ -476,16 +476,16 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
     it('should validate data integrity across all services', async () => {
       // Test campaign data integrity
       const campaign = await launchCampaignService.createCampaign({
-        _name: 'Data Integrity Test',
-        _budget: 10000
+        name: 'Data Integrity Test',
+        budget: 10000
       });
       expect(campaign.budget).toBe(10000);
       expect(campaign.metrics?.totalReach).toBe(0);
 
       // Test ASO data integrity  
       const asoListing = await asoService.createAppStoreListing({
-        _appName: 'Test App',
-        _platform: 'ios'
+        appName: 'Test App',
+        platform: 'ios'
       });
       expect(asoListing.platform).toBe('ios');
       expect((asoListing.compliance.ios as any).status).toBe('compliant');
