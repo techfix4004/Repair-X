@@ -117,6 +117,10 @@ model User {
   assignedInterventions  CustomerIntervention[] @relation("AssignedInterventions")
   printJobs              PrintJob[] @relation("UserPrintJobs")
 
+  // ADDED: Opposite relations for Message.sender and BookingAttachment.uploader
+  sentMessages Message[] @relation("UserSentMessages")
+  uploadedAttachments BookingAttachment[] @relation("UserUploadedAttachments")
+
   @@map("users")
 }
 
@@ -446,7 +450,7 @@ model Message {
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   senderId  String
-  sender    User @relation(fields: [senderId], references: [id])
+  sender    User @relation("UserSentMessages", fields: [senderId], references: [id])
 
   content   String
   type      MessageType @default(TEXT)
@@ -497,7 +501,7 @@ model BookingAttachment {
   url       String
 
   uploadedBy String
-  uploader   User @relation(fields: [uploadedBy], references: [id])
+  uploader   User @relation("UserUploadedAttachments", fields: [uploadedBy], references: [id])
 
   createdAt DateTime @default(now())
 
@@ -738,6 +742,9 @@ model Quotation {
   revisions     QuotationRevision[]
   printJobs     PrintJob[] // Added from enhanced section
 
+  // ADDED: Opposite relation for GeneratedDocument.quotation
+  generatedDocuments GeneratedDocument[] @relation("QuotationGeneratedDocuments")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -967,7 +974,7 @@ model GeneratedDocument {
   jobSheet      JobSheet? @relation(fields: [jobSheetId], references: [id])
 
   quotationId   String?
-  quotation     Quotation? @relation(fields: [quotationId], references: [id])
+  quotation     Quotation? @relation("QuotationGeneratedDocuments", fields: [quotationId], references: [id])
 
   bookingId     String?
   booking       Booking? @relation(fields: [bookingId], references: [id])
