@@ -73,12 +73,12 @@ const jobStatusData = [
 
 const navigation = [
   { name: 'Dashboard', icon: DashboardIcon, href: '/admin/dashboard', current: true },
-  { name: 'Job Management', icon: AssignmentIcon, href: '/admin/jobs', count: 12 },
-  { name: 'Technicians', icon: PeopleIcon, href: '/admin/technicians', count: 8 },
-  { name: 'Customers', icon: PeopleIcon, href: '/admin/customers' },
-  { name: 'Financial', icon: MoneyIcon, href: '/admin/financial' },
-  { name: 'Inventory', icon: InventoryIcon, href: '/admin/inventory', count: 3 },
-  { name: 'Analytics', icon: AnalyticsIcon, href: '/admin/analytics' },
+  { name: 'Job Workflow', icon: AssignmentIcon, href: '/admin/workflow', count: 12 },
+  { name: 'Customer CRM', icon: PeopleIcon, href: '/admin/crm', count: 8 },
+  { name: 'Billing System', icon: MoneyIcon, href: '/admin/billing' },
+  { name: 'Inventory Mgmt', icon: InventoryIcon, href: '/admin/inventory', count: 3 },
+  { name: 'AI Analytics', icon: AnalyticsIcon, href: '/admin/analytics' },
+  { name: 'Technicians', icon: PeopleIcon, href: '/admin/technicians' },
   { name: 'Settings', icon: SettingsIcon, href: '/admin/settings' },
 ];
 
