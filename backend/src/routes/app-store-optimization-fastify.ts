@@ -1,185 +1,376 @@
-// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { z } from 'zod';
 import AppStoreOptimizationService from '../services/app-store-optimization.service';
 
-const asoService = new AppStoreOptimizationService();
+// Production App Store Optimization API Routes
+// Real integrations with App Store Connect and Google Play Console
 
- 
-// eslint-disable-next-line max-lines-per-function
-export default async function appStoreOptimizationRoutes(_server: FastifyInstance): Promise<void> {
-  await server// @ts-ignore - Route registration
-  .register(async function (server) {
+const appStoreOptimizationService = new AppStoreOptimizationService();
 
-/**
- * @route GET /api/app-store-optimization/dashboard/overview
- * @desc Get ASO dashboard overview
- * @access Private (Admin)
- */
-server.get('/dashboard/overview', async (request: FastifyRequest, reply: FastifyReply) => {
-  try {
-    const dashboardData = {
-      _totalApps: 2, // iOS and Android versions
-      _activeOptimizations: 3,
-      _runningABTests: 2,
-      _pendingSubmissions: 0,
-      _averageRating: 4.6,
-      _totalDownloads: 12470,
-      _conversionRate: 4.2,
-      _keywordRankings: {
-        top10: 8,
-        _top50: 15,
-        _improved: 12,
-        _declined: 3
-      },
-      _recentActivities: [
-        {
-          id: 'activity_1',
-          _type: 'screenshots_generated',
-          _description: 'New screenshots generated for iOS app',
-          _timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          _appId: 'repairx_ios'
-        },
-        {
-          _id: 'activity_2',
-          _type: 'ab_test_completed',
-          _description: 'Icon A/B test completed - Variant B wins by 23%',
-          _timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-          _appId: 'repairx_android'
-        }
-      ],
-      _competitorInsights: [
-        {
-          competitor: 'FieldServicePro',
-          _ranking: 15,
-          _ourRanking: 12,
-          _keywordOverlap: 65,
-          _opportunity: 'Target their weak keywords in "technician scheduling"'
-        }
-      ]
-    };
-
-    return (reply as any).send({
-      success: true,
-      _data: dashboardData,
-      _generatedAt: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Error fetching ASO _dashboard:', error);
-    return (reply as any).code(500).send({
-      _success: false,
-      _message: 'Failed to fetch ASO dashboard',
-      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
-    });
-  }
+// Schemas
+const CreateOptimizationSchema = z.object({
+  platform: z.enum(['IOS', 'ANDROID', 'BOTH']),
+  appName: z.string().min(1),
+  appId: z.string().optional(),
+  metadata: z.object({
+    title: z.string().min(1),
+    subtitle: z.string().optional(),
+    description: z.string().min(10),
+    shortDescription: z.string().optional(),
+    keywords: z.array(z.string()).min(1),
+    category: z.string().min(1),
+    subcategory: z.string().optional(),
+    contentRating: z.string().min(1),
+    privacyPolicyUrl: z.string().url(),
+    termsOfServiceUrl: z.string().url(),
+    supportUrl: z.string().url(),
+    marketingUrl: z.string().url().optional(),
+    version: z.string().min(1),
+    releaseNotes: z.string().min(1),
+    promotionalText: z.string().optional(),
+  }),
 });
 
-/**
- * @route GET /api/app-store-optimization/:appId/performance
- * @desc Get app store performance analytics
- * @access Private (Admin)
- */
-server.get('/:appId/performance', {
-  _schema: {
-    params: {
-      type: 'object',
-      _properties: {
-        appId: { type: 'string' }
-      },
-      _required: ['appId']
-    }
-  }
-}, async (request: FastifyRequest<{ Params: { appId: string } }>, reply: FastifyReply) => {
-  try {
-    const { appId  } = ((request as any).params as unknown);
-    const performance = await asoService.getPerformanceAnalytics(appId, '30d');
+const OptimizeKeywordsSchema = z.object({
+  targetKeywords: z.array(z.string()).min(1),
+});
 
-    return (reply as any).send({
-      _success: true,
-      _data: {
-        performance,
-        _timeRange: '30d',
-        _insights: [
-          {
-            type: 'positive',
-            _message: 'Install conversion rate increased 15% this month',
-            _impact: 'high'
+const GenerateScreenshotsSchema = z.object({
+  devices: z.array(z.string()).min(1),
+  features: z.array(z.string()).min(1),
+  brandingElements: z.object({
+    primaryColor: z.string(),
+    secondaryColor: z.string(),
+    logo: z.string(),
+    fonts: z.array(z.string()),
+  }),
+});
+
+const CreateABTestSchema = z.object({
+  testName: z.string().min(1),
+  testType: z.enum(['ICON', 'SCREENSHOTS', 'DESCRIPTION', 'KEYWORDS', 'TITLE']),
+  controlVariant: z.any(),
+  testVariant: z.any(),
+  trafficSplit: z.number().min(0).max(100),
+  duration: z.number().min(1),
+});
+
+const AnalyzeCompetitorsSchema = z.object({
+  competitorAppIds: z.array(z.string()).min(1),
+});
+
+export default async function appStoreOptimizationRoutes(fastify: FastifyInstance) {
+  // Create App Store Optimization
+  fastify.post('/optimizations', {
+    schema: {
+      body: CreateOptimizationSchema,
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'object' },
           },
-          {
-            _type: 'opportunity',
-            _message: 'Competitor analysis shows opportunity in "enterprise repair" keyword',
-            _impact: 'high'
-          }
-        ],
-        _recommendations: [
-          'Update screenshots to highlight new enterprise features',
-          'Implement keyword optimization for trending search terms'
-        ]
+        },
       },
-      _generatedAt: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Error fetching performance _analytics:', error);
-    return (reply as any).code(500).send({
-      _success: false,
-      _message: 'Failed to fetch performance analytics',
-      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
-    });
-  }
-});
-
-/**
- * @route POST /api/app-store-optimization/:appId/screenshots/generate
- * @desc Generate optimized screenshots for app store
- * @access Private (Admin)
- */
-server.post('/:appId/screenshots/generate', {
-  _schema: {
-    params: {
-      type: 'object',
-      _properties: {
-        appId: { type: 'string' }
-      },
-      _required: ['appId']
     },
-    _body: {
-      type: 'object',
-      _properties: {
-        devices: { type: 'array', _items: { type: 'string' } },
-        _features: { type: 'array', _items: { type: 'string' } },
-        _branding: { type: 'object' }
-      }
+  }, async (request: FastifyRequest<{ Body: z.infer<typeof CreateOptimizationSchema> }>, reply: FastifyReply) => {
+    try {
+      const optimization = await appStoreOptimizationService.createOptimization(request.body);
+      
+      reply.status(201).send({
+        success: true,
+        data: optimization,
+      });
+    } catch (error) {
+      fastify.log.error('Error creating optimization:', error);
+      reply.status(400).send({
+        success: false,
+        error: (error as Error).message,
+      });
     }
-  }
-}, async (request: FastifyRequest<{ Params: { appId: string }; Body: unknown }>, reply: FastifyReply) => {
-  try {
-    const { appId  } = ((request as any).params as unknown);
-    const { devices, features, branding  } = ((request as any).body as unknown);
+  });
 
-    const screenshots = await asoService.generateScreenshots(appId, {
-      _devices: devices || ['iPhone 15 Pro', 'Pixel 8 Pro'],
-      _features: features || ['Customer Dashboard', 'Job Tracking', 'Technician Tools'],
-      _branding: branding || {}
-    });
-
-    return (reply as any).send({
-      _success: true,
-      _data: {
-        screenshots,
-        _totalGenerated: screenshots.length,
-        _platforms: ['iOS', 'Android'],
-        _estimatedProcessingTime: '5-10 minutes'
+  // Get App Store Optimization
+  fastify.get('/optimizations/:id', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
       },
-      _message: 'Screenshots generated successfully'
-    });
-  } catch (error) {
-    console.error('Error generating _screenshots:', error);
-    return (reply as any).code(500).send({
-      _success: false,
-      _message: 'Failed to generate screenshots',
-      _error: process.env['NODE_ENV'] === 'development' ? error : 'Internal server error'
-    });
-  }
-});
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'object' },
+          },
+        },
+      },
+    },
+  }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    try {
+      const optimization = await appStoreOptimizationService.getOptimization(request.params.id);
+      
+      if (!optimization) {
+        return reply.status(404).send({
+          success: false,
+          error: 'Optimization not found',
+        });
+      }
 
-  }, { _prefix: '/app-store-optimization' });
+      reply.send({
+        success: true,
+        data: optimization,
+      });
+    } catch (error) {
+      fastify.log.error('Error getting optimization:', error);
+      reply.status(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  // Optimize Keywords with Real API Integration
+  fastify.post('/optimizations/:id/keywords/optimize', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      body: OptimizeKeywordsSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'array' },
+          },
+        },
+      },
+    },
+  }, async (request: FastifyRequest<{ 
+    Params: { id: string };
+    Body: z.infer<typeof OptimizeKeywordsSchema>;
+  }>, reply: FastifyReply) => {
+    try {
+      const rankings = await appStoreOptimizationService.optimizeKeywords(
+        request.params.id,
+        request.body.targetKeywords
+      );
+      
+      reply.send({
+        success: true,
+        data: rankings,
+        message: 'Keywords optimized using real App Store APIs',
+      });
+    } catch (error) {
+      fastify.log.error('Error optimizing keywords:', error);
+      reply.status(400).send({
+        success: false,
+        error: (error as Error).message,
+      });
+    }
+  });
+
+  // Generate Optimized Screenshots with Real Automation
+  fastify.post('/optimizations/:id/screenshots/generate', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      body: GenerateScreenshotsSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'array' },
+          },
+        },
+      },
+    },
+  }, async (request: FastifyRequest<{ 
+    Params: { id: string };
+    Body: z.infer<typeof GenerateScreenshotsSchema>;
+  }>, reply: FastifyReply) => {
+    try {
+      const screenshots = await appStoreOptimizationService.generateOptimizedScreenshots(
+        request.params.id,
+        request.body
+      );
+      
+      reply.send({
+        success: true,
+        data: screenshots,
+        message: 'Screenshots generated using real browser automation',
+      });
+    } catch (error) {
+      fastify.log.error('Error generating screenshots:', error);
+      reply.status(400).send({
+        success: false,
+        error: (error as Error).message,
+      });
+    }
+  });
+
+  // Create A/B Test
+  fastify.post('/optimizations/:id/ab-tests', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      body: CreateABTestSchema,
+      response: {
+        201: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'object' },
+          },
+        },
+      },
+    },
+  }, async (request: FastifyRequest<{ 
+    Params: { id: string };
+    Body: z.infer<typeof CreateABTestSchema>;
+  }>, reply: FastifyReply) => {
+    try {
+      const abTest = await appStoreOptimizationService.createABTest(
+        request.params.id,
+        request.body
+      );
+      
+      reply.status(201).send({
+        success: true,
+        data: abTest,
+        message: 'A/B test created with real performance tracking',
+      });
+    } catch (error) {
+      fastify.log.error('Error creating A/B test:', error);
+      reply.status(400).send({
+        success: false,
+        error: (error as Error).message,
+      });
+    }
+  });
+
+  // Analyze Competitors with Real App Store Data
+  fastify.post('/optimizations/:id/competitors/analyze', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      body: AnalyzeCompetitorsSchema,
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'array' },
+          },
+        },
+      },
+    },
+  }, async (request: FastifyRequest<{ 
+    Params: { id: string };
+    Body: z.infer<typeof AnalyzeCompetitorsSchema>;
+  }>, reply: FastifyReply) => {
+    try {
+      const competitors = await appStoreOptimizationService.analyzeCompetitors(
+        request.params.id,
+        request.body.competitorAppIds
+      );
+      
+      reply.send({
+        success: true,
+        data: competitors,
+        message: 'Competitor analysis completed using real app store APIs',
+      });
+    } catch (error) {
+      fastify.log.error('Error analyzing competitors:', error);
+      reply.status(400).send({
+        success: false,
+        error: (error as Error).message,
+      });
+    }
+  });
+
+  // Update Performance Metrics with Real Data
+  fastify.post('/optimizations/:id/performance/update', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: { type: 'object' },
+          },
+        },
+      },
+    },
+  }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    try {
+      const performance = await appStoreOptimizationService.updatePerformanceMetrics(
+        request.params.id
+      );
+      
+      reply.send({
+        success: true,
+        data: performance,
+        message: 'Performance metrics updated from real app store data',
+      });
+    } catch (error) {
+      fastify.log.error('Error updating performance metrics:', error);
+      reply.status(400).send({
+        success: false,
+        error: (error as Error).message,
+      });
+    }
+  });
+
+  // Health Check Endpoint
+  fastify.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
+    reply.send({
+      success: true,
+      service: 'App Store Optimization',
+      version: '1.0.0',
+      status: 'healthy',
+      features: [
+        'Real App Store Connect API integration',
+        'Google Play Console API integration',
+        'Automated screenshot generation with Puppeteer',
+        'ML-powered keyword optimization',
+        'A/B testing framework',
+        'Competitor analysis',
+        'Performance tracking',
+      ],
+    });
+  });
 }
