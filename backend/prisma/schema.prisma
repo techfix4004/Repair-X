@@ -10,6 +10,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Organization/Tenant Management
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique // for tenant routing
+  domain      String?  @unique // custom domain for white-label
+  
+  // Contact information
+  contactEmail String
+  contactPhone String?
+  address      String?
+  
+  // Subscription and billing
+  subscriptionTier String @default("BASIC") // BASIC, PROFESSIONAL, ENTERPRISE
+  isActive     Boolean @default(true)
+  
+  // Settings
+  settings     Json? // Organization-specific settings
+  
+  // Relations
+  users        User[]
+  invitations  OrganizationInvitation[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organizations")
+}
+
+model OrganizationInvitation {
+  id             String   @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  email          String
+  role           UserRole
+  invitedBy      String
+  inviter        User @relation("SentInvitations", fields: [invitedBy], references: [id])
+  
+  token          String @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  
+  createdAt DateTime @default(now())
+
+  @@unique([organizationId, email])
+  @@map("organization_invitations")
+}
+
 // User Management
 model User {
   id        String   @id @default(cuid())
@@ -20,6 +69,14 @@ model User {
   phone     String?
   role      UserRole @default(CUSTOMER)
   status    UserStatus @default(ACTIVE)
+  
+  // Organization binding - all users must belong to an organization (except SAAS_ADMIN)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  // For customers - they can be associated with an org through active jobs/devices
+  hasActiveJobs  Boolean @default(false)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -51,6 +108,9 @@ model User {
 
   // Document system relations
   generatedDocuments   GeneratedDocument[] @relation("GeneratedDocuments")
+
+  // Organization invitation relations
+  sentInvitations      OrganizationInvitation[] @relation("SentInvitations")
 
   @@map("users")
 }
@@ -923,6 +983,9 @@ enum UserRole {
   DISPATCHER
   ADMIN
   SUPER_ADMIN
+  SAAS_ADMIN
+  ORGANIZATION_OWNER
+  ORGANIZATION_MANAGER
 }
 
 enum UserStatus {

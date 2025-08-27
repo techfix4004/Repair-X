@@ -307,14 +307,14 @@ class CustomerSuccessService {
     if (!customer) {
       return {
         _riskLevel: 'critical',
-        _riskFactors: ['Customer not found'],
-        _recommendations: ['Investigate customer data'],
-        _interventionRequired: true
+        riskFactors: ['Customer not found'],
+        recommendations: ['Investigate customer data'],
+        interventionRequired: true
       };
     }
 
     const healthScore = await this.calculateHealthScore(customerId);
-    const _riskFactors: string[] = [];
+    const riskFactors: string[] = [];
     const recommendations: string[] = [];
 
     // Assess risk factors
@@ -340,16 +340,16 @@ class CustomerSuccessService {
     }
 
     // Determine risk level
-    const _riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
+    let riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
     if (healthScore < 30 || daysSinceLastLogin > 30) riskLevel = 'critical';
     else if (healthScore < 50 || daysSinceLastLogin > 14) riskLevel = 'high';
     else if (healthScore < 70 || daysSinceLastLogin > 7) riskLevel = 'medium';
 
     return {
-      riskLevel,
+      _riskLevel: riskLevel,
       riskFactors,
       recommendations,
-      _interventionRequired: riskLevel === 'critical' || riskLevel === 'high'
+      interventionRequired: riskLevel === 'critical' || riskLevel === 'high'
     };
   }
 

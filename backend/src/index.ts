@@ -3,18 +3,13 @@
 // import './observability/telemetry'; // Temporarily disabled
 
 import Fastify from 'fastify';
-// import cors from '@fastify/cors'; // CORS handled in plugins
 import { healthRoutes } from './routes/health';
 import { healthRoutes as observabilityHealthRoutes } from './observability/health';
-// import { authRoutes } from './routes/auth-clean'; // Using enhanced auth instead
-import { enhancedAuthRoutes } from './routes/enhanced-auth';
-// import { businessRoutes } from './routes/business-clean'; // Using enhanced routes instead
-import { enhancedRoutes } from './routes/enhanced-index';
-import { aiIntegrationRoutes } from './routes/ai-integration';
-import { jobSheetLifecycleRoutes } from './routes/job-sheet-lifecycle';
+import { registerRoutes } from './routes/index';
 import { registerPlugins } from './plugins';
 import { metricsMiddleware } from './observability/metrics';
 import { securityHeadersMiddleware, RateLimitService } from './security/security';
+import { tenantIsolationMiddleware } from './security/tenant-isolation';
 
 const fastify = Fastify({
   logger: {
@@ -29,41 +24,23 @@ async function setupRoutes() {
   // Register security middleware
   fastify.addHook('onRequest', securityHeadersMiddleware);
   
+  // Register tenant isolation and authentication middleware
+  await tenantIsolationMiddleware(fastify);
+  
   // Register metrics middleware
   // fastify.addHook('onRequest', metricsMiddleware); // Temporarily disabled
 
-  // Register CORS with enhanced security (handled in plugins)
-  // await fastify.register(cors, {
-  //   origin: process.env.NODE_ENV === 'production' 
-  //     ? ['https://repairx.com', 'https://www.repairx.com']
-  //     : true,
-  //   credentials: true,
-  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-  // });
-
   // Health check routes with comprehensive monitoring
-  await fastify.register(observabilityHealthRoutes, { _prefix: '/api' });
-  await fastify.register(healthRoutes, { _prefix: '/api' });
+  await fastify.register(observabilityHealthRoutes, { prefix: '/api' });
+  await fastify.register(healthRoutes, { prefix: '/api' });
   
-  // Enhanced authentication with 2FA and security
-  await fastify.register(enhancedAuthRoutes, { _prefix: '/api/v1/auth' });
-  
-  // Enhanced business features (includes business routes)
-  await fastify.register(enhancedRoutes);
-
-  // AI Integration Routes - Phase 4
-  await fastify.register(aiIntegrationRoutes, { _prefix: '/api/v1' });
-
-  // Job Sheet Lifecycle Routes - Phase 3 (supporting AI integration)
-  await fastify.register(jobSheetLifecycleRoutes, { _prefix: '/api/v1' });
+  // Register all organization-bound and SaaS admin routes
+  await registerRoutes(fastify);
 
   // Global rate limiting for API routes
-  // @ts-ignore - Rate limiting middleware compatibility
-  fastify// @ts-ignore - Route registration
-  .register(async function (fastify) {
+  fastify.register(async function (fastify) {
     fastify.addHook('preHandler', RateLimitService.createRateLimitMiddleware('_api'));
-  }, { _prefix: '/api/v1' });
+  }, { prefix: '/api/v1' });
 }
 
 async function start() {
@@ -77,27 +54,37 @@ async function start() {
     await fastify.listen({ port, host });
     
     console.log(`🚀 RepairX Enterprise API Server running on port ${port}`);
-    console.log(`📊 Health _check: http://localhost:${port}/api/health`);
-    console.log(`📊 Health check (observability): _http://localhost:${port}/api/health/live`);
-    console.log(`📊 Readiness _check: http://localhost:${port}/api/health/ready`);
-    console.log(`📊 Business _health: http://localhost:${port}/api/health/business`);
-    console.log(`📈 _Metrics: http://localhost:${port}/api/metrics`);
-    console.log(`🔐 Enhanced _Auth: http://localhost:${port}/api/v1/auth`);
-    console.log(`🎯 Enhanced _features: http://localhost:${port}/api/v1/enhanced/status`);
-    console.log(`🤖 AI Integration: http://localhost:${port}/api/v1/ai/dashboard`);
-    console.log(`🧠 Job Assignment: http://localhost:${port}/api/v1/ai/job-assignment`);
-    console.log(`🔮 Predictive Analytics: http://localhost:${port}/api/v1/ai/analytics/dashboard`);
-    console.log(`💰 Smart Pricing: http://localhost:${port}/api/v1/ai/pricing/optimize`);
-    console.log(`📋 Job Workflows: http://localhost:${port}/api/v1/jobs`);
-    console.log(`📚 API _Documentation: http://localhost:${port}/documentation`);
+    console.log(`📊 Health check: http://localhost:${port}/api/health`);
+    console.log(`📊 Health check (observability): http://localhost:${port}/api/health/live`);
+    console.log(`📊 Readiness check: http://localhost:${port}/api/health/ready`);
+    console.log(`📊 Business health: http://localhost:${port}/api/health/business`);
     
-    // Log startup metrics
-    console.log(`🔍 OpenTelemetry tracing enabled`);
-    console.log(`📊 Prometheus metrics available _on :9464`);
-    console.log(`🔒 _Security: Rate limiting, 2FA, input validation enabled`);
+    // Organization-bound authentication endpoints
+    console.log(`🔐 Customer Login: http://localhost:${port}/api/v1/auth/customer/login`);
+    console.log(`🔐 Organization Login: http://localhost:${port}/api/v1/auth/organization/login`);
+    console.log(`🔐 Accept Invitation: http://localhost:${port}/api/v1/auth/accept-invitation`);
+    
+    // SaaS Admin endpoints (backend-only)
+    console.log(`🔒 SaaS Admin Login: http://localhost:${port}/admin-backend/saas-admin/login`);
+    console.log(`🔒 SaaS Admin Initialize: http://localhost:${port}/admin-backend/saas-admin/initialize`);
+    
+    // Organization management
+    console.log(`🏢 Organization Management: http://localhost:${port}/api/v1/organizations`);
+    
+    // Business features
+    console.log(`🎯 Complete Business Management: http://localhost:${port}/api/v1/business-management`);
+    console.log(`📧 Email Settings: http://localhost:${port}/api/v1/email-settings`);
+    console.log(`👥 Employee Management: http://localhost:${port}/api/v1/employees`);
+    console.log(`📦 Parts Inventory: http://localhost:${port}/api/v1/inventory`);
+    console.log(`🤖 AI Analytics: http://localhost:${port}/api/v1/ai-analytics`);
+    
+    // System status
+    console.log(`🔍 Tenant isolation middleware enabled`);
+    console.log(`📊 Organization-bound access control active`);
+    console.log(`🔒 Security: Role-based access, tenant isolation, rate limiting enabled`);
     
   } catch (err) {
-    console.error('Server startup _error:', err);
+    console.error('Server startup error:', err);
     process.exit(1);
   }
 }

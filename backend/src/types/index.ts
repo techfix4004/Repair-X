@@ -12,9 +12,16 @@ export interface User {
 export interface LaunchCampaign {
   id: string;
   name: string;
+  type: 'product-launch' | 'feature-launch' | 'market-expansion' | 'seasonal' | 'promotional';
   status: 'planning' | 'active' | 'completed' | 'paused' | 'cancelled';
+  startDate: Date;
+  endDate: Date;
+  budget: number;
   channels: CampaignChannel[];
   objectives: CampaignObjective[];
+  metrics: CampaignMetrics;
+  timeline: CampaignMilestone[];
+  mediaOutreach: MediaOutreachConfig;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,7 +29,14 @@ export interface LaunchCampaign {
 export interface CampaignChannel {
   id: string;
   type: 'email' | 'sms' | 'social-media' | 'paid-ads' | 'pr' | 'content' | 'partnerships' | 'events';
+  platform?: string;
   status: string;
+  budget: number;
+  _budget: number;
+  targetAudience: string;
+  content: CampaignContent;
+  schedule: CampaignSchedule;
+  performance: ChannelPerformance;
   config: unknown;
 }
 
@@ -30,14 +44,22 @@ export interface CampaignObjective {
   id: string;
   type: 'awareness' | 'acquisition' | 'conversion' | 'retention' | 'revenue';
   target: number;
+  current?: number;
+  unit?: string;
   metrics: unknown;
 }
 
 export interface AppStoreOptimization {
   id: string;
+  title?: string;
+  platform?: string;
+  appName?: string;
   status: 'draft' | 'optimizing' | 'testing' | 'submitted' | 'live' | 'rejected';
   metadata: AppStoreMetadata;
   screenshots: AppStoreScreenshot[];
+  optimization?: any;
+  performance?: any;
+  compliance?: any;
 }
 
 export interface AppStoreMetadata {
@@ -65,8 +87,12 @@ export interface GuidelineCompliance {
 export interface CustomerIntervention {
   id: string;
   customerId: string;
+  category?: string;
+  trigger?: string;
   type: string;
   status: string;
+  dueDate?: Date;
+  outcome?: string;
   riskLevel: 'low' | 'medium' | 'high' | 'critical';
   riskFactors: string[];
   recommendations: string[];
@@ -77,6 +103,9 @@ export interface CustomerIntervention {
 export interface SupportTicket {
   id: string;
   customerId: string;
+  category?: string;
+  assignedTo?: string;
+  escalated?: boolean;
   subject: string;
   description: string;
   type: 'technical' | 'billing' | 'general';
@@ -88,6 +117,11 @@ export interface SupportTicket {
 export interface SatisfactionSurvey {
   id: string;
   customerId: string;
+  type?: string;
+  trigger?: string;
+  status?: string;
+  sentAt?: Date;
+  expiresAt?: Date;
   questions: SurveyQuestion[];
   responses: SurveyResponse[];
   completedAt?: Date;
@@ -97,6 +131,8 @@ export interface SurveyQuestion {
   id: string;
   text: string;
   type: 'rating' | 'text' | 'multiple-choice';
+  required?: boolean;
+  scale?: { min: number; max: number };
   options?: string[];
 }
 
@@ -264,6 +300,7 @@ export interface ABTestVariant {
   id: string;
   name: string;
   traffic: number;
+  isControl?: boolean;
   conversionRate?: number;
 }
 
@@ -278,4 +315,96 @@ export interface ComplianceStatus {
   lastCheck: string;
   issues: string[];
   guidelines: GuidelineCompliance[];
+}
+
+// Additional interfaces for LaunchCampaign
+export interface CampaignMetrics {
+  reach: number;
+  totalReach: number;
+  impressions: number;
+  totalImpressions: number;
+  clicks: number;
+  totalClicks: number;
+  conversions: number;
+  totalConversions: number;
+  cost: number;
+  roi: number;
+  returnOnInvestment: number;
+  costPerConversion: number;
+  brandAwarenessLift: number;
+  customerAcquisitionCost: number;
+  engagementRate: number;
+}
+
+export interface CampaignMilestone {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: Date;
+  status: 'pending' | 'in-progress' | 'completed' | 'overdue';
+  assignee: string;
+}
+
+export interface MediaOutreachConfig {
+  pressReleases: PressRelease[];
+  mediaContacts: MediaContact[];
+  socialMediaPlan: SocialMediaPlan;
+}
+
+export interface PressRelease {
+  id: string;
+  title: string;
+  content: string;
+  releaseDate: Date;
+  status: 'draft' | 'scheduled' | 'published';
+}
+
+export interface MediaContact {
+  id: string;
+  name: string;
+  outlet: string;
+  email: string;
+  phone: string;
+  beat: string;
+}
+
+export interface SocialMediaPlan {
+  platforms: string[];
+  schedule: SocialMediaPost[];
+  hashtags: string[];
+  influencers: string[];
+}
+
+export interface SocialMediaPost {
+  id: string;
+  platform: string;
+  content: string;
+  scheduledTime: Date;
+  status: 'draft' | 'scheduled' | 'published';
+}
+
+export interface CampaignContent {
+  headlines: string[];
+  descriptions: string[];
+  images: string[];
+  videos: string[];
+  callToActions: string[];
+  landingPages: string[];
+}
+
+export interface CampaignSchedule {
+  startDate: Date;
+  endDate: Date;
+  frequency: 'once' | 'daily' | 'weekly' | 'monthly';
+  timing: string;
+  timezone: string;
+}
+
+export interface ChannelPerformance {
+  impressions: number;
+  clicks: number;
+  conversions: number;
+  cost: number;
+  roas: number;
+  engagementRate: number;
 }

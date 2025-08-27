@@ -21,7 +21,6 @@ import {
   Dashboard as DashboardIcon,
   Build as BuildIcon,
   Business as BusinessIcon,
-  AdminPanelSettings as AdminIcon,
   CheckCircle as CheckIcon,
   TrendingUp as TrendingIcon,
   Speed as SpeedIcon,
@@ -32,7 +31,8 @@ import {
 import { useRouter } from 'next/navigation';
 
 /**
- * Modern Material-UI Homepage - Enterprise SaaS Platform Entry
+ * Modern Material-UI Homepage - Organization-bound Access Only
+ * SaaS Admin access removed from public interface
  */
 export default function Home() {
   const router = useRouter();
@@ -41,46 +41,40 @@ export default function Home() {
     {
       emoji: '👤',
       title: 'Customer Portal',
-      description: 'Book repairs, track jobs, manage payments, communicate with technicians in real-time.',
-      href: '/customer/dashboard',
+      description: 'Access your active repairs, track progress, and communicate with your service provider.',
+      href: '/auth/customer/login',
       icon: <DashboardIcon />,
       color: 'primary' as const,
-      features: ['Real-time tracking', 'Digital payments', 'Live chat support'],
+      features: ['Real-time tracking', 'Service history', 'Direct communication'],
+      note: 'For customers with active services only',
     },
     {
       emoji: '🔧',
-      title: 'Technician Mobile',
-      description: 'Manage assigned jobs, fill job sheets, update inventory, and document work with photos.',
-      href: '/technician/dashboard',
+      title: 'Technician Access',
+      description: 'Manage assigned jobs, complete service reports, and update repair progress.',
+      href: '/auth/organization/login',
       icon: <BuildIcon />,
       color: 'secondary' as const,
-      features: ['Mobile-first design', 'Offline capability', 'Photo documentation'],
+      features: ['Job management', 'Mobile interface', 'Progress tracking'],
+      note: 'By organization invitation only',
     },
     {
       emoji: '🏢',
       title: 'Business Management',
-      description: 'Admin dashboard for operations, analytics, employees, financial management.',
-      href: '/admin/dashboard',
+      description: 'Organization dashboard for operations, team management, and business analytics.',
+      href: '/auth/organization/login',
       icon: <BusinessIcon />,
       color: 'success' as const,
-      features: ['Advanced analytics', 'Team management', 'Financial reporting'],
-    },
-    {
-      emoji: '🏗️',
-      title: 'SaaS Admin',
-      description: 'Multi-tenant management, billing, analytics, and white-label configuration.',
-      href: '/saas-admin/dashboard',
-      icon: <AdminIcon />,
-      color: 'warning' as const,
-      features: ['Multi-tenant', 'White-label', 'Enterprise billing'],
+      features: ['Team management', 'Analytics', 'Customer relations'],
+      note: 'For organization owners and managers',
     },
   ];
 
   const systemStatus = [
     { label: 'Backend API', value: 'Operational', healthy: true, icon: <CloudIcon /> },
     { label: 'Database', value: 'PostgreSQL Ready', healthy: true, icon: <SpeedIcon /> },
-    { label: 'Cache', value: 'Redis Active', healthy: true, icon: <TrendingIcon /> },
-    { label: 'Security', value: 'Encrypted & Secure', healthy: true, icon: <SecurityIcon /> },
+    { label: 'Security', value: 'Organization-bound', healthy: true, icon: <SecurityIcon /> },
+    { label: 'Access Control', value: 'Role-based Active', healthy: true, icon: <TrendingIcon /> },
   ];
 
   const handleNavigate = (href: string) => {
@@ -102,28 +96,28 @@ export default function Home() {
               </Typography>
             </Box>
             <Typography variant="h4" color="text.secondary" mb={2} fontWeight={300}>
-              Enterprise Repair Management Platform
+              Professional Repair Services Platform
             </Typography>
             <Typography variant="body1" color="text.secondary" maxWidth="600px" mx="auto">
-              Production-grade SaaS platform with AI-powered diagnostics, real-time analytics, 
-              and comprehensive multi-role management system.
+              Secure organization-bound repair management with role-based access control.
+              Access restricted to authorized organization members and customers with active services.
             </Typography>
             <Box mt={4} display="flex" justifyContent="center" gap={2}>
               <Chip 
-                icon={<AIIcon />} 
-                label="AI-Powered" 
+                icon={<SecurityIcon />} 
+                label="Organization-bound Security" 
                 color="primary" 
                 variant="outlined" 
               />
               <Chip 
-                icon={<SecurityIcon />} 
-                label="Enterprise Security" 
+                icon={<AIIcon />} 
+                label="Role-based Access" 
                 color="secondary" 
                 variant="outlined" 
               />
               <Chip 
                 icon={<TrendingIcon />} 
-                label="Real-time Analytics" 
+                label="Tenant Isolation" 
                 color="success" 
                 variant="outlined" 
               />
@@ -131,14 +125,41 @@ export default function Home() {
           </Box>
         </Fade>
 
+        {/* Access Notice */}
+        <Paper elevation={1} sx={{ p: 3, mb: 6, bgcolor: 'info.50', border: 1, borderColor: 'info.200' }}>
+          <Typography variant="h6" color="info.main" mb={2} textAlign="center">
+            🔐 Secure Access Notice
+          </Typography>
+          <Typography variant="body2" color="info.dark" textAlign="center" mb={2}>
+            This platform uses organization-bound authentication for enhanced security:
+          </Typography>
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item xs={12} md={4}>
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                <strong>Technicians:</strong> Access by organization invitation only
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                <strong>Customers:</strong> Access provided after service submission
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                <strong>Organizations:</strong> Contact support for setup
+              </Typography>
+            </Grid>
+          </Grid>
+        </Paper>
+
         {/* Role-based Entry Points */}
         <Typography variant="h3" component="h2" textAlign="center" mb={6} color="text.primary">
-          Choose Your Role
+          Access Your Role
         </Typography>
         
         <Grid container spacing={4} mb={8}>
           {roleCards.map((role, index) => (
-            <Grid item xs={12} md={6} lg={3} key={role.title}>
+            <Grid item xs={12} md={4} key={role.title}>
               <Zoom in timeout={600 + index * 200}>
                 <Card 
                   sx={{ 
@@ -175,7 +196,7 @@ export default function Home() {
                       {role.description}
                     </Typography>
                     
-                    <Box>
+                    <Box mb={2}>
                       {role.features.map((feature) => (
                         <Chip
                           key={feature}
@@ -187,6 +208,10 @@ export default function Home() {
                         />
                       ))}
                     </Box>
+
+                    <Typography variant="caption" color="text.secondary" fontStyle="italic">
+                      {role.note}
+                    </Typography>
                   </CardContent>
                   
                   <CardActions sx={{ p: 3, pt: 0 }}>
@@ -209,7 +234,7 @@ export default function Home() {
         {/* System Status Dashboard */}
         <Paper elevation={2} sx={{ p: 4, mb: 6 }}>
           <Typography variant="h4" component="h2" textAlign="center" mb={4} color="primary.main">
-            🚀 Production System Status
+            🚀 Secure Platform Status
           </Typography>
           
           <Grid container spacing={3}>
@@ -257,7 +282,10 @@ export default function Home() {
         {/* Footer */}
         <Box textAlign="center" py={4}>
           <Typography variant="body2" color="text.secondary" mb={2}>
-            RepairX Enterprise Platform v2.0.0 | Production Deployment Complete
+            RepairX Enterprise Platform v2.0.0 | Organization-bound Security Model
+          </Typography>
+          <Typography variant="caption" color="text.secondary" mb={3} display="block">
+            Platform administration access available via dedicated backend interface
           </Typography>
           <Box display="flex" justifyContent="center" gap={2} flexWrap="wrap">
             <Button 
