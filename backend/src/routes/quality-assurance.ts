@@ -3,7 +3,7 @@
 import { FastifyInstance } from 'fastify';
 
 // eslint-disable-next-line max-lines-per-function
-export async function qualityAssuranceRoutes(_fastify: FastifyInstance) {
+export async function qualityAssuranceRoutes(fastify: FastifyInstance) {
   // Six Sigma Quality Dashboard
   fastify.get('/quality/dashboard', async (request, reply: unknown) => {
     const dashboard = {
