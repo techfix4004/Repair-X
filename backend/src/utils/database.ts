@@ -24,16 +24,16 @@ export const mockDatabase = {
     
     findUnique: async ({ where }: { where: { email?: string; id?: string } }): Promise<User | null> => {
       if (where.email) {
-        return mockUsers.find((user: unknown) => (user as any).email === where.email) || null;
+        return mockUsers.find(user => user.email === where.email) || null;
       }
       if (where.id) {
-        return mockUsers.find((user: unknown) => (user as any).id === where.id) || null;
+        return mockUsers.find(user => user._id === where.id) || null;
       }
       return null;
     },
     
     update: async ({ where, data }: { where: { id: string }; data: Partial<User> }): Promise<User> => {
-      const index = mockUsers.findIndex(user => (user as any).id === where.id);
+      const index = mockUsers.findIndex(user => user._id === where.id);
       if (index !== -1) {
         mockUsers[index] = { ...mockUsers[index]!, ...data };
         return mockUsers[index]!;
@@ -41,8 +41,8 @@ export const mockDatabase = {
       throw new Error('User not found');
     },
     
-    _delete: async ({ where }: { where: { id: string } }): Promise<User> => {
-      const index = mockUsers.findIndex(user => (user as any).id === where.id);
+    delete: async ({ where }: { where: { id: string } }): Promise<User> => {
+      const index = mockUsers.findIndex(user => user._id === where.id);
       if (index !== -1) {
         const deletedUser = mockUsers[index];
         mockUsers.splice(index, 1);
@@ -52,3 +52,18 @@ export const mockDatabase = {
     }
   }
 };
+
+// Production database wrapper - export prisma if available, otherwise use mock
+let prisma: any;
+
+try {
+  // Try to import Prisma client for production
+  const { PrismaClient } = require('@prisma/client');
+  prisma = new PrismaClient();
+} catch (error) {
+  // Fall back to mock database for development/testing
+  console.warn('Prisma client not available, using mock database');
+  prisma = mockDatabase;
+}
+
+export { prisma };

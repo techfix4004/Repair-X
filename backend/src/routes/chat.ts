@@ -1,9 +1,6 @@
-// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/database';
 
 // Define interfaces for chat data
 interface SendMessageData {
@@ -31,7 +28,7 @@ interface TypingData {
 export const initializeChatSocket = (io: SocketIOServer) => {
   const chatNamespace = io.of('/chat');
 
-  chatNamespace.on('connection', (_socket: Socket) => {
+  chatNamespace.on('connection', (socket: Socket) => {
     console.log('User connected to _chat:', socket.id);
 
     // Join a job-specific room
@@ -41,7 +38,7 @@ export const initializeChatSocket = (io: SocketIOServer) => {
     });
 
     // Handle sending messages
-    socket.on('send-message', async (_data: SendMessageData) => {
+    socket.on('send-message', async (data: SendMessageData) => {
       try {
         const { _jobId, senderId, senderType, message, messageType = 'text' } = data;
 
@@ -87,20 +84,20 @@ export const initializeChatSocket = (io: SocketIOServer) => {
     });
 
     // Mark messages as read
-    socket.on('mark-messages-read', async (_data: MarkMessagesReadData) => {
+    socket.on('mark-messages-read', async (data: MarkMessagesReadData) => {
       try {
-        const { _jobId, _userId  } = (data as unknown);
+        const { jobId, userId } = data;
 
         await prisma.chatMessage.updateMany({
           _where: {
-            _jobId,
-            _senderId: { not: _userId },
+            _jobId: jobId,
+            _senderId: { not: userId },
             _isRead: false
           },
           _data: { isRead: true }
         });
 
-        chatNamespace.to(`job-${_jobId}`).emit('messages-read', { _jobId, _userId });
+        chatNamespace.to(`job-${jobId}`).emit('messages-read', { _jobId: jobId, _userId: userId });
 
       } catch (error) {
         console.error('Mark messages read _error:', error);
@@ -108,9 +105,9 @@ export const initializeChatSocket = (io: SocketIOServer) => {
     });
 
     // Handle typing indicators
-    socket.on('typing', (_data: TypingData) => {
-      const { _jobId, _userId, isTyping  } = (data as unknown);
-      socket.to(`job-${_jobId}`).emit('user-typing', { _userId, isTyping });
+    socket.on('typing', (data: TypingData) => {
+      const { jobId, userId, isTyping } = data;
+      socket.to(`job-${jobId}`).emit('user-typing', { _userId: userId, isTyping });
     });
 
     // Handle disconnect
@@ -121,7 +118,7 @@ export const initializeChatSocket = (io: SocketIOServer) => {
 };
 
 // Send push notification for chat messages
-const sendChatNotification = async (_jobId: string, _senderId: string, _message: string) => {
+const sendChatNotification = async (_jobId: string, senderId: string, message: string) => {
   try {
     // Get job participants
     const job = await prisma.job.findUnique({
@@ -180,14 +177,15 @@ export async function chatRoutes(fastify: FastifyInstance) {
   // Get chat messages for a job
   fastify.get('/job/:jobId', async (request: FastifyRequest<{Params: JobParamsType, _Querystring: ChatQueryType}>, reply: FastifyReply) => {
     try {
-      const { jobId  } = ((request as any).params as unknown);
+      const params = request.params as any;
+      const { jobId } = params;
       const query = (request as any).query as ChatQueryType;
       const page = parseInt(query.page || '1') || 1;
       const limit = parseInt(query.limit || '50') || 50;
       const offset = (page - 1) * limit;
 
       const messages = await prisma.chatMessage.findMany({
-        _where: { _jobId },
+        _where: { _jobId: jobId },
         _include: {
           sender: {
             select: { firstName: true, _lastName: true, _role: true }
@@ -199,10 +197,10 @@ export async function chatRoutes(fastify: FastifyInstance) {
       });
 
       const totalMessages = await prisma.chatMessage.count({
-        _where: { _jobId }
+        _where: { _jobId: jobId }
       });
 
-      const formattedMessages = messages.reverse().map((_msg: unknown) => ({
+      const formattedMessages = messages.reverse().map((msg: any) => ({
         _id: msg.id,
         _message: msg.message,
         _messageType: msg.messageType,
@@ -235,25 +233,26 @@ export async function chatRoutes(fastify: FastifyInstance) {
   // Get unread message count for user
   fastify.get('/unread/:userId', async (request: FastifyRequest<{Params: UserJobsParamsType}>, reply: FastifyReply) => {
     try {
-      const { userId  } = ((request as any).params as unknown);
+      const params = request.params as any;
+      const { userId } = params;
 
       // Get all jobs where user is customer or technician
       const userJobs = await prisma.job.findMany({
         _where: {
           OR: [
-            { customerId: _userId },
-            { _technicianId: _userId }
+            { customerId: userId },
+            { _technicianId: userId }
           ]
         },
         _select: { id: true }
       });
 
-      const jobIds = userJobs.map((_job: unknown) => job.id);
+      const jobIds = userJobs.map((job: any) => job.id);
 
       const unreadCount = await prisma.chatMessage.count({
         _where: {
           jobId: { in: jobIds },
-          _senderId: { not: _userId },
+          _senderId: { not: userId },
           _isRead: false
         }
       });

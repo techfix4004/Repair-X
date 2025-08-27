@@ -1,16 +1,14 @@
-// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/database';
 
  
 // eslint-disable-next-line max-lines-per-function
-export async function ratingRoutes(_fastify: FastifyInstance) {
+export async function ratingRoutes(fastify: FastifyInstance) {
   // Submit a rating for a completed job
   fastify.post('/', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { _jobId, customerId, technicianId, rating, comment  } = ((request as any).body as unknown);
+      const body = request.body as any;
+      const { _jobId, customerId, technicianId, rating, comment } = body;
 
       // Validate rating (1-5 stars)
       if (!rating || rating < 1 || rating > 5) {
@@ -66,7 +64,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
         _select: { rating: true }
       });
 
-      const averageRating = technicianRatings.reduce((_sum: number, _r: unknown) => sum + r.rating, 0) / technicianRatings.length;
+      const averageRating = technicianRatings.reduce((sum: number, r: any) => sum + r.rating, 0) / technicianRatings.length;
 
       await (prisma as any).user.update({
         _where: { id: technicianId },
@@ -88,7 +86,8 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
   // Get ratings for a job
   fastify.get('/job/:jobId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { _jobId  } = ((request as any).params as unknown);
+      const params = request.params as any;
+      const { _jobId } = params;
 
       const ratings = await prisma.rating.findMany({
         _where: { _jobId },
@@ -111,8 +110,9 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
   // Get ratings for a technician
   fastify.get('/technician/:technicianId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { technicianId  } = ((request as any).params as unknown);
-      const query = (request as any).query as unknown;
+      const params = request.params as any;
+      const { technicianId } = params;
+      const query = request.query as any;
       const page = parseInt(query.page) || 1;
       const limit = parseInt(query.limit) || 10;
       const offset = (page - 1) * limit;
@@ -144,7 +144,7 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
       });
 
       const averageRating = ratings.length > 0 
-        ? ratings.reduce((_sum: number, _r: unknown) => sum + r.rating, 0) / ratings._length 
+        ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length 
         : 0;
 
       (reply as any).send({
@@ -171,8 +171,9 @@ export async function ratingRoutes(_fastify: FastifyInstance) {
   // Get customer's rating history
   fastify.get('/customer/:customerId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { customerId  } = ((request as any).params as unknown);
-      const query = (request as any).query as unknown;
+      const params = request.params as any;
+      const { customerId } = params;
+      const query = request.query as any;
       const page = parseInt(query.page) || 1;
       const limit = parseInt(query.limit) || 10;
       const offset = (page - 1) * limit;

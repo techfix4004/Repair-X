@@ -82,8 +82,8 @@ export default async function appStoreOptimizationRoutes(fastify: FastifyInstanc
         success: true,
         data: optimization,
       });
-    } catch (error) {
-      fastify.log.error('Error creating optimization:', error);
+    } catch (error: unknown) {
+      request.log.error(error);
       reply.status(400).send({
         success: false,
         error: (error as Error).message,
@@ -126,8 +126,8 @@ export default async function appStoreOptimizationRoutes(fastify: FastifyInstanc
         success: true,
         data: optimization,
       });
-    } catch (error) {
-      fastify.log.error('Error getting optimization:', error);
+    } catch (error: unknown) {
+      request.log.error(error);
       reply.status(500).send({
         success: false,
         error: 'Internal server error',
@@ -172,7 +172,7 @@ export default async function appStoreOptimizationRoutes(fastify: FastifyInstanc
         message: 'Keywords optimized using real App Store APIs',
       });
     } catch (error) {
-      fastify.log.error('Error optimizing keywords:', error);
+      request.log.error(error);
       reply.status(400).send({
         success: false,
         error: (error as Error).message,
@@ -216,8 +216,8 @@ export default async function appStoreOptimizationRoutes(fastify: FastifyInstanc
         data: screenshots,
         message: 'Screenshots generated using real browser automation',
       });
-    } catch (error) {
-      fastify.log.error('Error generating screenshots:', error);
+    } catch (error: unknown) {
+      request.log.error(error);
       reply.status(400).send({
         success: false,
         error: (error as Error).message,
@@ -261,8 +261,8 @@ export default async function appStoreOptimizationRoutes(fastify: FastifyInstanc
         data: abTest,
         message: 'A/B test created with real performance tracking',
       });
-    } catch (error) {
-      fastify.log.error('Error creating A/B test:', error);
+    } catch (error: unknown) {
+      request.log.error(error);
       reply.status(400).send({
         success: false,
         error: (error as Error).message,
@@ -306,8 +306,8 @@ export default async function appStoreOptimizationRoutes(fastify: FastifyInstanc
         data: competitors,
         message: 'Competitor analysis completed using real app store APIs',
       });
-    } catch (error) {
-      fastify.log.error('Error analyzing competitors:', error);
+    } catch (error: unknown) {
+      request.log.error(error);
       reply.status(400).send({
         success: false,
         error: (error as Error).message,
@@ -347,7 +347,7 @@ export default async function appStoreOptimizationRoutes(fastify: FastifyInstanc
         message: 'Performance metrics updated from real app store data',
       });
     } catch (error) {
-      fastify.log.error('Error updating performance metrics:', error);
+      request.log.error(error);
       reply.status(400).send({
         success: false,
         error: (error as Error).message,

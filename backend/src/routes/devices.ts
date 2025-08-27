@@ -1,9 +1,6 @@
-// @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import '../types/auth'; // Import the type extensions
-
-const prisma = new PrismaClient();
 
 // Device management interfaces
 interface CreateDeviceRequest {
@@ -30,7 +27,7 @@ interface CreateDeviceRequest {
 export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Create a new device
   server.post('/', {
-    _schema: {
+    schema: {
       body: {
         type: 'object',
         _required: ['brand', 'model', 'category', 'condition'],
@@ -52,7 +49,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
         }
       }
     }
-  }, async (request: FastifyRequest<{ _Body: CreateDeviceRequest }>, reply: FastifyReply) => {
+  }, async (request: FastifyRequest<{ Body: CreateDeviceRequest }>, reply: FastifyReply) => {
     try {
       const customerId = (request as any).user?.id; // Assume user is attached from auth middleware
       
@@ -187,7 +184,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
 
   // Update device
   server.put('/:id', {
-    _schema: {
+    schema: {
       body: {
         type: 'object',
         _properties: {
@@ -210,7 +207,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
     }
   }, async (request: FastifyRequest<{ 
     Params: { id: string }, 
-    _Body: Partial<CreateDeviceRequest> 
+    Body: Partial<CreateDeviceRequest> 
   }>, reply: FastifyReply) => {
     try {
       const customerId = request.user?.id;
