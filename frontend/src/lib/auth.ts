@@ -61,7 +61,7 @@ const getApiBaseUrl = (loginType: LoginType): string => {
     case 'ORGANIZATION':
     case 'USER_CLIENT':
     default:
-      return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+      return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api/v1';
   }
 };
 

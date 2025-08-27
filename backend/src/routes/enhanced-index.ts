@@ -4,7 +4,7 @@ import { FastifyInstance } from 'fastify';
 import { advancedJobManagementRoutes } from './advanced-job-management';
 import { qualityAssuranceRoutes } from './quality-assurance';
 
-export async function enhancedRoutes(_fastify: FastifyInstance) {
+export async function enhancedRoutes(fastify: FastifyInstance) {
   await fastify.register(advancedJobManagementRoutes, { _prefix: '/api/v1' });
   await fastify.register(qualityAssuranceRoutes, { _prefix: '/api/v1' });
   

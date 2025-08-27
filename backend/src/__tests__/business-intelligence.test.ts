@@ -1,8 +1,6 @@
  
 /// <reference types="jest" />
- 
-/// <reference types="jest" />
-import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import * as dotenv from 'dotenv';
 
 // Load test environment variables

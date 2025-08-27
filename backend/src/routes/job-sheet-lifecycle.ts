@@ -19,7 +19,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 
 // Job Sheet State Definitions
-enum JobState {
+export enum JobState {
   CREATED = 'CREATED',
   IN_DIAGNOSIS = 'IN_DIAGNOSIS',
   AWAITING_APPROVAL = 'AWAITING_APPROVAL',
@@ -241,7 +241,7 @@ class JobSheetLifecycleService {
     },
   };
 
-  async createJobSheet(_data: unknown): Promise<any> {
+  async createJobSheet(data: unknown): Promise<any> {
     const _jobData = JobSheetSchema.parse(data);
     
     const _jobId = `JOB-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
@@ -257,8 +257,8 @@ class JobSheetLifecycleService {
       _stateHistory: [],
     };
 
-    this.jobs.set(_jobId, job);
-    this.stateTransitions.set(_jobId, []);
+    this._jobs.set(_jobId, job);
+    this._stateTransitions.set(_jobId, []);
 
     // Auto-transition to IN_DIAGNOSIS if technician available
     await this.autoAssignTechnician(_jobId);
@@ -269,50 +269,50 @@ class JobSheetLifecycleService {
     return job;
   }
 
-  async transitionState(_transitionData: unknown): Promise<any> {
+  async transitionState(transitionData: unknown): Promise<any> {
     const transition = StateTransitionSchema.parse({
       ...transitionData,
       _performedAt: new Date()
     });
 
-    const job = this.jobs.get(transition.jobId);
+    const job = this._jobs.get(transition._jobId);
     if (!job) {
       throw new Error('Job not found');
     }
 
     // Validate transition is allowed
-    const currentConfig = this.stateConfig[transition.fromState as JobState];
-    if (!(currentConfig.allowedTransitions as unknown).includes(transition.toState)) {
-      throw new Error(`Invalid transition from ${transition.fromState} to ${transition.toState}`);
+    const currentConfig = this.stateConfig[transition._fromState as JobState];
+    if (!(currentConfig._allowedTransitions as unknown).includes(transition._toState)) {
+      throw new Error(`Invalid transition from ${transition._fromState} to ${transition._toState}`);
     }
 
     // Validate required fields for target state
-    const targetConfig = this.stateConfig[transition.toState];
-    await this.validateStateRequirements(job, transition.toState);
+    const targetConfig = this.stateConfig[transition._toState];
+    await this.validateStateRequirements(job, transition._toState);
 
     // Record transition
     const transitionRecord = {
       ...transition,
       _timestamp: new Date(),
-      _previousState: job.state,
+      _previousState: job._state,
     };
 
-    const transitions = this.stateTransitions.get(transition.jobId) || [];
+    const transitions = this._stateTransitions.get(transition._jobId) || [];
     transitions.push(transitionRecord);
-    this.stateTransitions.set(transition.jobId, transitions);
+    this._stateTransitions.set(transition._jobId, transitions);
 
     // Update job state
-    job.state = transition.toState;
-    job.updatedAt = new Date();
-    job.stateHistory = transitions;
+    job._state = transition._toState;
+    job._updatedAt = new Date();
+    job._stateHistory = transitions;
 
-    this.jobs.set(transition.jobId, job);
+    this._jobs.set(transition._jobId, job);
 
     // Send notifications
-    await this.sendNotifications(transition.jobId, transition.toState);
+    await this.sendNotifications(transition._jobId, transition._toState);
 
     // Handle automated follow-up transitions
-    await this.handleAutomatedTransitions(transition.jobId, transition.toState);
+    await this.handleAutomatedTransitions(transition._jobId, transition._toState);
 
     return {
       _success: true,
@@ -321,8 +321,8 @@ class JobSheetLifecycleService {
     };
   }
 
-  async updateJobSheet(_jobId: string, _updateData: unknown): Promise<any> {
-    const job = this.jobs.get(_jobId);
+  async updateJobSheet(_jobId: string, updateData: unknown): Promise<any> {
+    const job = this._jobs.get(_jobId);
     if (!job) {
       throw new Error('Job not found');
     }
@@ -331,38 +331,38 @@ class JobSheetLifecycleService {
     
     // Update job data
     Object.assign(job, validatedUpdate, { _updatedAt: new Date() });
-    this.jobs.set(_jobId, job);
+    this._jobs.set(_jobId, job);
 
     return job;
   }
 
   async getJobSheet(_jobId: string): Promise<any> {
-    const job = this.jobs.get(_jobId);
+    const job = this._jobs.get(_jobId);
     if (!job) {
       throw new Error('Job not found');
     }
 
     return {
       ...job,
-      _stateConfig: this.stateConfig[job.state as JobState],
-      _transitions: this.stateTransitions.get(_jobId) || [],
+      _stateConfig: this.stateConfig[job._state as JobState],
+      _transitions: this._stateTransitions.get(_jobId) || [],
     };
   }
 
-  async getJobsByState(_state: unknown): Promise<any[]> {
-    const jobs = Array.from(this.jobs.values()).filter((_job: unknown) => job.state === state);
-    return jobs.map((_job: unknown) => ({
+  async getJobsByState(state: unknown): Promise<any[]> {
+    const jobs = Array.from(this._jobs.values()).filter((job: unknown) => (job as any)._state === state);
+    return jobs.map((job: unknown) => ({
       ...job,
-      _stateConfig: this.stateConfig[job.state as JobState],
+      _stateConfig: this.stateConfig[(job as any)._state as JobState],
     }));
   }
 
   async getJobAnalytics(): Promise<any> {
-    const jobs = Array.from(this.jobs.values());
+    const jobs = Array.from(this._jobs.values());
     const totalJobs = jobs.length;
     
-    const stateDistribution = Object.values(JobState).reduce((_acc: unknown, _state: unknown) => {
-      acc[state] = jobs.filter((_job: unknown) => job.state === state).length;
+    const stateDistribution = Object.values(JobState).reduce((acc: any, state: unknown) => {
+      acc[state as string] = jobs.filter((job: unknown) => (job as any)._state === state).length;
       return acc;
     }, {} as Record<string, number>);
 
@@ -370,9 +370,9 @@ class JobSheetLifecycleService {
     const cancellationRate = ((stateDistribution[JobState.CANCELLED] || 0) / totalJobs) * 100;
     
     // Calculate average cycle times
-    const completedJobs = jobs.filter((_job: unknown) => job.state === JobState.DELIVERED);
+    const completedJobs = jobs.filter((job: unknown) => (job as any)._state === JobState.DELIVERED);
     const avgCycleTime = completedJobs.length > 0 
-      ? completedJobs.reduce((_sum: unknown, _job: unknown) => sum + (new Date(job.updatedAt).getTime() - new Date(job.createdAt).getTime()), 0) / completedJobs.length / (1000 * 60 * 60) // _hours
+      ? completedJobs.reduce((sum: any, job: unknown) => sum + (new Date((job as any)._updatedAt).getTime() - new Date((job as any)._createdAt).getTime()), 0) / completedJobs.length / (1000 * 60 * 60) // hours
       : 0;
 
     return {
@@ -390,26 +390,26 @@ class JobSheetLifecycleService {
     };
   }
 
-  private async validateStateRequirements(_job: unknown, _targetState: unknown): Promise<void> {
+  private async validateStateRequirements(job: unknown, targetState: unknown): Promise<void> {
     const config = this.stateConfig[targetState as JobState];
     
-    for (const field of config.requiredFields) {
-      if (!job[field] && field !== 'customerApproval') {
+    for (const field of config._requiredFields) {
+      if (!(job as any)[field] && field !== 'customerApproval') {
         throw new Error(`Required field '${field}' missing for state ${targetState}`);
       }
     }
   }
 
   private async autoAssignTechnician(_jobId: string): Promise<void> {
-    const job = this.jobs.get(_jobId);
+    const job = this._jobs.get(_jobId);
     if (!job) return;
 
     // Mock technician assignment logic
     const availableTechnicians = ['TECH001', 'TECH002', 'TECH003'];
     const assignedTechnicianId = availableTechnicians[Math.floor(Math.random() * availableTechnicians.length)];
     
-    job.assignedTechnicianId = assignedTechnicianId;
-    this.jobs.set(_jobId, job);
+    job._assignedTechnicianId = assignedTechnicianId;
+    this._jobs.set(_jobId, job);
 
     // Auto-transition to IN_DIAGNOSIS
     await this.transitionState({
@@ -421,36 +421,36 @@ class JobSheetLifecycleService {
     });
   }
 
-  private async sendNotifications(_jobId: string, _state: unknown): Promise<void> {
-    const job = this.jobs.get(_jobId);
-    const config = (this.stateConfig as unknown)[state];
+  private async sendNotifications(_jobId: string, state: unknown): Promise<void> {
+    const job = this._jobs.get(_jobId);
+    const config = (this.stateConfig as unknown)[state as string];
     
     // Mock notification sending
-    console.log(`📱 Sending notifications for job ${job?.jobNumber} (${state}):`, config.notifications);
+    console.log(`📱 Sending notifications for job ${job?._jobNumber} (${state}):`, (config as any)?._notifications);
     
     // In production, this would integrate with SMS/Email services
-    for (const notification of config.notifications) {
+    for (const notification of (config as any)?._notifications || []) {
       switch (notification) {
         case 'customer_confirmation':
-          console.log(`  📧 _Email: Job ${job?.jobNumber} confirmed - tracking link provided`);
+          console.log(`  📧 Email: Job ${job?._jobNumber} confirmed - tracking link provided`);
           break;
         case 'technician_assignment':
-          console.log(`  📱 _SMS: Technician ${job?.assignedTechnicianId} assigned to job ${job?.jobNumber}`);
+          console.log(`  📱 SMS: Technician ${job?._assignedTechnicianId} assigned to job ${job?._jobNumber}`);
           break;
         case 'customer_update':
-          console.log(`  📧 _Email: Diagnosis complete for ${job?.deviceInfo.brand} ${job?.deviceInfo.model}`);
+          console.log(`  📧 Email: Diagnosis complete for ${job?._deviceInfo?.brand} ${job?._deviceInfo?._model}`);
           break;
         // Add more notification types as needed
       }
     }
   }
 
-  private async handleAutomatedTransitions(_jobId: string, _currentState: unknown): Promise<void> {
-    const config = (this.stateConfig as unknown)[currentState];
+  private async handleAutomatedTransitions(_jobId: string, currentState: unknown): Promise<void> {
+    const config = (this.stateConfig as unknown)[currentState as string];
     
-    if (config.automated && config.allowedTransitions.length > 0) {
+    if ((config as any)?._automated && (config as any)?._allowedTransitions?.length > 0) {
       // Handle automated transitions based on business rules
-      const nextState = config.allowedTransitions[0];
+      const nextState = (config as any)._allowedTransitions[0];
       
       setTimeout(async () => {
         try {
@@ -492,7 +492,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
   const lifecycleService = new JobSheetLifecycleService();
 
   // Create new job sheet
-  server.post('/jobs', async (request: FastifyRequest<{ _Body: unknown }>, reply: FastifyReply) => {
+  _server.post('/jobs', async (request: FastifyRequest<{ _Body: unknown }>, reply: FastifyReply) => {
     try {
       const job = await lifecycleService.createJobSheet((request as any).body);
       return (reply as FastifyReply).status(201).send({
@@ -500,34 +500,34 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
         _message: 'Job sheet created successfully',
         _data: job,
       });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
         _message: 'Failed to create job sheet',
-        _error: error.message,
+        _error: (error as Error).message,
       });
     }
   });
 
   // Get job sheet by ID
-  server.get('/jobs/:jobId', async (request: FastifyRequest<{ Params: { _jobId: string } }>, reply: FastifyReply) => {
+  _server.get('/jobs/:jobId', async (request: FastifyRequest<{ Params: { _jobId: string } }>, reply: FastifyReply) => {
     try {
       const job = await lifecycleService.getJobSheet((request as any).params.jobId);
       return (reply as any).send({
         _success: true,
         _data: job,
       });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       return (reply as FastifyReply).status(404).send({
         _success: false,
         _message: 'Job not found',
-        _error: error.message,
+        _error: (error as Error).message,
       });
     }
   });
 
   // Transition job state
-  server.post('/jobs/:jobId/transition', async (request: FastifyRequest<{
+  _server.post('/jobs/:jobId/transition', async (request: FastifyRequest<{
     Params: { jobId: string };
     Body: unknown;
   }>, reply: FastifyReply) => {
@@ -541,17 +541,17 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
         _message: 'State transition completed',
         _data: result,
       });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
         _message: 'State transition failed',
-        _error: error.message,
+        _error: (error as Error).message,
       });
     }
   });
 
   // Update job sheet
-  server.put('/jobs/:jobId', async (request: FastifyRequest<{
+  _server.put('/jobs/:jobId', async (request: FastifyRequest<{
     Params: { jobId: string };
     Body: unknown;
   }>, reply: FastifyReply) => {
@@ -562,17 +562,17 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
         _message: 'Job sheet updated successfully',
         _data: job,
       });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
         _message: 'Failed to update job sheet',
-        _error: error.message,
+        _error: (error as Error).message,
       });
     }
   });
 
   // Get jobs by state
-  server.get('/jobs/state/:state', async (request: FastifyRequest<{ Params: { _state: JobState } }>, reply: FastifyReply) => {
+  _server.get('/jobs/state/:state', async (request: FastifyRequest<{ Params: { _state: JobState } }>, reply: FastifyReply) => {
     try {
       const jobs = await lifecycleService.getJobsByState((request as any).params.state);
       return (reply as any).send({
@@ -580,34 +580,34 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
         _data: jobs,
         _total: jobs.length,
       });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({
         _success: false,
         _message: 'Failed to retrieve jobs',
-        _error: error.message,
+        _error: (error as Error).message,
       });
     }
   });
 
   // Get job analytics and Six Sigma metrics
-  server.get('/jobs/analytics/dashboard', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/jobs/analytics/dashboard', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const analytics = await lifecycleService.getJobAnalytics();
       return (reply as any).send({
         _success: true,
         _data: analytics,
       });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
         _message: 'Failed to generate analytics',
-        _error: error.message,
+        _error: (error as Error).message,
       });
     }
   });
 
   // Get workflow configuration and visualization
-  server.get('/jobs/workflow/config', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/jobs/workflow/config', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const config = lifecycleService.getStateConfiguration();
       const visualization = lifecycleService.getWorkflowVisualization();
@@ -619,11 +619,11 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
           _workflow: visualization,
         },
       });
-    } catch (_error: unknown) {
+    } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({
         _success: false,
         _message: 'Failed to retrieve workflow configuration',
-        _error: error.message,
+        _error: (error as Error).message,
       });
     }
   });

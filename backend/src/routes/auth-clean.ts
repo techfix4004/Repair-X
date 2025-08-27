@@ -38,7 +38,7 @@ const users: User[] = [
 ];
 
 // eslint-disable-next-line max-lines-per-function
-export async function authRoutes(_fastify: FastifyInstance) {
+export async function authRoutes(fastify: FastifyInstance) {
   // User login
   fastify.post('/login', {
     _schema: {

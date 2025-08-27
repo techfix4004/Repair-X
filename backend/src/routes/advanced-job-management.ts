@@ -3,7 +3,7 @@
 import { FastifyInstance } from 'fastify';
 
 // eslint-disable-next-line max-lines-per-function
-export async function advancedJobManagementRoutes(_fastify: FastifyInstance) {
+export async function advancedJobManagementRoutes(fastify: FastifyInstance) {
   // Advanced Job Creation with AI Optimization
   fastify.post('/jobs/advanced', async (request, reply: unknown) => {
     const jobData = (request as any).body as unknown;

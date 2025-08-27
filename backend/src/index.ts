@@ -6,10 +6,12 @@ import Fastify from 'fastify';
 // import cors from '@fastify/cors'; // CORS handled in plugins
 import { healthRoutes } from './routes/health';
 import { healthRoutes as observabilityHealthRoutes } from './observability/health';
-import { authRoutes } from './routes/auth-clean';
+// import { authRoutes } from './routes/auth-clean'; // Using enhanced auth instead
 import { enhancedAuthRoutes } from './routes/enhanced-auth';
-import { businessRoutes } from './routes/business-clean';
+// import { businessRoutes } from './routes/business-clean'; // Using enhanced routes instead
 import { enhancedRoutes } from './routes/enhanced-index';
+import { aiIntegrationRoutes } from './routes/ai-integration';
+import { jobSheetLifecycleRoutes } from './routes/job-sheet-lifecycle';
 import { registerPlugins } from './plugins';
 import { metricsMiddleware } from './observability/metrics';
 import { securityHeadersMiddleware, RateLimitService } from './security/security';
@@ -46,13 +48,15 @@ async function setupRoutes() {
   
   // Enhanced authentication with 2FA and security
   await fastify.register(enhancedAuthRoutes, { _prefix: '/api/v1/auth' });
-  await fastify.register(authRoutes, { _prefix: '/api/auth' });
   
-  // Business routes with rate limiting
-  await fastify.register(businessRoutes, { _prefix: '/api/business' });
-  
-  // Enhanced business features
+  // Enhanced business features (includes business routes)
   await fastify.register(enhancedRoutes);
+
+  // AI Integration Routes - Phase 4
+  await fastify.register(aiIntegrationRoutes, { _prefix: '/api/v1' });
+
+  // Job Sheet Lifecycle Routes - Phase 3 (supporting AI integration)
+  await fastify.register(jobSheetLifecycleRoutes, { _prefix: '/api/v1' });
 
   // Global rate limiting for API routes
   // @ts-ignore - Rate limiting middleware compatibility
@@ -80,6 +84,11 @@ async function start() {
     console.log(`📈 _Metrics: http://localhost:${port}/api/metrics`);
     console.log(`🔐 Enhanced _Auth: http://localhost:${port}/api/v1/auth`);
     console.log(`🎯 Enhanced _features: http://localhost:${port}/api/v1/enhanced/status`);
+    console.log(`🤖 AI Integration: http://localhost:${port}/api/v1/ai/dashboard`);
+    console.log(`🧠 Job Assignment: http://localhost:${port}/api/v1/ai/job-assignment`);
+    console.log(`🔮 Predictive Analytics: http://localhost:${port}/api/v1/ai/analytics/dashboard`);
+    console.log(`💰 Smart Pricing: http://localhost:${port}/api/v1/ai/pricing/optimize`);
+    console.log(`📋 Job Workflows: http://localhost:${port}/api/v1/jobs`);
     console.log(`📚 API _Documentation: http://localhost:${port}/documentation`);
     
     // Log startup metrics
