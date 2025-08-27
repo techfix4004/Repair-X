@@ -1181,3 +1181,1029 @@ enum DocumentType {
   SERVICE_REPORT
   CUSTOMER_AGREEMENT
 }
+
+// App Store Optimization Models
+model AppStoreOptimization {
+  id            String @id @default(cuid())
+  
+  platform      AppPlatform
+  appName       String
+  appId         String?
+  status        AppOptimizationStatus @default(DRAFT)
+  
+  // App metadata
+  title         String
+  subtitle      String?
+  description   String
+  shortDescription String?
+  keywords      String[]
+  category      String
+  subcategory   String?
+  contentRating String
+  version       String
+  releaseNotes  String
+  
+  // URLs and assets
+  privacyPolicyUrl String
+  termsOfServiceUrl String
+  supportUrl       String
+  marketingUrl     String?
+  appIconUrl       String?
+  
+  // Performance metrics
+  impressions      Int @default(0)
+  installs         Int @default(0)
+  conversionRate   Decimal @default(0) @db.Decimal(5, 4)
+  keywordRankings  Json? // Array of keyword ranking data
+  
+  // A/B Testing
+  screenshots      AppScreenshot[]
+  abTests          AppABTest[]
+  
+  // Localization
+  localizations    AppLocalization[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_store_optimizations")
+}
+
+model AppScreenshot {
+  id               String @id @default(cuid())
+  
+  appOptimizationId String
+  appOptimization   AppStoreOptimization @relation(fields: [appOptimizationId], references: [id], onDelete: Cascade)
+  
+  deviceType       String // iPhone, iPad, Android Phone, Android Tablet
+  orientation      ScreenshotOrientation
+  title            String
+  description      String
+  imageUrl         String
+  orderIndex       Int
+  
+  // Performance tracking
+  conversionRate   Decimal @default(0) @db.Decimal(5, 4)
+  clickThroughRate Decimal @default(0) @db.Decimal(5, 4)
+  viewDuration     Decimal @default(0) @db.Decimal(6, 2) // seconds
+  
+  isActive         Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_screenshots")
+}
+
+model AppABTest {
+  id               String @id @default(cuid())
+  
+  appOptimizationId String
+  appOptimization   AppStoreOptimization @relation(fields: [appOptimizationId], references: [id], onDelete: Cascade)
+  
+  testName         String
+  testType         ABTestType
+  status           ABTestStatus @default(RUNNING)
+  
+  // Test configuration
+  trafficSplit     Decimal @db.Decimal(3, 2) // 50.00 for 50%
+  startDate        DateTime
+  endDate          DateTime?
+  
+  // Variants
+  controlVariant   Json // Control version data
+  testVariant      Json // Test version data
+  
+  // Results
+  controlConversions Int @default(0)
+  testConversions    Int @default(0)
+  controlImpressions Int @default(0)
+  testImpressions    Int @default(0)
+  
+  winningVariant   ABTestWinner?
+  confidence       Decimal? @db.Decimal(5, 4)
+  improvement      Decimal? @db.Decimal(6, 4) // Percentage improvement
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_ab_tests")
+}
+
+model AppLocalization {
+  id               String @id @default(cuid())
+  
+  appOptimizationId String
+  appOptimization   AppStoreOptimization @relation(fields: [appOptimizationId], references: [id], onDelete: Cascade)
+  
+  language         String
+  region           String?
+  title            String
+  description      String
+  keywords         String[]
+  promotionalText  String?
+  releaseNotes     String
+  
+  // Cultural adaptations
+  culturalNotes    String?
+  localizedAssets  Json? // Localized screenshots, icons, etc.
+  
+  status           LocalizationStatus @default(PENDING)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([appOptimizationId, language, region])
+  @@map("app_localizations")
+}
+
+// Launch Campaign Models
+model LaunchCampaign {
+  id              String @id @default(cuid())
+  
+  name            String
+  description     String?
+  type            CampaignType
+  status          CampaignStatus @default(PLANNING)
+  
+  // Timeline
+  startDate       DateTime
+  endDate         DateTime
+  budget          Decimal @db.Decimal(12, 2)
+  actualSpend     Decimal @default(0) @db.Decimal(12, 2)
+  
+  // Targeting
+  targetAudience  Json? // Audience targeting criteria
+  channels        CampaignChannel[]
+  objectives      CampaignObjective[]
+  
+  // Performance metrics
+  impressions     Int @default(0)
+  clicks          Int @default(0)
+  conversions     Int @default(0)
+  revenue         Decimal @default(0) @db.Decimal(12, 2)
+  
+  // Content and assets
+  content         CampaignContent[]
+  mediaOutreach   MediaOutreach[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("launch_campaigns")
+}
+
+model CampaignChannel {
+  id              String @id @default(cuid())
+  
+  campaignId      String
+  campaign        LaunchCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  channelType     MarketingChannelType
+  channelName     String
+  budget          Decimal @db.Decimal(10, 2)
+  actualSpend     Decimal @default(0) @db.Decimal(10, 2)
+  
+  // Performance
+  impressions     Int @default(0)
+  clicks          Int @default(0)
+  conversions     Int @default(0)
+  
+  // Configuration
+  configuration   Json? // Channel-specific settings
+  isActive        Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("campaign_channels")
+}
+
+model CampaignObjective {
+  id              String @id @default(cuid())
+  
+  campaignId      String
+  campaign        LaunchCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  objectiveType   ObjectiveType
+  targetValue     Decimal @db.Decimal(12, 2)
+  currentValue    Decimal @default(0) @db.Decimal(12, 2)
+  
+  description     String?
+  priority        Priority @default(MEDIUM)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("campaign_objectives")
+}
+
+model CampaignContent {
+  id              String @id @default(cuid())
+  
+  campaignId      String
+  campaign        LaunchCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  contentType     ContentType
+  title           String
+  content         String
+  
+  // Asset URLs
+  imageUrl        String?
+  videoUrl        String?
+  documentUrl     String?
+  
+  // Targeting
+  targetChannels  String[] // Which channels to use this content for
+  
+  // Performance
+  impressions     Int @default(0)
+  clicks          Int @default(0)
+  engagements     Int @default(0)
+  
+  isActive        Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("campaign_content")
+}
+
+model MediaOutreach {
+  id              String @id @default(cuid())
+  
+  campaignId      String
+  campaign        LaunchCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  contactName     String
+  contactEmail    String
+  contactPhone    String?
+  organization    String
+  
+  outreachType    OutreachType
+  status          OutreachStatus @default(PLANNED)
+  
+  subject         String?
+  message         String?
+  
+  // Follow-up tracking
+  sentAt          DateTime?
+  respondedAt     DateTime?
+  response        String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("media_outreach")
+}
+
+// Customer Success Automation Models
+model CustomerSuccessProfile {
+  id              String @id @default(cuid())
+  
+  customerId      String @unique
+  customer        User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  // Health scoring
+  healthScore     Decimal @db.Decimal(5, 2) // 0-100
+  engagementScore Decimal @db.Decimal(5, 2) // 0-100
+  adoptionScore   Decimal @db.Decimal(5, 2) // 0-100
+  satisfactionScore Decimal @db.Decimal(5, 2) // 0-100
+  
+  // Risk assessment
+  churnRisk       ChurnRiskLevel @default(LOW)
+  riskFactors     String[] // List of identified risk factors
+  
+  // Business metrics
+  lifetimeValue   Decimal @db.Decimal(12, 2)
+  totalRevenue    Decimal @db.Decimal(12, 2)
+  totalJobs       Int @default(0)
+  avgJobValue     Decimal @db.Decimal(10, 2)
+  
+  // Success milestones
+  milestones      SuccessMilestone[]
+  interventions   CustomerIntervention[]
+  automationRules SuccessAutomationRule[]
+  
+  lastUpdated     DateTime @default(now())
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customer_success_profiles")
+}
+
+model SuccessMilestone {
+  id              String @id @default(cuid())
+  
+  profileId       String
+  profile         CustomerSuccessProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  milestoneType   MilestoneType
+  name            String
+  description     String?
+  
+  targetValue     Decimal? @db.Decimal(12, 2)
+  currentValue    Decimal @default(0) @db.Decimal(12, 2)
+  
+  isAchieved      Boolean @default(false)
+  achievedAt      DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("success_milestones")
+}
+
+model CustomerIntervention {
+  id              String @id @default(cuid())
+  
+  profileId       String
+  profile         CustomerSuccessProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  interventionType InterventionType
+  trigger         String // What triggered this intervention
+  
+  // Intervention details
+  title           String
+  description     String
+  actionTaken     String?
+  
+  status          InterventionStatus @default(PLANNED)
+  priority        Priority @default(MEDIUM)
+  
+  // Assignment
+  assignedTo      String?
+  assignee        User? @relation("AssignedInterventions", fields: [assignedTo], references: [id])
+  
+  // Timeline
+  scheduledAt     DateTime?
+  executedAt      DateTime?
+  completedAt     DateTime?
+  
+  // Results
+  outcome         String?
+  impactScore     Decimal? @db.Decimal(5, 2)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customer_interventions")
+}
+
+model SuccessAutomationRule {
+  id              String @id @default(cuid())
+  
+  profileId       String?
+  profile         CustomerSuccessProfile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  name            String
+  description     String?
+  
+  // Rule configuration
+  triggerType     AutomationTriggerType
+  triggerConditions Json // Conditions that trigger this rule
+  
+  // Actions
+  actions         Json // Actions to take when triggered
+  
+  // Settings
+  isActive        Boolean @default(true)
+  priority        Int @default(1)
+  
+  // Execution tracking
+  lastExecuted    DateTime?
+  executionCount  Int @default(0)
+  successRate     Decimal @default(0) @db.Decimal(5, 4)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("success_automation_rules")
+}
+
+// Visual Regression Testing Models
+model VisualRegressionSuite {
+  id              String @id @default(cuid())
+  
+  name            String
+  description     String?
+  baseUrl         String
+  
+  // Configuration
+  browsers        String[] // Chrome, Firefox, Safari, Edge
+  devices         String[] // Desktop, Mobile, Tablet
+  viewports       Json // Array of viewport sizes
+  
+  // Test settings
+  threshold       Decimal @db.Decimal(5, 4) // Difference threshold
+  ignoreElements  String[] // CSS selectors to ignore
+  
+  isActive        Boolean @default(true)
+  
+  // Test runs
+  testRuns        VisualTestRun[]
+  baselines       VisualBaseline[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("visual_regression_suites")
+}
+
+model VisualTestRun {
+  id              String @id @default(cuid())
+  
+  suiteId         String
+  suite           VisualRegressionSuite @relation(fields: [suiteId], references: [id], onDelete: Cascade)
+  
+  runNumber       Int
+  status          TestRunStatus @default(RUNNING)
+  
+  // Configuration for this run
+  gitCommit       String?
+  branch          String?
+  environment     String @default("staging")
+  
+  // Results
+  totalTests      Int @default(0)
+  passedTests     Int @default(0)
+  failedTests     Int @default(0)
+  
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  
+  // Test results
+  testResults     VisualTestResult[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([suiteId, runNumber])
+  @@map("visual_test_runs")
+}
+
+model VisualTestResult {
+  id              String @id @default(cuid())
+  
+  testRunId       String
+  testRun         VisualTestRun @relation(fields: [testRunId], references: [id], onDelete: Cascade)
+  
+  testName        String
+  url             String
+  browser         String
+  device          String
+  viewport        String
+  
+  status          TestResultStatus @default(PENDING)
+  
+  // Image data
+  baselineImageUrl String?
+  currentImageUrl  String
+  diffImageUrl     String?
+  
+  // Diff analysis
+  diffPercentage   Decimal? @db.Decimal(7, 4)
+  pixelDiff        Int?
+  
+  // Error handling
+  errorMessage     String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("visual_test_results")
+}
+
+model VisualBaseline {
+  id              String @id @default(cuid())
+  
+  suiteId         String
+  suite           VisualRegressionSuite @relation(fields: [suiteId], references: [id], onDelete: Cascade)
+  
+  testName        String
+  url             String
+  browser         String
+  device          String
+  viewport        String
+  
+  imageUrl        String
+  imageHash       String // For quick comparison
+  
+  // Metadata
+  createdFromRun  String? // Test run ID this baseline was created from
+  isActive        Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([suiteId, testName, browser, device, viewport])
+  @@map("visual_baselines")
+}
+
+// Mobile Printing Models
+model PrintJob {
+  id              String @id @default(cuid())
+  
+  jobNumber       String @unique
+  
+  // Source
+  userId          String
+  user            User @relation("UserPrintJobs", fields: [userId], references: [id])
+  
+  // Print configuration
+  printerName     String
+  printerType     PrinterType
+  
+  // Document details
+  documentType    PrintDocumentType
+  documentUrl     String
+  fileName        String
+  
+  // Print settings
+  pageSize        PageSize @default(A4)
+  orientation     PrintOrientation @default(PORTRAIT)
+  copies          Int @default(1)
+  colorMode       ColorMode @default(GRAYSCALE)
+  quality         PrintQuality @default(NORMAL)
+  
+  // Status and tracking
+  status          PrintJobStatus @default(QUEUED)
+  progress        Int @default(0) // 0-100
+  
+  // Error handling
+  errorMessage    String?
+  retryCount      Int @default(0)
+  maxRetries      Int @default(3)
+  
+  // Timing
+  queuedAt        DateTime @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  
+  // Cost tracking
+  estimatedCost   Decimal? @db.Decimal(8, 4)
+  actualCost      Decimal? @db.Decimal(8, 4)
+  
+  // Related entities
+  jobSheetId      String?
+  jobSheet        JobSheet? @relation(fields: [jobSheetId], references: [id])
+  
+  quotationId     String?
+  quotation       Quotation? @relation(fields: [quotationId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("print_jobs")
+}
+
+model PrinterConfiguration {
+  id              String @id @default(cuid())
+  
+  name            String
+  type            PrinterType
+  manufacturer    String
+  model           String
+  
+  // Network configuration
+  ipAddress       String?
+  port            Int?
+  macAddress      String?
+  
+  // Capabilities
+  supportedFormats String[] // PDF, JPEG, PNG, etc.
+  maxPageSize     PageSize
+  colorSupport    Boolean @default(false)
+  duplexSupport   Boolean @default(false)
+  
+  // Status
+  isOnline        Boolean @default(false)
+  lastOnline      DateTime?
+  
+  // Consumables tracking
+  tonerLevel      Int? // 0-100
+  paperLevel      Int? // 0-100
+  
+  // Location
+  location        String?
+  department      String?
+  
+  isActive        Boolean @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name])
+  @@map("printer_configurations")
+}
+
+// Enhanced User model relations
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String?
+  role      UserRole @default(CUSTOMER)
+  status    UserStatus @default(ACTIVE)
+  
+  // Organization binding - all users must belong to an organization (except SAAS_ADMIN)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  // For customers - they can be associated with an org through active jobs/devices
+  hasActiveJobs  Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Customer-specific fields
+  customerProfile CustomerProfile?
+  bookings       Booking[]
+  reviews        Review[]
+  payments       Payment[]
+  devices        Device[]
+
+  // Technician-specific fields
+  technicianProfile TechnicianProfile?
+  assignedBookings  Booking[] @relation("TechnicianBookings")
+  technicianReviews Review[] @relation("TechnicianReviews")
+  jobSheets         JobSheet[] @relation("TechnicianJobSheets")
+
+  // SMS system relations
+  smsMessages       SmsMessage[]
+
+  // Expense system relations
+  submittedExpenses Expense[] @relation("SubmittedExpenses")
+  approvedExpenses  Expense[] @relation("ApprovedExpenses")
+
+  // Quotation system relations
+  customerQuotations   Quotation[] @relation("CustomerQuotations")
+  preparedQuotations   Quotation[] @relation("PreparedQuotations")
+  quotationApprovals   QuotationApproval[] @relation("QuotationApprovals")
+  quotationRevisions   QuotationRevision[] @relation("QuotationRevisions")
+
+  // Document system relations
+  generatedDocuments   GeneratedDocument[] @relation("GeneratedDocuments")
+
+  // Organization invitation relations
+  sentInvitations      OrganizationInvitation[] @relation("SentInvitations")
+  
+  // New service relations
+  customerSuccessProfile CustomerSuccessProfile?
+  assignedInterventions  CustomerIntervention[] @relation("AssignedInterventions")
+  printJobs              PrintJob[] @relation("UserPrintJobs")
+
+  @@map("users")
+}
+
+// Enhanced JobSheet and Quotation models for print jobs
+model JobSheet {
+  id          String @id @default(cuid())
+  jobNumber   String @unique // Generated job number (e.g., JS-2024-001234)
+  
+  bookingId   String @unique
+  booking     Booking @relation(fields: [bookingId], references: [id])
+  
+  deviceId    String
+  device      Device @relation(fields: [deviceId], references: [id])
+  
+  technicianId String?
+  technician   User? @relation("TechnicianJobSheets", fields: [technicianId], references: [id])
+  
+  // Job details
+  problemDescription String
+  diagnosisNotes     String?
+  repairActions      Json? // Array of repair steps taken
+  partsUsed          JobSheetPart[]
+  
+  // Quality checkpoints
+  qualityChecks      Json? // Six Sigma quality checkpoints
+  testingResults     Json? // Post-repair testing results
+  
+  // Time tracking
+  estimatedHours     Decimal @db.Decimal(5, 2)
+  actualHours        Decimal? @db.Decimal(5, 2)
+  
+  startedAt          DateTime?
+  completedAt        DateTime?
+  
+  status             JobSheetStatus @default(CREATED)
+  priority           Priority @default(MEDIUM)
+  
+  // Customer communication
+  customerApprovalRequired Boolean @default(false)
+  customerApprovedAt       DateTime?
+  
+  // Pricing
+  laborCost          Decimal @db.Decimal(10, 2)
+  partsCost          Decimal? @db.Decimal(10, 2)
+  totalCost          Decimal? @db.Decimal(10, 2)
+  
+  // Documentation
+  beforePhotos       Json? // Array of photo URLs
+  afterPhotos        Json? // Array of photo URLs
+  warrantyCoverage   String? // Warranty provided on repair
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations to new systems
+  expenses     Expense[]
+  quotation    Quotation?
+  outsourcedJob OutsourcedJob?
+  generatedDocuments GeneratedDocument[]
+  printJobs    PrintJob[]
+
+  @@map("job_sheets")
+}
+
+model Quotation {
+  id            String @id @default(cuid())
+  quoteNumber   String @unique
+  
+  customerId    String
+  customer      User @relation("CustomerQuotations", fields: [customerId], references: [id])
+  
+  deviceId      String?
+  device        Device? @relation(fields: [deviceId], references: [id])
+  
+  preparedBy    String
+  preparedByUser User @relation("PreparedQuotations", fields: [preparedBy], references: [id])
+  
+  // Quote details
+  title         String
+  description   String
+  notes         String?
+  
+  // Pricing
+  subtotal      Decimal @db.Decimal(10, 2)
+  taxAmount     Decimal? @db.Decimal(10, 2)
+  discountAmount Decimal? @db.Decimal(10, 2)
+  totalAmount   Decimal @db.Decimal(10, 2)
+  
+  // Validity
+  validUntil    DateTime
+  
+  // Status and workflow
+  status        QuotationStatus @default(DRAFT)
+  revisionNumber Int @default(1)
+  
+  // Customer interaction
+  customerViewedAt DateTime?
+  customerApprovedAt DateTime?
+  customerRejectedAt DateTime?
+  rejectionReason   String?
+  
+  // Digital signature
+  customerSignature Json? // Signature data
+  signedAt          DateTime?
+  
+  // Conversion
+  convertedToJobAt  DateTime?
+  jobSheetId        String? @unique
+  jobSheet          JobSheet? @relation(fields: [jobSheetId], references: [id])
+  
+  // Line items and approvals
+  items         QuotationItem[]
+  approvals     QuotationApproval[]
+  revisions     QuotationRevision[]
+  printJobs     PrintJob[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("quotations")
+}
+
+// New Enums for the services
+enum AppPlatform {
+  IOS
+  ANDROID
+  BOTH
+}
+
+enum AppOptimizationStatus {
+  DRAFT
+  OPTIMIZING
+  TESTING
+  SUBMITTED
+  LIVE
+  REJECTED
+}
+
+enum ScreenshotOrientation {
+  PORTRAIT
+  LANDSCAPE
+}
+
+enum ABTestType {
+  ICON
+  SCREENSHOTS
+  DESCRIPTION
+  KEYWORDS
+  TITLE
+}
+
+enum ABTestStatus {
+  DRAFT
+  RUNNING
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum ABTestWinner {
+  CONTROL
+  VARIANT
+  INCONCLUSIVE
+}
+
+enum LocalizationStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REVIEW
+  APPROVED
+}
+
+enum CampaignType {
+  PRODUCT_LAUNCH
+  FEATURE_LAUNCH
+  BRAND_AWARENESS
+  LEAD_GENERATION
+  CUSTOMER_RETENTION
+  UPSELL
+}
+
+enum CampaignStatus {
+  PLANNING
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum MarketingChannelType {
+  EMAIL
+  SMS
+  SOCIAL_MEDIA
+  PAID_ADS
+  CONTENT_MARKETING
+  PR
+  INFLUENCER
+  AFFILIATE
+  DIRECT_MAIL
+  WEBINAR
+}
+
+enum ObjectiveType {
+  AWARENESS
+  LEADS
+  CONVERSIONS
+  REVENUE
+  DOWNLOADS
+  SIGNUPS
+  ENGAGEMENT
+}
+
+enum ContentType {
+  EMAIL
+  SOCIAL_POST
+  BLOG_ARTICLE
+  PRESS_RELEASE
+  AD_CREATIVE
+  VIDEO
+  INFOGRAPHIC
+  LANDING_PAGE
+}
+
+enum OutreachType {
+  PRESS_RELEASE
+  INTERVIEW
+  PRODUCT_DEMO
+  PARTNERSHIP
+  SPEAKING_OPPORTUNITY
+}
+
+enum OutreachStatus {
+  PLANNED
+  SENT
+  RESPONDED
+  SCHEDULED
+  COMPLETED
+  DECLINED
+}
+
+enum ChurnRiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum MilestoneType {
+  ONBOARDING
+  FIRST_SUCCESS
+  FEATURE_ADOPTION
+  REVENUE
+  ENGAGEMENT
+  RETENTION
+}
+
+enum InterventionType {
+  ONBOARDING_SUPPORT
+  FEATURE_TRAINING
+  SUCCESS_CHECK_IN
+  RISK_MITIGATION
+  UPSELL_OPPORTUNITY
+  RENEWAL_DISCUSSION
+}
+
+enum InterventionStatus {
+  PLANNED
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AutomationTriggerType {
+  TIME_BASED
+  EVENT_BASED
+  SCORE_BASED
+  BEHAVIOR_BASED
+}
+
+enum TestRunStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum TestResultStatus {
+  PENDING
+  PASSED
+  FAILED
+  ERROR
+  BASELINE_MISSING
+}
+
+enum PrinterType {
+  THERMAL
+  INKJET
+  LASER
+  DOT_MATRIX
+  LABEL
+}
+
+enum PrintDocumentType {
+  JOB_SHEET
+  QUOTATION
+  INVOICE
+  RECEIPT
+  WORK_ORDER
+  REPORT
+  LABEL
+}
+
+enum PageSize {
+  A4
+  A5
+  LETTER
+  LEGAL
+  THERMAL_80MM
+  THERMAL_58MM
+  LABEL_4X6
+}
+
+enum PrintOrientation {
+  PORTRAIT
+  LANDSCAPE
+}
+
+enum ColorMode {
+  COLOR
+  GRAYSCALE
+  MONOCHROME
+}
+
+enum PrintQuality {
+  DRAFT
+  NORMAL
+  HIGH
+  PHOTO
+}
+
+enum PrintJobStatus {
+  QUEUED
+  PROCESSING
+  PRINTING
+  COMPLETED
+  FAILED
+  CANCELLED
+}

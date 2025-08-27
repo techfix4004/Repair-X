@@ -23,9 +23,9 @@ import { complianceRoutes } from './compliance';
 import completeBusinessManagementRoutes from './complete-business-management';
 import customerOnboardingRoutes from './customer-onboarding';
 import marketingAutomationRoutes from './marketing-automation';
-import launchCampaignsRoutes from './launch-campaigns';
-import appStoreOptimizationRoutes from './app-store-optimization-fastify';
-import customerSuccessRoutes from './customer-success-fastify';
+
+
+
 import emailSettingsRoutes from './email-settings';
 import employeeManagementRoutes from './employee-management';
 import partsInventoryRoutes from './parts-inventory';
@@ -37,7 +37,7 @@ import { franchiseManagementRoutes } from './franchise-management';
 import outsourcingMarketplaceRoutes from './outsourcing-marketplace';
 import termsConditionsRoutes from './terms-conditions';
 import apiMarketplaceRoutes from './api-marketplace';
-import visualRegressionTestingRoutes from './visual-regression-testing';
+
 import mobileFieldOperationsRoutes from './mobile-field-operations';
 
  
@@ -90,14 +90,11 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
     // ✅ NEW: Marketing Automation System
     await server.register(marketingAutomationRoutes);
 
-    // ✅ NEW: Launch Campaign Execution System
-    await server.register(launchCampaignsRoutes);
 
-    // ✅ NEW: App Store Optimization System
-    await server.register(appStoreOptimizationRoutes);
 
-    // ✅ NEW: Customer Success Automation System
-    await server.register(customerSuccessRoutes);
+
+
+
 
     // ✅ NEW: Email Settings Management System (Category 4)
     await server.register(emailSettingsRoutes, { prefix: '/email-settings' });
@@ -132,8 +129,7 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
     // ✅ NEW: API Marketplace System (Third-party Integrations & White-label Framework)
     await server.register(apiMarketplaceRoutes, { prefix: '/api-marketplace' });
 
-    // ✅ NEW: Visual Regression Testing System (Automated UI Testing)
-    await server.register(visualRegressionTestingRoutes, { prefix: '/visual-testing' });
+
 
     // ✅ NEW: Mobile Field Operations System (Enhanced Field Service Management)
     await server.register(mobileFieldOperationsRoutes, { prefix: '/field-operations' });
