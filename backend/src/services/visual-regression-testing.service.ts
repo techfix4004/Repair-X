@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { chromium, firefox, webkit, Browser, Page, BrowserContext } from 'playwright';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { exec } from 'child_process';

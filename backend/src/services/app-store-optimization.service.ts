@@ -4,7 +4,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 
 const execAsync = promisify(exec);
 
