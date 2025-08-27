@@ -398,7 +398,7 @@ export class AIBusinessIntelligenceService {
   }
 
   private extractTechnicalKeywords(text: string): string[] {
-    const doc = compromise(text);
+    const doc = (compromise as any)(text);
     const nouns = doc.nouns().out('array');
     const adjectives = doc.adjectives().out('array');
     
@@ -768,4 +768,4 @@ export class AIBusinessIntelligenceService {
   }
 }
 
-export const aiBusinessIntelligenceService = new AIBusinessIntelligenceService();inessIntelligenceService();
+export const aiBusinessIntelligenceService = new AIBusinessIntelligenceService();

@@ -477,7 +477,7 @@ export default function CustomerDashboard() {
                     Payment Methods
                   </Typography>
                   <Typography color="text.secondary" mb={3}>
-                    Advanced billing management coming soon. You'll be able to manage payment methods, 
+                    Advanced billing management coming soon. You&apos;ll be able to manage payment methods, 
                     view detailed invoices, and set up automatic payments.
                   </Typography>
                   
@@ -603,5 +603,4 @@ export default function CustomerDashboard() {
       </Dialog>
     </Box>
   );
-} );
 }

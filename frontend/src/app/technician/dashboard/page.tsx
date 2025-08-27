@@ -332,7 +332,7 @@ export default function TechnicianDashboard() {
         {/* Today's Jobs Tab */}
         <TabPanel value={selectedTab} index={0}>
           <Typography variant="h5" fontWeight={600} mb={3}>
-            Today's Schedule
+            Today&apos;s Schedule
           </Typography>
           
           <List>
