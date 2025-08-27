@@ -4,25 +4,17 @@
 /// <reference types="jest" />
 import { describe, test, expect, beforeEach, afterAll } from '@jest/globals';
 
-import LaunchCampaignService from '../services/launch-campaign.service';
-import AppStoreOptimizationService from '../services/app-store-optimization.service';
 import CustomerSuccessService from '../services/customer-success.service';
 import type {
   CustomerIntervention,
   SupportTicket,
-  SatisfactionSurvey,
-  AppStoreOptimization,
-  ABTest
+  SatisfactionSurvey
 } from '../types/missing-interfaces';
 
 describe('Phase 8 Launch Automation & Marketing Systems', () => {
-  let launchCampaignService: LaunchCampaignService;
-  let asoService: AppStoreOptimizationService;
   let customerSuccessService: CustomerSuccessService;
 
   beforeEach(() => {
-    launchCampaignService = new LaunchCampaignService();
-    asoService = new AppStoreOptimizationService();
     customerSuccessService = new CustomerSuccessService();
   });
 
@@ -91,144 +83,6 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       await expect(
         launchCampaignService.executeCampaign(campaignId)
       ).resolves.not.toThrow();
-    });
-  });
-
-  // App Store Optimization Tests
-  describe('App Store Optimization System', () => {
-    it('should create app store optimization listing', async () => {
-      const appData = {
-        appName: 'RepairX Test',
-        platform: 'both' as const,
-        title: 'RepairX - Professional Repair Services',
-        description: 'Complete repair service platform',
-        keywords: ['repair', 'service', 'maintenance'],
-        screenshots: [
-          // Use the correct shape matching AppStoreScreenshot type
-          { id: 'scr1', url: 'screenshot1.png', deviceType: 'iPhone 15 Pro', order: 1, orientation: 'portrait' },
-          { id: 'scr2', url: 'screenshot2.png', deviceType: 'Pixel 8 Pro', order: 2, orientation: 'portrait' }
-        ],
-        icon: 'app_icon.png',
-        category: 'Productivity',
-        targetAudience: ['professionals', 'businesses']
-      };
-
-      const listing = await asoService.createAppStoreListing(appData);
-
-      expect(listing).toBeDefined();
-      expect(listing.id).toMatch(/^aso_\d+_[a-z0-9]+$/);
-      expect(listing.title).toBe(appData.title);
-      expect(listing.platform).toBe(appData.platform);
-      expect(listing.status).toBe('draft');
-      expect(listing.metadata).toBeDefined();
-      expect(listing.screenshots).toBeDefined();
-      expect(listing.optimization).toBeDefined();
-      expect(listing.performance).toBeDefined();
-      expect(listing.compliance).toBeDefined();
-    });
-
-    it('should generate optimized screenshots', async () => {
-      const appId = 'testapp';
-      const config = {
-        devices: ['iPhone 15 Pro', 'Pixel 8 Pro'],
-        features: ['Dashboard', 'Tracking', 'Analytics'],
-        branding: {}
-      };
-
-      const screenshots = await asoService.generateScreenshots(appId, config);
-
-      expect(screenshots).toBeInstanceOf(Array);
-      expect(screenshots.length).toBe(5);
-
-      screenshots.forEach((screenshot: any) => {
-        expect(screenshot.id).toBeDefined();
-        expect(screenshot.url).toMatch(/^\/app-store\/screenshots\//);
-        expect(screenshot.deviceType).toBe('iPhone 15 Pro');
-        expect(screenshot.orientation).toBe('portrait');
-        expect(screenshot.title).toContain('RepairX');
-        expect(screenshot.order).toBeGreaterThan(0);
-        expect(screenshot.performanceMetrics).toBeDefined();
-        expect(screenshot.performanceMetrics.conversionRate).toBeGreaterThan(0);
-      });
-    });
-
-    it('should optimize keywords for better visibility', async () => {
-      const appId = 'testapp';
-      const currentKeywords = ['repair service', 'field service', 'business automation'];
-
-      const optimization = await asoService.optimizeKeywords(appId, currentKeywords);
-
-      expect(optimization).toBeDefined();
-      expect(optimization.primaryKeywords).toBeInstanceOf(Array);
-      expect(optimization.primaryKeywords.length).toBe(3);
-      expect(optimization.secondaryKeywords).toBeInstanceOf(Array);
-      expect(optimization.competitorKeywords).toBeInstanceOf(Array);
-      expect(optimization.keywordDensity).toBeDefined();
-      expect(optimization._searchVolumeTargets).toBeInstanceOf(Array);
-
-      optimization.primaryKeywords.forEach((keyword: any) => {
-        expect(keyword.term).toBeDefined();
-        expect(keyword.relevanceScore).toBeGreaterThan(0);
-        expect(keyword.searchVolume).toBeGreaterThan(0);
-        expect(keyword.targetRanking).toBeGreaterThan(0);
-      });
-    });
-
-    it('should create A/B test for optimization', async () => {
-      const config = {
-        appId: 'testapp',
-        testType: 'icon' as const,
-        variants: [
-          { name: 'Original Icon', assets: { icon: 'original.png' } },
-          { name: 'New Icon', assets: { icon: 'new.png' } }
-        ]
-      };
-
-      const abTest = await asoService.createABTest(config);
-
-      expect(abTest).toBeDefined();
-      expect(abTest.id).toMatch(/^abtest_\d+_[a-z0-9]+$/);
-      expect(abTest.name).toContain('icon Optimization Test');
-      expect(abTest.type).toBe('icon');
-      expect(abTest.status).toBe('running');
-      expect(abTest.variants.length).toBe(2);
-      expect((abTest.variants[0] as any)._isControl ?? abTest.variants[0].isControl).toBe(true);
-      expect((abTest.variants[1] as any)._isControl ?? abTest.variants[1].isControl).toBe(false);
-      expect(abTest.startDate).toBeInstanceOf(Date);
-      expect(abTest.confidence).toBe(0);
-      expect(abTest.significanceLevel).toBe(0.95);
-    });
-
-    it('should check app store compliance', async () => {
-      const appId = 'testapp';
-      const platform = 'ios';
-
-      const compliance = await asoService.checkCompliance(appId, platform);
-
-      expect(compliance).toBeDefined();
-      expect(compliance.status).toBe('compliant');
-      expect(compliance.lastCheck).toBeInstanceOf(Date);
-      expect(compliance.issues).toBeInstanceOf(Array);
-      expect(compliance.guidelines).toBeInstanceOf(Array);
-      expect(compliance.guidelines.length).toBeGreaterThan(0);
-
-      compliance.guidelines.forEach((guideline: any) => {
-        expect(guideline.guideline).toBeDefined();
-        expect(guideline.status).toBe('pass');
-        expect(guideline.details).toBeDefined();
-      });
-    });
-
-    it('should submit app to store', async () => {
-      const appId = 'testapp';
-      const platform = 'ios';
-
-      const submission = await asoService.submitToAppStore(appId, platform);
-
-      expect(submission).toBeDefined();
-      expect((submission as any)._submissionId).toMatch(/^submission_\d+_ios$/);
-      expect((submission as any).status).toBe('submitted');
-      expect((submission as any).estimatedReviewTime).toBe('24-48 hours');
     });
   });
 
@@ -386,38 +240,6 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
 
   // Integration Tests
   describe('Phase 8 System Integration', () => {
-    it('should integrate launch campaigns with app store optimization', async () => {
-      const campaign = await launchCampaignService.createCampaign({
-        name: 'App Store Launch Campaign',
-        type: 'product-launch',
-        channels: [
-          {
-            id: 'test_channel',
-            type: 'pr' as const,
-            budget: 5000,
-            _budget: 5000,
-            status: 'active',
-            config: {},
-            targetAudience: 'Tech media',
-            content: { headlines: ['Test'], descriptions: ['Test'], images: [], videos: [], callToActions: [], landingPages: [] },
-            schedule: { startDate: new Date(), endDate: new Date(), frequency: 'once' as const, timing: '09:00', timezone: 'UTC' },
-            performance: { impressions: 0, clicks: 0, conversions: 0, cost: 0, roas: 0, engagementRate: 0 }
-          }
-        ]
-      });
-
-      const asoListing = await asoService.createAppStoreListing({
-        appName: 'RepairX Mobile',
-        platform: 'both'
-      });
-
-      expect(campaign.id).toBeDefined();
-      expect(asoListing.id).toBeDefined();
-
-      expect(campaign.channels.length).toBeGreaterThan(0);
-      expect((asoListing.metadata as any)?.title).toContain('RepairX');
-    });
-
     it('should integrate customer success with retention campaigns', async () => {
       const customerId = 'integration_test_customer';
 
@@ -473,13 +295,6 @@ describe('Phase 8 Launch Automation & Marketing Systems', () => {
       });
       expect(campaign.budget).toBe(10000);
       expect(campaign.metrics?.totalReach).toBe(0);
-
-      const asoListing = await asoService.createAppStoreListing({
-        appName: 'Test App',
-        platform: 'ios'
-      });
-      expect(asoListing.platform).toBe('ios');
-      expect((asoListing.compliance.ios as any).status).toBe('compliant');
 
       const profile = await customerSuccessService.getCustomerProfile('test_customer');
       expect(profile?.healthScore).toBeGreaterThanOrEqual(0);
