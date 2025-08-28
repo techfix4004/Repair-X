@@ -5,7 +5,7 @@ import { prisma } from '../utils/database';
 
 // Validation schemas
 const businessSettingSchema = z.object({
-  _category: z.enum([
+  category: z.enum([
     'TAX_SETTINGS',
     'PRINT_SETTINGS', 
     'WORKFLOW_CONFIGURATION',
@@ -27,15 +27,15 @@ const businessSettingSchema = z.object({
     'SECURITY_SETTINGS',
     'INTEGRATION_SETTINGS'
   ]),
-  _subcategory: z.string().optional(),
-  _key: z.string().min(1),
-  _value: z.any(),
-  _dataType: z.enum(['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'DATE', 'ARRAY']).default('STRING'),
-  _label: z.string().min(1),
-  _description: z.string().optional(),
-  _isRequired: z.boolean().default(false),
-  _validationRules: z.any().optional(),
-  _tenantId: z.string().optional()
+  subcategory: z.string().optional(),
+  key: z.string().min(1),
+  value: z.any(),
+  dataType: z.enum(['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'DATE', 'ARRAY']).default('STRING'),
+  label: z.string().min(1),
+  description: z.string().optional(),
+  isRequired: z.boolean().default(false),
+  validationRules: z.any().optional(),
+  tenantId: z.string().optional()
 });
 
 const updateBusinessSettingSchema = businessSettingSchema.partial();
@@ -45,7 +45,7 @@ async function getBusinessSettings(request: FastifyRequest, reply: FastifyReply)
   try {
     const { category, tenantId  } = ((request as any).query as unknown);
     
-    const _whereClause: unknown = {
+    const whereClause: any = {
       isActive: true
     };
     
@@ -58,25 +58,25 @@ async function getBusinessSettings(request: FastifyRequest, reply: FastifyReply)
     }
 
     const settings = await prisma.businessSettings.findMany({
-      _where: whereClause,
-      _orderBy: [
+      where: whereClause,
+      orderBy: [
         { category: 'asc' },
-        { _subcategory: 'asc' },
-        { _label: 'asc' }
+        { subcategory: 'asc' },
+        { label: 'asc' }
       ]
     });
 
-    return (reply as any).send({
-      _success: true,
-      _data: settings,
-      _count: settings.length
+    return reply.send({
+      success: true,
+      data: settings,
+      count: settings.length
     });
   } catch (error) {
     request.log.error(error);
-    return (reply as FastifyReply).status(500).send({
-      _success: false,
-      _message: 'Failed to fetch business settings',
-      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
+    return reply.status(500).send({
+      success: false,
+      message: 'Failed to fetch business settings',
+      error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -86,9 +86,9 @@ async function getBusinessSettingsByCategory(request: FastifyRequest, reply: Fas
     const { category  } = ((request as any).params as unknown);
     const { tenantId  } = ((request as any).query as unknown);
     
-    const _whereClause: unknown = {
+    const whereClause: any = {
       category,
-      _isActive: true
+      isActive: true
     };
     
     if (tenantId) {
@@ -96,15 +96,15 @@ async function getBusinessSettingsByCategory(request: FastifyRequest, reply: Fas
     }
 
     const settings = await prisma.businessSettings.findMany({
-      _where: whereClause,
-      _orderBy: [
+      where: whereClause,
+      orderBy: [
         { subcategory: 'asc' },
-        { _label: 'asc' }
+        { label: 'asc' }
       ]
     });
 
     // Group settings by subcategory for better organization
-    const groupedSettings = settings.reduce((_acc: Record<string, any[]>, _setting: unknown) => {
+    const groupedSettings = settings.reduce((acc: Record<string, any[]>, setting: any) => {
       const key = setting.subcategory || 'general';
       if (!acc[key]) {
         acc[key] = [];
@@ -113,20 +113,20 @@ async function getBusinessSettingsByCategory(request: FastifyRequest, reply: Fas
       return acc;
     }, {} as Record<string, any[]>);
 
-    return (reply as any).send({
-      _success: true,
-      _data: {
+    return reply.send({
+      success: true,
+      data: {
         category,
-        _settings: groupedSettings,
-        _total: settings.length
+        settings: groupedSettings,
+        total: settings.length
       }
     });
   } catch (error) {
     request.log.error(error);
-    return (reply as FastifyReply).status(500).send({
-      _success: false,
-      _message: 'Failed to fetch category settings',
-      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
+    return reply.status(500).send({
+      success: false,
+      message: 'Failed to fetch category settings',
+      error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -137,45 +137,45 @@ async function createBusinessSetting(request: FastifyRequest, reply: FastifyRepl
 
     // Check if setting already exists for this key and tenant
     const existingSetting = await prisma.businessSettings.findUnique({
-      _where: {
+      where: {
         category_key_tenantId: {
           category: data.category,
-          _key: data.key,
-          _tenantId: data.tenantId || null
+          key: data.key,
+          tenantId: data.tenantId || null
         }
       }
     });
 
     if (existingSetting) {
-      return (reply as FastifyReply).status(400).send({
-        _success: false,
-        _message: 'Setting with this key already exists for the specified category and tenant'
+      return reply.status(400).send({
+        success: false,
+        message: 'Setting with this key already exists for the specified category and tenant'
       });
     }
 
     const setting = await prisma.businessSettings.create({ data });
 
-    request.log.info({ _settingId: setting.id }, 'Business setting created');
+    request.log.info({ settingId: setting.id }, 'Business setting created');
 
-    return (reply as FastifyReply).status(201).send({
-      _success: true,
-      _data: setting,
-      _message: 'Business setting created successfully'
+    return reply.status(201).send({
+      success: true,
+      data: setting,
+      message: 'Business setting created successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return (reply as FastifyReply).status(400).send({
-        _success: false,
-        _message: 'Validation error',
-        _errors: error.issues
+      return reply.status(400).send({
+        success: false,
+        message: 'Validation error',
+        errors: error.issues
       });
     }
 
     request.log.error(error);
-    return (reply as FastifyReply).status(500).send({
-      _success: false,
-      _message: 'Failed to create business setting',
-      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
+    return reply.status(500).send({
+      success: false,
+      message: 'Failed to create business setting',
+      error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -186,40 +186,40 @@ async function updateBusinessSetting(request: FastifyRequest, reply: FastifyRepl
     const data = updateBusinessSettingSchema.parse((request as any).body);
 
     const existingSetting = await prisma.businessSettings.findUnique({
-      _where: { id }
+      where: { id }
     });
 
     if (!existingSetting) {
-      return (reply as FastifyReply).status(404).send({
-        _success: false,
-        _message: 'Business setting not found'
+      return reply.status(404).send({
+        success: false,
+        message: 'Business setting not found'
       });
     }
 
     const updatedSetting = await prisma.businessSettings.update({
-      _where: { id }, data });
+      where: { id }, data });
 
-    request.log.info({ _settingId: id }, 'Business setting updated');
+    request.log.info({ settingId: id }, 'Business setting updated');
 
-    return (reply as any).send({
-      _success: true,
-      _data: updatedSetting,
-      _message: 'Business setting updated successfully'
+    return reply.send({
+      success: true,
+      data: updatedSetting,
+      message: 'Business setting updated successfully'
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return (reply as FastifyReply).status(400).send({
-        _success: false,
-        _message: 'Validation error',
-        _errors: error.issues
+      return reply.status(400).send({
+        success: false,
+        message: 'Validation error',
+        errors: error.issues
       });
     }
 
     request.log.error(error);
-    return (reply as FastifyReply).status(500).send({
-      _success: false,
-      _message: 'Failed to update business setting',
-      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
+    return reply.status(500).send({
+      success: false,
+      message: 'Failed to update business setting',
+      error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
@@ -229,107 +229,107 @@ async function deleteBusinessSetting(request: FastifyRequest, reply: FastifyRepl
     const { id  } = ((request as any).params as unknown);
 
     const existingSetting = await prisma.businessSettings.findUnique({
-      _where: { id }
+      where: { id }
     });
 
     if (!existingSetting) {
-      return (reply as FastifyReply).status(404).send({
-        _success: false,
-        _message: 'Business setting not found'
+      return reply.status(404).send({
+        success: false,
+        message: 'Business setting not found'
       });
     }
 
     // Soft delete by setting isActive to false
     await prisma.businessSettings.update({
-      _where: { id },
-      _data: { isActive: false }
+      where: { id },
+      data: { isActive: false }
     });
 
-    request.log.info({ _settingId: id }, 'Business setting deleted');
+    request.log.info({ settingId: id }, 'Business setting deleted');
 
-    return (reply as any).send({
-      _success: true,
-      _message: 'Business setting deleted successfully'
+    return reply.send({
+      success: true,
+      message: 'Business setting deleted successfully'
     });
   } catch (error) {
     request.log.error(error);
-    return (reply as FastifyReply).status(500).send({
-      _success: false,
-      _message: 'Failed to delete business setting',
-      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
+    return reply.status(500).send({
+      success: false,
+      message: 'Failed to delete business setting',
+      error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
 async function bulkUpdateBusinessSettings(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { settings } = ((request as any).body as { _settings: Array<{ id: string; value: unknown }> });
+    const { settings } = ((request as any).body as { settings: Array<{ id: string; value: unknown }> });
 
     if (!Array.isArray(settings)) {
-      return (reply as FastifyReply).status(400).send({
-        _success: false,
-        _message: 'Settings must be an array'
+      return reply.status(400).send({
+        success: false,
+        message: 'Settings must be an array'
       });
     }
 
-    const updatePromises = settings.map(async (_setting: unknown) => {
-      const { id, value  } = (setting as unknown);
+    const updatePromises = settings.map(async (setting: any) => {
+      const { id, value  } = setting;
       return prisma.businessSettings.update({
-        _where: { id },
-        _data: { 
+        where: { id },
+        data: { 
           value,
-          _updatedAt: new Date()
+          updatedAt: new Date()
         }
       });
     });
 
     const updatedSettings = await Promise.all(updatePromises);
 
-    request.log.info({ _count: settings.length }, 'Bulk settings update completed');
+    request.log.info({ count: settings.length }, 'Bulk settings update completed');
 
-    return (reply as any).send({
-      _success: true,
-      _data: updatedSettings,
-      _message: `${settings.length} settings updated successfully`
+    return reply.send({
+      success: true,
+      data: updatedSettings,
+      message: `${settings.length} settings updated successfully`
     });
   } catch (error) {
     request.log.error(error);
-    return (reply as FastifyReply).status(500).send({
-      _success: false,
-      _message: 'Failed to bulk update settings',
-      _error: process.env['NODE_ENV'] === 'development' ? error : undefined
+    return reply.status(500).send({
+      success: false,
+      message: 'Failed to bulk update settings',
+      error: process.env['NODE_ENV'] === 'development' ? error : undefined
     });
   }
 }
 
 // Export route registration function
-export async function businessSettingsRoutes(_fastify: FastifyInstance) {
+export async function businessSettingsRoutes(fastify: FastifyInstance) {
   const commonSchema = {
-    _tags: ['Business Settings'],
-    _security: [{ bearerAuth: [] }]
+    tags: ['Business Settings'],
+    security: [{ bearerAuth: [] }]
   };
 
   // Get all business settings
   fastify.get('/', {
-    _schema: {
+    schema: {
       ...commonSchema,
-      _summary: 'Get all business settings',
-      _querystring: z.object({
+      summary: 'Get all business settings',
+      querystring: z.object({
         category: z.string().optional(),
-        _tenantId: z.string().optional()
+        tenantId: z.string().optional()
       })
     }
   }, getBusinessSettings);
 
   // Get settings by category
   fastify.get('/category/:category', {
-    _schema: {
+    schema: {
       ...commonSchema,
-      _summary: 'Get business settings by category',
-      _params: z.object({
+      summary: 'Get business settings by category',
+      params: z.object({
         category: z.string()
       }),
-      _querystring: z.object({
+      querystring: z.object({
         tenantId: z.string().optional()
       })
     }
@@ -337,31 +337,31 @@ export async function businessSettingsRoutes(_fastify: FastifyInstance) {
 
   // Create new business setting
   fastify.post('/', {
-    _schema: {
+    schema: {
       ...commonSchema,
-      _summary: 'Create new business setting',
-      _body: businessSettingSchema
+      summary: 'Create new business setting',
+      body: businessSettingSchema
     }
   }, createBusinessSetting);
 
   // Update business setting
   fastify.put('/:id', {
-    _schema: {
+    schema: {
       ...commonSchema,
-      _summary: 'Update business setting',
-      _params: z.object({
+      summary: 'Update business setting',
+      params: z.object({
         id: z.string()
       }),
-      _body: updateBusinessSettingSchema
+      body: updateBusinessSettingSchema
     }
   }, updateBusinessSetting);
 
   // Delete business setting
   fastify.delete('/:id', {
-    _schema: {
+    schema: {
       ...commonSchema,
-      _summary: 'Delete business setting',
-      _params: z.object({
+      summary: 'Delete business setting',
+      params: z.object({
         id: z.string()
       })
     }
@@ -369,13 +369,13 @@ export async function businessSettingsRoutes(_fastify: FastifyInstance) {
 
   // Bulk update settings
   fastify.post('/bulk-update', {
-    _schema: {
+    schema: {
       ...commonSchema,
-      _summary: 'Bulk update business settings',
-      _body: z.object({
+      summary: 'Bulk update business settings',
+      body: z.object({
         settings: z.array(z.object({
           id: z.string(),
-          _value: z.any()
+          value: z.any()
         }))
       })
     }
