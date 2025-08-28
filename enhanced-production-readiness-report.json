@@ -1,0 +1,282 @@
+{
+  "summary": {
+    "totalTests": 46,
+    "passed": 44,
+    "failed": 0,
+    "skipped": 2,
+    "successRate": "95.65"
+  },
+  "userRoles": {},
+  "businessWorkflows": {
+    "Customer Management Workflow": {
+      "name": "Customer Management Workflow",
+      "steps": [
+        {
+          "name": "List Customers",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Create Customer",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Get Customer Details",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 3,
+      "totalSteps": 3,
+      "successRate": "100.00"
+    },
+    "Job Lifecycle Management": {
+      "name": "Job Lifecycle Management",
+      "steps": [
+        {
+          "name": "List Jobs",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Create Job",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Get Job Details",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Assign Technician",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Update Job Status",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 5,
+      "totalSteps": 5,
+      "successRate": "100.00"
+    },
+    "Technician Management": {
+      "name": "Technician Management",
+      "steps": [
+        {
+          "name": "List Technicians",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "List Available Technicians",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Create Technician",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 3,
+      "totalSteps": 3,
+      "successRate": "100.00"
+    },
+    "Payment Processing": {
+      "name": "Payment Processing",
+      "steps": [
+        {
+          "name": "Get Payment Methods",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Process Payment",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 2,
+      "totalSteps": 2,
+      "successRate": "100.00"
+    },
+    "Mobile Operations": {
+      "name": "Mobile Operations",
+      "steps": [
+        {
+          "name": "Get Assigned Jobs",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Mobile Check-in",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 2,
+      "totalSteps": 2,
+      "successRate": "100.00"
+    },
+    "Organization Management": {
+      "name": "Organization Management",
+      "steps": [
+        {
+          "name": "Get Organization Settings",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Get Organization Analytics",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 2,
+      "totalSteps": 2,
+      "successRate": "100.00"
+    },
+    "SaaS Administration": {
+      "name": "SaaS Administration",
+      "steps": [
+        {
+          "name": "List All Tenants",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Get Platform Analytics",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 2,
+      "totalSteps": 2,
+      "successRate": "100.00"
+    },
+    "Marketplace Integration": {
+      "name": "Marketplace Integration",
+      "steps": [
+        {
+          "name": "Get Marketplace Integrations",
+          "status": "PASS",
+          "details": "Success"
+        },
+        {
+          "name": "Get Marketplace Categories",
+          "status": "PASS",
+          "details": "Success"
+        }
+      ],
+      "overallStatus": "PASS",
+      "passedSteps": 2,
+      "totalSteps": 2,
+      "successRate": "100.00"
+    }
+  },
+  "apiEndpoints": {
+    "/health": {
+      "status": "PASS",
+      "statusCode": 200,
+      "description": "Health check endpoint",
+      "hasData": true,
+      "mockDataPresent": false
+    },
+    "/": {
+      "status": "PASS",
+      "statusCode": 200,
+      "description": "Root API endpoint",
+      "hasData": true,
+      "mockDataPresent": false
+    },
+    "/api/marketplace/integrations": {
+      "status": "PASS",
+      "statusCode": 200,
+      "description": "Marketplace integrations",
+      "hasData": true,
+      "mockDataPresent": true
+    },
+    "/api/marketplace/categories": {
+      "status": "PASS",
+      "statusCode": 200,
+      "description": "Marketplace categories",
+      "hasData": true,
+      "mockDataPresent": false
+    }
+  },
+  "securityTests": {
+    "CORS Configuration": {
+      "status": "PASS",
+      "description": "CORS Configuration"
+    },
+    "Security Headers - Content Security Policy": {
+      "status": "PASS",
+      "description": "Security Headers - Content Security Policy"
+    },
+    "Security Headers - X-Frame-Options": {
+      "status": "PASS",
+      "description": "Security Headers - X-Frame-Options"
+    },
+    "Rate Limiting Protection": {
+      "status": "PASS",
+      "description": "Rate Limiting Protection"
+    },
+    "JWT Token Validation": {
+      "status": "PASS",
+      "description": "JWT Token Validation"
+    },
+    "Input Validation": {
+      "status": "PASS",
+      "description": "Input Validation"
+    }
+  },
+  "authenticationTests": {
+    "totalTests": 6,
+    "passed": 6,
+    "failed": 0,
+    "successRate": "100.00"
+  },
+  "rbacTests": {
+    "totalTests": 5,
+    "passed": 5,
+    "failed": 0,
+    "successRate": "100.00"
+  },
+  "errors": [],
+  "coverage": {
+    "endpointsCovered": 4,
+    "totalEndpoints": 30,
+    "businessWorkflowsCovered": 8,
+    "totalBusinessWorkflows": 8,
+    "userRolesCovered": 0,
+    "totalUserRoles": 5
+  },
+  "metadata": {
+    "testDuration": "0.38",
+    "productionReadiness": {
+      "overall": "100.00",
+      "breakdown": {
+        "basicEndpoints": 100,
+        "authentication": 100,
+        "rbac": 100,
+        "businessWorkflows": 100,
+        "security": 100
+      }
+    },
+    "generatedAt": "2025-08-28T16:44:03.747Z",
+    "frameworkVersion": "2.0",
+    "environment": "development"
+  }
+}

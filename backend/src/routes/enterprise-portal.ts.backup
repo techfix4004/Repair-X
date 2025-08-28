@@ -182,11 +182,238 @@ class EnterpriseCustomerService {
   private _tickets: Map<string, any> = new Map();
 
   constructor() {
-    // Sample data removed for production
+    this.initializeSampleData();
   }
 
-  // Sample data initialization removed for production
-  // Data should be loaded from database in production environment
+  private initializeSampleData() {
+    const sampleCustomers = [
+      {
+        _id: 'ent-001',
+        _companyName: 'TechCorp Solutions Inc.',
+        _businessType: 'CORPORATION',
+        _industry: 'Information Technology',
+        _size: 'LARGE',
+        _annualRevenue: 50000000,
+        _employeeCount: 500,
+        _headquarters: {
+          address: '123 Corporate Blvd',
+          _city: 'San Francisco',
+          _state: 'CA',
+          _country: 'US',
+          _zipCode: '94105',
+          _phone: '+1-555-123-4567',
+        },
+        _primaryContact: {
+          name: 'John Smith',
+          _title: 'IT Director',
+          _email: 'john.smith@techcorp.com',
+          _phone: '+1-555-123-4568',
+          _department: 'Information Technology',
+        },
+        _accountManager: {
+          assignedSalesRep: 'sales-001',
+          _assignedAccountManager: 'am-001',
+          _territoryManager: 'tm-001',
+        },
+        _contractDetails: {
+          contractType: 'PREMIUM',
+          _startDate: '2024-01-01T00:00:00Z',
+          _endDate: '2024-12-31T23:59:59Z',
+          _autoRenewal: true,
+          _paymentTerms: 'NET_30',
+          _creditLimit: 100000,
+          _discountTier: 15,
+        },
+        _serviceAgreement: {
+          slaLevel: 'PREMIUM',
+          _responseTime: {
+            critical: 2,
+            _high: 8,
+            _medium: 24,
+            _low: 72,
+          },
+          _coverageHours: '24_7',
+          _onSiteSupport: true,
+          _dedicatedTechnicians: ['tech-001', 'tech-002'],
+          _escalationContacts: [
+            {
+              level: 1,
+              _name: 'Sarah Johnson',
+              _email: 'sarah.johnson@techcorp.com',
+              _phone: '+1-555-123-4569',
+            },
+            {
+              _level: 2,
+              _name: 'Michael Davis',
+              _email: 'michael.davis@techcorp.com',
+              _phone: '+1-555-123-4570',
+            },
+          ],
+        },
+        _preferences: {
+          communicationChannels: ['EMAIL', 'PORTAL', 'PHONE'],
+          _reportingFrequency: 'WEEKLY',
+          _customBranding: true,
+          _singleSignOn: true,
+          _apiAccess: true,
+          _dataExport: true,
+        },
+        _billingInfo: {
+          billingContact: {
+            name: 'Alice Chen',
+            _email: 'alice.chen@techcorp.com',
+            _phone: '+1-555-123-4571',
+            _department: 'Finance',
+          },
+          _invoiceDelivery: 'PORTAL',
+          _consolidatedBilling: true,
+          _purchaseOrderRequired: true,
+          _taxExempt: false,
+        },
+        _status: 'ACTIVE',
+        _createdAt: '2024-01-01T00:00:00Z',
+      },
+    ];
+
+    const sampleBranches = [
+      {
+        _id: 'branch-001',
+        _enterpriseCustomerId: 'ent-001',
+        _branchName: 'TechCorp HQ',
+        _branchCode: 'TC-HQ-01',
+        _address: {
+          street: '123 Corporate Blvd',
+          _city: 'San Francisco',
+          _state: 'CA',
+          _country: 'US',
+          _zipCode: '94105',
+        },
+        _contactInfo: {
+          phone: '+1-555-123-4567',
+          _email: 'hq@techcorp.com',
+          _manager: 'John Smith',
+        },
+        _operatingHours: {
+          timezone: 'America/Los_Angeles',
+          _hours: [
+            { day: 'MON', _open: '08:00', _close: '18:00', _closed: false },
+            { _day: 'TUE', _open: '08:00', _close: '18:00', _closed: false },
+            { _day: 'WED', _open: '08:00', _close: '18:00', _closed: false },
+            { _day: 'THU', _open: '08:00', _close: '18:00', _closed: false },
+            { _day: 'FRI', _open: '08:00', _close: '17:00', _closed: false },
+            { _day: 'SAT', _open: '09:00', _close: '13:00', _closed: false },
+            { _day: 'SUN', _open: '00:00', _close: '00:00', _closed: true },
+          ],
+        },
+        _serviceTypes: ['DEVICE_REPAIR', 'BULK_SERVICE', 'EMERGENCY_SUPPORT'],
+        _deviceInventory: 250,
+        _isActive: true,
+      },
+      {
+        _id: 'branch-002',
+        _enterpriseCustomerId: 'ent-001',
+        _branchName: 'TechCorp East Coast',
+        _branchCode: 'TC-EC-01',
+        _address: {
+          street: '456 Business Ave',
+          _city: 'New York',
+          _state: 'NY',
+          _country: 'US',
+          _zipCode: '10001',
+        },
+        _contactInfo: {
+          phone: '+1-555-987-6543',
+          _email: 'eastcoast@techcorp.com',
+          _manager: 'Sarah Johnson',
+        },
+        _operatingHours: {
+          timezone: 'America/New_York',
+          _hours: [
+            { day: 'MON', _open: '07:00', _close: '19:00', _closed: false },
+            { _day: 'TUE', _open: '07:00', _close: '19:00', _closed: false },
+            { _day: 'WED', _open: '07:00', _close: '19:00', _closed: false },
+            { _day: 'THU', _open: '07:00', _close: '19:00', _closed: false },
+            { _day: 'FRI', _open: '07:00', _close: '18:00', _closed: false },
+            { _day: 'SAT', _open: '00:00', _close: '00:00', _closed: true },
+            { _day: 'SUN', _open: '00:00', _close: '00:00', _closed: true },
+          ],
+        },
+        _serviceTypes: ['DEVICE_REPAIR', 'CONSULTATION'],
+        _deviceInventory: 180,
+        _isActive: true,
+      },
+    ];
+
+    const sampleTickets = [
+      {
+        _id: 'ticket-001',
+        _ticketNumber: 'TC-2024-001',
+        _enterpriseCustomerId: 'ent-001',
+        _branchId: 'branch-001',
+        _title: 'Bulk laptop repairs needed urgently',
+        _description: 'We have 25 laptops that need screen replacements and general maintenance before our quarterly meeting next week.',
+        _category: 'BULK_SERVICE',
+        _priority: 'HIGH',
+        _severity: 'HIGH',
+        _status: 'IN_PROGRESS',
+        _assignedTo: 'tech-001',
+        _createdBy: 'john.smith@techcorp.com',
+        _devices: [
+          {
+            deviceType: 'Laptop',
+            _model: 'Dell Latitude 5520',
+            _serialNumber: 'DL5520-001',
+            _assetTag: 'TC-LAP-001',
+            _quantity: 15,
+          },
+          {
+            _deviceType: 'Laptop',
+            _model: 'HP EliteBook 850',
+            _serialNumber: 'HE850-001',
+            _assetTag: 'TC-LAP-002',
+            _quantity: 10,
+          },
+        ],
+        _slaTarget: {
+          responseBy: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours
+          _resolveBy: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 48 hours
+        },
+        _estimatedCost: 3750,
+        _actualCost: 3200,
+        _workLog: [
+          {
+            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+            _author: 'tech-001',
+            _action: 'STARTED_WORK',
+            _notes: 'Received devices and started diagnostic evaluation',
+            _billableHours: 2,
+          },
+          {
+            _timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+            _author: 'tech-001',
+            _action: 'PROGRESS_UPDATE',
+            _notes: 'Completed screen replacements on 10 Dell laptops, remaining 15 in progress',
+            _billableHours: 6,
+          },
+        ],
+        _createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+      },
+    ];
+
+    sampleCustomers.forEach((_customer: unknown) => {
+      this.enterpriseCustomers.set(customer.id, customer);
+    });
+
+    sampleBranches.forEach((_branch: unknown) => {
+      const customerBranches = this.branches.get(branch.enterpriseCustomerId) || [];
+      customerBranches.push(branch);
+      this.branches.set(branch.enterpriseCustomerId, customerBranches);
+    });
+
+    sampleTickets.forEach((_ticket: unknown) => {
+      this.tickets.set(ticket.id, ticket);
+    });
+  }
 
   // Enterprise Customer Management
   async getAllEnterpriseCustomers(filters?: { status?: string; size?: string; industry?: string }): Promise<any[]> {

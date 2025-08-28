@@ -160,11 +160,132 @@ class EmployeeManagementService {
   private _reviews: Map<string, any[]> = new Map();
 
   constructor() {
-    // Sample data removed for production
+    this.initializeSampleData();
   }
 
-  // Sample data initialization removed for production
-  // Data should be loaded from database in production environment
+  private initializeSampleData() {
+    // Sample employees for demonstration
+    const sampleEmployees = [
+      {
+        _id: 'emp-001',
+        _employeeId: 'TEC001',
+        _personalInfo: {
+          firstName: 'John',
+          _lastName: 'Smith',
+          _email: 'john.smith@repairx.com',
+          _phone: '+1234567890',
+          _address: {
+            street: '123 Tech Street',
+            _city: 'San Francisco',
+            _state: 'CA',
+            _zipCode: '94105',
+            _country: 'US',
+          },
+          _emergencyContact: {
+            name: 'Jane Smith',
+            _relationship: 'Spouse',
+            _phone: '+1234567891',
+          },
+        },
+        _employment: {
+          position: 'Senior Mobile Repair Technician',
+          _department: 'TECHNICAL',
+          _role: 'TECHNICIAN',
+          _employmentType: 'FULL_TIME',
+          _startDate: '2023-01-15',
+          _probationPeriod: 90,
+          _workLocation: 'FIELD',
+          _workSchedule: {
+            type: 'FLEXIBLE',
+            _hoursPerWeek: 40,
+            _workingDays: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'],
+            _startTime: '08:00',
+            _endTime: '16:00',
+          },
+        },
+        _compensation: {
+          baseSalary: 65000,
+          _currency: 'USD',
+          _payFrequency: 'MONTHLY',
+          _overtime: { eligible: true, _rate: 1.5 },
+          _benefits: ['Health Insurance', 'Dental', 'Vision', '401k'],
+          _bonusEligible: true,
+        },
+        _skills: {
+          technical: [
+            {
+              skill: 'iPhone Repair',
+              _level: 'EXPERT',
+              _certifiedDate: '2023-02-01',
+              _certificationType: 'Apple Certified',
+            },
+            {
+              _skill: 'Android Repair',
+              _level: 'ADVANCED',
+              _certifiedDate: '2023-03-15',
+              _certificationType: 'Samsung Certified',
+            },
+          ],
+          _certifications: [
+            {
+              name: 'Apple Certified iOS Technician',
+              _issuer: 'Apple Inc.',
+              _issuedDate: '2023-02-01',
+              _expiryDate: '2025-02-01',
+              _certificateNumber: 'ACIT-2023-001',
+            },
+          ],
+          _specializations: ['Mobile Devices', 'Screen Replacement', 'Water Damage Recovery'],
+        },
+        _performance: {
+          currentRating: 4.5,
+          _lastReviewDate: '2023-12-15',
+          _nextReviewDate: '2024-06-15',
+          _goals: [
+            {
+              goal: 'Complete tablet repair certification',
+              _deadline: '2024-03-31',
+              _status: 'IN_PROGRESS',
+              _progress: 75,
+            },
+          ],
+          _achievements: [
+            {
+              title: 'Employee of the Month',
+              _date: '2023-11-01',
+              _description: 'Outstanding customer service and technical excellence',
+            },
+          ],
+        },
+        _access: {
+          isActive: true,
+          _permissions: ['job_access', 'customer_view', 'inventory_view'],
+          _systemAccess: {
+            canLogin: true,
+            _lastLogin: '2024-01-08T09:15:00Z',
+            _passwordChangeRequired: false,
+            _twoFactorEnabled: true,
+          },
+        },
+        _documents: [
+          {
+            type: 'ID_COPY',
+            _filename: 'john_smith_id.pdf',
+            _uploadDate: '2023-01-10',
+          },
+          {
+            _type: 'CONTRACT',
+            _filename: 'employment_contract.pdf',
+            _uploadDate: '2023-01-10',
+          },
+        ],
+      },
+    ];
+
+    sampleEmployees.forEach((_emp: unknown) => {
+      this.employees.set(emp.id, emp);
+    });
+  }
 
   async getAllEmployees(tenantId?: string): Promise<any[]> {
     const employees = Array.from(this.employees.values());

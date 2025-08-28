@@ -204,11 +204,299 @@ class OutsourcingMarketplaceService {
   private _performanceData: Map<string, any[]> = new Map();
 
   constructor() {
-    // Sample data removed for production
+    this.initializeSampleData();
   }
 
-  // Sample data initialization removed for production
-  // Data should be loaded from database in production environment
+  private initializeSampleData() {
+    const sampleProviders = [
+      {
+        _id: 'provider-001',
+        _businessName: 'TechFix Pro Services',
+        _contactPerson: {
+          name: 'David Rodriguez',
+          _title: 'Technical Manager',
+          _email: 'david@techfixpro.com',
+          _phone: '+1-555-0201',
+        },
+        _businessInfo: {
+          registrationNumber: 'TFP-2023-001',
+          _taxId: 'TX-789456123',
+          _insuranceInfo: {
+            provider: 'Business Insurance Corp',
+            _policyNumber: 'BIC-234567',
+            _coverage: 1000000,
+            _expiryDate: '2025-12-31',
+          },
+          _certifications: [
+            {
+              name: 'Mobile Device Repair Certification',
+              _issuedBy: 'Repair Industry Association',
+              _validUntil: '2025-08-15',
+              _certificateNumber: 'RIA-2024-789',
+            },
+          ],
+        },
+        _serviceCapabilities: [
+          {
+            categoryId: 'mobile-repair',
+            _categoryName: 'Mobile Device Repair',
+            _specializations: ['iPhone', 'Samsung', 'Google Pixel', 'Screen Replacement'],
+            _experience: 5,
+            _capacity: {
+              dailyJobs: 12,
+              _weeklyJobs: 60,
+              _maxComplexity: 'HIGH',
+            },
+            _pricing: {
+              hourlyRate: 75.00,
+              _minimumCharge: 50.00,
+              _travelFee: 15.00,
+              _emergencyMultiplier: 1.5,
+            },
+          },
+          {
+            _categoryId: 'computer-repair',
+            _categoryName: 'Computer Repair',
+            _specializations: ['Laptop Repair', 'Data Recovery', 'Hardware Diagnostics'],
+            _experience: 8,
+            _capacity: {
+              dailyJobs: 6,
+              _weeklyJobs: 30,
+              _maxComplexity: 'CRITICAL',
+            },
+            _pricing: {
+              hourlyRate: 95.00,
+              _minimumCharge: 85.00,
+              _travelFee: 25.00,
+              _emergencyMultiplier: 2.0,
+            },
+          },
+        ],
+        _operatingAreas: [
+          {
+            city: 'Austin',
+            _state: 'TX',
+            _zipCodes: ['78701', '78702', '78703', '78704'],
+            _radius: 15,
+            _travelTime: 30,
+          },
+        ],
+        _availability: {
+          workingHours: {
+            monday: { start: '08:00', _end: '18:00', _available: true },
+            _tuesday: { start: '08:00', _end: '18:00', _available: true },
+            _wednesday: { start: '08:00', _end: '18:00', _available: true },
+            _thursday: { start: '08:00', _end: '18:00', _available: true },
+            _friday: { start: '08:00', _end: '18:00', _available: true },
+            _saturday: { start: '09:00', _end: '15:00', _available: true },
+            _sunday: { start: '00:00', _end: '00:00', _available: false },
+          },
+          _emergencyServices: true,
+          _holidays: ['2025-12-25', '2025-01-01'],
+          _blackoutDates: [],
+        },
+        _performance: {
+          rating: 4.7,
+          _totalJobs: 342,
+          _completedJobs: 328,
+          _cancelledJobs: 6,
+          _averageCompletionTime: 2.3,
+          _customerSatisfaction: 4.6,
+          _onTimeRate: 94.2,
+          _qualityScore: 4.5,
+          _responseTime: 12,
+          _repeatingCustomerRate: 67.8,
+        },
+        _financials: {
+          commissionRate: 18,
+          _paymentTerms: 'NET_14',
+          _minimumEarnings: 1000,
+          _totalEarnings: 47850.75,
+          _outstandingBalance: 2340.50,
+          _lastPaymentDate: '2025-07-28',
+        },
+        _verification: {
+          backgroundCheck: true,
+          _businessLicense: true,
+          _insurance: true,
+          _references: true,
+          _skillAssessment: true,
+          _verificationDate: '2024-01-15',
+          _verifiedBy: 'admin-001',
+        },
+        _status: 'ACTIVE',
+        _contractInfo: {
+          signedDate: '2024-01-20',
+          _contractVersion: '2.1',
+          _renewalDate: '2025-01-20',
+        },
+      },
+      {
+        _id: 'provider-002',
+        _businessName: 'QuickFix Solutions',
+        _contactPerson: {
+          name: 'Maria Garcia',
+          _title: 'Operations Director',
+          _email: 'maria@quickfixsolutions.com',
+          _phone: '+1-555-0202',
+        },
+        _businessInfo: {
+          registrationNumber: 'QFS-2024-005',
+          _taxId: 'TX-987654321',
+          _insuranceInfo: {
+            provider: 'Commercial Coverage Ltd',
+            _policyNumber: 'CCL-876543',
+            _coverage: 750000,
+            _expiryDate: '2025-11-30',
+          },
+          _certifications: [
+            {
+              name: 'Appliance Repair Certification',
+              _issuedBy: 'Home Appliance Service Institute',
+              _validUntil: '2025-06-30',
+              _certificateNumber: 'HASI-2024-456',
+            },
+          ],
+        },
+        _serviceCapabilities: [
+          {
+            categoryId: 'appliance-repair',
+            _categoryName: 'Home Appliance Repair',
+            _specializations: ['Refrigerator', 'Washing Machine', 'Dryer', 'Dishwasher'],
+            _experience: 6,
+            _capacity: {
+              dailyJobs: 8,
+              _weeklyJobs: 40,
+              _maxComplexity: 'HIGH',
+            },
+            _pricing: {
+              hourlyRate: 85.00,
+              _minimumCharge: 75.00,
+              _travelFee: 20.00,
+              _emergencyMultiplier: 1.8,
+            },
+          },
+        ],
+        _operatingAreas: [
+          {
+            city: 'Houston',
+            _state: 'TX',
+            _zipCodes: ['77001', '77002', '77003', '77004', '77005'],
+            _radius: 20,
+            _travelTime: 45,
+          },
+        ],
+        _availability: {
+          workingHours: {
+            monday: { start: '07:00', _end: '19:00', _available: true },
+            _tuesday: { start: '07:00', _end: '19:00', _available: true },
+            _wednesday: { start: '07:00', _end: '19:00', _available: true },
+            _thursday: { start: '07:00', _end: '19:00', _available: true },
+            _friday: { start: '07:00', _end: '19:00', _available: true },
+            _saturday: { start: '08:00', _end: '16:00', _available: true },
+            _sunday: { start: '10:00', _end: '14:00', _available: true },
+          },
+          _emergencyServices: false,
+          _holidays: ['2025-12-25', '2025-01-01', '2025-07-04'],
+          _blackoutDates: [
+            {
+              start: '2025-08-15',
+              _end: '2025-08-22',
+              _reason: 'Annual training week',
+            },
+          ],
+        },
+        _performance: {
+          rating: 4.3,
+          _totalJobs: 198,
+          _completedJobs: 189,
+          _cancelledJobs: 4,
+          _averageCompletionTime: 3.1,
+          _customerSatisfaction: 4.4,
+          _onTimeRate: 89.7,
+          _qualityScore: 4.2,
+          _responseTime: 18,
+          _repeatingCustomerRate: 52.3,
+        },
+        _financials: {
+          commissionRate: 20,
+          _paymentTerms: 'NET_7',
+          _minimumEarnings: 800,
+          _totalEarnings: 28920.40,
+          _outstandingBalance: 1575.25,
+          _lastPaymentDate: '2025-08-01',
+        },
+        _verification: {
+          backgroundCheck: true,
+          _businessLicense: true,
+          _insurance: true,
+          _references: true,
+          _skillAssessment: true,
+          _verificationDate: '2024-03-10',
+          _verifiedBy: 'admin-002',
+        },
+        _status: 'ACTIVE',
+        _contractInfo: {
+          signedDate: '2024-03-15',
+          _contractVersion: '2.0',
+          _renewalDate: '2025-03-15',
+        },
+      },
+    ];
+
+    sampleProviders.forEach((_provider: unknown) => {
+      this.providers.set(provider.id, provider);
+    });
+
+    // Sample outsourced jobs
+    const sampleJobs = [
+      {
+        _id: 'outsourced-001',
+        _originalJobId: 'job-12345',
+        _providerId: 'provider-001',
+        _assignmentDetails: {
+          assignedAt: '2025-08-09T10:00:00Z',
+          _assignedBy: 'admin-001',
+          _expectedStartDate: '2025-08-10T09:00:00Z',
+          _expectedCompletionDate: '2025-08-10T15:00:00Z',
+          _priority: 'HIGH',
+          _specialInstructions: 'Customer requires same-day completion',
+        },
+        _pricing: {
+          providerRate: 150.00,
+          _commissionAmount: 27.00,
+          _totalCost: 177.00,
+          _paymentStatus: 'PENDING',
+        },
+        _tracking: {
+          status: 'COMPLETED',
+          _providerNotes: 'iPhone 14 screen replacement completed successfully',
+          _customerFeedback: 'Excellent service, very professional',
+          _completionPhotos: ['photo1.jpg', 'photo2.jpg'],
+          _timeTracking: {
+            startTime: '2025-08-10T09:15:00Z',
+            _endTime: '2025-08-10T11:30:00Z',
+            _totalHours: 2.25,
+            _travelTime: 0.5,
+          },
+        },
+        _qualityAssurance: {
+          checklist: [
+            { item: 'Screen functionality test', _completed: true },
+            { _item: 'Touch responsiveness check', _completed: true },
+            { _item: 'Camera alignment verification', _completed: true },
+            { _item: 'Customer satisfaction confirmation', _completed: true },
+          ],
+          _qualityScore: 4.8,
+          _issues: [],
+        },
+      },
+    ];
+
+    sampleJobs.forEach((_job: unknown) => {
+      this.outsourcedJobs.set(job.id, job);
+    });
+  }
 
   // Provider Management
   async getAllProviders(tenantId?: string, filters?: unknown): Promise<any[]> {

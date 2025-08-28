@@ -199,11 +199,161 @@ class PartsInventoryService {
   private _purchaseOrders: Map<string, any> = new Map();
 
   constructor() {
-    // Sample data removed for production
+    this.initializeSampleData();
   }
 
-  // Sample data initialization removed for production
-  // Data should be loaded from database in production environment
+  private initializeSampleData() {
+    // Sample suppliers
+    const sampleSuppliers = [
+      {
+        _id: 'sup-001',
+        _name: 'Tech Parts Direct',
+        _code: 'TPD001',
+        _contactInfo: {
+          primaryContact: {
+            name: 'Sarah Johnson',
+            _title: 'Sales Manager',
+            _email: 'sarah@techpartsdirect.com',
+            _phone: '+1234567890',
+          },
+          _address: {
+            street: '456 Industrial Blvd',
+            _city: 'Los Angeles',
+            _state: 'CA',
+            _zipCode: '90210',
+            _country: 'US',
+          },
+          _website: 'https://techpartsdirect.com',
+        },
+        _businessInfo: {
+          paymentTerms: 'NET_30',
+          _currency: 'USD',
+          _minimumOrder: 100,
+        },
+        _performance: {
+          rating: 4.5,
+          _onTimeDelivery: 92,
+          _qualityRating: 4.3,
+          _responseTime: 12,
+          _totalOrders: 156,
+          _totalValue: 45780,
+        },
+        _status: 'ACTIVE',
+      },
+    ];
+
+    sampleSuppliers.forEach((_supplier: unknown) => {
+      this.suppliers.set(supplier.id, supplier);
+    });
+
+    // Sample parts
+    const sampleParts = [
+      {
+        _id: 'part-001',
+        _partNumber: 'SCR-IP14-BLK',
+        _name: 'iPhone 14 Screen Assembly Black',
+        _description: 'Complete LCD screen assembly with digitizer for iPhone 14',
+        _category: 'SCREEN_DISPLAY',
+        _manufacturer: 'Apple',
+        _model: 'A2884',
+        _compatibility: ['iPhone 14', 'iPhone 14 Standard'],
+        _specifications: {
+          color: 'Black',
+          _size: '6.1"',
+          _dimensions: {
+            length: 146.7,
+            _width: 71.5,
+            _height: 7.8,
+            _unit: 'mm',
+          },
+        },
+        _pricing: {
+          cost: 85.00,
+          _markup: 60,
+          _sellingPrice: 136.00,
+          _currency: 'USD',
+          _bulkPricing: [
+            { quantity: 10, _unitCost: 82.00 },
+            { _quantity: 25, _unitCost: 78.00 },
+            { _quantity: 50, _unitCost: 75.00 },
+          ],
+        },
+        _inventory: {
+          currentStock: 25,
+          _reservedStock: 3,
+          _availableStock: 22,
+          _minimumStock: 10,
+          _maximumStock: 100,
+          _reorderPoint: 15,
+          _reorderQuantity: 25,
+          _location: 'MAIN_WAREHOUSE',
+          _binLocation: 'A-01-15',
+        },
+        _supplier: {
+          primarySupplierId: 'sup-001',
+          _leadTime: 5,
+          _minimumOrderQuantity: 5,
+        },
+        _quality: {
+          grade: 'AFTERMARKET',
+          _warrantyPeriod: 90,
+          _defectRate: 2.1,
+          _returnRate: 0.8,
+        },
+        _status: 'ACTIVE',
+        _tags: ['mobile', 'display', 'iphone', 'popular'],
+      },
+      {
+        _id: 'part-002',
+        _partNumber: 'BAT-IP14-3279',
+        _name: 'iPhone 14 Battery',
+        _description: 'Lithium-ion battery for iPhone 14',
+        _category: 'BATTERY',
+        _manufacturer: 'Apple',
+        _model: 'A2884',
+        _compatibility: ['iPhone 14'],
+        _specifications: {
+          capacity: '3279mAh',
+          _voltage: '3.83V',
+          _power: '12.56Wh',
+        },
+        _pricing: {
+          cost: 28.50,
+          _markup: 75,
+          _sellingPrice: 49.88,
+          _currency: 'USD',
+        },
+        _inventory: {
+          currentStock: 45,
+          _reservedStock: 2,
+          _availableStock: 43,
+          _minimumStock: 20,
+          _maximumStock: 150,
+          _reorderPoint: 30,
+          _reorderQuantity: 50,
+          _location: 'MAIN_WAREHOUSE',
+          _binLocation: 'B-03-22',
+        },
+        _supplier: {
+          primarySupplierId: 'sup-001',
+          _leadTime: 7,
+          _minimumOrderQuantity: 10,
+        },
+        _quality: {
+          grade: 'AFTERMARKET',
+          _warrantyPeriod: 180,
+          _defectRate: 1.5,
+          _returnRate: 0.3,
+        },
+        _status: 'ACTIVE',
+        _tags: ['mobile', 'battery', 'iphone', 'consumable'],
+      },
+    ];
+
+    sampleParts.forEach((_part: unknown) => {
+      this.parts.set(part.id, part);
+    });
+  }
 
   // Parts Management
   async getAllParts(tenantId?: string, filters?: unknown): Promise<any[]> {

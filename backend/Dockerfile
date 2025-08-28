@@ -3,19 +3,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies including Chromium for Puppeteer
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
+# Install basic build dependencies
+RUN apk add --no-cache python3 make g++
 
-# Set Puppeteer to use system Chromium
+# Set Puppeteer to skip download (not needed for production API)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install all dependencies
 COPY package.json package-lock.json* yarn.lock* pnpm-lock.yaml* ./
@@ -42,21 +34,12 @@ RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 
 WORKDIR /app
 
-# Install runtime dependencies including Chromium
-RUN apk add --no-cache \
-    chromium \
-    nss \
-    freetype \
-    freetype-dev \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont \
-    && rm -rf /var/cache/apk/*
+# Install only essential runtime dependencies
+RUN apk add --no-cache ca-certificates && rm -rf /var/cache/apk/*
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Copy only production dependencies and build output
 COPY --from=builder /app/package.json ./
