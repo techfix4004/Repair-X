@@ -304,11 +304,219 @@ class MobileFieldOperationsService {
   private _devices: Map<string, any> = new Map();
 
   constructor() {
-    // Sample data removed for production
+    this.initializeSampleData();
   }
 
-  // Sample data initialization removed for production
-  // Data should be loaded from database in production environment
+  private initializeSampleData() {
+    // Sample field technicians
+    const sampleTechnicians = [
+      {
+        _id: 'tech-001',
+        _employeeId: 'EMP-001',
+        _personalInfo: {
+          firstName: 'John',
+          _lastName: 'Smith',
+          _phone: '+1-555-0201',
+          _email: 'john.smith@repairx.com',
+          _emergencyContact: {
+            name: 'Jane Smith',
+            _phone: '+1-555-0202',
+            _relationship: 'Spouse',
+          },
+        },
+        _fieldOperations: {
+          vehicleInfo: {
+            make: 'Ford',
+            _model: 'Transit',
+            _year: 2023,
+            _licensePlate: 'RX-001',
+            _color: 'White',
+          },
+          _serviceArea: {
+            primaryZip: '10001',
+            _radiusMiles: 25,
+            _coverageAreas: ['10001', '10002', '10003', '10004', '10005'],
+          },
+          _equipment: [
+            {
+              id: 'eq-001',
+              _name: 'Digital Multimeter',
+              _type: 'DIAGNOSTIC',
+              _condition: 'EXCELLENT',
+              _lastInspected: '2025-08-01T00:00:00Z',
+            },
+            {
+              _id: 'eq-002',
+              _name: 'Mobile Repair Kit',
+              _type: 'TOOL',
+              _condition: 'GOOD',
+              _lastInspected: '2025-08-01T00:00:00Z',
+            },
+          ],
+          _certifications: [
+            {
+              name: 'Mobile Device Repair Certification',
+              _issuedBy: 'RepairX Academy',
+              _issuedDate: '2024-01-15',
+              _expiryDate: '2026-01-15',
+              _certificateNumber: 'RXA-2024-001',
+            },
+          ],
+        },
+        _mobileCapabilities: {
+          hasSmartphone: true,
+          _hasTablet: true,
+          _hasLaptop: false,
+          _gpsEnabled: true,
+          _offlineCapable: true,
+          _digitalSignature: true,
+          _photoCapture: true,
+        },
+        _workSchedule: {
+          availability: [
+            { dayOfWeek: 1, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 2, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 3, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 4, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 5, _startTime: '08:00', _endTime: '17:00', _isAvailable: true },
+            { _dayOfWeek: 6, _startTime: '09:00', _endTime: '15:00', _isAvailable: true },
+            { _dayOfWeek: 0, _startTime: '00:00', _endTime: '00:00', _isAvailable: false },
+          ],
+          _maxJobsPerDay: 8,
+          _travelTimeBuffer: 30,
+        },
+        _performance: {
+          rating: 4.8,
+          _completionRate: 96.5,
+          _customerSatisfaction: 4.7,
+          _onTimeArrival: 94.2,
+          _avgJobDuration: 125,
+        },
+        _status: 'ON_DUTY',
+        _location: {
+          current: {
+            latitude: 40.7128,
+            _longitude: -74.0060,
+            _accuracy: 5,
+            _timestamp: new Date().toISOString(),
+          },
+          _lastKnown: {
+            latitude: 40.7128,
+            _longitude: -74.0060,
+            _timestamp: new Date(Date.now() - 300000).toISOString(),
+          },
+        },
+        _createdAt: '2024-01-01T00:00:00Z',
+      },
+    ];
+
+    sampleTechnicians.forEach((_tech: unknown) => {
+      this.technicians.set(tech.id, tech);
+    });
+
+    // Sample mobile assignments
+    const sampleAssignments = [
+      {
+        _id: 'assign-001',
+        _jobId: 'job-001',
+        _technicianId: 'tech-001',
+        _assignmentType: 'AUTO',
+        _priority: 'HIGH',
+        _scheduledTime: {
+          date: '2025-08-10',
+          _timeSlot: {
+            start: '10:00',
+            _end: '12:00',
+          },
+          _estimatedDuration: 90,
+        },
+        _location: {
+          address: '123 Customer St, New York, NY 10001',
+          _latitude: 40.7589,
+          _longitude: -73.9851,
+          _specialInstructions: 'Ring doorbell twice',
+        },
+        _jobDetails: {
+          customerName: 'Alice Johnson',
+          _contactPhone: '+1-555-0301',
+          _deviceType: 'iPhone 14',
+          _issueDescription: 'Cracked screen replacement needed',
+          _serviceType: 'Screen Repair',
+          _partsRequired: ['iPhone 14 Screen Assembly'],
+          _specialSkills: ['Mobile Repair'],
+        },
+        _fieldOperations: {
+          allowOffline: true,
+          _requiresSignature: true,
+          _requiresPhotos: true,
+          _maxPhotoCount: 10,
+          _qualityChecklist: [
+            'Screen functionality test',
+            'Touch responsiveness check',
+            'Camera alignment verification',
+            'Customer satisfaction confirmation',
+          ],
+        },
+        _tracking: {
+          status: 'ACCEPTED',
+          _acceptedAt: '2025-08-10T08:30:00Z',
+        },
+        _offline: {
+          isOfflineCapable: true,
+          _syncRequired: false,
+        },
+        _createdAt: '2025-08-10T08:00:00Z',
+      },
+    ];
+
+    sampleAssignments.forEach((_assignment: unknown) => {
+      this.assignments.set(assignment.id, assignment);
+    });
+
+    // Sample mobile devices
+    const sampleDevices = [
+      {
+        _id: 'device-001',
+        _technicianId: 'tech-001',
+        _deviceInfo: {
+          deviceType: 'SMARTPHONE',
+          _manufacturer: 'Apple',
+          _model: 'iPhone 13',
+          _osVersion: 'iOS 16.5',
+          _appVersion: '2.1.0',
+          _deviceId: 'ABC123DEF456',
+        },
+        _capabilities: {
+          gps: true,
+          _camera: true,
+          _offline: true,
+          _signature: true,
+          _barcode: true,
+          _nfc: true,
+          _bluetooth: true,
+        },
+        _configuration: {
+          offlineMode: true,
+          _autoSync: true,
+          _syncInterval: 15,
+          _photoQuality: 'HIGH',
+          _gpsAccuracy: 'HIGH',
+        },
+        _status: {
+          isOnline: true,
+          _lastSeen: new Date().toISOString(),
+          _batteryLevel: 78,
+          _storageUsed: 2048,
+          _storageAvailable: 30720,
+        },
+        _registeredAt: '2024-01-01T00:00:00Z',
+      },
+    ];
+
+    sampleDevices.forEach((_device: unknown) => {
+      this.devices.set(device.id, device);
+    });
+  }
 
   // Technician Management
   async getAllFieldTechnicians(tenantId?: string, filters?: unknown): Promise<any[]> {

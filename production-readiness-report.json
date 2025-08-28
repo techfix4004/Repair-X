@@ -1,0 +1,336 @@
+{
+  "summary": {
+    "totalTests": 27,
+    "passed": 7,
+    "failed": 20,
+    "skipped": 0
+  },
+  "userRoles": {
+    "SaaS Admin": {
+      "role": "SaaS Admin",
+      "description": "Platform-wide management",
+      "endpointTests": {
+        "/api/admin/tenants": "PROTECTED",
+        "/api/admin/analytics": "PROTECTED"
+      },
+      "authenticationRequired": true,
+      "crossOrgAccessAllowed": true,
+      "overallStatus": "PASS"
+    },
+    "Organization Owner": {
+      "role": "Organization Owner",
+      "description": "Organization management",
+      "endpointTests": {
+        "/api/org/settings": "PROTECTED",
+        "/api/org/users": "PROTECTED"
+      },
+      "authenticationRequired": true,
+      "crossOrgAccessAllowed": false,
+      "overallStatus": "PASS"
+    },
+    "Manager": {
+      "role": "Manager",
+      "description": "Team and job management",
+      "endpointTests": {
+        "/api/jobs": "PROTECTED",
+        "/api/technicians": "PROTECTED"
+      },
+      "authenticationRequired": true,
+      "crossOrgAccessAllowed": false,
+      "overallStatus": "PASS"
+    },
+    "Technician": {
+      "role": "Technician",
+      "description": "Job execution and mobile operations",
+      "endpointTests": {
+        "/api/jobs/assigned": "PROTECTED",
+        "/api/mobile/checkin": "PROTECTED"
+      },
+      "authenticationRequired": true,
+      "crossOrgAccessAllowed": false,
+      "overallStatus": "PASS"
+    },
+    "Customer": {
+      "role": "Customer",
+      "description": "Service requests and tracking",
+      "endpointTests": {
+        "/api/customer/jobs": "PROTECTED",
+        "/api/customer/profile": "PROTECTED"
+      },
+      "authenticationRequired": true,
+      "crossOrgAccessAllowed": false,
+      "overallStatus": "PASS"
+    }
+  },
+  "businessWorkflows": {
+    "Job Creation Workflow": {
+      "name": "Job Creation Workflow",
+      "steps": [
+        {
+          "endpoint": "/api/jobs",
+          "method": "POST",
+          "description": "Create new job",
+          "status": "FAIL"
+        },
+        {
+          "endpoint": "/api/jobs/1",
+          "method": "GET",
+          "description": "Retrieve job details",
+          "status": "FAIL"
+        }
+      ],
+      "overallStatus": "FAIL"
+    },
+    "Customer Management": {
+      "name": "Customer Management",
+      "steps": [
+        {
+          "endpoint": "/api/customers",
+          "method": "GET",
+          "description": "List customers",
+          "status": "FAIL"
+        },
+        {
+          "endpoint": "/api/customers/1",
+          "method": "GET",
+          "description": "Get customer details",
+          "status": "FAIL"
+        }
+      ],
+      "overallStatus": "FAIL"
+    },
+    "Technician Assignment": {
+      "name": "Technician Assignment",
+      "steps": [
+        {
+          "endpoint": "/api/technicians",
+          "method": "GET",
+          "description": "List available technicians",
+          "status": "FAIL"
+        },
+        {
+          "endpoint": "/api/jobs/1/assign",
+          "method": "POST",
+          "description": "Assign technician to job",
+          "status": "FAIL"
+        }
+      ],
+      "overallStatus": "FAIL"
+    },
+    "Payment Processing": {
+      "name": "Payment Processing",
+      "steps": [
+        {
+          "endpoint": "/api/payments/methods",
+          "method": "GET",
+          "description": "Get payment methods",
+          "status": "FAIL"
+        },
+        {
+          "endpoint": "/api/payments/process",
+          "method": "POST",
+          "description": "Process payment",
+          "status": "FAIL"
+        }
+      ],
+      "overallStatus": "FAIL"
+    }
+  },
+  "apiEndpoints": {
+    "/health": {
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": "N/A",
+      "hasData": true,
+      "mockDataPresent": false
+    },
+    "/": {
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": "N/A",
+      "hasData": true,
+      "mockDataPresent": false
+    },
+    "/api/marketplace/integrations": {
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": "N/A",
+      "hasData": true,
+      "mockDataPresent": true
+    },
+    "/api/marketplace/categories": {
+      "status": "PASS",
+      "statusCode": 200,
+      "responseTime": "N/A",
+      "hasData": true,
+      "mockDataPresent": false
+    },
+    "/api/admin/tenants": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/admin/analytics": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/org/settings": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/org/users": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/jobs": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/technicians": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/jobs/assigned": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/mobile/checkin": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/customer/jobs": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/customer/profile": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/jobs/1": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/customers": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/customers/1": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/jobs/1/assign": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/payments/methods": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    },
+    "/api/payments/process": {
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": [
+        200,
+        401,
+        404
+      ],
+      "error": "Status code mismatch"
+    }
+  },
+  "securityTests": {
+    "CORS Configuration": {
+      "status": "FAIL",
+      "description": "CORS Configuration"
+    },
+    "Security Headers": {
+      "status": "FAIL",
+      "description": "Security Headers"
+    },
+    "Rate Limiting": {
+      "status": "PASS",
+      "description": "Rate Limiting"
+    }
+  },
+  "errors": []
+}

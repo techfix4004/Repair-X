@@ -1,69 +1,67 @@
 
-import { User } from '../types';
+/**
+ * Production Database Configuration
+ * 
+ * Prisma database client configuration for RepairX production environment.
+ * Provides database connection management and type-safe database operations.
+ */
 
-interface MockUser extends User {
-  _id: string;
+import { PrismaClient } from '@prisma/client';
+
+// Global Prisma instance for production use
+declare global {
+  // eslint-disable-next-line no-var
+  var cachedPrisma: PrismaClient;
 }
 
-const mockUsers: MockUser[] = [];
-let mockIdCounter = 1;
+let prisma: PrismaClient;
 
-export const mockDatabase = {
-  user: {
-    create: async ({ data }: { data: Partial<User> }): Promise<User> => {
-      const newUser: MockUser = {
-        ...data as User,
-        _id: (mockIdCounter++).toString(),
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
-      mockUsers.push(newUser);
-      return newUser;
-    },
-    
-    findUnique: async ({ where }: { where: { email?: string; id?: string } }): Promise<User | null> => {
-      if (where.email) {
-        return mockUsers.find(user => user.email === where.email) || null;
-      }
-      if (where.id) {
-        return mockUsers.find(user => user._id === where.id) || null;
-      }
-      return null;
-    },
-    
-    update: async ({ where, data }: { where: { id: string }; data: Partial<User> }): Promise<User> => {
-      const index = mockUsers.findIndex(user => user._id === where.id);
-      if (index !== -1) {
-        mockUsers[index] = { ...mockUsers[index]!, ...data };
-        return mockUsers[index]!;
-      }
-      throw new Error('User not found');
-    },
-    
-    delete: async ({ where }: { where: { id: string } }): Promise<User> => {
-      const index = mockUsers.findIndex(user => user._id === where.id);
-      if (index !== -1) {
-        const deletedUser = mockUsers[index];
-        mockUsers.splice(index, 1);
-        return deletedUser!;
-      }
-      throw new Error('User not found');
-    }
+// Singleton pattern for Prisma client to prevent connection issues in serverless environments
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient({
+    log: ['error', 'warn'],
+    errorFormat: 'pretty',
+  });
+} else {
+  if (!global.cachedPrisma) {
+    global.cachedPrisma = new PrismaClient({
+      log: ['query', 'info', 'warn', 'error'],
+      errorFormat: 'pretty',
+    });
+  }
+  prisma = global.cachedPrisma;
+}
+
+// Graceful shutdown handling
+const gracefulShutdown = async () => {
+  console.log('Shutting down Prisma connection...');
+  await prisma.$disconnect();
+  process.exit(0);
+};
+
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
+
+// Health check function for database connectivity
+export const checkDatabaseHealth = async (): Promise<boolean> => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return true;
+  } catch (error) {
+    console.error('Database health check failed:', error);
+    return false;
   }
 };
 
-// Production database wrapper - export prisma if available, otherwise use mock
-let prisma: any;
-
-try {
-  // Try to import Prisma client for production
-  const { PrismaClient } = require('@prisma/client');
-  prisma = new PrismaClient();
-} catch (error) {
-  // Fall back to mock database for development/testing
-  console.warn('Prisma client not available, using mock database');
-  prisma = mockDatabase;
-}
+// Database connection test
+export const connectDatabase = async (): Promise<void> => {
+  try {
+    await prisma.$connect();
+    console.log('✅ Database connected successfully');
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    throw error;
+  }
+};
 
 export { prisma };
