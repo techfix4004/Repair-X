@@ -6,7 +6,7 @@ import '../types/auth'; // Import the type extensions
 
 // Job sheet management interfaces
 interface CreateJobSheetRequest {
-  _bookingId: string;
+  bookingId: string;
   deviceId: string;
   problemDescription: string;
   estimatedHours: number;
@@ -34,155 +34,155 @@ interface UpdateJobSheetRequest {
 interface StateTransition {
   from: string[];
   to: string;
-  validationRules?: (jobSheet: unknown, _updateData: unknown) => Promise<string | null>;
-  automatedActions?: (_jobSheet: unknown, _updateData: unknown) => Promise<void>;
+  validationRules?: (jobSheet: unknown, updateData: unknown) => Promise<string | null>;
+  automatedActions?: (jobSheet: unknown, updateData: unknown) => Promise<void>;
 }
 
 // Define the 12-state workflow with transitions and business rules
-const _WORKFLOW_TRANSITIONS: Record<string, StateTransition> = {
+const WORKFLOW_TRANSITIONS: Record<string, StateTransition> = {
   'IN_DIAGNOSIS': {
-    _from: ['CREATED'],
-    _to: 'IN_DIAGNOSIS',
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    from: ['CREATED'],
+    to: 'IN_DIAGNOSIS',
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Auto-set started timestamp
       if (!jobSheet.startedAt) {
-        (updateData as any).startedAt = new Date();
+        updateData.startedAt = new Date();
       }
       // Send notification to customer about diagnosis start
       await sendSmsNotification(jobSheet.booking.customerId, 'diagnosis_started', {
-        _jobNumber: jobSheet.jobNumber,
-        _technicianName: `${jobSheet.technician?.firstName} ${jobSheet.technician?.lastName}`
+        jobNumber: jobSheet.jobNumber,
+        technicianName: `${jobSheet.technician?.firstName} ${jobSheet.technician?.lastName}`
       });
     }
   },
   'AWAITING_APPROVAL': {
-    _from: ['IN_DIAGNOSIS'],
-    _to: 'AWAITING_APPROVAL',
-    _validationRules: async (jobSheet: unknown, _updateData: unknown) => {
-      if (!(updateData as any).diagnosisNotes) {
+    from: ['IN_DIAGNOSIS'],
+    to: 'AWAITING_APPROVAL',
+    validationRules: async (_jobSheet: any, updateData: any) => {
+      if (!updateData.diagnosisNotes) {
         return 'Diagnosis notes are required before requesting approval';
       }
       return null;
     },
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Set customer approval required flag
-      (updateData as any).customerApprovalRequired = true;
+      updateData.customerApprovalRequired = true;
       // Send approval request to customer
       await sendSmsNotification(jobSheet.booking.customerId, 'approval_request', {
-        _jobNumber: jobSheet.jobNumber,
-        _diagnosisNotes: (updateData as any).diagnosisNotes,
-        _estimatedCost: jobSheet.totalCost || jobSheet.laborCost
+        jobNumber: jobSheet.jobNumber,
+        diagnosisNotes: updateData.diagnosisNotes,
+        estimatedCost: jobSheet.totalCost || jobSheet.laborCost
       });
     }
   },
   'APPROVED': {
-    _from: ['AWAITING_APPROVAL'],
-    _to: 'APPROVED',
-    _validationRules: async (jobSheet: unknown, _updateData: unknown) => {
+    from: ['AWAITING_APPROVAL'],
+    to: 'APPROVED',
+    validationRules: async (jobSheet: any, _updateData: any) => {
       if (!jobSheet.customerApprovalRequired) {
         return 'Customer approval is required';
       }
       return null;
     },
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
-      (updateData as any).customerApprovedAt = new Date();
+    automatedActions: async (jobSheet: any, updateData: any) => {
+      updateData.customerApprovedAt = new Date();
       // Schedule work based on parts availability
       await scheduleWorkBasedOnParts(jobSheet);
     }
   },
   'IN_PROGRESS': {
-    _from: ['APPROVED', 'PARTS_ORDERED'],
-    _to: 'IN_PROGRESS',
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    from: ['APPROVED', 'PARTS_ORDERED'],
+    to: 'IN_PROGRESS',
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Update booking status
       await prisma.booking.update({
-        _where: { id: jobSheet.bookingId },
-        _data: { status: 'IN_PROGRESS' }
+        where: { id: jobSheet.bookingId },
+        data: { status: 'IN_PROGRESS' }
       });
       // Send progress notification
       await sendSmsNotification(jobSheet.booking.customerId, 'work_started', {
-        _jobNumber: jobSheet.jobNumber
+        jobNumber: jobSheet.jobNumber
       });
     }
   },
   'PARTS_ORDERED': {
-    _from: ['APPROVED', 'IN_PROGRESS'],
-    _to: 'PARTS_ORDERED',
-    _validationRules: async (jobSheet: unknown, _updateData: unknown) => {
+    from: ['APPROVED', 'IN_PROGRESS'],
+    to: 'PARTS_ORDERED',
+    validationRules: async (jobSheet: any, _updateData: any) => {
       if (!jobSheet.partsUsed || jobSheet.partsUsed?.length === 0) {
         return 'Parts must be added before marking as ordered';
       }
       return null;
     },
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Auto-order parts from suppliers
       await processPartsOrdering(jobSheet);
       // Update customer with delay notification
       await sendSmsNotification(jobSheet.booking.customerId, 'parts_ordered', {
-        _jobNumber: jobSheet.jobNumber,
-        _estimatedArrival: calculatePartsArrival()
+        jobNumber: jobSheet.jobNumber,
+        estimatedArrival: await calculatePartsArrival()
       });
     }
   },
   'TESTING': {
-    _from: ['IN_PROGRESS'],
-    _to: 'TESTING',
-    _validationRules: async (jobSheet: unknown, _updateData: unknown) => {
-      if (!(updateData as any).repairActions) {
+    from: ['IN_PROGRESS'],
+    to: 'TESTING',
+    validationRules: async (_jobSheet: any, updateData: any) => {
+      if (!updateData.repairActions) {
         return 'Repair actions must be documented before testing';
       }
       return null;
     },
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Execute automated testing protocols where applicable
       await executeTestingProtocols(jobSheet, updateData);
     }
   },
   'QUALITY_CHECK': {
-    _from: ['TESTING'],
-    _to: 'QUALITY_CHECK',
-    _validationRules: async (jobSheet: unknown, _updateData: unknown) => {
-      if (!(updateData as any).testingResults) {
+    from: ['TESTING'],
+    to: 'QUALITY_CHECK',
+    validationRules: async (_jobSheet: any, updateData: any) => {
+      if (!updateData.testingResults) {
         return 'Testing results are required before quality check';
       }
       return null;
     },
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Execute Six Sigma quality validation
       const qualityScore = await executeSixSigmaQualityCheck(jobSheet, updateData);
-      (updateData as any).qualityChecks = {
-        ...(updateData as any).qualityChecks,
-        _sixSigmaScore: qualityScore,
-        _checklistComplete: qualityScore >= 95,
-        _timestamp: new Date()
+      updateData.qualityChecks = {
+        ...updateData.qualityChecks,
+        sixSigmaScore: qualityScore,
+        checklistComplete: qualityScore >= 95,
+        timestamp: new Date()
       };
     }
   },
   'COMPLETED': {
-    _from: ['QUALITY_CHECK'],
-    _to: 'COMPLETED',
-    _validationRules: async (jobSheet: unknown, _updateData: unknown) => {
-      if (!(updateData as any).qualityChecks?.checklistComplete) {
+    from: ['QUALITY_CHECK'],
+    to: 'COMPLETED',
+    validationRules: async (_jobSheet: any, updateData: any) => {
+      if (!updateData.qualityChecks?.checklistComplete) {
         return 'Quality checklist must be completed';
       }
       return null;
     },
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
-      (updateData as any).completedAt = new Date();
+    automatedActions: async (jobSheet: any, updateData: any) => {
+      updateData.completedAt = new Date();
       // Generate final invoice
       await generateFinalInvoice(jobSheet);
       // Prepare warranty documentation
       await generateWarrantyDocumentation(jobSheet);
       // Send completion notification
       await sendSmsNotification(jobSheet.booking.customerId, 'work_completed', {
-        _jobNumber: jobSheet.jobNumber
+        jobNumber: jobSheet.jobNumber
       });
     }
   },
   'CUSTOMER_APPROVED': {
-    _from: ['COMPLETED'],
-    _to: 'CUSTOMER_APPROVED',
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    from: ['COMPLETED'],
+    to: 'CUSTOMER_APPROVED',
+    automatedActions: async (jobSheet: any, _updateData: any) => {
       // Collect customer satisfaction rating
       await requestCustomerSatisfactionRating(jobSheet);
       // Process final payment if not already done
@@ -190,15 +190,15 @@ const _WORKFLOW_TRANSITIONS: Record<string, StateTransition> = {
     }
   },
   'DELIVERED': {
-    _from: ['CUSTOMER_APPROVED'],
-    _to: 'DELIVERED',
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    from: ['CUSTOMER_APPROVED'],
+    to: 'DELIVERED',
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Update booking to completed
       await prisma.booking.update({
-        _where: { id: jobSheet.bookingId },
-        _data: { 
+        where: { id: jobSheet.bookingId },
+        data: { 
           status: 'COMPLETED',
-          _completedAt: new Date()
+          completedAt: new Date()
         }
       });
       // Schedule follow-up survey
@@ -208,32 +208,32 @@ const _WORKFLOW_TRANSITIONS: Record<string, StateTransition> = {
     }
   },
   'CANCELLED': {
-    _from: ['CREATED', 'IN_DIAGNOSIS', 'AWAITING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'PARTS_ORDERED'],
-    _to: 'CANCELLED',
-    _automatedActions: async (jobSheet: unknown, _updateData: unknown) => {
+    from: ['CREATED', 'IN_DIAGNOSIS', 'AWAITING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'PARTS_ORDERED'],
+    to: 'CANCELLED',
+    automatedActions: async (jobSheet: any, updateData: any) => {
       // Process refunds according to cancellation policy
       await processCancellationRefund(jobSheet);
       // Return parts to inventory
       await returnPartsToInventory(jobSheet);
       // Send cancellation notification
       await sendSmsNotification(jobSheet.booking.customerId, 'job_cancelled', {
-        _jobNumber: jobSheet.jobNumber,
-        _reason: (updateData as any).cancellationReason || 'Job cancelled'
+        jobNumber: jobSheet.jobNumber,
+        reason: updateData.cancellationReason || 'Job cancelled'
       });
     }
   }
 };
 
 // Enhanced workflow automation functions
-async function validateStateTransition(_currentStatus: string, _newStatus: string, _jobSheet: unknown, _updateData: unknown): Promise<string | null> {
+async function validateStateTransition(currentStatus: string, newStatus: string, jobSheet: any, updateData: any): Promise<string | null> {
   const transition = WORKFLOW_TRANSITIONS[newStatus];
   
   if (!transition) {
-    return `Invalid _status: ${newStatus}`;
+    return `Invalid status: ${newStatus}`;
   }
   
   if (!transition.from.includes(currentStatus)) {
-    return `Cannot transition from ${currentStatus} to ${newStatus}. Allowed _transitions: ${transition.from.join(', ')} → ${newStatus}`;
+    return `Cannot transition from ${currentStatus} to ${newStatus}. Allowed transitions: ${transition.from.join(', ')} → ${newStatus}`;
   }
   
   if (transition.validationRules) {
@@ -243,7 +243,7 @@ async function validateStateTransition(_currentStatus: string, _newStatus: strin
   return null;
 }
 
-async function executeAutomatedActions(_jobSheet: unknown, _updateData: unknown, _newStatus: string): Promise<void> {
+async function executeAutomatedActions(jobSheet: any, updateData: any, newStatus: string): Promise<void> {
   const transition = WORKFLOW_TRANSITIONS[newStatus];
   
   if (transition?.automatedActions) {
@@ -252,17 +252,17 @@ async function executeAutomatedActions(_jobSheet: unknown, _updateData: unknown,
 }
 
 // Mock implementations for automated functions (to be implemented with real integrations)
-async function sendSmsNotification(_customerId: string, _template: string, _data: unknown): Promise<void> {
+async function sendSmsNotification(customerId: string, template: string, data: any): Promise<void> {
   // Implementation would send actual SMS using the SMS service
-  console.log(`SMS _notification: ${template} to customer ${customerId}`, data);
+  console.log(`SMS notification: ${template} to customer ${customerId}`, data);
 }
 
-async function scheduleWorkBasedOnParts(_jobSheet: unknown): Promise<void> {
+async function scheduleWorkBasedOnParts(jobSheet: any): Promise<void> {
   // Check parts availability and schedule accordingly
   console.log(`Scheduling work for job ${jobSheet.jobNumber}`);
 }
 
-async function processPartsOrdering(_jobSheet: unknown): Promise<void> {
+async function processPartsOrdering(jobSheet: any): Promise<void> {
   // Auto-order parts from preferred suppliers
   console.log(`Processing parts ordering for job ${jobSheet.jobNumber}`);
 }
@@ -274,63 +274,63 @@ async function calculatePartsArrival(): Promise<string> {
   return arrivalDate.toISOString().split('T')[0] || '';
 }
 
-async function executeTestingProtocols(_jobSheet: unknown, _updateData: unknown): Promise<void> {
+async function executeTestingProtocols(jobSheet: any, updateData: any): Promise<void> {
   // Execute device-specific testing protocols
-  (updateData as any).testingResults = {
-    _protocolsExecuted: ['functional_test', 'performance_test', 'safety_test'],
-    _results: 'All tests passed',
-    _timestamp: new Date()
+  updateData.testingResults = {
+    protocolsExecuted: ['functional_test', 'performance_test', 'safety_test'],
+    results: 'All tests passed',
+    timestamp: new Date()
   };
 }
 
-async function executeSixSigmaQualityCheck(_jobSheet: unknown, _updateData: unknown): Promise<number> {
+async function executeSixSigmaQualityCheck(jobSheet: any, updateData: any): Promise<number> {
   // Execute Six Sigma quality validation checklist
   const qualityScore = Math.min(95 + Math.random() * 5, 100); // Mock score 95-100%
   return Math.round(qualityScore * 100) / 100;
 }
 
-async function generateFinalInvoice(_jobSheet: unknown): Promise<void> {
+async function generateFinalInvoice(jobSheet: any): Promise<void> {
   // Generate GST-compliant final invoice
   console.log(`Generating final invoice for job ${jobSheet.jobNumber}`);
 }
 
-async function generateWarrantyDocumentation(_jobSheet: unknown): Promise<void> {
+async function generateWarrantyDocumentation(jobSheet: any): Promise<void> {
   // Generate warranty certificate
   console.log(`Generating warranty documentation for job ${jobSheet.jobNumber}`);
 }
 
-async function requestCustomerSatisfactionRating(_jobSheet: unknown): Promise<void> {
+async function requestCustomerSatisfactionRating(jobSheet: any): Promise<void> {
   // Send customer satisfaction survey
   console.log(`Requesting customer satisfaction rating for job ${jobSheet.jobNumber}`);
 }
 
-async function processFinalPayment(_jobSheet: unknown): Promise<void> {
+async function processFinalPayment(jobSheet: any): Promise<void> {
   // Process any remaining payment balance
   console.log(`Processing final payment for job ${jobSheet.jobNumber}`);
 }
 
-async function scheduleFollowUpSurvey(_jobSheet: unknown): Promise<void> {
+async function scheduleFollowUpSurvey(jobSheet: any): Promise<void> {
   // Schedule follow-up satisfaction survey
   console.log(`Scheduling follow-up survey for job ${jobSheet.jobNumber}`);
 }
 
-async function updateCustomerServiceHistory(_jobSheet: unknown): Promise<void> {
+async function updateCustomerServiceHistory(jobSheet: any): Promise<void> {
   // Update comprehensive customer service history
   console.log(`Updating service history for job ${jobSheet.jobNumber}`);
 }
 
-async function processCancellationRefund(_jobSheet: unknown): Promise<void> {
+async function processCancellationRefund(jobSheet: any): Promise<void> {
   // Process refund according to cancellation policy
   console.log(`Processing cancellation refund for job ${jobSheet.jobNumber}`);
 }
 
-async function returnPartsToInventory(_jobSheet: unknown): Promise<void> {
+async function returnPartsToInventory(jobSheet: any): Promise<void> {
   // Return unused parts to inventory
   console.log(`Returning parts to inventory for job ${jobSheet.jobNumber}`);
 }
 
 interface AddJobSheetPartRequest {
-  _partName: string;
+  partName: string;
   partNumber?: string;
   quantity: number;
   unitCost: number;
@@ -344,104 +344,102 @@ function generateJobNumber(): string {
   return `JS-${year}-${randomNumber}`;
 }
 
- 
 // eslint-disable-next-line max-lines-per-function
-export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
+export async function jobSheetRoutes(fastify: FastifyInstance): Promise<void> {
   // Create a new job sheet
-  server.post('/', {
-    _schema: {
+  fastify.post('/', {
+    schema: {
       body: {
         type: 'object',
-        _required: ['bookingId', 'deviceId', 'problemDescription', 'estimatedHours', 'laborCost'],
-        _properties: {
+        required: ['bookingId', 'deviceId', 'problemDescription', 'estimatedHours', 'laborCost'],
+        properties: {
           bookingId: { type: 'string' },
-          _deviceId: { type: 'string' },
-          _problemDescription: { type: 'string' },
-          _estimatedHours: { type: 'number' },
-          _laborCost: { type: 'number' },
-          _priority: { type: 'string', _enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] }
+          deviceId: { type: 'string' },
+          problemDescription: { type: 'string' },
+          estimatedHours: { type: 'number' },
+          laborCost: { type: 'number' },
+          priority: { type: 'string', enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'] }
         }
       }
     }
-  }, async (request: FastifyRequest<{ _Body: CreateJobSheetRequest }>, reply: FastifyReply) => {
+  }, async (request: FastifyRequest<{ Body: CreateJobSheetRequest }>, reply: FastifyReply) => {
     try {
       const technicianId = request.user?.id;
-      
       if (!technicianId) {
-        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
+        return reply.status(401).send({ error: 'Authentication required' });
       }
 
       // Verify booking exists and is assigned to this technician
       const booking = await prisma.booking.findFirst({
-        _where: { 
+        where: { 
           id: (request as any).body.bookingId,
           technicianId,
-          _status: { in: ['CONFIRMED', 'ASSIGNED'] }
+          status: { in: ['CONFIRMED', 'ASSIGNED'] }
         },
-        _include: { device: true, _customer: true }
+        include: { device: true, customer: true }
       });
 
       if (!booking) {
-        return (reply as FastifyReply).status(404).send({ _error: 'Booking not found or not assigned to you' });
+        return reply.status(404).send({ error: 'Booking not found or not assigned to you' });
       }
 
       // Check if job sheet already exists for this booking
       const existingJobSheet = await prisma.jobSheet.findUnique({
-        _where: { bookingId: (request as any).body.bookingId }
+        where: { bookingId: (request as any).body.bookingId }
       });
 
       if (existingJobSheet) {
-        return (reply as FastifyReply).status(400).send({ _error: 'Job sheet already exists for this booking' });
+        return reply.status(400).send({ error: 'Job sheet already exists for this booking' });
       }
 
       const jobNumber = generateJobNumber();
 
       const jobSheet = await prisma.jobSheet.create({
-        _data: {
+        data: {
           jobNumber,
-          _bookingId: (request as any).body.bookingId,
-          _deviceId: (request as any).body.deviceId,
+          bookingId: (request as any).body.bookingId,
+          deviceId: (request as any).body.deviceId,
           technicianId,
-          _problemDescription: (request as any).body.problemDescription,
-          _estimatedHours: (request as any).body.estimatedHours,
-          _laborCost: (request as any).body.laborCost,
-          _priority: (request as any).body.priority || 'MEDIUM',
-          _status: 'CREATED'
+          problemDescription: (request as any).body.problemDescription,
+          estimatedHours: (request as any).body.estimatedHours,
+          laborCost: (request as any).body.laborCost,
+          priority: (request as any).body.priority || 'MEDIUM',
+          status: 'CREATED'
         },
-        _include: {
+        include: {
           booking: {
-            include: { service: true, _customer: true }
+            include: { service: true, customer: true }
           },
-          _device: true,
-          _technician: {
-            select: { id: true, _firstName: true, _lastName: true, _email: true }
+          device: true,
+          technician: {
+            select: { id: true, firstName: true, lastName: true, email: true }
           },
-          _partsUsed: true
+          partsUsed: true
         }
       });
 
       // Update booking status
       await prisma.booking.update({
-        _where: { id: (request as any).body.bookingId },
-        _data: { status: 'IN_PROGRESS' }
+        where: { id: (request as any).body.bookingId },
+        data: { status: 'IN_PROGRESS' }
       });
 
-      return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: jobSheet,
-        _message: 'Job sheet created successfully'
+      return reply.status(201).send({
+        success: true,
+        data: jobSheet,
+        message: 'Job sheet created successfully'
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ 
-        _error: 'Failed to create job sheet',
-        _details: error instanceof Error ? error.message : 'Unknown error'
+      fastify.log.error(error);
+      return reply.status(500).send({ 
+        error: 'Failed to create job sheet',
+        details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
 
   // Get job sheets (for technicians)
-  server.get('/', async (request: FastifyRequest<{ 
+  fastify.get('/', async (request: FastifyRequest<{ 
     Querystring: { 
       status?: string, 
       priority?: string, 
@@ -452,159 +450,156 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
     try {
       const technicianId = request.user?.id;
       const userRole = request.user?.role;
-      
       if (!technicianId) {
-        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
+        return reply.status(401).send({ error: 'Authentication required' });
       }
 
       const { status, priority, page = 1, limit = 10 } = (request as any).query;
       const skip = (page - 1) * limit;
 
-      const _where: unknown = {};
-      
+      const where: any = {};
       // Regular technicians can only see their own job sheets
       if (userRole === 'TECHNICIAN') {
         where.technicianId = technicianId;
       }
-      
       if (status) where.status = status;
       if (priority) where.priority = priority;
 
       const [jobSheets, total] = await Promise.all([
         prisma.jobSheet.findMany({
           where,
-          _include: {
+          include: {
             booking: {
               include: { 
                 service: true, 
-                _customer: { select: { id: true, _firstName: true, _lastName: true, _phone: true } }
+                customer: { select: { id: true, firstName: true, lastName: true, phone: true } }
               }
             },
-            _device: {
-              select: { id: true, _brand: true, _model: true, _category: true, _condition: true }
+            device: {
+              select: { id: true, brand: true, model: true, category: true, condition: true }
             },
-            _technician: {
-              select: { id: true, _firstName: true, _lastName: true }
+            technician: {
+              select: { id: true, firstName: true, lastName: true }
             },
-            _partsUsed: true
+            partsUsed: true
           },
-          _orderBy: [
+          orderBy: [
             { priority: 'desc' },
-            { _createdAt: 'desc' }
+            { createdAt: 'desc' }
           ],
           skip,
-          _take: limit
+          take: limit
         }),
         prisma.jobSheet.count({ where })
       ]);
 
-      return (reply as any).send({
-        _success: true,
-        _data: jobSheets,
-        _pagination: {
+      return reply.send({
+        success: true,
+        data: jobSheets,
+        pagination: {
           page,
           limit,
           total,
-          _pages: Math.ceil(total / limit)
+          pages: Math.ceil(total / limit)
         }
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch job sheets' });
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Failed to fetch job sheets' });
     }
   });
 
   // Get job sheet by ID
-  server.get('/:id', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
+  fastify.get('/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     try {
       const jobSheetId = (request as any).params.id;
-      const _userId = request.user?.id;
+      const userId = request.user?.id;
       const userRole = request.user?.role;
 
       const jobSheet = await prisma.jobSheet.findUnique({
-        _where: { id: jobSheetId },
-        _include: {
+        where: { id: jobSheetId },
+        include: {
           booking: {
             include: { 
               service: true, 
-              _customer: true,
-              _address: true
+              customer: true,
+              address: true
             }
           },
-          _device: true,
-          _technician: {
+          device: true,
+          technician: {
             select: { 
               id: true, 
-              _firstName: true, 
-              _lastName: true, 
-              _email: true, 
-              _phone: true,
-              _technicianProfile: {
+              firstName: true, 
+              lastName: true, 
+              email: true, 
+              phone: true,
+              technicianProfile: {
                 select: { 
                   rating: true, 
-                  _experience: true, 
-                  _hourlyRate: true 
+                  experience: true, 
+                  hourlyRate: true 
                 }
               }
             }
           },
-          _partsUsed: true
+          partsUsed: true
         }
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found' });
+        return reply.status(404).send({ error: 'Job sheet not found' });
       }
 
       // Authorization check
       const isAuthorized = 
         userRole === 'ADMIN' || 
         userRole === 'SUPER_ADMIN' ||
-        jobSheet.technicianId === _userId ||
-        jobSheet.booking.customerId === _userId;
+        jobSheet.technicianId === userId ||
+        jobSheet.booking.customerId === userId;
 
       if (!isAuthorized) {
-        return (reply as FastifyReply).status(403).send({ _error: 'Access denied' });
+        return reply.status(403).send({ error: 'Access denied' });
       }
 
-      return (reply as any).send({
-        _success: true,
-        _data: jobSheet
+      return reply.send({
+        success: true,
+        data: jobSheet
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch job sheet' });
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Failed to fetch job sheet' });
     }
   });
 
   // Update job sheet
-  server.put('/:id', {
-    _schema: {
+  fastify.put('/:id', {
+    schema: {
       body: {
         type: 'object',
-        _properties: {
+        properties: {
           diagnosisNotes: { type: 'string' },
-          _repairActions: { type: 'object' },
-          _actualHours: { type: 'number' },
-          _partsCost: { type: 'number' },
-          _totalCost: { type: 'number' },
-          _status: { 
+          repairActions: { type: 'object' },
+          actualHours: { type: 'number' },
+          partsCost: { type: 'number' },
+          totalCost: { type: 'number' },
+          status: { 
             type: 'string', 
-            _enum: ['CREATED', 'IN_DIAGNOSIS', 'AWAITING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'PARTS_ORDERED', 'TESTING', 'QUALITY_CHECK', 'COMPLETED', 'CUSTOMER_APPROVED', 'DELIVERED', 'CANCELLED'] 
+            enum: ['CREATED', 'IN_DIAGNOSIS', 'AWAITING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'PARTS_ORDERED', 'TESTING', 'QUALITY_CHECK', 'COMPLETED', 'CUSTOMER_APPROVED', 'DELIVERED', 'CANCELLED'] 
           },
-          _qualityChecks: { type: 'object' },
-          _testingResults: { type: 'object' },
-          _beforePhotos: { type: 'array', _items: { type: 'string' } },
-          _afterPhotos: { type: 'array', _items: { type: 'string' } },
-          _warrantyCoverage: { type: 'string' },
-          _customerApprovalRequired: { type: 'boolean' },
-          _progressNotes: { type: 'string' }
+          qualityChecks: { type: 'object' },
+          testingResults: { type: 'object' },
+          beforePhotos: { type: 'array', items: { type: 'string' } },
+          afterPhotos: { type: 'array', items: { type: 'string' } },
+          warrantyCoverage: { type: 'string' },
+          customerApprovalRequired: { type: 'boolean' },
+          progressNotes: { type: 'string' }
         }
       }
     }
   }, async (request: FastifyRequest<{ 
     Params: { id: string }, 
-    _Body: UpdateJobSheetRequest 
+    Body: UpdateJobSheetRequest 
   }>, reply: FastifyReply) => {
     try {
       const jobSheetId = (request as any).params.id;
@@ -613,18 +608,18 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
 
       // Verify authorization
       const jobSheet = await prisma.jobSheet.findUnique({
-        _where: { id: jobSheetId },
-        _include: { 
+        where: { id: jobSheetId },
+        include: { 
           booking: {
             include: { customer: true }
           },
-          _technician: true,
-          _partsUsed: true
+          technician: true,
+          partsUsed: true
         }
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found' });
+        return reply.status(404).send({ error: 'Job sheet not found' });
       }
 
       const isAuthorized = 
@@ -633,11 +628,11 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
         jobSheet.technicianId === technicianId;
 
       if (!isAuthorized) {
-        return (reply as FastifyReply).status(403).send({ _error: 'Access denied' });
+        return reply.status(403).send({ error: 'Access denied' });
       }
 
       // Special handling for status changes with 12-state workflow
-      const _updateData: unknown = { ...(request as any).body };
+      const updateData: any = { ...(request as any).body };
 
       if ((request as any).body.status && (request as any).body.status !== jobSheet.status) {
         // Validate state transition using enhanced workflow
@@ -649,9 +644,9 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
         );
 
         if (validationError) {
-          return (reply as FastifyReply).status(400).send({ 
-            _error: 'Invalid state transition', 
-            _message: validationError 
+          return reply.status(400).send({ 
+            error: 'Invalid state transition', 
+            message: validationError 
           });
         }
 
@@ -660,17 +655,17 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
 
         // Handle completion timestamp
         if ((request as any).body.status === 'COMPLETED' && !jobSheet.completedAt) {
-          (updateData as any).completedAt = new Date();
+          updateData.completedAt = new Date();
         }
         
         // Handle start timestamp
         if(['IN_DIAGNOSIS', 'IN_PROGRESS'].includes((request as any).body.status) && !jobSheet.startedAt) {
-          (updateData as any).startedAt = new Date();
+          updateData.startedAt = new Date();
         }
 
         // Handle customer approval timestamp
         if((request as any).body.status === 'CUSTOMER_APPROVED') {
-          (updateData as any).customerApprovedAt = new Date();
+          updateData.customerApprovedAt = new Date();
         }
 
         // Update booking status based on job sheet status
@@ -693,75 +688,75 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
 
         if (bookingStatus !== jobSheet.booking.status) {
           await prisma.booking.update({
-            _where: { id: jobSheet.bookingId },
-            _data: { status: bookingStatus }
+            where: { id: jobSheet.bookingId },
+            data: { status: bookingStatus }
           });
         }
       }
 
       const updatedJobSheet = await prisma.jobSheet.update({
-        _where: { id: jobSheetId },
-        _data: updateData,
-        _include: {
+        where: { id: jobSheetId },
+        data: updateData,
+        include: {
           booking: {
-            include: { service: true, _customer: true }
+            include: { service: true, customer: true }
           },
-          _device: true,
-          _technician: {
-            select: { id: true, _firstName: true, _lastName: true }
+          device: true,
+          technician: {
+            select: { id: true, firstName: true, lastName: true }
           },
-          _partsUsed: true
+          partsUsed: true
         }
       });
 
       // Log the state transition for audit trail
-      server.log.info({
+      fastify.log.info({
         jobSheetId,
-        _jobNumber: jobSheet.jobNumber,
-        _oldStatus: jobSheet.status,
-        _newStatus: (request as any).body.status,
+        jobNumber: jobSheet.jobNumber,
+        oldStatus: jobSheet.status,
+        newStatus: (request as any).body.status,
         technicianId,
-        _timestamp: new Date()
+        timestamp: new Date()
       }, 'Job sheet state transition completed');
 
-      return (reply as any).send({
-        _success: true,
-        _data: updatedJobSheet,
-        _message: 'Job sheet updated successfully',
-        _workflow: {
+      return reply.send({
+        success: true,
+        data: updatedJobSheet,
+        message: 'Job sheet updated successfully',
+        workflow: {
           previousState: jobSheet.status,
-          _currentState: updatedJobSheet.status,
-          _transitionTimestamp: new Date(),
-          _automatedActionsExecuted: (request as any).body.status ? true : false
+          currentState: updatedJobSheet.status,
+          transitionTimestamp: new Date(),
+          automatedActionsExecuted: (request as any).body.status ? true : false
         }
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ 
-        _error: 'Failed to update job sheet',
-        _details: error instanceof Error ? error.message : 'Unknown error'
+      fastify.log.error(error);
+      return reply.status(500).send({ 
+        error: 'Failed to update job sheet',
+        details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
 
   // Add part to job sheet
-  server.post('/:id/parts', {
-    _schema: {
+  fastify.post('/:id/parts', {
+    schema: {
       body: {
         type: 'object',
-        _required: ['partName', 'quantity', 'unitCost'],
-        _properties: {
+        required: ['partName', 'quantity', 'unitCost'],
+        properties: {
           partName: { type: 'string' },
-          _partNumber: { type: 'string' },
-          _quantity: { type: 'number', _minimum: 1 },
-          _unitCost: { type: 'number', _minimum: 0 },
-          _supplier: { type: 'string' }
+          partNumber: { type: 'string' },
+          quantity: { type: 'number', minimum: 1 },
+          unitCost: { type: 'number', minimum: 0 },
+          supplier: { type: 'string' }
         }
       }
     }
   }, async (request: FastifyRequest<{ 
     Params: { id: string }, 
-    _Body: AddJobSheetPartRequest 
+    Body: AddJobSheetPartRequest 
   }>, reply: FastifyReply) => {
     try {
       const jobSheetId = (request as any).params.id;
@@ -769,202 +764,202 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
 
       // Verify job sheet ownership
       const jobSheet = await prisma.jobSheet.findFirst({
-        _where: { id: jobSheetId, technicianId }
+        where: { id: jobSheetId, technicianId }
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found or access denied' });
+        return reply.status(404).send({ error: 'Job sheet not found or access denied' });
       }
 
       const totalCost = (request as any).body.quantity * (request as any).body.unitCost;
 
       const part = await prisma.jobSheetPart.create({
-        _data: {
+        data: {
           jobSheetId,
-          _partName: (request as any).body.partName,
-          _partNumber: (request as any).body.partNumber,
-          _quantity: (request as any).body.quantity,
-          _unitCost: (request as any).body.unitCost,
+          partName: (request as any).body.partName,
+          partNumber: (request as any).body.partNumber,
+          quantity: (request as any).body.quantity,
+          unitCost: (request as any).body.unitCost,
           totalCost,
-          _supplier: (request as any).body.supplier
+          supplier: (request as any).body.supplier
         }
       });
 
       // Update job sheet parts cost
       const allParts = await prisma.jobSheetPart.findMany({
-        _where: { jobSheetId }
+        where: { jobSheetId }
       });
 
-      const totalPartsCost = allParts.reduce((_sum: number, _part: unknown) => sum + Number(part.totalCost), 0);
+      const totalPartsCost = allParts.reduce((sum: number, part: any) => sum + Number(part.totalCost), 0);
 
       await prisma.jobSheet.update({
-        _where: { id: jobSheetId },
-        _data: {
+        where: { id: jobSheetId },
+        data: {
           partsCost: totalPartsCost,
-          _totalCost: Number(jobSheet.laborCost) + totalPartsCost
+          totalCost: Number(jobSheet.laborCost) + totalPartsCost
         }
       });
 
-      return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: part,
-        _message: 'Part added successfully'
+      return reply.status(201).send({
+        success: true,
+        data: part,
+        message: 'Part added successfully'
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ _error: 'Failed to add part' });
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Failed to add part' });
     }
   });
 
   // Remove part from job sheet
-  server.delete('/:jobSheetId/parts/:partId', async (request: FastifyRequest<{ 
-    Params: { jobSheetId: string, _partId: string } 
+  fastify.delete('/:jobSheetId/parts/:partId', async (request: FastifyRequest<{ 
+    Params: { jobSheetId: string, partId: string } 
   }>, reply: FastifyReply) => {
     try {
-      const { jobSheetId, partId  } = ((request as any).params as unknown);
+      const { jobSheetId, partId  } = ((request as any).params as any);
       const technicianId = request.user?.id;
 
       // Verify job sheet ownership
       const jobSheet = await prisma.jobSheet.findFirst({
-        _where: { id: jobSheetId, technicianId }
+        where: { id: jobSheetId, technicianId }
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found or access denied' });
+        return reply.status(404).send({ error: 'Job sheet not found or access denied' });
       }
 
       await prisma.jobSheetPart.delete({
-        _where: { id: partId, jobSheetId }
+        where: { id: partId, jobSheetId }
       });
 
       // Recalculate total parts cost
       const remainingParts = await prisma.jobSheetPart.findMany({
-        _where: { jobSheetId }
+        where: { jobSheetId }
       });
 
-      const totalPartsCost = remainingParts.reduce((_sum: number, _part: unknown) => sum + Number(part.totalCost), 0);
+      const totalPartsCost = remainingParts.reduce((sum: number, part: any) => sum + Number(part.totalCost), 0);
 
       await prisma.jobSheet.update({
-        _where: { id: jobSheetId },
-        _data: {
+        where: { id: jobSheetId },
+        data: {
           partsCost: totalPartsCost,
-          _totalCost: Number(jobSheet.laborCost) + totalPartsCost
+          totalCost: Number(jobSheet.laborCost) + totalPartsCost
         }
       });
 
-      return (reply as any).send({
-        _success: true,
-        _message: 'Part removed successfully'
+      return reply.send({
+        success: true,
+        message: 'Part removed successfully'
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ _error: 'Failed to remove part' });
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Failed to remove part' });
     }
   });
 
   // Generate job sheet PDF
-  server.get('/:id/pdf', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
+  fastify.get('/:id/pdf', async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     try {
       const jobSheetId = (request as any).params.id;
-      const _userId = request.user?.id;
+      const userId = request.user?.id;
       const userRole = request.user?.role;
 
       const jobSheet = await prisma.jobSheet.findUnique({
-        _where: { id: jobSheetId },
-        _include: {
+        where: { id: jobSheetId },
+        include: {
           booking: {
             include: { 
               service: true, 
-              _customer: true,
-              _address: true
+              customer: true,
+              address: true
             }
           },
-          _device: true,
-          _technician: {
+          device: true,
+          technician: {
             include: { technicianProfile: true }
           },
-          _partsUsed: true
+          partsUsed: true
         }
       });
 
       if (!jobSheet) {
-        return (reply as FastifyReply).status(404).send({ _error: 'Job sheet not found' });
+        return reply.status(404).send({ error: 'Job sheet not found' });
       }
 
       // Authorization check
       const isAuthorized = 
         userRole === 'ADMIN' || 
         userRole === 'SUPER_ADMIN' ||
-        jobSheet.technicianId === _userId ||
-        jobSheet.booking.customerId === _userId;
+        jobSheet.technicianId === userId ||
+        jobSheet.booking.customerId === userId;
 
       if (!isAuthorized) {
-        return (reply as FastifyReply).status(403).send({ _error: 'Access denied' });
+        return reply.status(403).send({ error: 'Access denied' });
       }
 
       // For now, return JSON that could be used to generate PDF
       // In production, you'd use a PDF generation library like puppeteer or PDFKit
       const pdfData = {
-        _jobNumber: jobSheet.jobNumber,
-        _date: jobSheet.createdAt,
-        _customer: {
+        jobNumber: jobSheet.jobNumber,
+        date: jobSheet.createdAt,
+        customer: {
           name: `${jobSheet.booking.customer.firstName} ${jobSheet.booking.customer.lastName}`,
-          _email: jobSheet.booking.customer.email,
-          _phone: jobSheet.booking.customer.phone,
-          _address: jobSheet.booking.address
+          email: jobSheet.booking.customer.email,
+          phone: jobSheet.booking.customer.phone,
+          address: jobSheet.booking.address
         },
-        _device: {
+        device: {
           brand: jobSheet.device.brand,
-          _model: jobSheet.device.model,
-          _serialNumber: jobSheet.device.serialNumber,
-          _category: jobSheet.device.category,
-          _condition: jobSheet.device.condition
+          model: jobSheet.device.model,
+          serialNumber: jobSheet.device.serialNumber,
+          category: jobSheet.device.category,
+          condition: jobSheet.device.condition
         },
-        _technician: {
+        technician: {
           name: `${jobSheet.technician.firstName} ${jobSheet.technician.lastName}`,
-          _experience: jobSheet.technician.technicianProfile?.experience
+          experience: jobSheet.technician.technicianProfile?.experience
         },
-        _service: jobSheet.booking.service.name,
-        _problemDescription: jobSheet.problemDescription,
-        _diagnosisNotes: jobSheet.diagnosisNotes,
-        _repairActions: jobSheet.repairActions,
-        _partsUsed: jobSheet.partsUsed,
-        _costs: {
+        service: jobSheet.booking.service.name,
+        problemDescription: jobSheet.problemDescription,
+        diagnosisNotes: jobSheet.diagnosisNotes,
+        repairActions: jobSheet.repairActions,
+        partsUsed: jobSheet.partsUsed,
+        costs: {
           labor: jobSheet.laborCost,
-          _parts: jobSheet.partsCost,
-          _total: jobSheet.totalCost
+          parts: jobSheet.partsCost,
+          total: jobSheet.totalCost
         },
-        _timeTracking: {
+        timeTracking: {
           estimated: jobSheet.estimatedHours,
-          _actual: jobSheet.actualHours,
-          _started: jobSheet.startedAt,
-          _completed: jobSheet.completedAt
+          actual: jobSheet.actualHours,
+          started: jobSheet.startedAt,
+          completed: jobSheet.completedAt
         },
-        _qualityChecks: jobSheet.qualityChecks,
-        _testingResults: jobSheet.testingResults,
-        _warranty: jobSheet.warrantyCoverage,
-        _status: jobSheet.status
+        qualityChecks: jobSheet.qualityChecks,
+        testingResults: jobSheet.testingResults,
+        warranty: jobSheet.warrantyCoverage,
+        status: jobSheet.status
       };
 
       return reply.type('application/json').send({
-        _success: true,
-        _data: pdfData,
-        _message: 'Job sheet data ready for PDF generation'
+        success: true,
+        data: pdfData,
+        message: 'Job sheet data ready for PDF generation'
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ _error: 'Failed to generate job sheet PDF' });
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Failed to generate job sheet PDF' });
     }
   });
 
   // Get job sheet statistics (for dashboard)
-  server.get('/stats/dashboard', async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.get('/stats/dashboard', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const technicianId = request.user?.id;
       const userRole = request.user?.role;
 
       if (!technicianId) {
-        return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
+        return reply.status(401).send({ error: 'Authentication required' });
       }
 
       const where = userRole === 'TECHNICIAN' ? { technicianId } : {};
@@ -978,45 +973,45 @@ export async function jobSheetRoutes(_server: FastifyInstance): Promise<void> {
       ] = await Promise.all([
         prisma.jobSheet.count({ where }),
         prisma.jobSheet.count({ 
-          _where: { 
+          where: { 
             ...where, 
-            _status: { in: ['CREATED', 'IN_DIAGNOSIS', 'IN_PROGRESS', 'TESTING', 'QUALITY_CHECK'] }
+            status: { in: ['CREATED', 'IN_DIAGNOSIS', 'IN_PROGRESS', 'TESTING', 'QUALITY_CHECK'] }
           }
         }),
         prisma.jobSheet.count({ 
-          _where: { ...where, _status: { in: ['COMPLETED', 'CUSTOMER_APPROVED', 'DELIVERED'] } }
+          where: { ...where, status: { in: ['COMPLETED', 'CUSTOMER_APPROVED', 'DELIVERED'] } }
         }),
         prisma.jobSheet.aggregate({
-          _where: { 
+          where: { 
             ...where, 
-            _status: 'COMPLETED',
-            _actualHours: { not: null }
+            status: 'COMPLETED',
+            actualHours: { not: null }
           },
           _avg: { actualHours: true }
         }),
         prisma.jobSheet.groupBy({
-          _by: ['status'],
+          by: ['status'],
           where,
           _count: { status: true }
         })
       ]);
 
-      return (reply as any).send({
-        _success: true,
-        _data: {
+      return reply.send({
+        success: true,
+        data: {
           totalJobSheets,
           activeJobSheets,
           completedJobSheets,
-          _avgCompletionTime: avgCompletionTime.avg.actualHours || 0,
-          _statusBreakdown: statusBreakdown.reduce((acc: Record<string, number>, _item: unknown) => {
-            acc[item.status] = item.count.status;
+          avgCompletionTime: avgCompletionTime._avg.actualHours || 0,
+          statusBreakdown: statusBreakdown.reduce((acc: Record<string, number>, item: any) => {
+            acc[item.status] = item._count.status;
             return acc;
           }, {} as Record<string, number>)
         }
       });
     } catch (error) {
-      server.log.error(error);
-      return (reply as FastifyReply).status(500).send({ _error: 'Failed to fetch statistics' });
+      fastify.log.error(error);
+      return reply.status(500).send({ error: 'Failed to fetch statistics' });
     }
   });
 }
