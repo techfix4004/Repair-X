@@ -62,9 +62,7 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
       whereClause.isActive = true;
     }
 
-    const categories = await prisma.expenseCategory.findMany({
-      _where: whereClause,
-      _include: {
+    const categories = await prisma.expenseCategory.findMany({ where: whereClause, include: {
         parent: {
           select: {
             id: true,
@@ -72,8 +70,7 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
           }
         },
         _children: {
-          where: { isActive: true },
-          _select: {
+          where: { isActive: true }, select: {
             id: true,
             _name: true,
             _description: true,
@@ -91,8 +88,7 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
             }
           }
         }
-      },
-      _orderBy: [
+      }, orderBy: [
         { parentId: { sort: 'asc', _nulls: 'first' }},
         { _name: 'asc' }
       ]
@@ -106,8 +102,7 @@ async function getExpenseCategories(request: FastifyRequest, reply: FastifyReply
     }));
 
     return (reply as any).send({
-      _success: true,
-      _data: hierarchicalCategories,
+      _success: true, data: hierarchicalCategories,
       _count: categories.length
     });
   } catch (error) {
@@ -126,8 +121,7 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
 
     // Validate parent category exists if provided
     if (data.parentId) {
-      const parentCategory = await prisma.expenseCategory.findUnique({
-        _where: { id: data.parentId }
+      const parentCategory = await prisma.expenseCategory.findUnique({ where: { id: data.parentId }
       });
 
       if (!parentCategory) {
@@ -139,8 +133,7 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
     }
 
     // Check for duplicate category name within the same parent
-    const existingCategory = await prisma.expenseCategory.findFirst({
-      _where: {
+    const existingCategory = await prisma.expenseCategory.findFirst({ where: {
         name: data.name,
         _parentId: data.parentId || null
       }
@@ -154,8 +147,7 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
     }
 
     const category = await prisma.expenseCategory.create({
-      data,
-      _include: {
+      data, include: {
         parent: {
           select: {
             id: true,
@@ -168,8 +160,7 @@ async function createExpenseCategory(request: FastifyRequest, reply: FastifyRepl
     request.log.info({ _categoryId: category.id }, 'Expense category created');
 
     return (reply as FastifyReply).status(201).send({
-      _success: true,
-      _data: category,
+      _success: true, data: category,
       _message: 'Expense category created successfully'
     });
   } catch (error) {
@@ -240,9 +231,7 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
     }
 
     const [expenses, total, totalAmount] = await Promise.all([
-      prisma.expense.findMany({
-        _where: whereClause,
-        _include: {
+      prisma.expense.findMany({ where: whereClause, include: {
           category: {
             select: {
               id: true,
@@ -285,21 +274,17 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
               }
             }
           }
-        },
-        _orderBy: { createdAt: 'desc' },
-        skip,
-        _take: limit
+        }, orderBy: { createdAt: 'desc' },
+        skip, take: limit
       }),
-      prisma.expense.count({ _where: whereClause }),
-      prisma.expense.aggregate({
-        _where: whereClause,
+      prisma.expense.count({ where: whereClause }),
+      prisma.expense.aggregate({ where: whereClause,
         _sum: { amount: true }
       })
     ]);
 
     return (reply as any).send({
-      _success: true,
-      _data: expenses,
+      _success: true, data: expenses,
       _pagination: {
         page,
         limit,
@@ -336,8 +321,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
     }
 
     // Validate category exists
-    const category = await prisma.expenseCategory.findUnique({
-      _where: { id: data.categoryId }
+    const category = await prisma.expenseCategory.findUnique({ where: { id: data.categoryId }
     });
 
     if (!category || !category.isActive) {
@@ -349,8 +333,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
 
     // Validate job sheet if provided
     if (data.jobSheetId) {
-      const jobSheet = await prisma.jobSheet.findUnique({
-        _where: { id: data.jobSheetId }
+      const jobSheet = await prisma.jobSheet.findUnique({ where: { id: data.jobSheetId }
       });
 
       if (!jobSheet) {
@@ -367,9 +350,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
       _expenseDate: new Date(data.expenseDate)
     };
 
-    const expense = await prisma.expense.create({
-      _data: expenseData,
-      _include: {
+    const expense = await prisma.expense.create({ data: expenseData, include: {
         category: {
           select: {
             name: true,
@@ -394,9 +375,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
         if (firstReceiptFile) {
           const receiptText = await ReceiptOCRService.extractText(firstReceiptFile);
           
-          await prisma.expense.update({
-            _where: { id: expense.id },
-            _data: {
+          await prisma.expense.update({ where: { id: expense.id }, data: {
               receiptText: receiptText.text,
               _receiptUrl: firstReceiptFile
             }
@@ -410,8 +389,7 @@ async function createExpense(request: FastifyRequest, reply: FastifyReply) {
     request.log.info({ _expenseId: expense.id }, 'Expense created');
 
     return (reply as FastifyReply).status(201).send({
-      _success: true,
-      _data: expense,
+      _success: true, data: expense,
       _message: 'Expense created successfully'
     });
   } catch (error) {
@@ -447,9 +425,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
       });
     }
 
-    const expense = await prisma.expense.findUnique({
-      _where: { id },
-      _include: {
+    const expense = await prisma.expense.findUnique({ where: { id }, include: {
         submitter: {
           select: {
             firstName: true,
@@ -488,10 +464,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
       (updateData as any).reimbursementAmount = data.reimbursementAmount;
     }
 
-    const updatedExpense = await prisma.expense.update({
-      _where: { id },
-      _data: updateData,
-      _include: {
+    const updatedExpense = await prisma.expense.update({ where: { id }, data: updateData, include: {
         submitter: {
           select: {
             firstName: true,
@@ -522,8 +495,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
     }, 'Expense approval processed');
 
     return (reply as any).send({
-      _success: true,
-      _data: updatedExpense,
+      _success: true, data: updatedExpense,
       _message: `Expense ${data.action === 'approve' ? 'approved' : 'rejected'} successfully`
     });
   } catch (error) {
@@ -578,30 +550,24 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
     }
 
     const [totalStats, statusStats, categoryStats, monthlyStats] = await Promise.all([
-      prisma.expense.aggregate({
-        _where: whereClause,
+      prisma.expense.aggregate({ where: whereClause,
         _sum: { amount: true, _taxAmount: true, _reimbursementAmount: true },
         _count: { all: true },
         _avg: { amount: true }
       }),
       prisma.expense.groupBy({
-        _by: ['status'],
-        _where: whereClause,
+        _by: ['status'], where: whereClause,
         _sum: { amount: true },
         _count: { all: true }
       }),
       prisma.expense.groupBy({
-        _by: ['categoryId'],
-        _where: whereClause,
+        _by: ['categoryId'], where: whereClause,
         _sum: { amount: true },
-        _count: { all: true },
-        _orderBy: { _sum: { amount: 'desc' } },
-        _take: 10
+        _count: { all: true }, orderBy: { _sum: { amount: 'desc' } }, take: 10
       }),
       // Monthly breakdown for the period
       prisma.expense.groupBy({
-        _by: ['expenseDate'],
-        _where: whereClause,
+        _by: ['expenseDate'], where: whereClause,
         _sum: { amount: true },
         _count: { all: true }
       })
@@ -609,9 +575,7 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
 
     // Get category names for category stats
     const categoryIds = categoryStats.map((_stat: unknown) => stat.categoryId);
-    const categories = await prisma.expenseCategory.findMany({
-      _where: { id: { in: categoryIds } },
-      _select: { id: true, _name: true }
+    const categories = await prisma.expenseCategory.findMany({ where: { id: { in: categoryIds } }, select: { id: true, _name: true }
     });
 
     const categoryStatsWithNames = categoryStats.map((_stat: unknown) => ({
@@ -631,8 +595,7 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
     }, {} as Record<string, { _amount: number; count: number }>);
 
     return (reply as any).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         period,
         _totals: {
           amount: totalStats.sum.amount || 0,

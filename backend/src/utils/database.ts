@@ -6,15 +6,22 @@
  * Provides database connection management and type-safe database operations.
  */
 
-import { PrismaClient } from '@prisma/client';
+// Try to import real Prisma client, fallback to mock if not available
+let PrismaClient: any;
+let prisma: any;
+
+try {
+  ({ PrismaClient } = require('@prisma/client'));
+} catch (error) {
+  console.warn('Prisma client not available, using mock client for development');
+  ({ PrismaClient } = require('./mock-prisma'));
+}
 
 // Global Prisma instance for production use
 declare global {
   // eslint-disable-next-line no-var
-  var cachedPrisma: PrismaClient;
+  var cachedPrisma: any;
 }
-
-let prisma: PrismaClient;
 
 // Singleton pattern for Prisma client to prevent connection issues in serverless environments
 if (process.env.NODE_ENV === 'production') {

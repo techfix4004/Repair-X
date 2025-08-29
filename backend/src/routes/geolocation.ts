@@ -46,8 +46,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        _success: true,
-        _data: mockAddress
+        _success: true, data: mockAddress
       });
     } catch (error) {
       console.error('Reverse geocoding _error:', error);
@@ -93,8 +92,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const nearestArea = availableAreas.length > 0 ? availableAreas[0] : null;
 
       (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           isServiceable,
           _serviceAreas: availableAreas,
           nearestArea,
@@ -141,8 +139,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       ];
 
       (reply as any).send({
-        success: true,
-        _data: {
+        success: true, data: {
           technicians: mockTechnicians,
           _searchRadius: radiusKm,
           _coordinates: { latitude, longitude },
@@ -179,8 +176,7 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       const estimatedMinutes = Math.round(distance * baseTime);
 
       (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           distanceKm: Math.round(distance * 10) / 10,
           _estimatedTravelTimeMinutes: estimatedMinutes,
           mode,

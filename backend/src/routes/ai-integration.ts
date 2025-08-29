@@ -124,8 +124,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       
       return reply.status(200).send({
         _success: true,
-        _message: 'Optimal technician assigned successfully',
-        _data: assignmentResult,
+        _message: 'Optimal technician assigned successfully', data: assignmentResult,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -144,8 +143,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       const analytics = await jobAssignmentService.getAssignmentAnalytics();
       
       return reply.send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (error: unknown) {
       return reply.status(500).send({
@@ -176,8 +174,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        _message: 'Repair time prediction generated',
-        _data: prediction,
+        _message: 'Repair time prediction generated', data: prediction,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -206,8 +203,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        _message: 'Parts failure prediction generated',
-        _data: prediction,
+        _message: 'Parts failure prediction generated', data: prediction,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -232,8 +228,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        _message: 'Service demand forecast generated',
-        _data: forecast,
+        _message: 'Service demand forecast generated', data: forecast,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -262,8 +257,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        _message: 'Job quality prediction generated',
-        _data: prediction,
+        _message: 'Job quality prediction generated', data: prediction,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -288,8 +282,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        _message: 'Cost optimization analysis completed',
-        _data: analysis,
+        _message: 'Cost optimization analysis completed', data: analysis,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -308,8 +301,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       const dashboardData = await predictiveAnalyticsService.getPredictiveAnalyticsDashboard();
       
       return reply.send({
-        _success: true,
-        _data: dashboardData,
+        _success: true, data: dashboardData,
       });
     } catch (error: unknown) {
       return reply.status(500).send({
@@ -336,8 +328,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       
       return reply.send({
         _success: true,
-        _message: 'Optimal pricing generated',
-        _data: pricingResponse,
+        _message: 'Optimal pricing generated', data: pricingResponse,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -356,8 +347,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       const performance = await pricingOptimizationService.analyzePricingPerformance();
       
       return reply.send({
-        _success: true,
-        _data: performance,
+        _success: true, data: performance,
       });
     } catch (error: unknown) {
       return reply.status(500).send({
@@ -380,8 +370,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       const insights = await pricingOptimizationService.getMarketInsights(region, serviceCategory);
       
       return reply.send({
-        _success: true,
-        _data: insights,
+        _success: true, data: insights,
       });
     } catch (error: unknown) {
       return reply.status(500).send({
@@ -431,8 +420,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       };
 
       return reply.send({
-        _success: true,
-        _data: aiDashboard,
+        _success: true, data: aiDashboard,
       });
     } catch (error: unknown) {
       return reply.status(500).send({
@@ -489,8 +477,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       };
 
       return reply.send({
-        _success: true,
-        _data: modelPerformance,
+        _success: true, data: modelPerformance,
       });
     } catch (error: unknown) {
       return reply.status(500).send({
@@ -522,8 +509,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
 
       return reply.status(202).send({
         _success: true,
-        _message: 'Model retraining initiated',
-        _data: retrainingResult,
+        _message: 'Model retraining initiated', data: retrainingResult,
       });
     } catch (error: unknown) {
       return reply.status(400).send({
@@ -578,8 +564,7 @@ export async function aiIntegrationRoutes(fastify: FastifyInstance): Promise<voi
       };
 
       return reply.send({
-        _success: true,
-        _data: aiConfig,
+        _success: true, data: aiConfig,
       });
     } catch (error: unknown) {
       return reply.status(500).send({

@@ -261,8 +261,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       ];
 
       (reply as any).send({
-        success: true,
-        _data: {
+        success: true, data: {
           locations,
           _total: locations.length,
           _summary: {
@@ -328,8 +327,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: location
+        success: true, data: location
       });
     } catch (error) {
       reply.status(500).send({
@@ -376,8 +374,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: newLocation,
+        success: true, data: newLocation,
         _message: 'Franchise location created successfully'
       });
     } catch (error) {
@@ -440,8 +437,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        _success: true,
-        _data: dashboard
+        _success: true, data: dashboard
       });
     } catch (error) {
       reply.status(500).send({
@@ -513,8 +509,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       ];
 
       (reply as any).send({
-        success: true,
-        _data: {
+        success: true, data: {
           agreements,
           _summary: {
             _active: agreements.filter((a: unknown) => a.status === 'active').length,
@@ -611,8 +606,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: complianceData
+        success: true, data: complianceData
       });
     } catch (error) {
       reply.status(500).send({
@@ -691,8 +685,7 @@ export async function franchiseManagementRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        _success: true,
-        _data: territoryAnalysis
+        _success: true, data: territoryAnalysis
       });
     } catch (error) {
       reply.status(500).send({

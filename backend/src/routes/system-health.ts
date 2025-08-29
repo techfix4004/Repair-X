@@ -42,8 +42,7 @@ export async function systemHealthRoutes(_fastify: FastifyInstance) {
                       healthCheck.status === 'degraded' ? 200 : 503;
     
     (reply as any).code(statusCode).send({
-      _success: true,
-      _data: healthCheck
+      _success: true, data: healthCheck
     });
   });
 
@@ -75,8 +74,7 @@ export async function systemHealthRoutes(_fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: detailedStatus
+        success: true, data: detailedStatus
       });
     } catch (error) {
       (reply as any).code(500).send({

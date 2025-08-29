@@ -19,8 +19,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
       const recommendations = await biService.intelligentJobAssignment(_jobId);
       
       return {
-        _success: true,
-        _data: recommendations,
+        _success: true, data: recommendations,
         _timestamp: new Date().toISOString(),
       };
     } catch (_error: unknown) {
@@ -50,8 +49,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
       );
       
       return {
-        _success: true,
-        _data: prediction,
+        _success: true, data: prediction,
         _timestamp: new Date().toISOString(),
       };
     } catch (_error: unknown) {
@@ -99,8 +97,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
       });
       
       return {
-        _success: true,
-        _data: {
+        _success: true, data: {
           ...dashboard,
           _dateRange: {
             start: start.toISOString(),
@@ -153,8 +150,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
       };
       
       return {
-        _success: true,
-        _data: realtimeMetrics,
+        _success: true, data: realtimeMetrics,
         _lastUpdated: new Date().toISOString(),
       };
     } catch (_error: unknown) {
@@ -219,8 +215,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
       };
       
       return {
-        _success: true,
-        _data: enhancedAnalytics,
+        _success: true, data: enhancedAnalytics,
         period,
         _generatedAt: new Date().toISOString(),
       };
@@ -282,8 +277,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
       };
       
       return {
-        _success: true,
-        _data: customerAnalytics,
+        _success: true, data: customerAnalytics,
         segment,
         period,
         _generatedAt: new Date().toISOString(),
@@ -357,8 +351,7 @@ export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Pro
       };
       
       return {
-        _success: true,
-        _data: optimizations,
+        _success: true, data: optimizations,
         _generatedAt: new Date().toISOString(),
       };
     } catch (_error: unknown) {

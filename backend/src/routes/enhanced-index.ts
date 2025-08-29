@@ -11,8 +11,7 @@ export async function enhancedRoutes(fastify: FastifyInstance) {
   // Health check for enhanced features
   fastify.get('/api/v1/enhanced/status', async (request, reply: unknown) => {
     return (reply as any).code(200).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         status: 'operational',
         _features: [
           'Advanced Job Management',

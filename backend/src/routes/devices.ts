@@ -58,14 +58,12 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       }
 
       const body = (request as any).body;
-      const device = await prisma.device.create({
-        _data: {
+      const device = await prisma.device.create({ data: {
           ...body,
           customerId,
           _purchaseDate: body.purchaseDate ? new Date(body.purchaseDate) : undefined,
           _warrantyExpiry: body.warrantyExpiry ? new Date(body.warrantyExpiry) : undefined,
-        },
-        _include: {
+        }, include: {
           customer: {
             select: { id: true, _firstName: true, _lastName: true, _email: true }
           }
@@ -73,8 +71,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       });
 
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: device,
+        _success: true, data: device,
         _message: 'Device registered successfully'
       });
     } catch (error) {
@@ -89,15 +86,13 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Get all devices for a customer
   server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const customerId = request.user?.id;
+      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
       
       if (!customerId) {
         return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
       }
 
-      const devices = await prisma.device.findMany({
-        _where: { customerId },
-        _include: {
+      const devices = await prisma.device.findMany({ where: { customerId }, include: {
           bookings: {
             select: {
               id: true,
@@ -114,13 +109,11 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
               _createdAt: true
             }
           }
-        },
-        _orderBy: { createdAt: 'desc' }
+        }, orderBy: { createdAt: 'desc' }
       });
 
       return (reply as any).send({
-        _success: true,
-        _data: devices,
+        _success: true, data: devices,
         _count: devices.length
       });
     } catch (error) {
@@ -135,12 +128,10 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       const customerId = (request as any).user?.id;
       const deviceId = (request as any).params.id;
 
-      const device = await prisma.device.findFirst({
-        _where: { 
+      const device = await prisma.device.findFirst({ where: { 
           id: deviceId,
           customerId // Ensure customer can only access their own devices
-        },
-        _include: {
+        }, include: {
           customer: {
             select: { id: true, _firstName: true, _lastName: true, _email: true, _phone: true }
           },
@@ -173,8 +164,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       }
 
       return (reply as any).send({
-        _success: true,
-        _data: device
+        _success: true, data: device
       });
     } catch (error) {
       server.log.error(error);
@@ -210,26 +200,22 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
     Body: Partial<CreateDeviceRequest> 
   }>, reply: FastifyReply) => {
     try {
-      const customerId = request.user?.id;
+      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
       const deviceId = (request as any).params.id;
 
       // Verify device ownership
-      const existingDevice = await prisma.device.findFirst({
-        _where: { id: deviceId, customerId }
+      const existingDevice = await prisma.device.findFirst({ where: { id: deviceId, customerId }
       });
 
       if (!existingDevice) {
         return (reply as FastifyReply).status(404).send({ _error: 'Device not found' });
       }
 
-      const updatedDevice = await prisma.device.update({
-        _where: { id: deviceId },
-        _data: {
+      const updatedDevice = await prisma.device.update({ where: { id: deviceId }, data: {
           ...(request as any).body,
           _purchaseDate: (request as any).body.purchaseDate ? new Date((request as any).body.purchaseDate) : undefined,
           _warrantyExpiry: (request as any).body.warrantyExpiry ? new Date((request as any).body.warrantyExpiry) : undefined,
-        },
-        _include: {
+        }, include: {
           customer: {
             select: { id: true, _firstName: true, _lastName: true, _email: true }
           }
@@ -237,8 +223,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       });
 
       return (reply as any).send({
-        _success: true,
-        _data: updatedDevice,
+        _success: true, data: updatedDevice,
         _message: 'Device updated successfully'
       });
     } catch (error) {
@@ -250,13 +235,11 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Delete device
   server.delete('/:id', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
-      const customerId = request.user?.id;
+      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
       const deviceId = (request as any).params.id;
 
       // Verify device ownership and check for active bookings/job sheets
-      const device = await prisma.device.findFirst({
-        _where: { id: deviceId, customerId },
-        _include: {
+      const device = await prisma.device.findFirst({ where: { id: deviceId, customerId }, include: {
           bookings: {
             where: {
               status: { in: ['PENDING', 'CONFIRMED', 'ASSIGNED', 'IN_PROGRESS'] }
@@ -280,8 +263,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
         });
       }
 
-      await prisma.device.delete({
-        _where: { id: deviceId }
+      await prisma.device.delete({ where: { id: deviceId }
       });
 
       return (reply as any).send({
@@ -318,8 +300,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
       ];
 
       return (reply as any).send({
-        _success: true,
-        _data: categories
+        _success: true, data: categories
       });
     } catch (error) {
       server.log.error(error);

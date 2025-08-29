@@ -48,8 +48,7 @@ export async function businessRoutes(_fastify: FastifyInstance) {
     const settings = businessSettings.filter((_s: unknown) => s.category === category);
     
     return (reply as any).code(200).send({
-      _success: true,
-      _data: settings
+      _success: true, data: settings
     });
   });
 
@@ -86,8 +85,7 @@ export async function businessRoutes(_fastify: FastifyInstance) {
     };
     
     return (reply as any).code(200).send({
-      _success: true,
-      _data: businessSettings[settingIndex]
+      _success: true, data: businessSettings[settingIndex]
     });
   });
 
@@ -102,8 +100,7 @@ export async function businessRoutes(_fastify: FastifyInstance) {
     ];
     
     return (reply as any).code(200).send({
-      _success: true,
-      _data: categories
+      _success: true, data: categories
     });
   });
 
@@ -137,8 +134,7 @@ export async function businessRoutes(_fastify: FastifyInstance) {
     };
     
     return (reply as any).code(200).send({
-      _success: true,
-      _data: metrics
+      _success: true, data: metrics
     });
   });
 }

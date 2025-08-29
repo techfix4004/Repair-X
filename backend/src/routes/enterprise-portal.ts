@@ -461,8 +461,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const customers = await enterpriseService.getAllEnterpriseCustomers(filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: customers,
+        _success: true, data: customers,
         _count: customers.length,
       });
     } catch (_error: unknown) {
@@ -489,8 +488,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: customer,
+        _success: true, data: customer,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -509,8 +507,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const customer = await enterpriseService.createEnterpriseCustomer(customerData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: customer,
+        _success: true, data: customer,
         _message: 'Enterprise customer created successfully',
       });
     } catch (_error: unknown) {
@@ -531,8 +528,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const branches = await enterpriseService.getCustomerBranches(customerId);
       
       return (reply as any).send({
-        _success: true,
-        _data: branches,
+        _success: true, data: branches,
         _count: branches.length,
       });
     } catch (_error: unknown) {
@@ -554,8 +550,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const branch = await enterpriseService.createBranch(branchData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: branch,
+        _success: true, data: branch,
         _message: 'Branch created successfully',
       });
     } catch (_error: unknown) {
@@ -578,8 +573,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const tickets = await enterpriseService.getCustomerTickets(customerId, filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: tickets,
+        _success: true, data: tickets,
         _count: tickets.length,
       });
     } catch (_error: unknown) {
@@ -601,8 +595,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const ticket = await enterpriseService.createTicket(ticketData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: ticket,
+        _success: true, data: ticket,
         _message: 'Ticket created successfully',
       });
     } catch (_error: unknown) {
@@ -625,8 +618,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const ticket = await enterpriseService.updateTicket(ticketId, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: ticket,
+        _success: true, data: ticket,
         _message: 'Ticket updated successfully',
       });
     } catch (_error: unknown) {
@@ -648,8 +640,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const analytics = await enterpriseService.getCustomerAnalytics(customerId);
       
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (_error: unknown) {
       const status = error.message === 'Customer not found' ? _404 : 500;
@@ -669,8 +660,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
       const dashboard = await enterpriseService.getPortalDashboard(customerId);
       
       return (reply as any).send({
-        _success: true,
-        _data: dashboard,
+        _success: true, data: dashboard,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -693,8 +683,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: businessTypes,
+      _success: true, data: businessTypes,
     });
   });
 
@@ -724,8 +713,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: slaLevels,
+      _success: true, data: slaLevels,
     });
   });
 }

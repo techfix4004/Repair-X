@@ -60,8 +60,7 @@ export async function qualityAssuranceRoutes(fastify: FastifyInstance) {
     };
 
     return (reply as any).code(200).send({
-      _success: true,
-      _data: dashboard
+      _success: true, data: dashboard
     });
   });
 
@@ -90,8 +89,7 @@ export async function qualityAssuranceRoutes(fastify: FastifyInstance) {
     };
 
     return (reply as any).code(200).send({
-      _success: true,
-      _data: realtime
+      _success: true, data: realtime
     });
   });
 
@@ -127,8 +125,7 @@ export async function qualityAssuranceRoutes(fastify: FastifyInstance) {
     };
 
     return (reply as any).code(200).send({
-      _success: true,
-      _data: recommendations
+      _success: true, data: recommendations
     });
   });
 }

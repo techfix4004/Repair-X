@@ -76,9 +76,7 @@ class SmsService {
 // Route handlers
 async function getSmsAccounts(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const accounts = await prisma.smsAccount.findMany({
-      _where: { isActive: true },
-      _select: {
+    const accounts = await prisma.smsAccount.findMany({ where: { isActive: true }, select: {
         id: true,
         _providerName: true,
         _fromNumber: true,
@@ -90,16 +88,14 @@ async function getSmsAccounts(request: FastifyRequest, reply: FastifyReply) {
         _createdAt: true,
         _updatedAt: true,
         // Exclude sensitive fields like authToken
-      },
-      _orderBy: [
+      }, orderBy: [
         { isPrimary: 'desc' },
         { _createdAt: 'desc' }
       ]
     });
 
     return (reply as any).send({
-      _success: true,
-      _data: accounts,
+      _success: true, data: accounts,
       _count: accounts.length
     });
   } catch (error) {
@@ -118,16 +114,13 @@ async function createSmsAccount(request: FastifyRequest, reply: FastifyReply) {
 
     // If setting as primary, unset other primary accounts
     if (data.isPrimary) {
-      await prisma.smsAccount.updateMany({
-        _where: { isPrimary: true },
-        _data: { isPrimary: false }
+      await prisma.smsAccount.updateMany({ where: { isPrimary: true }, data: { isPrimary: false }
       });
     }
 
     // _TODO: Encrypt authToken before storing
     const account = await prisma.smsAccount.create({
-      data,
-      _select: {
+      data, select: {
         id: true,
         _providerName: true,
         _fromNumber: true,
@@ -140,8 +133,7 @@ async function createSmsAccount(request: FastifyRequest, reply: FastifyReply) {
     request.log.info({ _accountId: account.id }, 'SMS account created');
 
     return (reply as FastifyReply).status(201).send({
-      _success: true,
-      _data: account,
+      _success: true, data: account,
       _message: 'SMS account created successfully'
     });
   } catch (error) {
@@ -169,15 +161,13 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
     const data = sendSmsSchema.parse((request as any).body);
 
     // Get primary SMS account or first active account
-    const account = await prisma.smsAccount.findFirst({
-      _where: { 
+    const account = await prisma.smsAccount.findFirst({ where: { 
         isActive: true,
         _OR: [
           { isPrimary: true },
           { _isPrimary: false }
         ]
-      },
-      _orderBy: { isPrimary: 'desc' }
+      }, orderBy: { isPrimary: 'desc' }
     });
 
     if (!account) {
@@ -195,8 +185,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
     }
 
     // Create SMS message record
-    const smsMessage = await prisma.smsMessage.create({
-      _data: {
+    const smsMessage = await prisma.smsMessage.create({ data: {
         accountId: account.id,
         _toNumber: data.toNumber,
         _fromNumber: account.fromNumber,
@@ -214,9 +203,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
 
       if (result.success) {
         // Update message with success details
-        await prisma.smsMessage.update({
-          _where: { id: smsMessage.id },
-          _data: {
+        await prisma.smsMessage.update({ where: { id: smsMessage.id }, data: {
             status: 'SENT',
             _externalId: result.externalId,
             _cost: result.cost
@@ -224,9 +211,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
         });
 
         // Deduct credit and update account
-        await prisma.smsAccount.update({
-          _where: { id: account.id },
-          _data: {
+        await prisma.smsAccount.update({ where: { id: account.id }, data: {
             creditsRemaining: { decrement: 1 },
             _creditsUsed: { increment: 1 }
           }
@@ -239,8 +224,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
         }
 
         return (reply as any).send({
-          _success: true,
-          _data: {
+          _success: true, data: {
             messageId: smsMessage.id,
             _externalId: result.externalId,
             _status: 'SENT',
@@ -250,9 +234,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
         });
       } else {
         // Update message with failure details
-        await prisma.smsMessage.update({
-          _where: { id: smsMessage.id },
-          _data: {
+        await prisma.smsMessage.update({ where: { id: smsMessage.id }, data: {
             status: 'FAILED',
             _failedAt: new Date(),
             _errorMessage: result.error
@@ -267,9 +249,7 @@ async function sendSms(request: FastifyRequest, reply: FastifyReply) {
       }
     } catch (providerError) {
       // Update message with failure
-      await prisma.smsMessage.update({
-        _where: { id: smsMessage.id },
-        _data: {
+      await prisma.smsMessage.update({ where: { id: smsMessage.id }, data: {
           status: 'FAILED',
           _failedAt: new Date(),
           _errorMessage: `Provider error: ${  String(providerError)}`
@@ -317,9 +297,7 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
     }
 
     const [messages, total] = await Promise.all([
-      prisma.smsMessage.findMany({
-        _where: whereClause,
-        _include: {
+      prisma.smsMessage.findMany({ where: whereClause, include: {
           account: {
             select: {
               providerName: true,
@@ -345,17 +323,14 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
               _email: true
             }
           }
-        },
-        _orderBy: { createdAt: 'desc' },
-        skip,
-        _take: limit
+        }, orderBy: { createdAt: 'desc' },
+        skip, take: limit
       }),
-      prisma.smsMessage.count({ _where: whereClause })
+      prisma.smsMessage.count({ where: whereClause })
     ]);
 
     return (reply as any).send({
-      _success: true,
-      _data: messages,
+      _success: true, data: messages,
       _pagination: {
         page,
         limit,
@@ -396,29 +371,24 @@ async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
     }
 
     const [totalMessages, statusStats, accountStats, totalCost] = await Promise.all([
-      prisma.smsMessage.count({
-        _where: {
+      prisma.smsMessage.count({ where: {
           createdAt: { gte: startDate }
         }
       }),
       prisma.smsMessage.groupBy({
-        _by: ['status'],
-        _where: {
+        _by: ['status'], where: {
           createdAt: { gte: startDate }
         },
         _count: { all: true }
       }),
-      prisma.smsAccount.findMany({
-        _where: { isActive: true },
-        _select: {
+      prisma.smsAccount.findMany({ where: { isActive: true }, select: {
           id: true,
           _providerName: true,
           _creditsRemaining: true,
           _creditsUsed: true
         }
       }),
-      prisma.smsMessage.aggregate({
-        _where: {
+      prisma.smsMessage.aggregate({ where: {
           createdAt: { gte: startDate },
           _cost: { not: null }
         },
@@ -435,8 +405,7 @@ async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
     const totalCreditsUsed = accountStats.reduce((_sum: number, _account: unknown) => sum + account.creditsUsed, 0);
 
     return (reply as any).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         period,
         totalMessages,
         statusBreakdown,

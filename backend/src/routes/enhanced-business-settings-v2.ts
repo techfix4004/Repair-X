@@ -412,8 +412,7 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       const settings = await settingsService.getSettings(category, tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: settings,
+        _success: true, data: settings,
         _metadata: {
           categories: [
             'tax_settings', 'print_settings', 'workflow_config', 'email_settings', 
@@ -446,8 +445,7 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       
       return (reply as any).send({
         _success: true,
-        _message: `${category} settings updated successfully`,
-        _data: await settingsService.getSettings(category, tenantId)
+        _message: `${category} settings updated successfully`, data: await settingsService.getSettings(category, tenantId)
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -467,8 +465,7 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       const validation = await settingsService.validateGSTIN(gstin);
       
       return (reply as any).send({
-        _success: true,
-        _data: validation
+        _success: true, data: validation
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -488,8 +485,7 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
       const calculation = await settingsService.calculateTax(amount, jurisdiction);
       
       return (reply as any).send({
-        _success: true,
-        _data: calculation
+        _success: true, data: calculation
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -563,8 +559,7 @@ export async function enhancedBusinessSettingsRoutes(server: FastifyInstance): P
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: categories,
+      _success: true, data: categories,
       _total: categories.length
     });
   });

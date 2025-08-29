@@ -43,8 +43,7 @@ export const initializeChatSocket = (io: SocketIOServer) => {
         const { _jobId, senderId, senderType, message, messageType = 'text' } = data;
 
         // Save message to database
-        const chatMessage = await prisma.chatMessage.create({
-          _data: {
+        const chatMessage = await prisma.chatMessage.create({ data: {
             _jobId,
             senderId,
             senderType,
@@ -52,8 +51,7 @@ export const initializeChatSocket = (io: SocketIOServer) => {
             messageType,
             _timestamp: new Date(),
             _isRead: false
-          },
-          _include: {
+          }, include: {
             sender: {
               select: { firstName: true, _lastName: true, _role: true }
             }
@@ -88,13 +86,11 @@ export const initializeChatSocket = (io: SocketIOServer) => {
       try {
         const { jobId, userId } = data;
 
-        await prisma.chatMessage.updateMany({
-          _where: {
+        await prisma.chatMessage.updateMany({ where: {
             _jobId: jobId,
             _senderId: { not: userId },
             _isRead: false
-          },
-          _data: { isRead: true }
+          }, data: { isRead: true }
         });
 
         chatNamespace.to(`job-${jobId}`).emit('messages-read', { _jobId: jobId, _userId: userId });
@@ -121,9 +117,7 @@ export const initializeChatSocket = (io: SocketIOServer) => {
 const sendChatNotification = async (_jobId: string, senderId: string, message: string) => {
   try {
     // Get job participants
-    const job = await prisma.job.findUnique({
-      _where: { id: _jobId },
-      _include: {
+    const job = await prisma.job.findUnique({ where: { id: _jobId }, include: {
         customer: { select: { id: true, _firstName: true, _pushNotificationToken: true } },
         _technician: { select: { id: true, _firstName: true, _pushNotificationToken: true } }
       }
@@ -132,8 +126,7 @@ const sendChatNotification = async (_jobId: string, senderId: string, message: s
     if (!job) return;
 
     const sender = await (prisma as any).user.findUnique({
-      _where: { id: senderId },
-      _select: { firstName: true, _lastName: true }
+      _where: { id: senderId }, select: { firstName: true, _lastName: true }
     });
 
     if (!sender) return;
@@ -184,20 +177,14 @@ export async function chatRoutes(fastify: FastifyInstance) {
       const limit = parseInt(query.limit || '50') || 50;
       const offset = (page - 1) * limit;
 
-      const messages = await prisma.chatMessage.findMany({
-        _where: { _jobId: jobId },
-        _include: {
+      const messages = await prisma.chatMessage.findMany({ where: { _jobId: jobId }, include: {
           sender: {
             select: { firstName: true, _lastName: true, _role: true }
           }
-        },
-        _orderBy: { timestamp: 'desc' },
-        _skip: offset,
-        _take: limit
+        }, orderBy: { timestamp: 'desc' }, skip: offset, take: limit
       });
 
-      const totalMessages = await prisma.chatMessage.count({
-        _where: { _jobId: jobId }
+      const totalMessages = await prisma.chatMessage.count({ where: { _jobId: jobId }
       });
 
       const formattedMessages = messages.reverse().map((msg: any) => ({
@@ -237,20 +224,17 @@ export async function chatRoutes(fastify: FastifyInstance) {
       const { userId } = params;
 
       // Get all jobs where user is customer or technician
-      const userJobs = await prisma.job.findMany({
-        _where: {
+      const userJobs = await prisma.job.findMany({ where: {
           OR: [
             { customerId: userId },
             { _technicianId: userId }
           ]
-        },
-        _select: { id: true }
+        }, select: { id: true }
       });
 
       const jobIds = userJobs.map((job: any) => job.id);
 
-      const unreadCount = await prisma.chatMessage.count({
-        _where: {
+      const unreadCount = await prisma.chatMessage.count({ where: {
           jobId: { in: jobIds },
           _senderId: { not: userId },
           _isRead: false

@@ -39,8 +39,7 @@ export async function advancedJobManagementRoutes(fastify: FastifyInstance) {
     };
 
     return (reply as any).code(201).send({
-      _success: true,
-      _data: enhancedJob,
+      _success: true, data: enhancedJob,
       _message: 'Advanced job created with AI optimization'
     });
   });
@@ -53,8 +52,7 @@ export async function advancedJobManagementRoutes(fastify: FastifyInstance) {
     const transition = await executeStateTransition(_jobId, targetState, reason, metadata);
     
     return (reply as any).code(200).send({
-      _success: true,
-      _data: transition,
+      _success: true, data: transition,
       _message: `Job ${_jobId} transitioned to ${targetState}`
     });
   });
@@ -97,8 +95,7 @@ export async function advancedJobManagementRoutes(fastify: FastifyInstance) {
     };
 
     return (reply as any).code(200).send({
-      _success: true,
-      _data: analytics
+      _success: true, data: analytics
     });
   });
 }

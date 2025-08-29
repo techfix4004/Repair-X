@@ -3,13 +3,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config';
 import { prisma } from '../utils/database';
-
-export interface AuthenticatedRequest extends FastifyRequest {
-  userId: string;
-  role: string;
-  organizationId?: string;
-  authType: 'SAAS_ADMIN' | 'ORGANIZATION_MEMBER' | 'CUSTOMER';
-}
+import { AuthenticatedUser } from '../types/auth';
 
 // Middleware for tenant isolation and role-based access control
 export async function tenantIsolationMiddleware(server: FastifyInstance): Promise<void> {
@@ -61,9 +55,18 @@ export async function tenantIsolationMiddleware(server: FastifyInstance): Promis
       }
 
       // Set user info on request
-      (request as AuthenticatedRequest).userId = user.id;
-      (request as AuthenticatedRequest).role = user.role;
-      (request as AuthenticatedRequest).authType = decoded.type;
+      request.userId = user.id;
+      // Store authenticated user info in a custom property
+      (request as any).authenticatedUser = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        organizationId: user.organizationId,
+        authType: decoded.type
+      };
+      request.authType = decoded.type;
 
       // Handle SaaS admin access
       if (decoded.type === 'SAAS_ADMIN') {
@@ -74,7 +77,7 @@ export async function tenantIsolationMiddleware(server: FastifyInstance): Promis
           });
         }
         // SaaS admins have platform-wide access
-        (request as AuthenticatedRequest).organizationId = null;
+        request.organizationId = null;
         return;
       }
 
@@ -94,7 +97,7 @@ export async function tenantIsolationMiddleware(server: FastifyInstance): Promis
         });
       }
 
-      (request as AuthenticatedRequest).organizationId = user.organizationId;
+      request.organizationId = user.organizationId;
 
       // Additional validation for customers
       if (user.role === 'CUSTOMER') {
@@ -190,54 +193,53 @@ export async function tenantIsolationMiddleware(server: FastifyInstance): Promis
 // Helper function to check organization access
 export function requireOrganizationAccess(allowedRoles: string[] = []) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
-    const authReq = request as AuthenticatedRequest;
     
-    if (authReq.authType === 'SAAS_ADMIN') {
+    if (request.authType === 'SAAS_ADMIN') {
       return; // SaaS admins have access to all organizations
     }
 
-    if (!authReq.organizationId) {
+    if (!request.organizationId) {
       return reply.code(403).send({ 
         code: 'NO_ORGANIZATION_ACCESS',
         message: 'Organization access required' 
       });
     }
 
-    if (allowedRoles.length > 0 && !allowedRoles.includes(authReq.role)) {
+    if (allowedRoles.length > 0 && !allowedRoles.includes((request as any).authenticatedUser?.role || '')) {
       return reply.code(403).send({ 
         code: 'INSUFFICIENT_ROLE',
-        message: `Role ${authReq.role} not allowed for this operation` 
+        message: `Role ${(request as any).authenticatedUser?.role} not allowed for this operation` 
       });
     }
   };
 }
 
 // Helper function to scope Prisma queries to organization
-export function withOrganizationScope(authReq: AuthenticatedRequest, baseWhere: any = {}) {
-  if (authReq.authType === 'SAAS_ADMIN') {
+export function withOrganizationScope(request: FastifyRequest, baseWhere: any = {}) {
+  if (request.authType === 'SAAS_ADMIN') {
     return baseWhere; // No scoping for SaaS admins
   }
 
   return {
     ...baseWhere,
-    organizationId: authReq.organizationId,
+    organizationId: request.organizationId,
   };
 }
 
 // Helper function to scope customer queries
-export function withCustomerScope(authReq: AuthenticatedRequest, baseWhere: any = {}) {
-  if (authReq.authType === 'SAAS_ADMIN') {
+export function withCustomerScope(request: FastifyRequest, baseWhere: any = {}) {
+  if (request.authType === 'SAAS_ADMIN') {
     return baseWhere; // No scoping for SaaS admins
   }
 
-  if (authReq.role === 'CUSTOMER') {
+  if ((request as any).authenticatedUser?.role === 'CUSTOMER') {
     // Customers can only see their own data
     return {
       ...baseWhere,
-      customerId: authReq.userId,
+      customerId: request.userId,
     };
   }
 
   // Organization members can see all customers in their org
-  return withOrganizationScope(authReq, baseWhere);
+  return withOrganizationScope(request, baseWhere);
 }

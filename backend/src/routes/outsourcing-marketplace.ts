@@ -548,8 +548,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       const providers = await marketplaceService.getAllProviders(tenantId, filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: providers,
+        _success: true, data: providers,
         _count: providers.length,
       });
     } catch (_error: unknown) {
@@ -570,8 +569,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       const provider = await marketplaceService.createProvider(providerData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: provider,
+        _success: true, data: provider,
         _message: 'Service provider created successfully',
       });
     } catch (_error: unknown) {
@@ -599,8 +597,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: provider,
+        _success: true, data: provider,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -623,8 +620,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       const provider = await marketplaceService.updateProvider(providerId, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: provider,
+        _success: true, data: provider,
         _message: 'Service provider updated successfully',
       });
     } catch (_error: unknown) {
@@ -652,8 +648,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       const providers = await marketplaceService.getOptimalProviders(jobRequirements);
       
       return (reply as any).send({
-        _success: true,
-        _data: providers,
+        _success: true, data: providers,
         _count: providers.length,
       });
     } catch (_error: unknown) {
@@ -678,8 +673,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       const assignment = await marketplaceService.assignJobToProvider(_jobId, providerId, assignmentDetails);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: assignment,
+        _success: true, data: assignment,
         _message: 'Job assigned to provider successfully',
       });
     } catch (_error: unknown) {
@@ -704,8 +698,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       const performance = await marketplaceService.getProviderPerformance(providerId, period);
       
       return (reply as any).send({
-        _success: true,
-        _data: performance,
+        _success: true, data: performance,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -722,8 +715,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
       const analytics = await marketplaceService.getMarketplaceAnalytics();
       
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -748,8 +740,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: categories,
+      _success: true, data: categories,
     });
   });
 }

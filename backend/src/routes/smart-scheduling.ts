@@ -24,8 +24,7 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
       }, technicianId);
       
       return {
-        _success: true,
-        _data: optimizedSchedule,
+        _success: true, data: optimizedSchedule,
         _timestamp: new Date().toISOString(),
       };
     } catch (_error: unknown) {
@@ -47,8 +46,7 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
       const assignment = await schedulingService.dynamicJobAssignment(_jobId);
       
       return {
-        _success: true,
-        _data: assignment,
+        _success: true, data: assignment,
         _timestamp: new Date().toISOString(),
       };
     } catch (_error: unknown) {
@@ -72,8 +70,7 @@ export async function smartSchedulingRoutes(fastify: FastifyInstance): Promise<v
       const forecast = await schedulingService.predictCapacityNeeds(period);
       
       return {
-        _success: true,
-        _data: forecast,
+        _success: true, data: forecast,
         _timestamp: new Date().toISOString(),
       };
     } catch (_error: unknown) {

@@ -33,8 +33,7 @@ const TranslationSchema = z.object({
 const TranslationImportSchema = z.object({
   _language: z.string().length(2),
   _namespace: z.string().default('common'),
-  _format: z.enum(['json', 'csv', 'xlsx']).default('json'),
-  _data: z.any(),
+  _format: z.enum(['json', 'csv', 'xlsx']).default('json'), data: z.any(),
   _overwrite: z.boolean().default(false),
 });
 
@@ -612,8 +611,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const languages = await languageService.getAllLanguages(enabled);
       
       return (reply as any).send({
-        _success: true,
-        _data: languages,
+        _success: true, data: languages,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -632,8 +630,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const language = await languageService.createLanguage(languageData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: language,
+        _success: true, data: language,
         _message: 'Language created successfully',
       });
     } catch (_error: unknown) {
@@ -656,8 +653,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const language = await languageService.updateLanguage(code, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: language,
+        _success: true, data: language,
         _message: 'Language updated successfully',
       });
     } catch (_error: unknown) {
@@ -700,8 +696,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const translations = await languageService.getAllTranslations(filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: translations,
+        _success: true, data: translations,
         _count: translations.length,
       });
     } catch (_error: unknown) {
@@ -724,8 +719,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const translations = await languageService.getTranslationsByLanguage(language, namespace);
       
       return (reply as any).send({
-        _success: true,
-        _data: translations,
+        _success: true, data: translations,
         language,
         _namespace: namespace || 'all',
       });
@@ -746,8 +740,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const translation = await languageService.createTranslation(translationData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: translation,
+        _success: true, data: translation,
         _message: 'Translation created successfully',
       });
     } catch (_error: unknown) {
@@ -770,8 +763,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const translation = await languageService.updateTranslation(id, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: translation,
+        _success: true, data: translation,
         _message: 'Translation updated successfully',
       });
     } catch (_error: unknown) {
@@ -793,8 +785,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const result = await languageService.importTranslations(importData);
       
       return (reply as any).send({
-        _success: true,
-        _data: result,
+        _success: true, data: result,
         _message: `Imported ${result.imported} translations`,
       });
     } catch (_error: unknown) {
@@ -823,8 +814,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: exportData,
+        _success: true, data: exportData,
         language,
         _namespace: namespace || 'all',
         format,
@@ -844,8 +834,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const namespaces = await languageService.getNamespaces();
       
       return (reply as any).send({
-        _success: true,
-        _data: namespaces,
+        _success: true, data: namespaces,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -861,8 +850,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const stats = await languageService.getTranslationStats();
       
       return (reply as any).send({
-        _success: true,
-        _data: stats,
+        _success: true, data: stats,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -882,8 +870,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
       const translation = await languageService.translate(key, language, namespace);
       
       return (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           key,
           language,
           namespace,
