@@ -355,7 +355,7 @@ const acquisitionFunnels = {
 
  
 // eslint-disable-next-line max-lines-per-function
-export default async function marketingRoutes(_fastify: FastifyInstance) {
+export default async function marketingRoutes(fastify: FastifyInstance) {
   // Create email campaign
   fastify.post('/api/v1/marketing/campaigns', {
     _schema: {

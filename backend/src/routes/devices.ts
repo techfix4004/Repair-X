@@ -86,7 +86,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Get all devices for a customer
   server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
+      const customerId = request.userId;
       
       if (!customerId) {
         return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
@@ -200,7 +200,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
     Body: Partial<CreateDeviceRequest> 
   }>, reply: FastifyReply) => {
     try {
-      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
+      const customerId = request.userId;
       const deviceId = (request as any).params.id;
 
       // Verify device ownership
@@ -235,7 +235,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Delete device
   server.delete('/:id', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
-      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
+      const customerId = request.userId;
       const deviceId = (request as any).params.id;
 
       // Verify device ownership and check for active bookings/job sheets
