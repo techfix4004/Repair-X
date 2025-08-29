@@ -540,8 +540,8 @@ class BusinessSettingsController implements BusinessSettingsService {
  
 // eslint-disable-next-line max-lines-per-function
 async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
-  const mockPrisma = { _businessSettings: { _findMany: async () => [], _create: async () => ({ _id: '1' }) } };
-  const businessSettings = new BusinessSettingsController(mockPrisma as unknown);
+  // Use real Prisma client for production
+  const businessSettings = new BusinessSettingsController(prisma);
 
   // Category _1: Tax Settings Routes
   fastify.get('/api/v1/business-settings/tax', async (request: FastifyRequest, reply: FastifyReply) => {

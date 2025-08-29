@@ -21,6 +21,7 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
+import { prisma } from '../utils/database';
 
 // Payment gateway configuration
 interface PaymentGatewayConfig {
@@ -330,19 +331,20 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
   const paymentGateway = new PaymentGatewayService();
   const taxService = new TaxCalculationService();
 
-  // Mock database operations
-  const mockDb = {
-    _payments: {
-      _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
-      _findById: async (id: string) => ({ id, _status: 'succeeded', _amount: 10000 }),
-      _update: async (id: string, data: unknown) => ({ id, ...data }),
+  // TODO: Replace with real Prisma operations for production deployment
+  // These operations use simplified database patterns for development
+  const paymentOperations = {
+    payments: {
+      create: async (data: any) => prisma.payment.create({ data }),
+      findById: async (id: string) => prisma.payment.findUnique({ where: { id } }),
+      update: async (id: string, data: any) => prisma.payment.update({ where: { id }, data }),
     },
-    _refunds: {
-      _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
+    refunds: {
+      create: async (data: any) => ({ id: Date.now().toString(), ...data }), // TODO: Implement with real schema
     },
-    _paymentPlans: {
-      _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
-      _findById: async (id: string) => ({ id, _installments: 6, _nextDueDate: new Date() }),
+    paymentPlans: {
+      create: async (data: any) => ({ id: Date.now().toString(), ...data }), // TODO: Implement with real schema
+      findById: async (id: string) => ({ id, installments: 6, nextDueDate: new Date() }), // TODO: Implement with real schema
     }
   };
 
@@ -380,7 +382,8 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       });
 
       // Store payment record
-      await mockDb.payments.create({
+      await prisma.payment.create({
+        data: {
         _paymentIntentId: paymentIntent.id,
         _customerId: (paymentData as any).customerId,
         _amount: finalAmount,
@@ -388,6 +391,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _status: 'pending',
         taxCalculation,
         fraudCheck,
+        }
       });
 
       return {
@@ -417,7 +421,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       );
 
       // Update payment record
-      await mockDb.payments.update((request as any).params.id, {
+      await paymentOperations.payments.update((request as any).params.id, {
         _status: result.status,
         _chargeId: result.chargeId,
         _failureReason: result.failureReason,
@@ -436,7 +440,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       const refundData = refundRequestSchema.parse((request as any).body);
       
       // Get original payment
-      const payment = await mockDb.payments.findById((refundData as any).paymentId);
+      const payment = await paymentOperations.payments.findById((refundData as any).paymentId);
       if (!payment) {
         return (reply as FastifyReply).status(404).send({ _success: false, _error: 'Payment not found' });
       }
@@ -448,7 +452,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       });
 
       // Store refund record
-      await mockDb.refunds.create({
+      await paymentOperations.refunds.create({
         _refundId: refund.id,
         _paymentId: (refundData as any).paymentId,
         _amount: refund.amount,
@@ -503,7 +507,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       const installmentAmount = Math.round(((planData as any).totalAmount / (planData as any).installments) * 100) / 100;
       
       // Create payment plan
-      const paymentPlan = await mockDb.paymentPlans.create({
+      const paymentPlan = await paymentOperations.paymentPlans.create({
         ...planData,
         installmentAmount,
         _status: 'ACTIVE',
@@ -521,7 +525,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
-      const plan = await mockDb._paymentPlans._findById((request as any).params.id);
+      const plan = await paymentOperations._paymentPlans._findById((request as any).params.id);
       if (!plan) {
         return (reply as FastifyReply).status(404).send({ _success: false, _error: 'Payment plan not found' });
       }
