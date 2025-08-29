@@ -55,8 +55,7 @@ server.get('/dashboard', async (request: FastifyRequest, reply: FastifyReply) =>
     };
 
     return (reply as any).send({
-      success: true,
-      _data: dashboardData,
+      success: true, data: dashboardData,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {
@@ -92,8 +91,7 @@ server.get('/customers/:customerId/health', {
     const profile = await customerSuccessService.getCustomerProfile(customerId);
 
     return (reply as any).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         customerId,
         _customerName: profile?.name,
         healthScore,
@@ -163,8 +161,7 @@ server.get('/customers/at-risk', async (request: FastifyRequest, reply: FastifyR
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         customers: atRiskCustomers,
         _total: atRiskCustomers.length,
         _summary: {
@@ -212,8 +209,7 @@ server.post('/interventions', {
     );
 
     return (reply as any).code(201).send({
-      _success: true,
-      _data: intervention,
+      _success: true, data: intervention,
       _message: 'Automated intervention created and initiated successfully'
     });
   } catch (error) {
@@ -262,8 +258,7 @@ server.get('/analytics', async (request: FastifyRequest, reply: FastifyReply) =>
     };
 
     return (reply as any).send({
-      success: true,
-      _data: analytics,
+      success: true, data: analytics,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {

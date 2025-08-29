@@ -1030,8 +1030,7 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
   // Get all business settings categories
   fastify.get('/business-settings/categories', async (request: FastifyRequest, reply: FastifyReply) => {
     return (reply as any).send({
-      _success: true,
-      _data: BUSINESS_SETTINGS_CATEGORIES,
+      _success: true, data: BUSINESS_SETTINGS_CATEGORIES,
       _total: BUSINESS_SETTINGS_CATEGORIES.length,
       _message: '20+ comprehensive business configuration categories loaded successfully',
     });
@@ -1052,8 +1051,7 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
     }
 
     return (reply as any).send({
-      _success: true,
-      _data: category,
+      _success: true, data: category,
     });
   });
 
@@ -1080,8 +1078,7 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
       // In production, save to database
       // For now, return success with validated data
       return (reply as any).send({
-        _success: true,
-        _data: validatedSettings,
+        _success: true, data: validatedSettings,
         _message: `${category.name} settings updated successfully`,
       });
     } catch (error) {
@@ -1108,8 +1105,7 @@ export default async function businessManagementRoutes(_fastify: FastifyInstance
     }));
 
     return (reply as any).send({
-      _success: true,
-      _data: allSettings,
+      _success: true, data: allSettings,
       tenantId,
       _total: allSettings.length,
     });

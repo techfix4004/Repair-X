@@ -335,7 +335,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     _payments: {
       _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
       _findById: async (id: string) => ({ id, _status: 'succeeded', _amount: 10000 }),
-      _update: async (id: string, _data: unknown) => ({ id, ...data }),
+      _update: async (id: string, data: unknown) => ({ id, ...data }),
     },
     _refunds: {
       _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
@@ -391,8 +391,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       });
 
       return {
-        _success: true,
-        _data: {
+        _success: true, data: {
           ...paymentIntent,
           taxCalculation,
           _fraudCheck: {
@@ -425,7 +424,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _confirmedAt: new Date(),
       });
 
-      return { _success: true, _data: result };
+      return { _success: true, data: result };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
@@ -458,7 +457,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _processedAt: new Date(),
       });
 
-      return { _success: true, _data: refund };
+      return { _success: true, data: refund };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
@@ -485,8 +484,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       const taxCalculation = await taxService.calculateTax(amount, jurisdiction, itemType);
 
       return {
-        _success: true,
-        _data: {
+        _success: true, data: {
           ...taxCalculation,
           gstinValidation,
         }
@@ -512,7 +510,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _createdAt: new Date(),
       });
 
-      return { _success: true, _data: paymentPlan };
+      return { _success: true, data: paymentPlan };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({ _success: false, _error: (error as Error).message });
     }
@@ -528,7 +526,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         return (reply as FastifyReply).status(404).send({ _success: false, _error: 'Payment plan not found' });
       }
 
-      return { _success: true, _data: plan };
+      return { _success: true, data: plan };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: (error as Error).message });
     }
@@ -547,7 +545,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _hasConfiguration: !!(gateway.config.publicKey && gateway.config.secretKey),
       }));
 
-      return { _success: true, _data: gateways };
+      return { _success: true, data: gateways };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: (error as Error).message });
     }
@@ -585,7 +583,7 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         }
       };
 
-      return { _success: true, _data: analytics };
+      return { _success: true, data: analytics };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: (error as Error).message });
     }

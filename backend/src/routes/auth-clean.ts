@@ -81,8 +81,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     };
     
     return (reply as any).code(200).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         user: userResponse, token }
     });
   });
@@ -136,8 +135,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     };
     
     return (reply as any).code(201).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         user: userResponse, token }
     });
   });
@@ -175,8 +173,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     };
     
     return (reply as any).code(200).send({
-      _success: true,
-      _data: { user: userResponse }
+      _success: true, data: { user: userResponse }
     });
   });
 }

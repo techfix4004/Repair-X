@@ -266,8 +266,7 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
       const result = await aiService.intelligentJobAssignment(_jobData);
       
       return (reply as any).send({
-        _success: true,
-        _data: result,
+        _success: true, data: result,
         _message: 'AI job assignment completed successfully'
       });
     } catch (error) {
@@ -286,8 +285,7 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
       const prediction = await aiService.predictiveAnalytics(_jobData);
       
       return (reply as any).send({
-        _success: true,
-        _data: prediction,
+        _success: true, data: prediction,
         _message: 'Predictive analysis completed successfully'
       });
     } catch (error) {
@@ -306,8 +304,7 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
       const pricing = await aiService.smartPricingOptimization(_jobData);
       
       return (reply as any).send({
-        _success: true,
-        _data: pricing,
+        _success: true, data: pricing,
         _message: 'Smart pricing analysis completed successfully'
       });
     } catch (error) {
@@ -326,8 +323,7 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
       const prediction = await aiService.qualityPrediction(_jobData, technician);
       
       return (reply as any).send({
-        _success: true,
-        _data: prediction,
+        _success: true, data: prediction,
         _message: 'Quality prediction completed successfully'
       });
     } catch (error) {
@@ -345,8 +341,7 @@ export async function enhancedAIRoutes(fastify: FastifyInstance) {
       const optimization = await aiService.workflowOptimization();
       
       return (reply as any).send({
-        _success: true,
-        _data: optimization,
+        _success: true, data: optimization,
         _message: 'Workflow optimization analysis completed successfully'
       });
     } catch (error) {

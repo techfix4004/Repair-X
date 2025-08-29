@@ -334,8 +334,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
       const settings = await emailService.getEmailSettings(tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: settings,
+        _success: true, data: settings,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -429,8 +428,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: templates,
+        _success: true, data: templates,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -476,8 +474,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
       const stats = await emailService.getEmailDeliveryStats(tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: stats,
+        _success: true, data: stats,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -515,8 +512,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
     };
 
     return (reply as any).send({
-      _success: true,
-      _data: variables,
+      _success: true, data: variables,
     });
   });
 }

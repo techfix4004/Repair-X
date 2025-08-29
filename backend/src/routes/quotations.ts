@@ -121,9 +121,7 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
     }
 
     const [quotations, total] = await Promise.all([
-      prisma.quotation.findMany({
-        _where: whereClause,
-        _include: {
+      prisma.quotation.findMany({ where: whereClause, include: {
           customer: {
             select: {
               id: true,
@@ -159,8 +157,7 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
                   _lastName: true
                 }
               }
-            },
-            _orderBy: { createdAt: 'asc' }
+            }, orderBy: { createdAt: 'asc' }
           },
           _jobSheet: {
             select: {
@@ -174,17 +171,14 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
               revisions: true
             }
           }
-        },
-        _orderBy: { createdAt: 'desc' },
-        skip,
-        _take: limit
+        }, orderBy: { createdAt: 'desc' },
+        skip, take: limit
       }),
-      prisma.quotation.count({ _where: whereClause })
+      prisma.quotation.count({ where: whereClause })
     ]);
 
     return (reply as any).send({
-      _success: true,
-      _data: quotations,
+      _success: true, data: quotations,
       _pagination: {
         page,
         limit,
@@ -208,9 +202,7 @@ async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { id  } = ((request as any).params as unknown);
 
-    const quotation = await prisma.quotation.findUnique({
-      _where: { id },
-      _include: {
+    const quotation = await prisma.quotation.findUnique({ where: { id }, include: {
         customer: {
           select: {
             id: true,
@@ -247,8 +239,7 @@ async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
                 _lastName: true
               }
             }
-          },
-          _orderBy: { createdAt: 'asc' }
+          }, orderBy: { createdAt: 'asc' }
         },
         _revisions: {
           include: {
@@ -258,8 +249,7 @@ async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
                 _lastName: true
               }
             }
-          },
-          _orderBy: { createdAt: 'desc' }
+          }, orderBy: { createdAt: 'desc' }
         },
         _jobSheet: {
           select: {
@@ -280,15 +270,12 @@ async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
 
     // Track customer view
     if (!quotation.customerViewedAt) {
-      await prisma.quotation.update({
-        _where: { id },
-        _data: { customerViewedAt: new Date() }
+      await prisma.quotation.update({ where: { id }, data: { customerViewedAt: new Date() }
       });
     }
 
     return (reply as any).send({
-      _success: true,
-      _data: quotation
+      _success: true, data: quotation
     });
   } catch (error) {
     request.log.error(error);
@@ -316,8 +303,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
 
     // Validate customer exists
     const customer = await (prisma as any).user.findUnique({
-      _where: { id: data.customerId },
-      _select: { id: true, _role: true }
+      _where: { id: data.customerId }, select: { id: true, _role: true }
     });
 
     if (!customer || customer.role !== 'CUSTOMER') {
@@ -329,8 +315,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
 
     // Validate device if provided
     if (data.deviceId) {
-      const device = await prisma.device.findFirst({
-        _where: { 
+      const device = await prisma.device.findFirst({ where: { 
           id: data.deviceId,
           _customerId: data.customerId 
         }
@@ -353,8 +338,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
     // Create quotation with items in a transaction
     const quotation = await prisma.$transaction(async (_tx: unknown) => {
       // Create quotation
-      const newQuotation = await tx.quotation.create({
-        _data: {
+      const newQuotation = await tx.quotation.create({ data: {
           quoteNumber,
           _customerId: data.customerId,
           _deviceId: data.deviceId,
@@ -384,8 +368,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
         _warranty: item.warranty
       }));
 
-      await tx.quotationItem.createMany({
-        _data: itemsWithTotals
+      await tx.quotationItem.createMany({ data: itemsWithTotals
       });
 
       // Create approval requirements if needed
@@ -393,8 +376,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
         const requiredApprovals = await checkApprovalRequirements(totals.totalAmount, _userId);
         
         if (requiredApprovals.length > 0) {
-          await tx.quotationApproval.createMany({
-            _data: requiredApprovals.map((approval: unknown) => ({
+          await tx.quotationApproval.createMany({ data: requiredApprovals.map((approval: unknown) => ({
               _quotationId: newQuotation.id,
               _approverRole: approval.approverRole as unknown,
               _requiredAmount: approval.requiredAmount,
@@ -408,9 +390,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
     });
 
     // Fetch complete quotation with relations
-    const completeQuotation = await prisma.quotation.findUnique({
-      _where: { id: quotation.id },
-      _include: {
+    const completeQuotation = await prisma.quotation.findUnique({ where: { id: quotation.id }, include: {
         customer: {
           select: {
             firstName: true,
@@ -426,8 +406,7 @@ async function createQuotation(request: FastifyRequest, reply: FastifyReply) {
     request.log.info({ _quotationId: quotation.id, quoteNumber }, 'Quotation created');
 
     return (reply as FastifyReply).status(201).send({
-      _success: true,
-      _data: completeQuotation,
+      _success: true, data: completeQuotation,
       _message: 'Quotation created successfully'
     });
   } catch (error) {
@@ -463,9 +442,7 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
       });
     }
 
-    const quotation = await prisma.quotation.findUnique({
-      _where: { id },
-      _include: {
+    const quotation = await prisma.quotation.findUnique({ where: { id }, include: {
         approvals: true,
         _customer: {
           select: {
@@ -504,9 +481,7 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     }
 
     // Process the approval
-    const updatedApproval = await prisma.quotationApproval.update({
-      _where: { id: pendingApproval.id },
-      _data: {
+    const updatedApproval = await prisma.quotationApproval.update({ where: { id: pendingApproval.id }, data: {
         approverId: _userId,
         _status: data.action === 'approve' ? 'APPROVED' : 'REJECTED',
         _comments: data.comments,
@@ -516,9 +491,7 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     });
 
     // Check if all required approvals are complete
-    const updatedQuotation = await prisma.quotation.findUnique({
-      _where: { id },
-      _include: { approvals: true }
+    const updatedQuotation = await prisma.quotation.findUnique({ where: { id }, include: { approvals: true }
     });
 
     const allApprovals = updatedQuotation!.approvals;
@@ -534,16 +507,13 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
 
     // Update quotation status if changed
     if (newStatus !== quotation.status) {
-      await prisma.quotation.update({
-        _where: { id },
-        _data: { status: newStatus }
+      await prisma.quotation.update({ where: { id }, data: { status: newStatus }
       });
     }
 
     // Create revision record if rejected
     if(data.action === 'reject' || data.action === 'request_revision') {
-      await prisma.quotationRevision.create({
-        _data: {
+      await prisma.quotationRevision.create({ data: {
           quotationId: id,
           _revisionNumber: quotation.revisionNumber + 1,
           _changes: {
@@ -564,8 +534,7 @@ async function processQuotationApproval(request: FastifyRequest, reply: FastifyR
     }, 'Quotation approval processed');
 
     return (reply as any).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         approvalId: updatedApproval.id,
         _quotationStatus: newStatus,
         _action: data.action
@@ -597,9 +566,7 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
     const { id  } = ((request as any).params as unknown);
     const data = customerResponseSchema.parse((request as any).body);
 
-    const quotation = await prisma.quotation.findUnique({
-      _where: { id },
-      _include: {
+    const quotation = await prisma.quotation.findUnique({ where: { id }, include: {
         customer: true
       }
     });
@@ -620,9 +587,7 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
 
     // Check if quotation is expired
     if (new Date() > quotation.validUntil) {
-      await prisma.quotation.update({
-        _where: { id },
-        _data: { status: 'EXPIRED' }
+      await prisma.quotation.update({ where: { id }, data: { status: 'EXPIRED' }
       });
 
       return (reply as FastifyReply).status(400).send({
@@ -649,10 +614,7 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
       (updateData as any).revisionNumber = quotation.revisionNumber + 1;
     }
 
-    const updatedQuotation = await prisma.quotation.update({
-      _where: { id },
-      _data: updateData,
-      _include: {
+    const updatedQuotation = await prisma.quotation.update({ where: { id }, data: updateData, include: {
         customer: {
           select: {
             firstName: true,
@@ -666,8 +628,7 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
 
     // Create revision record if requested
     if(data.action === 'request_revision') {
-      await prisma.quotationRevision.create({
-        _data: {
+      await prisma.quotationRevision.create({ data: {
           quotationId: id,
           _revisionNumber: quotation.revisionNumber + 1,
           _changes: {
@@ -687,8 +648,7 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
     }, 'Customer quotation response processed');
 
     return (reply as any).send({
-      _success: true,
-      _data: updatedQuotation,
+      _success: true, data: updatedQuotation,
       _message: `Quotation ${data.action} processed successfully`
     });
   } catch (error) {
@@ -723,9 +683,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
       });
     }
 
-    const quotation = await prisma.quotation.findUnique({
-      _where: { id },
-      _include: {
+    const quotation = await prisma.quotation.findUnique({ where: { id }, include: {
         items: true,
         _device: true,
         _customer: true
@@ -757,8 +715,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
     const result = await prisma.$transaction(async (_tx: unknown) => {
       // First create a booking (required for job sheet)
       // In a real system, this might already exist or be created differently
-      const booking = await tx.booking.create({
-        _data: {
+      const booking = await tx.booking.create({ data: {
           customerId: quotation.customerId,
           _serviceId: 'default-service-id', // This would need proper service mapping
           _addressId: 'default-address-id', // This would need proper address handling
@@ -773,8 +730,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
       const jobNumber = `JS-${Date.now()}`;
 
       // Create job sheet
-      const jobSheet = await tx.jobSheet.create({
-        _data: {
+      const jobSheet = await tx.jobSheet.create({ data: {
           jobNumber,
           _bookingId: booking.id,
           _deviceId: quotation.deviceId!,
@@ -787,9 +743,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
       });
 
       // Update quotation
-      await tx.quotation.update({
-        _where: { id },
-        _data: {
+      await tx.quotation.update({ where: { id }, data: {
           status: 'CONVERTED_TO_JOB',
           _convertedToJobAt: new Date(),
           _jobSheetId: jobSheet.id
@@ -806,8 +760,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
     }, 'Quotation converted to job sheet');
 
     return (reply as any).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         jobSheetId: result.jobSheet.id,
         _jobNumber: result.jobSheet.jobNumber,
         _bookingId: result.booking.id

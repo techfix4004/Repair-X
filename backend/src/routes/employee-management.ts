@@ -365,8 +365,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: employees,
+        _success: true, data: employees,
         _count: employees.length,
       });
     } catch (_error: unknown) {
@@ -394,8 +393,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: employee,
+        _success: true, data: employee,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -415,8 +413,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       const employee = await employeeService.createEmployee(employeeData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: employee,
+        _success: true, data: employee,
         _message: 'Employee created successfully',
       });
     } catch (_error: unknown) {
@@ -440,8 +437,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       const employee = await employeeService.updateEmployee(id, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: employee,
+        _success: true, data: employee,
         _message: 'Employee updated successfully',
       });
     } catch (_error: unknown) {
@@ -488,8 +484,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       const attendance = await employeeService.recordAttendance(attendanceData);
       
       return (reply as any).send({
-        _success: true,
-        _data: attendance,
+        _success: true, data: attendance,
         _message: 'Attendance recorded successfully',
       });
     } catch (_error: unknown) {
@@ -513,8 +508,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       const attendance = await employeeService.getEmployeeAttendance(id, startDate, endDate);
       
       return (reply as any).send({
-        _success: true,
-        _data: attendance,
+        _success: true, data: attendance,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -537,8 +531,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       const review = await employeeService.createPerformanceReview(reviewData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: review,
+        _success: true, data: review,
         _message: 'Performance review created successfully',
       });
     } catch (_error: unknown) {
@@ -559,8 +552,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       const reviews = await employeeService.getEmployeeReviews(id);
       
       return (reply as any).send({
-        _success: true,
-        _data: reviews,
+        _success: true, data: reviews,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -587,8 +579,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: stats,
+        _success: true, data: stats,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -605,8 +596,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
       const stats = await employeeService.getEmployeeStats();
       
       return (reply as any).send({
-        _success: true,
-        _data: stats,
+        _success: true, data: stats,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({

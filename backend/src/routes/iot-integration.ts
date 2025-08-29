@@ -56,8 +56,7 @@ const IoTDataSchema = z.object({
     'ALERT',
     'CALIBRATION_DATA',
     'USAGE_LOG',
-  ]),
-  _data: z.record(z.string(), z.any()),
+  ]), data: z.record(z.string(), z.any()),
   _metadata: z.object({
     jobId: z.string().optional(),
     _technicianId: z.string().optional(),
@@ -224,8 +223,7 @@ class IoTIntegrationService {
         _id: 'data-001',
         _deviceId: 'SCALE-WS-001',
         _timestamp: new Date(now.getTime() - 1800000).toISOString(), // 30 min ago
-        _dataType: 'MEASUREMENT',
-        _data: {
+        _dataType: 'MEASUREMENT', data: {
           weight: 125.3,
           _stability: 'stable',
           _temperature: 22.5,
@@ -242,8 +240,7 @@ class IoTIntegrationService {
         _id: 'data-002',
         _deviceId: 'DIAG-TOOL-001',
         _timestamp: new Date(now.getTime() - 900000).toISOString(), // 15 min ago
-        _dataType: 'DIAGNOSTIC_RESULT',
-        _data: {
+        _dataType: 'DIAGNOSTIC_RESULT', data: {
           battery_health: 87,
           _battery_cycles: 342,
           _screen_test: 'PASS',
@@ -610,8 +607,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
       const devices = await iotService.getAllDevices(filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: devices,
+        _success: true, data: devices,
         _count: devices.length,
       });
     } catch (_error: unknown) {
@@ -638,8 +634,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: device,
+        _success: true, data: device,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -658,8 +653,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
       const device = await iotService.registerDevice(deviceData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: device,
+        _success: true, data: device,
         _message: 'Device registered successfully',
       });
     } catch (_error: unknown) {
@@ -682,8 +676,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
       const device = await iotService.updateDevice(deviceId, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: device,
+        _success: true, data: device,
         _message: 'Device updated successfully',
       });
     } catch (_error: unknown) {
@@ -705,8 +698,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
       const result = await iotService.recordData(dataRecord);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: result,
+        _success: true, data: result,
         _message: 'Data recorded successfully',
       });
     } catch (_error: unknown) {
@@ -756,8 +748,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
       const alerts = await iotService.getAlerts(filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: alerts,
+        _success: true, data: alerts,
         _count: alerts.length,
       });
     } catch (_error: unknown) {
@@ -823,8 +814,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
       const analytics = await iotService.getDeviceAnalytics();
       
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -853,8 +843,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: deviceTypes,
+      _success: true, data: deviceTypes,
     });
   });
 }

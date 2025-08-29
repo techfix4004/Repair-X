@@ -497,8 +497,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
       const job = await lifecycleService.createJobSheet((request as any).body);
       return (reply as FastifyReply).status(201).send({
         _success: true,
-        _message: 'Job sheet created successfully',
-        _data: job,
+        _message: 'Job sheet created successfully', data: job,
       });
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -514,8 +513,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
     try {
       const job = await lifecycleService.getJobSheet((request as any).params.jobId);
       return (reply as any).send({
-        _success: true,
-        _data: job,
+        _success: true, data: job,
       });
     } catch (error: unknown) {
       return (reply as FastifyReply).status(404).send({
@@ -538,8 +536,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
       });
       return (reply as any).send({
         _success: true,
-        _message: 'State transition completed',
-        _data: result,
+        _message: 'State transition completed', data: result,
       });
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -559,8 +556,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
       const job = await lifecycleService.updateJobSheet((request as any).params.jobId, (request as any).body);
       return (reply as any).send({
         _success: true,
-        _message: 'Job sheet updated successfully',
-        _data: job,
+        _message: 'Job sheet updated successfully', data: job,
       });
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -576,8 +572,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
     try {
       const jobs = await lifecycleService.getJobsByState((request as any).params.state);
       return (reply as any).send({
-        _success: true,
-        _data: jobs,
+        _success: true, data: jobs,
         _total: jobs.length,
       });
     } catch (error: unknown) {
@@ -594,8 +589,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
     try {
       const analytics = await lifecycleService.getJobAnalytics();
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -613,8 +607,7 @@ export async function jobSheetLifecycleRoutes(_server: FastifyInstance): Promise
       const visualization = lifecycleService.getWorkflowVisualization();
       
       return (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           stateConfig: config,
           _workflow: visualization,
         },

@@ -432,8 +432,7 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const result = await saasService.createTenant(tenantData);
       
       return (reply as any).send({
-        _success: true,
-        _data: result,
+        _success: true, data: result,
         _message: 'Tenant created successfully'
       });
     } catch (error) {
@@ -452,8 +451,7 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const subscription = await saasService.manageSubscription(tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: subscription,
+        _success: true, data: subscription,
         _message: 'Subscription details retrieved successfully'
       });
     } catch (error) {
@@ -473,8 +471,7 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const security = await saasService.implementEnterpriseSecurity(tenantId, securityConfig);
       
       return (reply as any).send({
-        _success: true,
-        _data: security,
+        _success: true, data: security,
         _message: 'Enterprise security implemented successfully'
       });
     } catch (error) {
@@ -494,8 +491,7 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const result = await saasService.customizeTenant(tenantId, customizations);
       
       return (reply as any).send({
-        _success: true,
-        _data: result,
+        _success: true, data: result,
         _message: 'Tenant customization applied successfully'
       });
     } catch (error) {
@@ -514,8 +510,7 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const analytics = await saasService.generateEnterpriseAnalytics(tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
         _message: 'Enterprise analytics generated successfully'
       });
     } catch (error) {
@@ -534,8 +529,7 @@ export async function enterpriseSaaSRoutes(fastify: FastifyInstance) {
       const infrastructure = await saasService.manageScalableInfrastructure(tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: infrastructure,
+        _success: true, data: infrastructure,
         _message: 'Infrastructure analysis completed successfully'
       });
     } catch (error) {

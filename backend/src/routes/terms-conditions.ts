@@ -645,8 +645,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const documents = await termsService.getAllDocuments(tenantId, filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: documents,
+        _success: true, data: documents,
         _count: documents.length,
       });
     } catch (_error: unknown) {
@@ -667,8 +666,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const document = await termsService.createDocument(documentData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: document,
+        _success: true, data: document,
         _message: 'Legal document created successfully',
       });
     } catch (_error: unknown) {
@@ -696,8 +694,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: document,
+        _success: true, data: document,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -720,8 +717,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const document = await termsService.updateDocument(documentId, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: document,
+        _success: true, data: document,
         _message: 'Legal document updated successfully',
       });
     } catch (_error: unknown) {
@@ -746,8 +742,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const document = await termsService.publishDocument(documentId, approvedBy);
       
       return (reply as any).send({
-        _success: true,
-        _data: document,
+        _success: true, data: document,
         _message: 'Document published successfully',
       });
     } catch (_error: unknown) {
@@ -768,8 +763,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const acceptance = await termsService.recordAcceptance(acceptanceData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: acceptance,
+        _success: true, data: acceptance,
         _message: 'Acceptance recorded successfully',
       });
     } catch (_error: unknown) {
@@ -793,8 +787,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const acceptances = await termsService.getUserAcceptances(_userId, documentType);
       
       return (reply as any).send({
-        _success: true,
-        _data: acceptances,
+        _success: true, data: acceptances,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -814,8 +807,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const compliance = await termsService.checkUserCompliance(_userId);
       
       return (reply as any).send({
-        _success: true,
-        _data: compliance,
+        _success: true, data: compliance,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -838,8 +830,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const versions = await termsService.getDocumentVersions(documentType, tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: versions,
+        _success: true, data: versions,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -859,8 +850,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const comparison = await termsService.compareVersions(documentId1, documentId2);
       
       return (reply as any).send({
-        _success: true,
-        _data: comparison,
+        _success: true, data: comparison,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({
@@ -880,8 +870,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
       const report = await termsService.generateComplianceReport(tenantId, auditType);
       
       return (reply as any).send({
-        _success: true,
-        _data: report,
+        _success: true, data: report,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -910,8 +899,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: types,
+      _success: true, data: types,
     });
   });
 }

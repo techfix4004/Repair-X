@@ -732,7 +732,7 @@ export default async function onboardingRoutes(fastify: FastifyInstance) {
 }
 
 // Helper functions
-async function triggerOnboardingAutomation(_userId: string, _trigger: string, _data: unknown): Promise<void> {
+async function triggerOnboardingAutomation(_userId: string, _trigger: string, data: unknown): Promise<void> {
   console.log(`Triggering automation for user ${_userId} on trigger ${trigger}`);
   
   // In a real implementation, this _would:
@@ -746,8 +746,7 @@ async function triggerOnboardingAutomation(_userId: string, _trigger: string, _d
 async function updateOnboardingProgress(
   userId: string, 
   _stepId: string, 
-  _completed: boolean, 
-  _data: object
+  _completed: boolean, data: object
 ): Promise<OnboardingProgress> {
   console.log(`Updating progress for user ${_userId}, step ${stepId}, _completed: ${completed}`);
   

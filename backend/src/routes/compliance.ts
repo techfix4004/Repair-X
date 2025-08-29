@@ -44,8 +44,7 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       const complianceReport = await generateComplianceReport();
       
       (reply as any).send({
-        _success: true,
-        _data: complianceReport
+        _success: true, data: complianceReport
       });
     } catch (error) {
       (reply as any).code(500).send({
@@ -87,8 +86,7 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: pciStatus
+        success: true, data: pciStatus
       });
     } catch (error) {
       (reply as any).code(500).send({
@@ -132,8 +130,7 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: gdprStatus
+        success: true, data: gdprStatus
       });
     } catch (error) {
       (reply as any).code(500).send({
@@ -180,8 +177,7 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: gstStatus
+        success: true, data: gstStatus
       });
     } catch (error) {
       (reply as any).code(500).send({
@@ -226,8 +222,7 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        _success: true,
-        _data: sixSigmaStatus
+        _success: true, data: sixSigmaStatus
       });
     } catch (error) {
       (reply as any).code(500).send({
@@ -277,8 +272,7 @@ export async function complianceRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: auditTrail
+        success: true, data: auditTrail
       });
     } catch (error) {
       (reply as any).code(500).send({

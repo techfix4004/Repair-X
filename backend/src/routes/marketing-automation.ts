@@ -701,8 +701,7 @@ async function processCampaign(campaign: MarketingCampaign): Promise<void> {
 
 async function processAutomationTrigger(
   _event: string, 
-  _userId: string, 
-  _data: object
+  _userId: string, data: object
 ): Promise<object> {
   console.log(`Processing automation _trigger: ${event} for user ${_userId}`);
   

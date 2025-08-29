@@ -483,17 +483,14 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
     try {
       await this.prisma.$transaction(async (_tx: unknown) => {
         // Update job sheet status
-        await tx.jobSheet.update({
-          _where: { id: validated.jobSheetId },
-          _data: {
+        await tx.jobSheet.update({ where: { id: validated.jobSheetId }, data: {
             status: validated.toState,
             _updatedAt: new Date(),
           },
         });
 
         // Create audit trail entry
-        await tx.jobSheetAudit.create({
-          _data: {
+        await tx.jobSheetAudit.create({ data: {
             jobSheetId: validated.jobSheetId,
             _fromState: validated.fromState,
             _toState: validated.toState,
@@ -546,9 +543,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
     }
 
     // Check job sheet exists and is in expected state
-    const jobSheet = await this.prisma.jobSheet.findUnique({
-      _where: { id: jobSheetId },
-      _include: { booking: true, _device: true, _technician: true },
+    const jobSheet = await this.prisma.jobSheet.findUnique({ where: { id: jobSheetId }, include: { booking: true, _device: true, _technician: true },
     });
 
     if (!jobSheet) {
@@ -597,8 +592,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
   }
 
   async getAvailableTransitions(_jobSheetId: string): Promise<string[]> {
-    const jobSheet = await this.prisma.jobSheet.findUnique({
-      _where: { id: jobSheetId },
+    const jobSheet = await this.prisma.jobSheet.findUnique({ where: { id: jobSheetId },
     });
 
     if (!jobSheet) {
@@ -615,8 +609,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
 
   async processAutomaticTransitions(): Promise<void> {
     // Find job sheets that have exceeded timeout periods
-    const overduejobs = await this.prisma.jobSheet.findMany({
-      _where: {
+    const overduejobs = await this.prisma.jobSheet.findMany({ where: {
         status: {
           in: ['CREATED', 'IN_DIAGNOSIS', 'AWAITING_APPROVAL', 'APPROVED', 'IN_PROGRESS'],
         },
@@ -633,9 +626,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
 
   async sendStateNotifications(_jobSheetId: string, _state: string, _stakeholders: string[]): Promise<void> {
     const stateConfig = this.getStateConfiguration(state);
-    const jobSheet = await this.prisma.jobSheet.findUnique({
-      _where: { id: jobSheetId },
-      _include: { booking: { include: { customer: true } }, _technician: true },
+    const jobSheet = await this.prisma.jobSheet.findUnique({ where: { id: jobSheetId }, include: { booking: { include: { customer: true } }, _technician: true },
     });
 
     if (!jobSheet) return;
@@ -711,8 +702,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
   }
 
   async captureDocumentation(_jobSheetId: string, _state: string, _documentation: unknown): Promise<void> {
-    await this.prisma.jobSheetDocumentation.create({
-      _data: {
+    await this.prisma.jobSheetDocumentation.create({ data: {
         jobSheetId,
         state,
         _documentationType: documentation.type,
@@ -757,9 +747,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
   }
 
   async generateStateReport(_jobSheetId: string): Promise<any> {
-    const jobSheet = await this.prisma.jobSheet.findUnique({
-      _where: { id: jobSheetId },
-      _include: {
+    const jobSheet = await this.prisma.jobSheet.findUnique({ where: { id: jobSheetId }, include: {
         booking: { include: { customer: true, _service: true } },
         _device: true,
         _technician: true,
@@ -767,9 +755,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
       },
     });
 
-    const auditTrail = await this.prisma.jobSheetAudit.findMany({
-      _where: { jobSheetId },
-      _orderBy: { timestamp: 'asc' },
+    const auditTrail = await this.prisma.jobSheetAudit.findMany({ where: { jobSheetId }, orderBy: { timestamp: 'asc' },
     });
 
     return {
@@ -783,8 +769,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
   async getWorkflowAnalytics(_dateRange: { _from: Date; _to: Date }): Promise<any> {
     // Workflow analytics implementation
     const analytics = await this.prisma.jobSheet.groupBy({
-      _by: ['status'],
-      _where: {
+      _by: ['status'], where: {
         createdAt: {
           gte: dateRange.from,
           _lte: dateRange.to,
@@ -801,7 +786,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
     console.log(`Executing automation rules for job ${jobSheetId} in state ${state}`);
   }
 
-  private generateSMSTemplate(_state: string, _data: unknown): string {
+  private generateSMSTemplate(_state: string, data: unknown): string {
     const _templates: Record<string, string> = {
       _CREATED: `RepairX: Job ${data.jobNumber} created. Technician ${data.technicianName} assigned.`,
       _IN_DIAGNOSIS: `RepairX: Diagnosis in progress for job ${data.jobNumber}.`,
@@ -815,7 +800,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
     return templates[state] || `_RepairX: Update on job ${data.jobNumber} - ${data.stateName}`;
   }
 
-  private generateEmailTemplate(state: string, _data: unknown): string {
+  private generateEmailTemplate(state: string, data: unknown): string {
     // Email template generation logic
     return `<h2>${data.stateName}</h2><p>${data.description}</p><p>Job _Number: ${data.jobNumber}</p>`;
   }
@@ -853,7 +838,7 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/jobsheets/:id/state', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
       const report = await lifecycleManager.generateStateReport((request as any).params.id);
-      return { _success: true, _data: report };
+      return { _success: true, data: report };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
@@ -882,7 +867,7 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/jobsheets/:id/transitions', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
       const transitions = await lifecycleManager.getAvailableTransitions((request as any).params.id);
-      return { _success: true, _data: transitions };
+      return { _success: true, data: transitions };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
@@ -891,8 +876,7 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   // Get workflow state configurations
   fastify.get('/api/v1/jobsheets/workflow/states', async (request: FastifyRequest, reply: FastifyReply) => {
     return { 
-      _success: true, 
-      _data: Object.entries(JOB_STATES).map(([key, config]) => ({
+      _success: true, data: Object.entries(JOB_STATES).map(([key, config]) => ({
         key,
         ...config,
       })),
@@ -903,7 +887,7 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   fastify.post('/api/v1/jobsheets/:id/quality-check', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
       const result = await lifecycleManager.executeSixSigmaQualityCheck((request as any).params.id);
-      return { _success: true, _data: result };
+      return { _success: true, data: result };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
@@ -920,7 +904,7 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
       };
       
       const analytics = await lifecycleManager.getWorkflowAnalytics(dateRange);
-      return { _success: true, _data: analytics };
+      return { _success: true, data: analytics };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }

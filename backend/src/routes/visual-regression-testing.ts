@@ -764,8 +764,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const suites = await testingService.getAllTestSuites(tenantId, filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: suites,
+        _success: true, data: suites,
         _count: suites.length,
       });
     } catch (_error: unknown) {
@@ -786,8 +785,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const suite = await testingService.createTestSuite(suiteData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: suite,
+        _success: true, data: suite,
         _message: 'Test suite created successfully',
       });
     } catch (_error: unknown) {
@@ -815,8 +813,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: suite,
+        _success: true, data: suite,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -839,8 +836,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const suite = await testingService.updateTestSuite(suiteId, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: suite,
+        _success: true, data: suite,
         _message: 'Test suite updated successfully',
       });
     } catch (_error: unknown) {
@@ -871,8 +867,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const execution = await testingService.executeTestSuite(suiteId, executionData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: execution,
+        _success: true, data: execution,
         _message: 'Test suite execution started',
       });
     } catch (_error: unknown) {
@@ -896,8 +891,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const executions = await testingService.getTestExecutions(suiteId, limit);
       
       return (reply as any).send({
-        _success: true,
-        _data: executions,
+        _success: true, data: executions,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -924,8 +918,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: execution,
+        _success: true, data: execution,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -948,8 +941,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const baseline = await testingService.createBaseline(testCaseId, suiteId, baselineData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: baseline,
+        _success: true, data: baseline,
         _message: 'Baseline created successfully',
       });
     } catch (_error: unknown) {
@@ -970,8 +962,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const baselines = await testingService.getBaselines(testCaseId);
       
       return (reply as any).send({
-        _success: true,
-        _data: baselines,
+        _success: true, data: baselines,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -997,8 +988,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
       const analytics = await testingService.getTestingAnalytics(tenantId, period);
       
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -1019,8 +1009,7 @@ export async function visualRegressionTestingRoutes(_server: FastifyInstance): P
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: platforms,
+      _success: true, data: platforms,
     });
   });
 }

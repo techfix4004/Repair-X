@@ -157,8 +157,7 @@ const MobileJobAssignmentSchema = z.object({
     _lastSyncAt: z.string().optional(),
     _offlineActions: z.array(z.object({
       action: z.string(),
-      _timestamp: z.string(),
-      _data: z.unknown(),
+      _timestamp: z.string(), data: z.unknown(),
     })).default([]),
   }),
   _tenantId: z.string().optional(),
@@ -815,8 +814,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const technicians = await fieldService.getAllFieldTechnicians(tenantId, filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: technicians,
+        _success: true, data: technicians,
         _count: technicians.length,
       });
     } catch (_error: unknown) {
@@ -837,8 +835,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const technician = await fieldService.createFieldTechnician(technicianData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: technician,
+        _success: true, data: technician,
         _message: 'Field technician created successfully',
       });
     } catch (_error: unknown) {
@@ -883,8 +880,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const assignment = await fieldService.createMobileJobAssignment(assignmentData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: assignment,
+        _success: true, data: assignment,
         _message: 'Job assignment created successfully',
       });
     } catch (_error: unknown) {
@@ -905,8 +901,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const assignments = await fieldService.getJobAssignments(technicianId, status);
       
       return (reply as any).send({
-        _success: true,
-        _data: assignments,
+        _success: true, data: assignments,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -929,8 +924,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const assignment = await fieldService.updateAssignmentStatus(assignmentId, status, additionalData);
       
       return (reply as any).send({
-        _success: true,
-        _data: assignment,
+        _success: true, data: assignment,
         _message: 'Assignment status updated successfully',
       });
     } catch (_error: unknown) {
@@ -951,8 +945,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const record = await fieldService.createFieldWorkRecord(recordData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: record,
+        _success: true, data: record,
         _message: 'Field work record created successfully',
       });
     } catch (_error: unknown) {
@@ -976,8 +969,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const record = await fieldService.updateFieldWorkRecord(recordId, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: record,
+        _success: true, data: record,
         _message: 'Field work record updated successfully',
       });
     } catch (_error: unknown) {
@@ -998,8 +990,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const records = await fieldService.getFieldWorkRecords(technicianId, _jobId);
       
       return (reply as any).send({
-        _success: true,
-        _data: records,
+        _success: true, data: records,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -1019,8 +1010,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const device = await fieldService.registerMobileDevice(deviceData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: device,
+        _success: true, data: device,
         _message: 'Mobile device registered successfully',
       });
     } catch (_error: unknown) {
@@ -1068,8 +1058,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const syncResult = await fieldService.syncOfflineData(technicianId, offlineData);
       
       return (reply as any).send({
-        _success: true,
-        _data: syncResult,
+        _success: true, data: syncResult,
         _message: 'Offline data synchronized successfully',
       });
     } catch (_error: unknown) {
@@ -1093,8 +1082,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const optimizedRoute = await fieldService.optimizeRoute(technicianId, assignmentIds);
       
       return (reply as any).send({
-        _success: true,
-        _data: optimizedRoute,
+        _success: true, data: optimizedRoute,
         _message: 'Route optimized successfully',
       });
     } catch (_error: unknown) {
@@ -1115,8 +1103,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
       const analytics = await fieldService.getTechnicianPerformanceAnalytics(technicianId);
       
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(400).send({

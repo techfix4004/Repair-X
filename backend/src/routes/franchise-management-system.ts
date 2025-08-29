@@ -6,8 +6,7 @@ export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
   // Multi-Location Management
   fastify.get('/franchise/locations', async (request, reply: unknown) => {
     const locations = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         locations: [
           {
             id: 'loc_001',
@@ -59,8 +58,7 @@ export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
   // Centralized Control Dashboard
   fastify.get('/franchise/control/dashboard', async (request, reply: unknown) => {
     const controlDashboard = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         overview: {
           totalFranchises: 12,
           _activeFranchises: 11,
@@ -100,8 +98,7 @@ export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
     const { locationId  } = ((request as any).params as unknown);
     
     const performance = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         locationId,
         _metrics: {
           financial: {
@@ -147,8 +144,7 @@ export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
     const { locationId  } = ((request as any).params as unknown);
     
     const compliance = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         locationId,
         _overallScore: 94.5,
         _categories: {
@@ -173,8 +169,7 @@ export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
   // Training & Support Management
   fastify.get('/franchise/training', async (request, reply: unknown) => {
     const training = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         programs: [
           {
             id: 'prog_001',

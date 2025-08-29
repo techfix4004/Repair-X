@@ -476,8 +476,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const parts = await inventoryService.getAllParts(tenantId, filters);
       
       return (reply as any).send({
-        _success: true,
-        _data: parts,
+        _success: true, data: parts,
         _count: parts.length,
       });
     } catch (_error: unknown) {
@@ -498,8 +497,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const part = await inventoryService.createPart(partData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: part,
+        _success: true, data: part,
         _message: 'Part created successfully',
       });
     } catch (_error: unknown) {
@@ -527,8 +525,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       }
       
       return (reply as any).send({
-        _success: true,
-        _data: part,
+        _success: true, data: part,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -551,8 +548,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const part = await inventoryService.updatePart(id, updateData);
       
       return (reply as any).send({
-        _success: true,
-        _data: part,
+        _success: true, data: part,
         _message: 'Part updated successfully',
       });
     } catch (_error: unknown) {
@@ -574,8 +570,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const movement = await inventoryService.recordStockMovement(movementData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: movement,
+        _success: true, data: movement,
         _message: 'Stock movement recorded successfully',
       });
     } catch (_error: unknown) {
@@ -599,8 +594,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const movements = await inventoryService.getStockMovements(partId, startDate, endDate);
       
       return (reply as any).send({
-        _success: true,
-        _data: movements,
+        _success: true, data: movements,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -646,8 +640,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const suppliers = await inventoryService.getAllSuppliers(tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: suppliers,
+        _success: true, data: suppliers,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -667,8 +660,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const supplier = await inventoryService.createSupplier(supplierData);
       
       return (reply as FastifyReply).status(201).send({
-        _success: true,
-        _data: supplier,
+        _success: true, data: supplier,
         _message: 'Supplier created successfully',
       });
     } catch (_error: unknown) {
@@ -689,8 +681,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
       const analytics = await inventoryService.getInventoryAnalytics(tenantId);
       
       return (reply as any).send({
-        _success: true,
-        _data: analytics,
+        _success: true, data: analytics,
       });
     } catch (_error: unknown) {
       return (reply as FastifyReply).status(500).send({
@@ -726,8 +717,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: categories,
+      _success: true, data: categories,
     });
   });
 }

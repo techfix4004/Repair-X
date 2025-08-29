@@ -6,8 +6,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
   // Executive Dashboard - Real-time KPI Monitoring
   fastify.get('/dashboard/executive', async (request, reply: unknown) => {
     const executiveMetrics = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         overview: {
           totalRevenue: 145678.90,
           _monthlyGrowth: 12.5,
@@ -55,8 +54,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
     const { startDate, endDate, groupBy  } = ((request as any).query as unknown);
     
     const financialReport = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         summary: {
           totalRevenue: 89567.45,
           _totalCosts: 34567.89,
@@ -84,8 +82,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
   // Customer Analytics & Insights
   fastify.get('/analytics/customers', async (request, reply: unknown) => {
     const customerAnalytics = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         demographics: {
           ageGroups: [
             { range: '18-25', _count: 145, _percentage: 11.6 },
@@ -122,8 +119,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
   // Operational Metrics & Performance
   fastify.get('/analytics/operations', async (request, reply: unknown) => {
     const operationalMetrics = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         efficiency: {
           jobCompletionRate: 96.8,
           _avgJobDuration: 2.4, // hours
@@ -159,8 +155,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
     const { reportConfig  } = ((request as any).body as unknown);
     
     const customReport = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         reportId: `report_${Date.now()}`,
         _generatedAt: new Date().toISOString(),
         _config: reportConfig,
@@ -280,8 +275,7 @@ export async function advancedReportingRoutes(_fastify: FastifyInstance) {
   function generateCustomReportResults(config: unknown) {
     // Generate results based on report configuration
     return {
-      _totalRecords: 1247,
-      _data: [
+      _totalRecords: 1247, data: [
         // Sample data based on config
         { metric: 'Sample Metric', _value: 123.45, _trend: '+12%' }
       ],

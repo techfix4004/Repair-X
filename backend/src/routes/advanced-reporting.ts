@@ -178,8 +178,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: _dashboard,
+        success: true, data: _dashboard,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -243,8 +242,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: financialReport,
+        success: true, data: financialReport,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -306,8 +304,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: customerAnalytics,
+        success: true, data: customerAnalytics,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -366,8 +363,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: operationalReport,
+        success: true, data: operationalReport,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -395,8 +391,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
         _id: `report_${Date.now()}`,
         _type: reportType,
         _generated: new Date().toISOString(),
-        _filters: filters,
-        _data: Array.from({ length: 20 }, (_, i) => ({
+        _filters: filters, data: Array.from({ length: 20 }, (_, i) => ({
           _id: i + 1,
           _date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           _value1: Math.round(Math.random() * 1000),
@@ -422,8 +417,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: customReport,
+        success: true, data: customReport,
         _timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -462,8 +456,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       }, 5000);
 
       (reply as any).send({
-        _success: true,
-        _data: exportResult,
+        _success: true, data: exportResult,
         _message: 'Report export initiated successfully'
       });
     } catch (error) {
@@ -503,8 +496,7 @@ export async function advancedReportingRoutes(fastify: FastifyInstance) {
       };
 
       (reply as any).send({
-        success: true,
-        _data: scheduledReport,
+        success: true, data: scheduledReport,
         _message: 'Report scheduled successfully'
       });
     } catch (error) {

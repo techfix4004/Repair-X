@@ -12,17 +12,7 @@ import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-
-// Types and interfaces
-interface AuthenticatedRequest extends FastifyRequest {
-  user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-    organizationId?: string;
-    permissions: string[];
-  };
-}
+import { AuthenticatedUser } from './types/auth';
 
 type UserRole = 'SAAS_ADMIN' | 'ORG_OWNER' | 'MANAGER' | 'TECHNICIAN' | 'CUSTOMER';
 
@@ -251,7 +241,7 @@ const initializeData = () => {
 };
 
 // Authentication middleware
-const authenticateToken = async (request: AuthenticatedRequest, reply: FastifyReply) => {
+const authenticateToken = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const authHeader = request.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -487,8 +477,8 @@ const setupServer = async () => {
     }
   });
 
-  fastify.get('/auth/me', { preHandler: authenticateToken }, async (request: AuthenticatedRequest) => {
-    const user = users.get(request.user.id);
+  fastify.get('/auth/me', { preHandler: authenticateToken }, async (request: FastifyRequest) => {
+    const user = users.get(request.userId);
     return {
       success: true,
       user: {
@@ -504,16 +494,16 @@ const setupServer = async () => {
   });
 
   // Job Management endpoints
-  fastify.get('/api/jobs', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (!checkPermission(request.user.permissions, 'jobs:read')) {
+  fastify.get('/api/jobs', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'jobs:read')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
     const userJobs = Array.from(jobs.values()).filter((job: Job) => {
-      if (request.user.role === 'SAAS_ADMIN') return true;
-      if (request.user.role === 'CUSTOMER') return job.customerId === request.user.id;
-      if (request.user.role === 'TECHNICIAN') return job.technicianId === request.user.id;
-      return job.organizationId === request.user.organizationId;
+      if ((request as any).authenticatedUser?.role === 'SAAS_ADMIN') return true;
+      if ((request as any).authenticatedUser?.role === 'CUSTOMER') return job.customerId === request.userId;
+      if ((request as any).authenticatedUser?.role === 'TECHNICIAN') return job.technicianId === request.userId;
+      return job.organizationId === request.organizationId;
     });
 
     return {
@@ -523,25 +513,25 @@ const setupServer = async () => {
     };
   });
 
-  fastify.get('/api/jobs/:id', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ Params: { id: string } }>, reply) => {
+  fastify.get('/api/jobs/:id', { preHandler: authenticateToken }, async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
     const job = jobs.get(request.params.id);
     if (!job) {
       return reply.code(404).send({ error: 'Job not found' });
     }
 
     // Check access permissions
-    if (request.user.role !== 'SAAS_ADMIN' && 
-        job.organizationId !== request.user.organizationId &&
-        job.customerId !== request.user.id &&
-        job.technicianId !== request.user.id) {
+    if ((request as any).authenticatedUser?.role !== 'SAAS_ADMIN' && 
+        job.organizationId !== request.organizationId &&
+        job.customerId !== request.userId &&
+        job.technicianId !== request.userId) {
       return reply.code(403).send({ error: 'Access denied' });
     }
 
     return { success: true, data: job };
   });
 
-  fastify.post('/api/jobs', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ Body: z.infer<typeof jobCreateSchema> }>, reply) => {
-    if (!checkPermission(request.user.permissions, 'jobs:write')) {
+  fastify.post('/api/jobs', { preHandler: authenticateToken }, async (request: FastifyRequest<{ Body: z.infer<typeof jobCreateSchema> }>, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'jobs:write')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
@@ -552,7 +542,7 @@ const setupServer = async () => {
         id: `job_${Date.now()}`,
         ...jobData,
         status: 'CREATED',
-        organizationId: request.user.organizationId,
+        organizationId: request.organizationId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -569,7 +559,7 @@ const setupServer = async () => {
     }
   });
 
-  fastify.patch('/api/jobs/:id/status', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ 
+  fastify.patch('/api/jobs/:id/status', { preHandler: authenticateToken }, async (request: FastifyRequest<{ 
     Params: { id: string }, 
     Body: { status: JobStatus, notes?: string } 
   }>, reply) => {
@@ -578,7 +568,7 @@ const setupServer = async () => {
       return reply.code(404).send({ error: 'Job not found' });
     }
 
-    if (!checkPermission(request.user.permissions, 'jobs:write')) {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'jobs:write')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
@@ -598,7 +588,7 @@ const setupServer = async () => {
     };
   });
 
-  fastify.post('/api/jobs/:id/assign', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ 
+  fastify.post('/api/jobs/:id/assign', { preHandler: authenticateToken }, async (request: FastifyRequest<{ 
     Params: { id: string }, 
     Body: { technicianId: string } 
   }>, reply) => {
@@ -612,7 +602,7 @@ const setupServer = async () => {
       return reply.code(404).send({ error: 'Technician not found' });
     }
 
-    if (!checkPermission(request.user.permissions, 'jobs:write')) {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'jobs:write')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
@@ -633,14 +623,14 @@ const setupServer = async () => {
   });
 
   // Customer Management endpoints
-  fastify.get('/api/customers', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (!checkPermission(request.user.permissions, 'customers:read')) {
+  fastify.get('/api/customers', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'customers:read')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
     const userCustomers = Array.from(customers.values()).filter((customer: Customer) => {
-      if (request.user.role === 'SAAS_ADMIN') return true;
-      return customer.organizationId === request.user.organizationId;
+      if ((request as any).authenticatedUser?.role === 'SAAS_ADMIN') return true;
+      return customer.organizationId === request.organizationId;
     });
 
     return {
@@ -650,21 +640,21 @@ const setupServer = async () => {
     };
   });
 
-  fastify.get('/api/customers/:id', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ Params: { id: string } }>, reply) => {
+  fastify.get('/api/customers/:id', { preHandler: authenticateToken }, async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {
     const customer = customers.get(request.params.id);
     if (!customer) {
       return reply.code(404).send({ error: 'Customer not found' });
     }
 
-    if (request.user.role !== 'SAAS_ADMIN' && customer.organizationId !== request.user.organizationId) {
+    if ((request as any).authenticatedUser?.role !== 'SAAS_ADMIN' && customer.organizationId !== request.organizationId) {
       return reply.code(403).send({ error: 'Access denied' });
     }
 
     return { success: true, data: customer };
   });
 
-  fastify.post('/api/customers', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ Body: z.infer<typeof customerCreateSchema> }>, reply) => {
-    if (!checkPermission(request.user.permissions, 'customers:write')) {
+  fastify.post('/api/customers', { preHandler: authenticateToken }, async (request: FastifyRequest<{ Body: z.infer<typeof customerCreateSchema> }>, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'customers:write')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
@@ -674,7 +664,7 @@ const setupServer = async () => {
       const newCustomer: Customer = {
         id: `cust_${Date.now()}`,
         ...customerData,
-        organizationId: request.user.organizationId,
+        organizationId: request.organizationId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -692,14 +682,14 @@ const setupServer = async () => {
   });
 
   // Technician Management endpoints
-  fastify.get('/api/technicians', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (!checkPermission(request.user.permissions, 'technicians:read')) {
+  fastify.get('/api/technicians', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'technicians:read')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
     const userTechnicians = Array.from(technicians.values()).filter((technician: Technician) => {
-      if (request.user.role === 'SAAS_ADMIN') return true;
-      return technician.organizationId === request.user.organizationId;
+      if ((request as any).authenticatedUser?.role === 'SAAS_ADMIN') return true;
+      return technician.organizationId === request.organizationId;
     });
 
     return {
@@ -709,9 +699,9 @@ const setupServer = async () => {
     };
   });
 
-  fastify.get('/api/technicians/available', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
+  fastify.get('/api/technicians/available', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
     const availableTechnicians = Array.from(technicians.values()).filter((technician: Technician) => {
-      const isFromUserOrg = request.user.role === 'SAAS_ADMIN' || technician.organizationId === request.user.organizationId;
+      const isFromUserOrg = (request as any).authenticatedUser?.role === 'SAAS_ADMIN' || technician.organizationId === request.organizationId;
       return isFromUserOrg && technician.isAvailable && technician.currentJobs < technician.maxJobs;
     });
 
@@ -722,8 +712,8 @@ const setupServer = async () => {
     };
   });
 
-  fastify.post('/api/technicians', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ Body: z.infer<typeof technicianCreateSchema> }>, reply) => {
-    if (!checkPermission(request.user.permissions, 'technicians:write')) {
+  fastify.post('/api/technicians', { preHandler: authenticateToken }, async (request: FastifyRequest<{ Body: z.infer<typeof technicianCreateSchema> }>, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'technicians:write')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
@@ -733,7 +723,7 @@ const setupServer = async () => {
       const newTechnician: Technician = {
         id: `tech_${Date.now()}`,
         ...technicianData,
-        organizationId: request.user.organizationId,
+        organizationId: request.organizationId,
         isAvailable: true,
         currentJobs: 0,
         rating: 0,
@@ -754,7 +744,7 @@ const setupServer = async () => {
   });
 
   // Payment endpoints
-  fastify.get('/api/payments/methods', { preHandler: authenticateToken }, async (request: AuthenticatedRequest) => {
+  fastify.get('/api/payments/methods', { preHandler: authenticateToken }, async (request: FastifyRequest) => {
     return {
       success: true,
       data: [
@@ -766,7 +756,7 @@ const setupServer = async () => {
     };
   });
 
-  fastify.post('/api/payments/process', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ 
+  fastify.post('/api/payments/process', { preHandler: authenticateToken }, async (request: FastifyRequest<{ 
     Body: { jobId: string, amount: number, method: string } 
   }>, reply) => {
     const job = jobs.get(request.body.jobId);
@@ -791,13 +781,13 @@ const setupServer = async () => {
   });
 
   // Mobile endpoints for technicians
-  fastify.get('/api/mobile/jobs/assigned', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (request.user.role !== 'TECHNICIAN' && request.user.role !== 'SAAS_ADMIN') {
+  fastify.get('/api/mobile/jobs/assigned', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if ((request as any).authenticatedUser?.role !== 'TECHNICIAN' && (request as any).authenticatedUser?.role !== 'SAAS_ADMIN') {
       return reply.code(403).send({ error: 'Access denied' });
     }
 
     const assignedJobs = Array.from(jobs.values()).filter((job: Job) => 
-      job.technicianId === request.user.id
+      job.technicianId === request.userId
     );
 
     return {
@@ -807,10 +797,10 @@ const setupServer = async () => {
     };
   });
 
-  fastify.post('/api/mobile/checkin', { preHandler: authenticateToken }, async (request: AuthenticatedRequest<{ 
+  fastify.post('/api/mobile/checkin', { preHandler: authenticateToken }, async (request: FastifyRequest<{ 
     Body: { jobId: string, location: { lat: number, lng: number }, notes?: string } 
   }>, reply) => {
-    if (request.user.role !== 'TECHNICIAN' && request.user.role !== 'SAAS_ADMIN') {
+    if ((request as any).authenticatedUser?.role !== 'TECHNICIAN' && (request as any).authenticatedUser?.role !== 'SAAS_ADMIN') {
       return reply.code(403).send({ error: 'Access denied' });
     }
 
@@ -820,7 +810,7 @@ const setupServer = async () => {
     }
     
     // SAAS_ADMIN can check in to any job, TECHNICIAN only to their assigned jobs
-    if (request.user.role === 'TECHNICIAN' && job.technicianId !== request.user.id) {
+    if ((request as any).authenticatedUser?.role === 'TECHNICIAN' && job.technicianId !== request.userId) {
       return reply.code(404).send({ error: 'Job not assigned to you' });
     }
 
@@ -829,7 +819,7 @@ const setupServer = async () => {
       data: {
         checkinId: `checkin_${Date.now()}`,
         jobId: request.body.jobId,
-        technicianId: request.user.id,
+        technicianId: request.userId,
         location: request.body.location,
         timestamp: new Date().toISOString(),
         notes: request.body.notes
@@ -839,12 +829,12 @@ const setupServer = async () => {
   });
 
   // Organization management endpoints
-  fastify.get('/api/org/settings', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (!checkPermission(request.user.permissions, 'org:read')) {
+  fastify.get('/api/org/settings', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'org:read')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
-    const org = organizations.get(request.user.organizationId);
+    const org = organizations.get(request.organizationId);
     if (!org) {
       return reply.code(404).send({ error: 'Organization not found' });
     }
@@ -852,13 +842,13 @@ const setupServer = async () => {
     return { success: true, data: org };
   });
 
-  fastify.get('/api/org/analytics', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (!checkPermission(request.user.permissions, 'org:read')) {
+  fastify.get('/api/org/analytics', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if (!checkPermission((request as any).authenticatedUser?.permissions || [], 'org:read')) {
       return reply.code(403).send({ error: 'Insufficient permissions' });
     }
 
     const orgJobs = Array.from(jobs.values()).filter((job: Job) => 
-      job.organizationId === request.user.organizationId
+      job.organizationId === request.organizationId
     );
 
     const analytics = {
@@ -876,8 +866,8 @@ const setupServer = async () => {
   });
 
   // Admin endpoints (SaaS Admin only)
-  fastify.get('/api/admin/tenants', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (request.user.role !== 'SAAS_ADMIN') {
+  fastify.get('/api/admin/tenants', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if ((request as any).authenticatedUser?.role !== 'SAAS_ADMIN') {
       return reply.code(403).send({ error: 'SaaS Admin access required' });
     }
 
@@ -889,8 +879,8 @@ const setupServer = async () => {
     };
   });
 
-  fastify.get('/api/admin/analytics', { preHandler: authenticateToken }, async (request: AuthenticatedRequest, reply) => {
-    if (request.user.role !== 'SAAS_ADMIN') {
+  fastify.get('/api/admin/analytics', { preHandler: authenticateToken }, async (request: FastifyRequest, reply) => {
+    if ((request as any).authenticatedUser?.role !== 'SAAS_ADMIN') {
       return reply.code(403).send({ error: 'SaaS Admin access required' });
     }
 

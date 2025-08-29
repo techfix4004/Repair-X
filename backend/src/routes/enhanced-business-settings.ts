@@ -92,7 +92,7 @@ interface BusinessSettingsService {
   // Category _2: Print Settings & Templates
   getPrintSettings(_tenantId?: string): Promise<any>;
   updatePrintTemplate(_templateType: string, _template: string, _tenantId?: string): Promise<void>;
-  generateDocument(_type: string, _data: unknown, _tenantId?: string): Promise<Buffer>;
+  generateDocument(_type: string, data: unknown, _tenantId?: string): Promise<Buffer>;
   previewTemplate(_templateType: string, _sampleData: unknown, _tenantId?: string): Promise<string>;
 
   // Category _3: Workflow Configuration
@@ -104,7 +104,7 @@ interface BusinessSettingsService {
   // Category _4: Email Settings
   getEmailSettings(_tenantId?: string): Promise<any>;
   testEmailConnection(_settings: unknown): Promise<{ _success: boolean; error?: string }>;
-  sendAutomatedEmail(template: string, _recipient: string, _data: unknown, _tenantId?: string): Promise<void>;
+  sendAutomatedEmail(template: string, _recipient: string, data: unknown, _tenantId?: string): Promise<void>;
 
   // Category _5: SMS Settings
   getSMSSettings(_tenantId?: string): Promise<any>;
@@ -155,8 +155,7 @@ class BusinessSettingsController implements BusinessSettingsService {
 
   // Category _1: Tax Settings Implementation
   async getTaxSettings(_tenantId?: string): Promise<any> {
-    const settings = await this.prisma.businessSettings.findMany({
-      _where: {
+    const settings = await this.prisma.businessSettings.findMany({ where: {
         category: 'TAX_SETTINGS',
         _tenantId: tenantId || null,
         _isActive: true,
@@ -186,8 +185,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     const validatedSettings = taxSettingsSchema.parse(settings);
     
     for (const [key, value] of Object.entries(validatedSettings)) {
-      await this.prisma.businessSettings.upsert({
-        _where: {
+      await this.prisma.businessSettings.upsert({ where: {
           category_keytenantId: {
             category: 'TAX_SETTINGS',
             key,
@@ -264,8 +262,7 @@ class BusinessSettingsController implements BusinessSettingsService {
 
   // Category _2: Print Settings & Templates Implementation
   async getPrintSettings(_tenantId?: string): Promise<any> {
-    const settings = await this.prisma.businessSettings.findMany({
-      _where: {
+    const settings = await this.prisma.businessSettings.findMany({ where: {
         category: 'PRINT_SETTINGS',
         _tenantId: tenantId || null,
         _isActive: true,
@@ -292,8 +289,7 @@ class BusinessSettingsController implements BusinessSettingsService {
   }
 
   async updatePrintTemplate(_templateType: string, _template: string, _tenantId?: string): Promise<void> {
-    await this.prisma.businessSettings.upsert({
-      _where: {
+    await this.prisma.businessSettings.upsert({ where: {
         category_keytenantId: {
           category: 'PRINT_SETTINGS',
           _key: `${templateType}Template`,
@@ -318,7 +314,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     });
   }
 
-  async generateDocument(_type: string, _data: unknown, _tenantId?: string): Promise<Buffer> {
+  async generateDocument(_type: string, data: unknown, _tenantId?: string): Promise<Buffer> {
     const settings = await this.getPrintSettings(tenantId);
     const templateKey = `${type}Template`;
     const template = settings[templateKey];
@@ -349,8 +345,7 @@ class BusinessSettingsController implements BusinessSettingsService {
 
   // Category _3: Workflow Configuration Implementation
   async getWorkflowConfig(_tenantId?: string): Promise<any> {
-    const settings = await this.prisma.businessSettings.findMany({
-      _where: {
+    const settings = await this.prisma.businessSettings.findMany({ where: {
         category: 'WORKFLOW_CONFIGURATION',
         _tenantId: tenantId || null,
         _isActive: true,
@@ -396,8 +391,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     const validatedConfig = workflowConfigSchema.parse(config);
     
     for (const [key, value] of Object.entries(validatedConfig)) {
-      await this.prisma.businessSettings.upsert({
-        _where: {
+      await this.prisma.businessSettings.upsert({ where: {
           category_keytenantId: {
             category: 'WORKFLOW_CONFIGURATION',
             key,
@@ -472,9 +466,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     }
 
     // Update job sheet status
-    await this.prisma.jobSheet.update({
-      _where: { id: _jobId },
-      _data: { status: toState },
+    await this.prisma.jobSheet.update({ where: { id: _jobId }, data: { status: toState },
     });
 
     // Trigger notifications if configured
@@ -499,7 +491,7 @@ class BusinessSettingsController implements BusinessSettingsService {
     return { success: true }; 
   }
   
-  async sendAutomatedEmail(template: string, _recipient: string, _data: unknown, _tenantId?: string): Promise<void> {
+  async sendAutomatedEmail(template: string, _recipient: string, data: unknown, _tenantId?: string): Promise<void> {
     // Implementation would go here
   }
 
@@ -555,7 +547,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/business-settings/tax', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const settings = await businessSettings.getTaxSettings();
-      return { _success: true, _data: settings };
+      return { _success: true, data: settings };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
@@ -580,7 +572,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     try {
       const { amount, jurisdiction  } = ((request as any).body as unknown);
       const result = await businessSettings.calculateTax(amount, jurisdiction);
-      return { _success: true, _data: result };
+      return { _success: true, data: result };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(400).send({ _success: false, _error: error.message });
     }
@@ -590,7 +582,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/business-settings/print', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const settings = await businessSettings.getPrintSettings();
-      return { _success: true, _data: settings };
+      return { _success: true, data: settings };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
@@ -613,7 +605,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
   fastify.get('/api/v1/business-settings/workflow', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const config = await businessSettings.getWorkflowConfig();
-      return { _success: true, _data: config };
+      return { _success: true, data: config };
     } catch (error: unknown) {
       return (reply as FastifyReply).status(500).send({ _success: false, _error: error.message });
     }
@@ -663,8 +655,7 @@ async function enhancedBusinessSettingsRoutes(fastify: FastifyInstance) {
     ];
 
     return { 
-      _success: true, 
-      _data: categories.map((category: unknown) => ({
+      _success: true, data: categories.map((category: unknown) => ({
         _key: category,
         _label: category.split('_').map((_word: unknown) => word.charAt(0) + word.slice(1).toLowerCase()).join(' '),
         _implemented: ['TAX_SETTINGS', 'PRINT_SETTINGS', 'WORKFLOW_CONFIGURATION'].includes(category),

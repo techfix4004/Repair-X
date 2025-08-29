@@ -123,8 +123,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       });
 
       return (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           user: {
             id: result.user.id,
             _email: result.user.email,
@@ -206,8 +205,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       });
 
       return (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           accessToken: result.accessToken,
           _refreshToken: result.refreshToken
         }
@@ -260,8 +258,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       });
 
       return (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           secret: result.secret,
           _qrCode: result.qrCode
         }
@@ -445,8 +442,7 @@ export async function enhancedAuthRoutes(fastify: FastifyInstance) {
       AuditService.logSensitiveAction('view_audit_log', 'audit', 'success', request);
 
       return (reply as any).send({
-        _success: true,
-        _data: {
+        _success: true, data: {
           entries: auditLog.slice(-100), // Return last 100 entries
           _totalCount: auditLog.length
         }

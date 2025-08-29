@@ -23,8 +23,7 @@ server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
     ];
 
     return (reply as any).send({
-      _success: true,
-      _data: {
+      _success: true, data: {
         campaigns: campaigns.filter((c: unknown) => c !== null),
         _total: campaigns.length,
         _page: 1,
@@ -69,8 +68,7 @@ server.get('/:campaignId', {
     }
 
     return (reply as any).send({
-      _success: true,
-      _data: campaign
+      _success: true, data: campaign
     });
   } catch (error) {
     console.error('Error fetching _campaign:', error);
@@ -108,8 +106,7 @@ server.post('/', {
     const campaign = await launchCampaignService.createCampaign(campaignData as unknown);
 
     return (reply as any).code(201).send({
-      _success: true,
-      _data: campaign,
+      _success: true, data: campaign,
       _message: 'Campaign created successfully'
     });
   } catch (error) {
@@ -175,8 +172,7 @@ server.get('/dashboard/overview', async (request: FastifyRequest, reply: Fastify
     };
 
     return (reply as any).send({
-      _success: true,
-      _data: dashboardData,
+      _success: true, data: dashboardData,
       _generatedAt: new Date().toISOString()
     });
   } catch (error) {

@@ -6,8 +6,7 @@ export async function marketingAutomationRoutes(_fastify: FastifyInstance) {
   // Customer Acquisition Funnels
   fastify.get('/marketing/funnels', async (request, reply: unknown) => {
     const funnels = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         activeFunnels: [
           {
             id: 'funnel_001',
@@ -59,8 +58,7 @@ export async function marketingAutomationRoutes(_fastify: FastifyInstance) {
   // Lead Scoring & Qualification
   fastify.get('/marketing/leads/scoring', async (request, reply: unknown) => {
     const leadScoring = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         scoringModel: {
           demographic: { weight: 25, _factors: ['age', 'location', 'income'] },
           _behavioral: { weight: 40, _factors: ['website_visits', 'email_opens', 'service_history'] },
@@ -120,8 +118,7 @@ export async function marketingAutomationRoutes(_fastify: FastifyInstance) {
   // A/B Testing & Optimization
   fastify.get('/marketing/ab-testing', async (request, reply: unknown) => {
     const abTesting = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         activeTests: [
           {
             id: 'test_001',
@@ -199,8 +196,7 @@ export async function marketingAutomationRoutes(_fastify: FastifyInstance) {
   // Campaign Performance Analytics
   fastify.get('/marketing/campaigns/performance', async (request, reply: unknown) => {
     const performance = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         campaigns: [
           {
             id: 'camp_001',
@@ -269,8 +265,7 @@ export async function marketingAutomationRoutes(_fastify: FastifyInstance) {
   // Customer Retention & Loyalty
   fastify.get('/marketing/retention', async (request, reply: unknown) => {
     const retention = {
-      _success: true,
-      _data: {
+      _success: true, data: {
         overview: {
           totalCustomers: 2456,
           _activeCustomers: 1847,
