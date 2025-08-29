@@ -180,6 +180,7 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
     console.log('🤝 Outsourcing Marketplace System available at /api/v1/outsourcing');
     console.log('📜 Terms & Conditions Management available at /api/v1/terms');
     console.log('🔗 API Marketplace & White-label Framework available at /api/v1/api-marketplace');
+    console.log('🎯 Visual Regression Testing System available at /api/v1/visual-testing');
     console.log('📱 Mobile Field Operations System available at /api/v1/field-operations');
   }, { prefix: '/api/v1' });
 

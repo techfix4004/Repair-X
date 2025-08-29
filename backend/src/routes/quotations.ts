@@ -778,7 +778,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
 }
 
 // Export route registration function
-export async function quotationRoutes(fastify: FastifyInstance) {
+export async function quotationRoutes(_fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['Quotation System'],
     _security: [{ bearerAuth: [] }]

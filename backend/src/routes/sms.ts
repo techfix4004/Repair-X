@@ -431,7 +431,7 @@ async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
 }
 
 // Export route registration function
-export async function smsRoutes(fastify: FastifyInstance) {
+export async function smsRoutes(_fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['SMS Management'],
     _security: [{ bearerAuth: [] }]

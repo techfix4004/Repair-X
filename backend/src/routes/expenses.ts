@@ -644,7 +644,7 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
 }
 
 // Export route registration function
-export async function expenseRoutes(fastify: FastifyInstance) {
+export async function expenseRoutes(_fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['Expense Management'],
     _security: [{ bearerAuth: [] }]

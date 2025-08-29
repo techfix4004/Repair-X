@@ -2,7 +2,7 @@
 import { FastifyInstance } from 'fastify';
 
 // eslint-disable-next-line max-lines-per-function
-export async function marketingAutomationRoutes(fastify: FastifyInstance) {
+export async function marketingAutomationRoutes(_fastify: FastifyInstance) {
   // Customer Acquisition Funnels
   fastify.get('/marketing/funnels', async (request, reply: unknown) => {
     const funnels = {

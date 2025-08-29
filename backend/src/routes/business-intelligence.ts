@@ -7,7 +7,7 @@ const biService = new BusinessIntelligenceService();
 // Advanced Analytics and AI Routes
  
 // eslint-disable-next-line max-lines-per-function
-export async function businessIntelligenceRoutes(fastify: FastifyInstance): Promise<void> {
+export async function businessIntelligenceRoutes(_fastify: FastifyInstance): Promise<void> {
   
   // AI-Powered Job Assignment Recommendations
   fastify.post('/api/v1/ai/job-assignment/:jobId', async (request: FastifyRequest<{

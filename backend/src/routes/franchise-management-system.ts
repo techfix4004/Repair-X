@@ -2,7 +2,7 @@
 import { FastifyInstance } from 'fastify';
 
 // eslint-disable-next-line max-lines-per-function
-export async function franchiseManagementRoutes(fastify: FastifyInstance) {
+export async function franchiseManagementRoutes(_fastify: FastifyInstance) {
   // Multi-Location Management
   fastify.get('/franchise/locations', async (request, reply: unknown) => {
     const locations = {
