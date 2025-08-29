@@ -22,6 +22,7 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
+import { prisma } from '../utils/database';
 
 // Temporary type definitions until Prisma is properly set up
 type JobSheetStatus = string;
@@ -816,20 +817,8 @@ export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
     _recordStateTransition: async () => {},
   };
   
-  const mockPrisma = {
-    _jobSheet: {
-      _findUnique: async () => ({ _id: '1', _status: 'CREATED' }),
-      _findMany: async () => [],
-      _create: async () => ({ _id: '1' }),
-      _update: async () => ({ _id: '1' }),
-    },
-    _stateTransition: {
-      _create: async () => ({ _id: '1' }),
-    }
-  };
-
   const lifecycleManager = new JobSheetLifecycleManager(
-    mockPrisma as unknown, 
+    prisma, 
     notificationService, 
     qualityService
   );

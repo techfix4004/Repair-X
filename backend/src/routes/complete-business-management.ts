@@ -1026,7 +1026,7 @@ export const _BUSINESS_SETTINGS_CATEGORIES: BusinessSettingsCategory[] = [
  */
  
 // eslint-disable-next-line max-lines-per-function
-export default async function businessManagementRoutes(_fastify: FastifyInstance) {
+export default async function businessManagementRoutes(fastify: FastifyInstance) {
   // Get all business settings categories
   fastify.get('/business-settings/categories', async (request: FastifyRequest, reply: FastifyReply) => {
     return (reply as any).send({
