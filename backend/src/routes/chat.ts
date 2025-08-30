@@ -252,13 +252,33 @@ export async function chatRoutes(fastify: FastifyInstance) {
   // Upload file/image for chat
   fastify.post('/upload', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      // Implementation would handle file upload to cloud storage
-      // For now, return a placeholder response
-      (reply as any).send({
+      // Import local storage service for real file upload
+      const { LocalStorageService } = await import('../services/local-storage.service');
+      const storageService = new LocalStorageService();
+      
+      // Handle multipart file upload
+      const data = await (request as any).file();
+      
+      if (!data) {
+        return reply.status(400).send({ _success: false, _error: 'No file provided' });
+      }
+      
+      // Upload file using real storage service
+      const uploadResult = await storageService.uploadFile(data.file, {
+        originalName: data.filename,
+        mimeType: data.mimetype,
+        size: data.file.bytesRead || 0, // Add the missing size property
+        tags: ['chat', 'upload'],
+        userId: (request as any).user?.id
+      });
+      
+      reply.send({
         _success: true,
-        _fileUrl: '/uploads/placeholder-image.jpg',
-        _fileName: 'uploaded-file.jpg',
-        _fileType: 'image/jpeg'
+        _fileUrl: uploadResult.url,
+        _fileName: data.filename,
+        _fileType: data.mimetype,
+        _fileId: uploadResult.id,
+        _fileSize: uploadResult.size
       });
 
     } catch (error) {

@@ -67,7 +67,11 @@ class EnvironmentValidator {
 
     // Production-specific validations
     if (NODE_ENV === 'production') {
-      if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'repairx-production-secret-key-2024') {
+      if (!process.env.JWT_SECRET) {
+        errors.push('JWT_SECRET is required in production');
+      } else if (process.env.JWT_SECRET.length < 32) {
+        errors.push('JWT_SECRET must be at least 32 characters in production');
+      } else if (process.env.JWT_SECRET === 'repairx-production-secret-key-2024') {
         errors.push('JWT_SECRET must be changed from default value in production');
       }
 

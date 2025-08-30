@@ -10,8 +10,12 @@ const fastify: FastifyInstance = Fastify({
   }
 });
 
-// JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'repairx-production-secret-key-2024';
+// JWT Configuration - Secure production configuration
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is required for production');
+  process.exit(1);
+}
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 // Register plugins

@@ -125,6 +125,8 @@ class ProductionDatabase {
   private visualTestRuns: Map<string, any> = new Map();
   private visualTestResults: Map<string, any> = new Map();
   private visualBaselines: Map<string, any> = new Map();
+  private businessSettingsData: Map<string, any> = new Map();
+  private paymentPlansData: Map<string, any> = new Map();
   private dataPath: string;
 
   constructor() {
@@ -151,13 +153,15 @@ class ProductionDatabase {
                      'launchCampaigns', 'campaignChannels', 'mediaOutreaches', 'customerSuccessProfiles', 
                      'customerInterventions', 'successAutomationRules', 'successMilestones', 'printJobs',
                      'printerConfigurations', 'quotations', 'visualRegressionSuites', 'visualTestRuns', 
-                     'visualTestResults', 'visualBaselines'];
+                     'visualTestResults', 'visualBaselines', 'businessSettings', 'paymentPlans'];
       
       files.forEach(file => {
         const filePath = path.join(this.dataPath, `${file}.json`);
         if (fs.existsSync(filePath)) {
           const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-          (this as any)[file] = new Map(Object.entries(data));
+          const mapName = file === 'businessSettings' ? 'businessSettingsData' : 
+                         file === 'paymentPlans' ? 'paymentPlansData' : file;
+          (this as any)[mapName] = new Map(Object.entries(data));
         }
       });
       
@@ -174,11 +178,13 @@ class ProductionDatabase {
                      'launchCampaigns', 'campaignChannels', 'mediaOutreaches', 'customerSuccessProfiles',
                      'customerInterventions', 'successAutomationRules', 'successMilestones', 'printJobs',
                      'printerConfigurations', 'quotations', 'visualRegressionSuites', 'visualTestRuns', 
-                     'visualTestResults', 'visualBaselines'];
+                     'visualTestResults', 'visualBaselines', 'businessSettings', 'paymentPlans'];
       
       files.forEach(file => {
         const filePath = path.join(this.dataPath, `${file}.json`);
-        const data = Object.fromEntries((this as any)[file]);
+        const mapName = file === 'businessSettings' ? 'businessSettingsData' : 
+                       file === 'paymentPlans' ? 'paymentPlansData' : file;
+        const data = Object.fromEntries((this as any)[mapName]);
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
       });
       
@@ -783,6 +789,8 @@ class ProductionDatabase {
   visualTestRun = this.createGenericEntity('visualTestRuns');
   visualTestResult = this.createGenericEntity('visualTestResults');
   visualBaseline = this.createGenericEntity('visualBaselines');
+  businessSettings = this.createGenericEntity('businessSettingsData');
+  paymentPlans = this.createGenericEntity('paymentPlansData');
 
   // Generic entity operations factory
   private createGenericEntity(storeName: string) {
@@ -979,6 +987,8 @@ export interface DatabaseClient {
   visualTestRun: any;
   visualTestResult: any;
   visualBaseline: any;
+  businessSettings: any;
+  paymentPlans: any;
 }
 
 // Factory function to create database client

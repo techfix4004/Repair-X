@@ -567,11 +567,13 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       const installmentAmount = Math.round(((planData as any).totalAmount / (planData as any).installments) * 100) / 100;
       
       // Create payment plan
-      const paymentPlan = await mockDb.paymentPlans.create({
-        ...planData,
-        installmentAmount,
-        _status: 'ACTIVE',
-        _createdAt: new Date(),
+      const paymentPlan = await prisma.paymentPlans.create({
+        data: {
+          ...planData,
+          installmentAmount,
+          _status: 'ACTIVE',
+          _createdAt: new Date(),
+        }
       });
 
       return { _success: true, data: paymentPlan };
@@ -585,7 +587,9 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
-      const plan = await mockDb._paymentPlans._findById((request as any).params.id);
+      const plan = await prisma.paymentPlans.findFirst({
+        where: { id: (request as any).params.id }
+      });
       if (!plan) {
         return (reply as FastifyReply).status(404).send({ _success: false, _error: 'Payment plan not found' });
       }
