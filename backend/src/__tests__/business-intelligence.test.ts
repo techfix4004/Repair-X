@@ -9,13 +9,8 @@ dotenv.config();
  
  
 describe('AI-Powered Business Intelligence API', () => {
-  let authToken: string;
-  let testJobId: string;
-
   beforeAll(async () => {
-    // Mock authentication token for testing
-    authToken = 'mock-jwt-token';
-    testJobId = 'mock-job-id-123';
+    // Setup test environment
   });
 
   describe('AI Job Assignment', () => {

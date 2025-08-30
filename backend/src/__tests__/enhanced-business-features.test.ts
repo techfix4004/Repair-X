@@ -1,6 +1,6 @@
  
 /// <reference types="jest" />
-import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import { fastify } from '../index';
 
  
@@ -152,6 +152,7 @@ describe('RepairX Enhanced Business Features Tests', () => {
     test('should integrate with enhanced BI service', async () => {
       // This would typically test integration with the business intelligence service
       // For now, we verify the service exists
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { EnhancedBusinessIntelligence  } = (require('../services/business-intelligence-enhanced') as any);
       const bi = new EnhancedBusinessIntelligence();
       
