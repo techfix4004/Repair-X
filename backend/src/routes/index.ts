@@ -76,7 +76,7 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
     await server.register(qualityRoutes, { prefix: '/quality' });
 
     // Business Settings Management routes (20+ categories)
-    await server.register(businessSettingsRoutes, { prefix: '/business-settings' });
+    // await server.register(businessSettingsRoutes, { prefix: '/business-settings' }); // Temporarily disabled
 
     // Enhanced Business Settings (Advanced 20+ category system)
     await server.register(enhancedBusinessSettingsRoutes, { prefix: '/enhanced-business-settings' });

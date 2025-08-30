@@ -314,10 +314,13 @@ export async function businessSettingsRoutes(fastify: FastifyInstance) {
     schema: {
       ...commonSchema,
       summary: 'Get all business settings',
-      querystring: z.object({
-        category: z.string().optional(),
-        tenantId: z.string().optional()
-      })
+      querystring: {
+        type: 'object',
+        properties: {
+          category: { type: 'string' },
+          tenantId: { type: 'string' }
+        }
+      }
     }
   }, getBusinessSettings);
 
