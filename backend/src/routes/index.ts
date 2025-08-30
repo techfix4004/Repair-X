@@ -5,7 +5,7 @@ import { saasAdminAuthRoutes } from './saas-admin-auth';
 import { organizationManagementRoutes } from './organization-management';
 import { userRoutes, serviceRoutes, bookingRoutes, qualityRoutes } from './users';
 import { paymentRoutes } from './payments';
-import { deviceRoutes } from './devices'; // TEMPORARILY DISABLED FOR DATABASE MIGRATION
+import { deviceRoutes } from './devices';
 import { jobSheetRoutes } from './jobsheets';
 import { businessSettingsRoutes } from './business-settings';
 import { enhancedBusinessSettingsRoutes } from './enhanced-business-settings';
@@ -60,8 +60,8 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
     // Service management routes
     await server.register(serviceRoutes, { prefix: '/services' });
     
-    // Device management routes - TEMPORARILY DISABLED FOR DATABASE MIGRATION
-    // await server.register(deviceRoutes, { prefix: '/devices' });
+    // Device management routes
+    await server.register(deviceRoutes, { prefix: '/devices' });
     
     // Booking management routes
     await server.register(bookingRoutes, { prefix: '/bookings' });

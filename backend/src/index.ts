@@ -5,7 +5,7 @@
 import Fastify from 'fastify';
 import { healthRoutes } from './routes/health';
 import { healthRoutes as observabilityHealthRoutes } from './observability/health';
-import { registerRoutes } from './routes/simplified-index';
+import { registerRoutes } from './routes/index';
 import { registerPlugins } from './plugins';
 import { metricsMiddleware } from './observability/metrics';
 import { securityHeadersMiddleware, RateLimitService } from './security/security';
@@ -45,21 +45,6 @@ async function setupRoutes() {
 
 async function start() {
   try {
-    // Initialize database first
-    console.log('🗄️ Initializing database connection...');
-    const { initializeDatabase, checkDatabaseHealth } = await import('./utils/database');
-    
-    // Check database connectivity
-    const isHealthy = await checkDatabaseHealth();
-    if (!isHealthy) {
-      console.error('❌ Database connection failed');
-      process.exit(1);
-    }
-    
-    // Initialize database with basic data if needed
-    await initializeDatabase();
-    console.log('✅ Database initialized successfully');
-    
     await setupRoutes();
 
     // Start server with enhanced monitoring
