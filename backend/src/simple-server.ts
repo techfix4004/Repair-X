@@ -1,5 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { registerPhase5Routes } from './routes/phase5-advanced-ai';
 
 const fastify: FastifyInstance = Fastify({
@@ -7,6 +9,10 @@ const fastify: FastifyInstance = Fastify({
     level: process.env.NODE_ENV === 'production' ? 'warn' : 'info'
   }
 });
+
+// JWT Configuration
+const JWT_SECRET = process.env.JWT_SECRET || 'repairx-production-secret-key-2024';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 // Register plugins
 async function registerPlugins() {
@@ -145,7 +151,17 @@ fastify.post('/auth/login', async (request, reply) => {
       organizationSlug: organizationSlug || 'demo-company'
     };
     
-    const token = `jwt_mock_${user.id}_${userRole}`;
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        role: userRole,
+        loginType,
+        iat: Math.floor(Date.now() / 1000)
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
     
     return {
       success: true,
@@ -177,43 +193,25 @@ fastify.get('/auth/me', async (request, reply) => {
   
   // Mock user profile based on token
   const token = authHeader.replace('Bearer ', '');
-  if (token.startsWith('jwt_mock_')) {
-    // Extract role from token - handle both formats
-    const parts = token.split('_');
-    let role = 'CUSTOMER';
-    let userId = 'user_123';
-    
-    if (parts.length >= 4) {
-      // Format: jwt_mock_user_123456_ROLE
-      role = parts[parts.length - 1];
-      userId = parts[2];
-    } else if (parts.length >= 3) {
-      // Format: jwt_mock_user_123456
-      userId = parts[2];
-      // Try to determine role from email patterns
-      role = 'CUSTOMER';
-    }
-    
-    const roleToEmail = {
-      'SAAS_ADMIN': 'admin@repairx.com',
-      'ORG_OWNER': 'owner@demo-company.com', 
-      'MANAGER': 'manager@demo-company.com',
-      'TECHNICIAN': 'tech@demo-company.com',
-      'CUSTOMER': 'customer@demo-company.com'
-    };
+  try {
+    // Production JWT token verification
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
     
     return {
       success: true,
       data: {
         user: {
-          id: userId,
-          email: roleToEmail[role] || 'test@example.com',
-          role: role,
-          name: `Test ${role}`,
-          organizationSlug: role === 'SAAS_ADMIN' ? null : 'demo-company'
+          id: decoded.userId,
+          email: decoded.email,
+          role: decoded.role,
+          name: decoded.name || decoded.email.split('@')[0],
+          organizationSlug: decoded.organizationSlug,
+          loginType: decoded.loginType
         }
       }
     };
+  } catch (error) {
+    console.error('JWT verification failed:', error);
   }
   
   reply.code(401);
@@ -250,7 +248,18 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
       name: userEmail.split('@')[0]
     };
     
-    const token = `jwt_mock_${user.id}`;
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        loginType,
+        iat: Math.floor(Date.now() / 1000)
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
     
     return {
       success: true,
@@ -286,7 +295,17 @@ fastify.post('/api/v1/auth/register', async (request, reply) => {
       name: `${_firstName} ${_lastName}`
     };
     
-    const token = `jwt_mock_${user.id}`;
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        iat: Math.floor(Date.now() / 1000)
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
     
     return {
       success: true,
