@@ -5,7 +5,7 @@
 import Fastify from 'fastify';
 import { healthRoutes } from './routes/health';
 import { healthRoutes as observabilityHealthRoutes } from './observability/health';
-import { registerRoutes } from './routes/index';
+import { registerRoutes } from './routes/simplified-index';
 import { registerPlugins } from './plugins';
 import { metricsMiddleware } from './observability/metrics';
 import { securityHeadersMiddleware, RateLimitService } from './security/security';

@@ -1,10 +1,10 @@
 {
-  "timestamp": "2025-08-30T19:19:55.516Z",
+  "timestamp": "2025-08-30T19:29:53.735Z",
   "summary": {
-    "totalIssuesFound": 234,
-    "criticalIssues": 119,
-    "highIssues": 54,
-    "mediumIssues": 61
+    "totalIssuesFound": 241,
+    "criticalIssues": 123,
+    "highIssues": 53,
+    "mediumIssues": 65
   },
   "productionReadiness": {
     "status": "NOT_READY",
@@ -196,6 +196,12 @@
         "severity": "CRITICAL"
       },
       {
+        "file": "backend/src/routes/simplified-index.ts",
+        "pattern": "mock",
+        "matches": 4,
+        "severity": "CRITICAL"
+      },
+      {
         "file": "backend/src/routes/sms.ts",
         "pattern": "mock",
         "matches": 9,
@@ -253,6 +259,24 @@
         "file": "backend/src/simple-server.ts",
         "pattern": "mock",
         "matches": 3,
+        "severity": "CRITICAL"
+      },
+      {
+        "file": "backend/src/utils/database.ts",
+        "pattern": "mock",
+        "matches": 1,
+        "severity": "CRITICAL"
+      },
+      {
+        "file": "backend/src/utils/production-database.ts",
+        "pattern": "mock",
+        "matches": 1,
+        "severity": "CRITICAL"
+      },
+      {
+        "file": "backend/src/utils/real-database-implementation.ts",
+        "pattern": "mock",
+        "matches": 4,
         "severity": "CRITICAL"
       },
       {
@@ -1062,6 +1086,18 @@
         "severity": "CRITICAL"
       },
       {
+        "file": "backend/src/routes/simplified-index.ts",
+        "pattern": "mock",
+        "matches": 4,
+        "severity": "CRITICAL"
+      },
+      {
+        "file": "backend/src/routes/simplified-index.ts",
+        "pattern": "demo",
+        "matches": 1,
+        "severity": "MEDIUM"
+      },
+      {
         "file": "backend/src/routes/sms.ts",
         "pattern": "mock",
         "matches": 9,
@@ -1248,6 +1284,18 @@
         "severity": "HIGH"
       },
       {
+        "file": "backend/src/utils/database.ts",
+        "pattern": "mock",
+        "matches": 1,
+        "severity": "CRITICAL"
+      },
+      {
+        "file": "backend/src/utils/production-database.ts",
+        "pattern": "mock",
+        "matches": 1,
+        "severity": "CRITICAL"
+      },
+      {
         "file": "backend/src/utils/real-database-client.ts",
         "pattern": "sample",
         "matches": 1,
@@ -1257,6 +1305,18 @@
         "file": "backend/src/utils/real-database-client.ts",
         "pattern": "seed",
         "matches": 5,
+        "severity": "MEDIUM"
+      },
+      {
+        "file": "backend/src/utils/real-database-implementation.ts",
+        "pattern": "mock",
+        "matches": 4,
+        "severity": "CRITICAL"
+      },
+      {
+        "file": "backend/src/utils/real-database-implementation.ts",
+        "pattern": "seed",
+        "matches": 4,
         "severity": "MEDIUM"
       },
       {
@@ -2007,7 +2067,7 @@
         "file": "backend/src/index.ts",
         "issue": "Excessive console logging",
         "severity": "MEDIUM",
-        "count": 20
+        "count": 23
       },
       {
         "file": "backend/src/routes/chat.ts",
@@ -2088,23 +2148,28 @@
         "count": 6
       },
       {
+        "file": "backend/src/utils/production-database.ts",
+        "issue": "Excessive console logging",
+        "severity": "MEDIUM",
+        "count": 12
+      },
+      {
         "file": "backend/src/utils/real-database-client.ts",
         "issue": "Excessive console logging",
         "severity": "MEDIUM",
         "count": 45
       },
       {
+        "file": "backend/src/utils/real-database-implementation.ts",
+        "issue": "Excessive console logging",
+        "severity": "MEDIUM",
+        "count": 10
+      },
+      {
         "file": "frontend/src/lib/ai-integration.service.ts",
         "issue": "Excessive console logging",
         "severity": "MEDIUM",
         "count": 7
-      },
-      {
-        "file": "API Endpoints",
-        "issue": "Public endpoint /api/health requires authentication",
-        "severity": "HIGH",
-        "statusCode": "401",
-        "recommendation": "Review authentication middleware configuration"
       }
     ],
     "securityGaps": [
@@ -2147,7 +2212,7 @@
         "file": "Test Coverage",
         "issue": "Insufficient test coverage",
         "severity": "HIGH",
-        "coverage": "9.6%",
+        "coverage": "9.5%",
         "recommendation": "Increase test coverage to at least 70%"
       }
     ],
