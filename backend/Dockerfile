@@ -6,6 +6,9 @@ WORKDIR /app
 # Install basic build dependencies
 RUN apk update && apk add --no-cache python3 make g++ pkgconfig cairo-dev jpeg-dev pango-dev giflib-dev
 
+# Ensure data directory exists and is accessible for all stages
+RUN mkdir -p /app/data && chmod 777 /app/data
+
 # Set Puppeteer to skip download (not needed for production API)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
@@ -37,6 +40,9 @@ WORKDIR /app
 # Install only essential runtime dependencies
 RUN apk add --no-cache ca-certificates && rm -rf /var/cache/apk/*
 
+# Ensure data directory exists and is owned by nodejs
+RUN mkdir -p /app/data && chown -R nodejs:nodejs /app/data
+
 # Set environment variables
 ENV NODE_ENV=production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
@@ -49,6 +55,9 @@ RUN if [ -f package-lock.json ]; then npm ci --omit=dev --legacy-peer-deps && np
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nodejs:nodejs /app/uploads ./uploads
+
+# Copy data directory with correct ownership (optional if using volume, but safe)
+COPY --from=builder --chown=nodejs:nodejs /app/data ./data
 
 # --- CRITICAL: Copy generated Prisma client from builder ---
 COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
