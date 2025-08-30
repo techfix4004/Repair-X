@@ -23,10 +23,10 @@ export async function registerPlugins(_server: FastifyInstance): Promise<void> {
     },
   });
 
-  await _server.register(cors, {
-    origin: config._NODE_ENV === 'development' ? true : ['https://repairx.com'],
-    credentials: true,
-  });
+  // await _server.register(cors, {
+  //   origin: config._NODE_ENV === 'development' ? true : ['https://repairx.com'],
+  //   credentials: true,
+  // });
 
   await _server.register(rateLimit, {
     max: config._RATE_LIMIT_MAX,

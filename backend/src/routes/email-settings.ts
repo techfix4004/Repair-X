@@ -208,16 +208,16 @@ If you have any questions, please don't hesitate to contact us.
       },
     };
 
-    this.settings.set('default', defaultSettings);
+    this._settings.set('default', defaultSettings);
   }
 
   async getEmailSettings(_tenantId: string = 'default'): Promise<any> {
-    return this.settings.get(tenantId) || this.settings.get('default');
+    return this._settings.get(_tenantId) || this._settings.get('default');
   }
 
   async updateEmailSettings(_settings: unknown, _tenantId: string = 'default'): Promise<void> {
-    const validatedSettings = EmailSettingsSchema.parse(settings);
-    this.settings.set(tenantId, validatedSettings);
+    const validatedSettings = EmailSettingsSchema.parse(_settings);
+    this._settings.set(_tenantId, validatedSettings);
   }
 
   async testSMTPConnection(_smtpConfig: unknown): Promise<{ _success: boolean; message: string }> {
@@ -326,7 +326,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   const emailService = new EmailSettingsService();
 
   // Get email settings
-  server.get('/', async (request: FastifyRequest<{
+  _server.get('/', async (request: FastifyRequest<{
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -346,7 +346,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Update email settings
-  server.put('/', async (request: FastifyRequest<{
+  _server.put('/', async (request: FastifyRequest<{
     Body: unknown
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
@@ -370,7 +370,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Test SMTP connection
-  server.post('/test-smtp', async (request: FastifyRequest<{
+  _server.post('/test-smtp', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -391,7 +391,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Send test email
-  server.post('/send-test', async (request: FastifyRequest<{
+  _server.post('/send-test', async (request: FastifyRequest<{
     Body: { templateId: string; recipientEmail: string; sampleData: unknown }
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
@@ -415,7 +415,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Get email templates
-  server.get('/templates', async (request: FastifyRequest<{
+  _server.get('/templates', async (request: FastifyRequest<{
     Querystring: { tenantId?: string; category?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -440,7 +440,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Update email template
-  server.put('/templates/:templateId', async (request: FastifyRequest<{
+  _server.put('/templates/:templateId', async (request: FastifyRequest<{
     Params: { templateId: string }
     Body: unknown
     Querystring: { tenantId?: string }
@@ -466,7 +466,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Get email delivery statistics
-  server.get('/stats', async (request: FastifyRequest<{
+  _server.get('/stats', async (request: FastifyRequest<{
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -486,7 +486,7 @@ export async function emailSettingsRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Get available email variables for templates
-  server.get('/variables', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/variables', async (request: FastifyRequest, reply: FastifyReply) => {
     const variables = {
       _customer: [
         'customerName', 'customerEmail', 'customerPhone', 'customerAddress'

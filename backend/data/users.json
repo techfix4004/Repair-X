@@ -1,0 +1,15 @@
+{
+  "user_admin": {
+    "id": "user_admin",
+    "email": "admin@repairx.com",
+    "password": "$2b$10$hash.for.password",
+    "firstName": "System",
+    "lastName": "Administrator",
+    "role": "SUPER_ADMIN",
+    "status": "ACTIVE",
+    "organizationId": "org_default",
+    "hasActiveJobs": false,
+    "createdAt": "2025-08-30T16:16:08.724Z",
+    "updatedAt": "2025-08-30T16:16:08.724Z"
+  }
+}

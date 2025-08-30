@@ -1,0 +1,35 @@
+{
+  "service_1": {
+    "id": "service_1",
+    "name": "Mobile Phone Repair",
+    "description": "Screen replacement, battery issues, software problems",
+    "basePrice": 99.99,
+    "estimatedDuration": 60,
+    "isActive": true,
+    "categoryId": "cat_electronics",
+    "createdAt": "2025-08-30T16:16:08.724Z",
+    "updatedAt": "2025-08-30T16:16:08.724Z"
+  },
+  "service_2": {
+    "id": "service_2",
+    "name": "Laptop Repair",
+    "description": "Hardware diagnostics, screen replacement, keyboard repair",
+    "basePrice": 149.99,
+    "estimatedDuration": 120,
+    "isActive": true,
+    "categoryId": "cat_electronics",
+    "createdAt": "2025-08-30T16:16:08.724Z",
+    "updatedAt": "2025-08-30T16:16:08.724Z"
+  },
+  "service_3": {
+    "id": "service_3",
+    "name": "Appliance Repair",
+    "description": "Refrigerator, washing machine, dryer repair",
+    "basePrice": 199.99,
+    "estimatedDuration": 180,
+    "isActive": true,
+    "categoryId": "cat_appliances",
+    "createdAt": "2025-08-30T16:16:08.724Z",
+    "updatedAt": "2025-08-30T16:16:08.724Z"
+  }
+}

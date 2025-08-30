@@ -349,7 +349,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   const employeeService = new EmployeeManagementService();
 
   // Get all employees
-  server.get('/', async (request: FastifyRequest<{
+  _server.get('/', async (request: FastifyRequest<{
     Querystring: { tenantId?: string; department?: string; active?: boolean }
   }>, reply: FastifyReply) => {
     try {
@@ -378,7 +378,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Get employee by ID
-  server.get('/:id', async (request: FastifyRequest<{
+  _server.get('/:id', async (request: FastifyRequest<{
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
@@ -405,7 +405,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Create new employee
-  server.post('/', async (request: FastifyRequest<{
+  _server.post('/', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -426,7 +426,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Update employee
-  server.put('/:id', async (request: FastifyRequest<{
+  _server.put('/:id', async (request: FastifyRequest<{
     Params: { id: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -451,7 +451,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Delete employee (soft delete)
-  server.delete('/:id', async (request: FastifyRequest<{
+  _server.delete('/:id', async (request: FastifyRequest<{
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
@@ -473,7 +473,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Record attendance
-  server.post('/:id/attendance', async (request: FastifyRequest<{
+  _server.post('/:id/attendance', async (request: FastifyRequest<{
     Params: { id: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -497,7 +497,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Get employee attendance
-  server.get('/:id/attendance', async (request: FastifyRequest<{
+  _server.get('/:id/attendance', async (request: FastifyRequest<{
     Params: { id: string }
     Querystring: { startDate?: string; endDate?: string }
   }>, reply: FastifyReply) => {
@@ -520,7 +520,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Create performance review
-  server.post('/:id/reviews', async (request: FastifyRequest<{
+  _server.post('/:id/reviews', async (request: FastifyRequest<{
     Params: { id: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -544,7 +544,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Get employee reviews
-  server.get('/:id/reviews', async (request: FastifyRequest<{
+  _server.get('/:id/reviews', async (request: FastifyRequest<{
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
@@ -564,7 +564,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Get employee statistics
-  server.get('/:id/stats', async (request: FastifyRequest<{
+  _server.get('/:id/stats', async (request: FastifyRequest<{
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
@@ -591,7 +591,7 @@ export async function employeeManagementRoutes(_server: FastifyInstance): Promis
   });
 
   // Get overall statistics
-  server.get('/stats/overview', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/stats/overview', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const stats = await employeeService.getEmployeeStats();
       

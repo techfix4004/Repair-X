@@ -534,7 +534,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   const marketplaceService = new OutsourcingMarketplaceService();
 
   // Get all service providers
-  server.get('/', async (request: FastifyRequest<{
+  _server.get('/', async (request: FastifyRequest<{
     Querystring: { 
       tenantId?: string;
       status?: string;
@@ -561,7 +561,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Create new service provider
-  server.post('/', async (request: FastifyRequest<{
+  _server.post('/', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -582,7 +582,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Get service provider by ID
-  server.get('/:providerId', async (request: FastifyRequest<{
+  _server.get('/:providerId', async (request: FastifyRequest<{
     Params: { providerId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -609,7 +609,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Update service provider
-  server.put('/:providerId', async (request: FastifyRequest<{
+  _server.put('/:providerId', async (request: FastifyRequest<{
     Params: { providerId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -634,7 +634,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Find optimal providers for a job
-  server.post('/find-providers', async (request: FastifyRequest<{
+  _server.post('/find-providers', async (request: FastifyRequest<{
     Body: {
       serviceCategory: string;
       location: { city: string; state: string };
@@ -661,7 +661,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Assign job to provider
-  server.post('/assign-job', async (request: FastifyRequest<{
+  _server.post('/assign-job', async (request: FastifyRequest<{
     Body: {
       jobId: string;
       providerId: string;
@@ -686,7 +686,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Get provider performance analytics
-  server.get('/:providerId/performance', async (request: FastifyRequest<{
+  _server.get('/:providerId/performance', async (request: FastifyRequest<{
     Params: { providerId: string }
     Querystring: { startDate?: string; endDate?: string }
   }>, reply: FastifyReply) => {
@@ -710,7 +710,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Get marketplace analytics
-  server.get('/analytics/overview', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/analytics/overview', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const analytics = await marketplaceService.getMarketplaceAnalytics();
       
@@ -727,7 +727,7 @@ export async function outsourcingMarketplaceRoutes(_server: FastifyInstance): Pr
   });
 
   // Get service categories list
-  server.get('/categories/list', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/categories/list', async (request: FastifyRequest, reply: FastifyReply) => {
     const categories = [
       { _id: 'mobile-repair', _name: 'Mobile Device Repair', _icon: '📱' },
       { _id: 'computer-repair', _name: 'Computer Repair', _icon: '💻' },
