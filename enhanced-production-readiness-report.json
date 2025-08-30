@@ -1,10 +1,10 @@
 {
   "summary": {
     "totalTests": 41,
-    "passed": 37,
+    "passed": 39,
     "failed": 2,
-    "skipped": 2,
-    "successRate": "90.24"
+    "skipped": 0,
+    "successRate": "95.12"
   },
   "userRoles": {},
   "businessWorkflows": {
@@ -256,7 +256,7 @@
       "expectedStatus": 401,
       "actualStatus": 200,
       "error": "Unknown error",
-      "timestamp": "2025-08-30T15:23:57.056Z"
+      "timestamp": "2025-08-30T15:25:49.242Z"
     },
     {
       "endpoint": "/auth/me",
@@ -264,7 +264,7 @@
       "expectedStatus": 200,
       "actualStatus": 401,
       "error": "Authorization token required",
-      "timestamp": "2025-08-30T15:23:57.058Z"
+      "timestamp": "2025-08-30T15:25:49.244Z"
     }
   ],
   "coverage": {
@@ -276,7 +276,7 @@
     "totalUserRoles": 5
   },
   "metadata": {
-    "testDuration": "0.10",
+    "testDuration": "0.12",
     "productionReadiness": {
       "overall": "63.33",
       "breakdown": {
@@ -287,7 +287,7 @@
         "security": 100
       }
     },
-    "generatedAt": "2025-08-30T15:23:57.118Z",
+    "generatedAt": "2025-08-30T15:25:49.327Z",
     "frameworkVersion": "2.0",
     "environment": "development"
   }
