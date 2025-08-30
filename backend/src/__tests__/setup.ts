@@ -8,7 +8,7 @@ import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach 
 
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('SMS Management API Tests', () => {
   let app: FastifyInstance;
 

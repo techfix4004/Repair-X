@@ -113,7 +113,7 @@ export class AIBusinessIntelligenceService {
       
       return {
         id: uuidv4(),
-        confidence: confidence,
+        confidence,
         diagnosis: diagnosis.mainIssue,
         recommendedActions: recommendations.actions,
         estimatedCost: recommendations.cost,
@@ -339,7 +339,7 @@ export class AIBusinessIntelligenceService {
         throw new Error('Service not found');
       }
 
-      let basePrice = Number(service.basePrice);
+      const basePrice = Number(service.basePrice);
       const priceFactors = [];
 
       // Demand-based pricing

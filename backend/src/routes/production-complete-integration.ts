@@ -134,7 +134,7 @@ class EnhancedFieldOperations {
   }
 }
 
-// eslint-disable-next-line max-lines-per-function
+ 
 export async function productionReadinessRoutes(fastify: FastifyInstance) {
   const workflowManager = new WorkflowManager();
   const fieldOps = new EnhancedFieldOperations();

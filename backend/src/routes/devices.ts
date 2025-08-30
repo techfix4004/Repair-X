@@ -30,22 +30,22 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
     schema: {
       body: {
         type: 'object',
-        _required: ['brand', 'model', 'category', 'condition'],
-        _properties: {
+        required: ['brand', 'model', 'category', 'condition'],
+        properties: {
           brand: { type: 'string' },
-          _model: { type: 'string' },
-          _serialNumber: { type: 'string' },
-          _yearManufactured: { type: 'number' },
-          _category: { type: 'string' },
-          _subcategory: { type: 'string' },
-          _color: { type: 'string' },
-          _condition: { 
+          model: { type: 'string' },
+          serialNumber: { type: 'string' },
+          yearManufactured: { type: 'number' },
+          category: { type: 'string' },
+          subcategory: { type: 'string' },
+          color: { type: 'string' },
+          condition: { 
             type: 'string', 
-            _enum: ['EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED'] 
+            enum: ['EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED'] 
           },
-          _specifications: { type: 'object' },
-          _purchaseDate: { type: 'string' },
-          _warrantyExpiry: { type: 'string' }
+          specifications: { type: 'object' },
+          purchaseDate: { type: 'string' },
+          warrantyExpiry: { type: 'string' }
         }
       }
     }
@@ -86,7 +86,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Get all devices for a customer
   server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
+      const customerId = (request as any).userId || ((request as any).user?.id);
       
       if (!customerId) {
         return (reply as FastifyReply).status(401).send({ _error: 'Authentication required' });
@@ -177,21 +177,21 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
     schema: {
       body: {
         type: 'object',
-        _properties: {
+        properties: {
           brand: { type: 'string' },
-          _model: { type: 'string' },
-          _serialNumber: { type: 'string' },
-          _yearManufactured: { type: 'number' },
-          _category: { type: 'string' },
-          _subcategory: { type: 'string' },
-          _color: { type: 'string' },
-          _condition: { 
+          model: { type: 'string' },
+          serialNumber: { type: 'string' },
+          yearManufactured: { type: 'number' },
+          category: { type: 'string' },
+          subcategory: { type: 'string' },
+          color: { type: 'string' },
+          condition: { 
             type: 'string', 
-            _enum: ['EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED'] 
+            enum: ['EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED'] 
           },
-          _specifications: { type: 'object' },
-          _purchaseDate: { type: 'string' },
-          _warrantyExpiry: { type: 'string' }
+          specifications: { type: 'object' },
+          purchaseDate: { type: 'string' },
+          warrantyExpiry: { type: 'string' }
         }
       }
     }
@@ -200,7 +200,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
     Body: Partial<CreateDeviceRequest> 
   }>, reply: FastifyReply) => {
     try {
-      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
+      const customerId = (request as any).userId || ((request as any).user?.id);
       const deviceId = (request as any).params.id;
 
       // Verify device ownership
@@ -235,7 +235,7 @@ export async function deviceRoutes(server: FastifyInstance): Promise<void> {
   // Delete device
   server.delete('/:id', async (request: FastifyRequest<{ Params: { _id: string } }>, reply: FastifyReply) => {
     try {
-      const customerId = request.userId || (typeof request.user === 'object' && request.user && 'id' in request.user ? request.user.id : null);
+      const customerId = (request as any).userId || ((request as any).user?.id);
       const deviceId = (request as any).params.id;
 
       // Verify device ownership and check for active bookings/job sheets

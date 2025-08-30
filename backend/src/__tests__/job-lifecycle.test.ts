@@ -12,7 +12,7 @@ import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach 
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('Job Sheet Lifecycle API Tests', () => {
   let app: FastifyInstance;
   const jobStates = [

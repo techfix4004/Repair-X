@@ -494,7 +494,7 @@ class ProductionDatabase {
         customerRequestDetails: data.customerRequestDetails,
         createdAt: new Date(),
         updatedAt: new Date()
-      };
+      } as Booking;
       
       this.bookings.set(booking.id, booking);
       this.saveData();
@@ -551,7 +551,7 @@ class ProductionDatabase {
         warrantyExpiry: data.warrantyExpiry ? new Date(data.warrantyExpiry) : undefined,
         createdAt: new Date(),
         updatedAt: new Date()
-      };
+      } as Device;
       
       this.devices.set(device.id, device);
       this.saveData();
@@ -840,7 +840,7 @@ class ProductionDatabase {
         
         // Apply basic filtering
         if (where) {
-          entities = entities.filter(entity => {
+          entities = entities.filter((entity: any) => {
             return Object.keys(where).every(key => entity[key] === where[key]);
           });
         }

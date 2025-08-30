@@ -188,7 +188,7 @@ export default function CustomerLogin() {
               {/* Footer */}
               <Box textAlign="center" mt={4}>
                 <Typography variant="body2" color="text.secondary" mb={2}>
-                  Don't have access? Contact your service provider to set up your account.
+                  Don&apos;t have access? Contact your service provider to set up your account.
                 </Typography>
                 <Button 
                   variant="text" 

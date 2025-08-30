@@ -41,7 +41,7 @@ import apiMarketplaceRoutes from './api-marketplace';
 import mobileFieldOperationsRoutes from './mobile-field-operations';
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 export async function registerRoutes(server: FastifyInstance): Promise<void> {
   // Register SaaS Admin routes (separate from main API, only accessible via dedicated backend endpoint)
   await server.register(saasAdminAuthRoutes, { prefix: '/admin-backend' });

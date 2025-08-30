@@ -10,7 +10,7 @@ import { DatabaseClient, createDatabaseClient } from './real-database-client';
 
 // Global database instance for production use
 declare global {
-  // eslint-disable-next-line no-var
+   
   var cachedDatabase: DatabaseClient | undefined;
 }
 

@@ -1,6 +1,6 @@
  
 /// <reference types="jest" />
-/* eslint-disable no-undef */
+ 
 /// <reference types="jest" />
 import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
 
@@ -8,7 +8,7 @@ import Fastify, { FastifyInstance, FastifyReply } from 'fastify';
 import { registerPlugins } from '../plugins/index';
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('Device Registration API Tests', () => {
   let app: FastifyInstance;
 

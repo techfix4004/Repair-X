@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('AI-Powered Business Intelligence API', () => {
   let authToken: string;
   let testJobId: string;

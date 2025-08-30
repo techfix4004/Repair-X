@@ -24,7 +24,7 @@ interface TypingData {
 
 // Initialize Socket.IO for real-time chat
  
-// eslint-disable-next-line max-lines-per-function
+ 
 export const initializeChatSocket = (io: SocketIOServer) => {
   const chatNamespace = io.of('/chat');
 
@@ -165,7 +165,7 @@ interface UserJobsParamsType {
 }
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 export async function chatRoutes(fastify: FastifyInstance) {
   // Get chat messages for a job
   fastify.get('/job/:jobId', async (request: FastifyRequest<{Params: JobParamsType, _Querystring: ChatQueryType}>, reply: FastifyReply) => {

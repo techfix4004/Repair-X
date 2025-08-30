@@ -1,9 +1,9 @@
-/* eslint-disable no-undef */
+ 
 /// <reference types="jest" />
 import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import { fastify } from '../index';
 
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('RepairX Enhanced Business Features Tests', () => {
   beforeAll(async () => {
     await fastify.ready();

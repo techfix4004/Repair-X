@@ -39,7 +39,7 @@ const businessSettings: BusinessSetting[] = [
   }
 ];
 
-// eslint-disable-next-line max-lines-per-function
+ 
 export async function businessRoutes(fastify: FastifyInstance) {
   // Get business settings by category
   fastify.get('/settings/:category', async (request, reply: unknown) => {

@@ -349,7 +349,7 @@ async function getSmsMessages(request: FastifyRequest, reply: FastifyReply) {
 }
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 async function getSmsStats(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { period = '7d' } = (request as any).query as { period?: string };

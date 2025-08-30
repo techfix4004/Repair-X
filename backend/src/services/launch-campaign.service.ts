@@ -312,7 +312,7 @@ class LaunchCampaignService {
       const emailCampaign = await this.emailService.sendCampaign({
         subject: emailConfig.subject,
         content: emailConfig.content,
-        recipients: recipients,
+        recipients,
         templateId: emailConfig.templateId,
         campaignId: campaign.id,
       });
