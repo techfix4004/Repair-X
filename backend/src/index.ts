@@ -45,6 +45,21 @@ async function setupRoutes() {
 
 async function start() {
   try {
+    // Initialize database first
+    console.log('🗄️ Initializing database connection...');
+    const { initializeDatabase, checkDatabaseHealth } = await import('./utils/database');
+    
+    // Check database connectivity
+    const isHealthy = await checkDatabaseHealth();
+    if (!isHealthy) {
+      console.error('❌ Database connection failed');
+      process.exit(1);
+    }
+    
+    // Initialize database with basic data if needed
+    await initializeDatabase();
+    console.log('✅ Database initialized successfully');
+    
     await setupRoutes();
 
     // Start server with enhanced monitoring
