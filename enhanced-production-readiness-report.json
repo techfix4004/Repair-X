@@ -1,10 +1,10 @@
 {
   "summary": {
-    "totalTests": 46,
-    "passed": 44,
-    "failed": 0,
+    "totalTests": 41,
+    "passed": 1,
+    "failed": 38,
     "skipped": 2,
-    "successRate": "95.65"
+    "successRate": "2.44"
   },
   "userRoles": {},
   "businessWorkflows": {
@@ -13,220 +13,220 @@
       "steps": [
         {
           "name": "List Customers",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Create Customer",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Get Customer Details",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 3,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 3,
-      "successRate": "100.00"
+      "successRate": "0.00"
     },
     "Job Lifecycle Management": {
       "name": "Job Lifecycle Management",
       "steps": [
         {
           "name": "List Jobs",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Create Job",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Get Job Details",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Assign Technician",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Update Job Status",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 5,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 5,
-      "successRate": "100.00"
+      "successRate": "0.00"
     },
     "Technician Management": {
       "name": "Technician Management",
       "steps": [
         {
           "name": "List Technicians",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "List Available Technicians",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Create Technician",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 3,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 3,
-      "successRate": "100.00"
+      "successRate": "0.00"
     },
     "Payment Processing": {
       "name": "Payment Processing",
       "steps": [
         {
           "name": "Get Payment Methods",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Process Payment",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 2,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 2,
-      "successRate": "100.00"
+      "successRate": "0.00"
     },
     "Mobile Operations": {
       "name": "Mobile Operations",
       "steps": [
         {
           "name": "Get Assigned Jobs",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Mobile Check-in",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 2,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 2,
-      "successRate": "100.00"
+      "successRate": "0.00"
     },
     "Organization Management": {
       "name": "Organization Management",
       "steps": [
         {
           "name": "Get Organization Settings",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Get Organization Analytics",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 2,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 2,
-      "successRate": "100.00"
+      "successRate": "0.00"
     },
     "SaaS Administration": {
       "name": "SaaS Administration",
       "steps": [
         {
           "name": "List All Tenants",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Get Platform Analytics",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 2,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 2,
-      "successRate": "100.00"
+      "successRate": "0.00"
     },
     "Marketplace Integration": {
       "name": "Marketplace Integration",
       "steps": [
         {
           "name": "Get Marketplace Integrations",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         },
         {
           "name": "Get Marketplace Categories",
-          "status": "PASS",
-          "details": "Success"
+          "status": "FAIL",
+          "details": ""
         }
       ],
-      "overallStatus": "PASS",
-      "passedSteps": 2,
+      "overallStatus": "FAIL",
+      "passedSteps": 0,
       "totalSteps": 2,
-      "successRate": "100.00"
+      "successRate": "0.00"
     }
   },
   "apiEndpoints": {
     "/health": {
-      "status": "PASS",
-      "statusCode": 200,
+      "status": "FAIL",
+      "statusCode": "ERROR",
       "description": "Health check endpoint",
-      "hasData": true,
+      "hasData": false,
       "mockDataPresent": false
     },
     "/": {
-      "status": "PASS",
-      "statusCode": 200,
+      "status": "FAIL",
+      "statusCode": "ERROR",
       "description": "Root API endpoint",
-      "hasData": true,
+      "hasData": false,
       "mockDataPresent": false
     },
     "/api/marketplace/integrations": {
-      "status": "PASS",
-      "statusCode": 200,
+      "status": "FAIL",
+      "statusCode": "ERROR",
       "description": "Marketplace integrations",
-      "hasData": true,
-      "mockDataPresent": true
+      "hasData": false,
+      "mockDataPresent": false
     },
     "/api/marketplace/categories": {
-      "status": "PASS",
-      "statusCode": 200,
+      "status": "FAIL",
+      "statusCode": "ERROR",
       "description": "Marketplace categories",
-      "hasData": true,
+      "hasData": false,
       "mockDataPresent": false
     }
   },
   "securityTests": {
     "CORS Configuration": {
-      "status": "PASS",
+      "status": "FAIL",
       "description": "CORS Configuration"
     },
     "Security Headers - Content Security Policy": {
-      "status": "PASS",
+      "status": "FAIL",
       "description": "Security Headers - Content Security Policy"
     },
     "Security Headers - X-Frame-Options": {
-      "status": "PASS",
+      "status": "FAIL",
       "description": "Security Headers - X-Frame-Options"
     },
     "Rate Limiting Protection": {
@@ -234,27 +234,221 @@
       "description": "Rate Limiting Protection"
     },
     "JWT Token Validation": {
-      "status": "PASS",
+      "status": "FAIL",
       "description": "JWT Token Validation"
     },
     "Input Validation": {
-      "status": "PASS",
+      "status": "FAIL",
       "description": "Input Validation"
     }
   },
   "authenticationTests": {
     "totalTests": 6,
-    "passed": 6,
-    "failed": 0,
-    "successRate": "100.00"
+    "passed": 0,
+    "failed": 6,
+    "successRate": "0.00"
   },
-  "rbacTests": {
-    "totalTests": 5,
-    "passed": 5,
-    "failed": 0,
-    "successRate": "100.00"
-  },
-  "errors": [],
+  "rbacTests": {},
+  "errors": [
+    {
+      "endpoint": "/health",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.535Z"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.538Z"
+    },
+    {
+      "endpoint": "/api/marketplace/integrations",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.540Z"
+    },
+    {
+      "endpoint": "/api/marketplace/categories",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.542Z"
+    },
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.544Z"
+    },
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.546Z"
+    },
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.548Z"
+    },
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.549Z"
+    },
+    {
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.551Z"
+    },
+    {
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.553Z"
+    },
+    {
+      "endpoint": "/api/customers",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.554Z"
+    },
+    {
+      "endpoint": "/api/customers",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.556Z"
+    },
+    {
+      "endpoint": "/api/customers/cust_001",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.557Z"
+    },
+    {
+      "endpoint": "/api/jobs",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.559Z"
+    },
+    {
+      "endpoint": "/api/jobs",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.560Z"
+    },
+    {
+      "endpoint": "/api/jobs/job_001",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.561Z"
+    },
+    {
+      "endpoint": "/api/jobs/job_001/assign",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.563Z"
+    },
+    {
+      "endpoint": "/api/jobs/job_001/status",
+      "method": "PATCH",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.564Z"
+    },
+    {
+      "endpoint": "/api/technicians",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.566Z"
+    },
+    {
+      "endpoint": "/api/technicians/available",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.567Z"
+    },
+    {
+      "endpoint": "/api/technicians",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.568Z"
+    },
+    {
+      "endpoint": "/api/payments/methods",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.569Z"
+    },
+    {
+      "endpoint": "/api/payments/process",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.570Z"
+    },
+    {
+      "endpoint": "/api/mobile/jobs/assigned",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.571Z"
+    },
+    {
+      "endpoint": "/api/mobile/checkin",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.572Z"
+    },
+    {
+      "endpoint": "/api/org/settings",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.573Z"
+    },
+    {
+      "endpoint": "/api/org/analytics",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.574Z"
+    },
+    {
+      "endpoint": "/api/admin/tenants",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.575Z"
+    },
+    {
+      "endpoint": "/api/admin/analytics",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.576Z"
+    },
+    {
+      "endpoint": "/api/marketplace/integrations",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.577Z"
+    },
+    {
+      "endpoint": "/api/marketplace/categories",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.578Z"
+    },
+    {
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.594Z"
+    },
+    {
+      "endpoint": "/api/customers",
+      "method": "POST",
+      "error": "",
+      "timestamp": "2025-08-30T15:08:28.595Z"
+    }
+  ],
   "coverage": {
     "endpointsCovered": 4,
     "totalEndpoints": 30,
@@ -264,18 +458,18 @@
     "totalUserRoles": 5
   },
   "metadata": {
-    "testDuration": "0.38",
+    "testDuration": "0.08",
     "productionReadiness": {
-      "overall": "100.00",
+      "overall": "2.50",
       "breakdown": {
-        "basicEndpoints": 100,
-        "authentication": 100,
-        "rbac": 100,
-        "businessWorkflows": 100,
-        "security": 100
+        "basicEndpoints": 0,
+        "authentication": 0,
+        "rbac": 0,
+        "businessWorkflows": 0,
+        "security": 16.666666666666664
       }
     },
-    "generatedAt": "2025-08-28T16:44:03.747Z",
+    "generatedAt": "2025-08-30T15:08:28.598Z",
     "frameworkVersion": "2.0",
     "environment": "development"
   }

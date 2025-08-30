@@ -4,7 +4,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install basic build dependencies
-RUN apk add --no-cache python3 make g++
+RUN apk update && apk add --no-cache python3 make g++ pkgconfig cairo-dev jpeg-dev pango-dev giflib-dev
 
 # Set Puppeteer to skip download (not needed for production API)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
