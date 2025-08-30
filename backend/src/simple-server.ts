@@ -1,6 +1,6 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { registerPhase5Routes } from './routes/phase5-advanced-ai';
 
@@ -160,7 +160,7 @@ fastify.post('/auth/login', async (request, reply) => {
         iat: Math.floor(Date.now() / 1000)
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN } as SignOptions
     );
     
     return {
@@ -258,7 +258,7 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
         iat: Math.floor(Date.now() / 1000)
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN } as SignOptions
     );
     
     return {
@@ -304,7 +304,7 @@ fastify.post('/api/v1/auth/register', async (request, reply) => {
         iat: Math.floor(Date.now() / 1000)
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN } as SignOptions
     );
     
     return {
