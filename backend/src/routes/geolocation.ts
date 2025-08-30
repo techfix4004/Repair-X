@@ -23,6 +23,42 @@ interface ServiceAreaRequest {
   radiusKm?: number;
 }
 
+// Production reverse geocoding function
+async function reverseGeocode(latitude: number, longitude: number) {
+  try {
+    // Using OpenStreetMap Nominatim API (free alternative to Google Maps)
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&addressdetails=1`
+    );
+    
+    if (!response.ok) {
+      throw new Error('Geocoding service unavailable');
+    }
+    
+    const data = await response.json();
+    
+    return {
+      _address: data.display_name || `${latitude}, ${longitude}`,
+      _city: data.address?.city || data.address?.town || data.address?.village || 'Unknown',
+      _state: data.address?.state || data.address?.province || 'Unknown',
+      _zipCode: data.address?.postcode || 'Unknown',
+      _country: data.address?.country || 'Unknown',
+      _coordinates: { latitude, longitude }
+    };
+  } catch (error) {
+    console.error('Reverse geocoding error:', error);
+    // Fallback to coordinates if service fails
+    return {
+      _address: `${latitude}, ${longitude}`,
+      _city: 'Unknown',
+      _state: 'Unknown',
+      _zipCode: 'Unknown',
+      _country: 'Unknown',
+      _coordinates: { latitude, longitude }
+    };
+  }
+}
+
  
 // eslint-disable-next-line max-lines-per-function
 export async function geolocationRoutes(fastify: FastifyInstance) {
@@ -35,18 +71,11 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
         return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
       }
 
-      // Mock reverse geocoding - in production, use Google Maps API or similar
-      const mockAddress = {
-        _address: `${Math.floor(Math.random() * 9999) + 1} Main Street`,
-        _city: 'San Francisco',
-        _state: 'CA', 
-        _zipCode: '94105',
-        _country: 'USA',
-        _coordinates: { latitude, longitude }
-      };
+      // Production reverse geocoding using a third-party service (replace with your preferred service)
+      const address = await reverseGeocode(latitude, longitude);
 
       (reply as any).send({
-        _success: true, data: mockAddress
+        _success: true, data: address
       });
     } catch (error) {
       console.error('Reverse geocoding _error:', error);
@@ -63,12 +92,19 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
         return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
       }
 
-      // Get service areas from database (mock data for now)
-      const serviceAreas = [
-        { _name: 'San Francisco Bay Area', _centerLat: 37.7749, _centerLng: -122.4194, _radiusKm: 75 },
-        { _name: 'Los Angeles Metro', _centerLat: 34.0522, _centerLng: -118.2437, _radiusKm: 100 },
-        { _name: 'New York Metro', _centerLat: 40.7128, _centerLng: -74.0060, _radiusKm: 80 }
-      ];
+      // Get service areas from database
+      const { prisma } = await import('../utils/database');
+      const serviceAreas = await prisma.serviceArea.findMany({
+        where: { isActive: true },
+        select: {
+          id: true,
+          name: true,
+          centerLatitude: true,
+          centerLongitude: true,
+          radiusKm: true,
+          organizationId: true
+        }
+      });
 
       // Calculate distance using Haversine formula
       const calculateDistance = (lat1: number, _lon1: number, _lat2: number, _lon2: number): number => {
@@ -83,8 +119,8 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
       };
 
       // Check if location is within any service area
-      const availableAreas = serviceAreas.filter((_area: unknown) => {
-        const distance = calculateDistance(latitude, longitude, area.centerLat, area.centerLng);
+      const availableAreas = serviceAreas.filter((area: any) => {
+        const distance = calculateDistance(latitude, longitude, area.centerLatitude, area.centerLongitude);
         return distance <= area.radiusKm;
       });
 
@@ -115,35 +151,87 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
         return (reply as FastifyReply).status(400).send({ _error: 'Latitude and longitude are required' });
       }
 
-      // In a real implementation, this would query the database for technicians
-      // with location data and calculate distances
-      const mockTechnicians = [
-        {
-          _id: '1',
-          _name: 'John Smith',
-          _rating: 4.8,
-          _specialties: ['electronics', 'appliances'],
-          _estimatedArrivalTime: '30-45 minutes',
-          _distanceKm: 12.5,
-          _available: true
+      // Query database for nearby technicians
+      const { prisma } = await import('../utils/database');
+      
+      // Get technicians with location data
+      const technicians = await prisma.technician.findMany({
+        where: {
+          isActive: true,
+          isAvailable: true,
+          location: {
+            isNot: null
+          }
         },
-        {
-          _id: '2', 
-          _name: 'Sarah Johnson',
-          _rating: 4.9,
-          _specialties: ['automotive', 'home maintenance'],
-          _estimatedArrivalTime: '45-60 minutes', 
-          _distanceKm: 18.2,
-          _available: true
+        include: {
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              phone: true
+            }
+          },
+          skills: true,
+          location: true,
+          reviews: {
+            select: {
+              rating: true
+            }
+          }
         }
-      ];
+      });
+
+      // Calculate distance and filter by radius
+      const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+        const R = 6371; // Earth's radius in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      };
+
+      const nearbyTechnicians = technicians
+        .map(tech => {
+          if (!tech.location) return null;
+          
+          const distance = calculateDistance(
+            latitude, longitude,
+            tech.location.latitude, tech.location.longitude
+          );
+          
+          if (distance > radiusKm) return null;
+          
+          const avgRating = tech.reviews.length > 0 
+            ? tech.reviews.reduce((sum, review) => sum + review.rating, 0) / tech.reviews.length
+            : 0;
+          
+          const estimatedTime = Math.round(distance * 2.5); // 2.5 minutes per km estimate
+          
+          return {
+            _id: tech.id,
+            _name: `${tech.user.firstName} ${tech.user.lastName}`,
+            _rating: Number(avgRating.toFixed(1)),
+            _specialties: tech.skills.map(skill => skill.name),
+            _estimatedArrivalTime: `${estimatedTime}-${estimatedTime + 15} minutes`,
+            _distanceKm: Number(distance.toFixed(1)),
+            _available: tech.isAvailable,
+            _phone: tech.user.phone,
+            _email: tech.user.email
+          };
+        })
+        .filter(tech => tech !== null)
+        .sort((a, b) => a._distanceKm - b._distanceKm); // Sort by distance
 
       (reply as any).send({
         success: true, data: {
-          technicians: mockTechnicians,
+          technicians: nearbyTechnicians,
           _searchRadius: radiusKm,
           _coordinates: { latitude, longitude },
-          _totalFound: mockTechnicians.length
+          _totalFound: nearbyTechnicians.length
         }
       });
 
@@ -166,21 +254,57 @@ export async function geolocationRoutes(fastify: FastifyInstance) {
         return (reply as FastifyReply).status(400).send({ _error: 'Origin and destination coordinates are required' });
       }
 
-      // Mock travel time calculation - in production, use Google Maps API
-      const distance = Math.sqrt(
-        Math.pow(destination.latitude - origin.latitude, 2) + 
-        Math.pow(destination.longitude - origin.longitude, 2)
-      ) * 111; // Approximate km conversion
+      // Calculate precise distance using Haversine formula
+      const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+        const R = 6371; // Earth's radius in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+      };
+      
+      const distance = calculateDistance(
+        origin.latitude, origin.longitude,
+        destination.latitude, destination.longitude
+      );
 
-      const baseTime = mode === 'driving' ? _2 : mode === 'walking' ? 15 : 5; // minutes per km
-      const estimatedMinutes = Math.round(distance * baseTime);
+      // More accurate time estimation based on mode and traffic patterns
+      let estimatedMinutes: number;
+      switch (mode) {
+        case 'driving':
+          // Account for city driving conditions (avg 30-40 km/h)
+          estimatedMinutes = Math.round(distance * 2.2); // 2.2 minutes per km
+          break;
+        case 'walking':
+          // Average walking speed 5 km/h
+          estimatedMinutes = Math.round(distance * 12); // 12 minutes per km
+          break;
+        case 'transit':
+          // Public transit with stops and transfers
+          estimatedMinutes = Math.round(distance * 4.5); // 4.5 minutes per km
+          break;
+        default:
+          estimatedMinutes = Math.round(distance * 2.2);
+      }
+
+      // Add buffer time for real-world conditions
+      const bufferTime = Math.round(estimatedMinutes * 0.15); // 15% buffer
+      const totalTime = estimatedMinutes + bufferTime;
 
       (reply as any).send({
         _success: true, data: {
           distanceKm: Math.round(distance * 10) / 10,
-          _estimatedTravelTimeMinutes: estimatedMinutes,
+          _estimatedTravelTimeMinutes: totalTime,
+          _baseTime: estimatedMinutes,
+          _bufferTime: bufferTime,
           mode,
-          origin, destination }
+          origin, 
+          destination,
+          _lastCalculated: new Date().toISOString()
+        }
       });
 
     } catch (error) {

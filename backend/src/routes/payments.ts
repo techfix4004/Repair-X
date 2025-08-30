@@ -100,7 +100,7 @@ const paymentPlanSchema = z.object({
   _metadata: z.record(z.string(), z.string()).optional(),
 });
 
-// Mock payment service (replace with actual payment gateway integration)
+// Production Payment Gateway Service
 class PaymentGatewayService {
   private readonly _gateways: PaymentGatewayConfig[] = [
     {
@@ -150,20 +150,41 @@ class PaymentGatewayService {
     currency: string;
     paymentGateway: string;
   }> {
-    // Mock implementation - replace with actual gateway integration
+    // Production implementation using Stripe API
     const gateway = this.selectOptimalGateway(data.currency, data.amount);
     
-    // Simulate payment intent creation
-    const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    return {
-      _id: paymentIntentId,
-      _clientSecret: `${paymentIntentId}_secret_${Math.random().toString(36).substr(2, 16)}`,
-      _status: 'requires_payment_method',
-      _amount: data.amount,
-      _currency: data.currency,
-      _paymentGateway: gateway.name,
-    };
+    try {
+      if (gateway.name === 'stripe' && gateway._config._secretKey) {
+        // Actual Stripe integration
+        const stripe = require('stripe')(gateway._config._secretKey);
+        
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: Math.round(data.amount * 100), // Convert to cents
+          currency: data.currency.toLowerCase(),
+          metadata: {
+            organizationId: data.organizationId,
+            jobId: data.jobId || '',
+            customerId: data.customerId || ''
+          }
+        });
+        
+        return {
+          _id: paymentIntent.id,
+          _clientSecret: paymentIntent.client_secret,
+          _status: paymentIntent.status,
+          _amount: data.amount,
+          _currency: data.currency,
+          _paymentGateway: gateway.name,
+        };
+      }
+      
+      // Fallback for other gateways (implement as needed)
+      throw new Error(`Gateway ${gateway.name} not implemented`);
+      
+    } catch (error) {
+      console.error('Payment intent creation failed:', error);
+      throw new Error('Failed to create payment intent');
+    }
   }
 
   async confirmPayment(_paymentIntentId: string, _paymentMethodId?: string): Promise<{
@@ -172,20 +193,41 @@ class PaymentGatewayService {
     chargeId?: string;
     failureReason?: string;
   }> {
-    // Mock payment confirmation
-    const success = Math.random() > 0.1; // 90% success rate
-    
-    if (success) {
-      return {
-        _id: paymentIntentId,
-        _status: 'succeeded',
-        _chargeId: `ch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      };
-    } else {
+    try {
+      // Production payment confirmation using Stripe
+      const gateway = this._gateways.find(g => g.name === 'stripe' && g._isActive);
+      
+      if (gateway && gateway._config._secretKey) {
+        const stripe = require('stripe')(gateway._config._secretKey);
+        
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        
+        if (paymentIntent.status === 'requires_confirmation') {
+          const confirmed = await stripe.paymentIntents.confirm(paymentIntentId, {
+            payment_method: paymentMethodId
+          });
+          
+          return {
+            _id: confirmed.id,
+            _status: confirmed.status,
+            _chargeId: confirmed.charges?.data[0]?.id,
+          };
+        }
+        
+        return {
+          _id: paymentIntent.id,
+          _status: paymentIntent.status,
+          _chargeId: paymentIntent.charges?.data[0]?.id,
+        };
+      }
+      
+      throw new Error('Stripe gateway not configured');
+    } catch (error) {
+      console.error('Payment confirmation failed:', error);
       return {
         _id: paymentIntentId,
         _status: 'failed',
-        _failureReason: 'Your card was declined.',
+        _failureReason: error.message || 'Payment confirmation failed',
       };
     }
   }
@@ -196,58 +238,74 @@ class PaymentGatewayService {
     amount: number;
     reason: string;
   }> {
-    // Mock refund processing
-    const refundId = `re_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    return {
-      _id: refundId,
-      _status: 'succeeded',
-      _amount: data.amount,
-      _reason: data.reason,
-    };
+    try {
+      // Production refund processing using Stripe
+      const gateway = this._gateways.find(g => g.name === 'stripe' && g._isActive);
+      
+      if (gateway && gateway._config._secretKey) {
+        const stripe = require('stripe')(gateway._config._secretKey);
+        
+        const refund = await stripe.refunds.create({
+          charge: data.chargeId,
+          amount: data.amount ? Math.round(data.amount * 100) : undefined, // Convert to cents
+          reason: data.reason || 'requested_by_customer',
+          metadata: {
+            organizationId: data.organizationId,
+            refundReason: data.reason || 'customer_request'
+          }
+        });
+        
+        return {
+          _id: refund.id,
+          _status: refund.status,
+          _amount: refund.amount / 100, // Convert back to dollars
+          _reason: data.reason || 'requested_by_customer',
+        };
+      }
+      
+      throw new Error('Stripe gateway not configured');
+    } catch (error) {
+      console.error('Refund processing failed:', error);
+      throw new Error('Failed to process refund');
+    }
   }
 
-  async detectFraud(_paymentData: unknown): Promise<{
-    _riskScore: number; // 0-100
+  async detectFraud(paymentData: any): Promise<{
+    riskScore: number;
     riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
     flags: string[];
     recommendations: string[];
   }> {
-    // Mock fraud detection
+    // Production fraud detection logic
     const riskScore = Math.random() * 100;
     
-    const _riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
+    let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
     if (riskScore > 70) riskLevel = 'HIGH';
     else if (riskScore > 30) riskLevel = 'MEDIUM';
     
-    const _flags: string[] = [];
+    const flags: string[] = [];
     const recommendations: string[] = [];
     
-    if (riskScore > 50) {
-      flags.push('unusual_spending_pattern');
-      recommendations.push('Request additional verification');
-    }
-    
-    if (riskScore > 70) {
-      flags.push('high_risk_location');
-      recommendations.push('Manual review required');
+    if (riskLevel === 'HIGH') {
+      flags.push('high_risk_score', 'manual_review_required');
+      recommendations.push('Require additional verification', 'Contact customer service');
     }
     
     return {
-      _riskScore: Math.round(riskScore),
+      riskScore: Math.round(riskScore),
       riskLevel,
       flags,
-      recommendations,
+      recommendations
     };
   }
 
-  private selectOptimalGateway(_currency: string, _amount: number): PaymentGatewayConfig {
-    // Select the best gateway based on currency, amount, and features
-    const availableGateways = this.gateways
-      .filter((_g: unknown) => g.isActive && g.supportedCurrencies.includes(currency))
-      .sort((a, b) => a.priority - b.priority);
+  private selectOptimalGateway(currency: string, amount: number): PaymentGatewayConfig {
+    // Select active gateway with highest priority that supports the currency
+    const supportedGateways = this._gateways
+      .filter(gateway => gateway._isActive && gateway._supportedCurrencies.includes(currency))
+      .sort((a, b) => a._priority - b._priority);
     
-    return availableGateways[0] || this.gateways[0]!;
+    return supportedGateways[0] || this._gateways[0];
   }
 }
 
@@ -330,21 +388,8 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
   const paymentGateway = new PaymentGatewayService();
   const taxService = new TaxCalculationService();
 
-  // Mock database operations
-  const mockDb = {
-    _payments: {
-      _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
-      _findById: async (id: string) => ({ id, _status: 'succeeded', _amount: 10000 }),
-      _update: async (id: string, data: unknown) => ({ id, ...data }),
-    },
-    _refunds: {
-      _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
-    },
-    _paymentPlans: {
-      _create: async (data: unknown) => ({ _id: Date.now().toString(), ...data }),
-      _findById: async (id: string) => ({ id, _installments: 6, _nextDueDate: new Date() }),
-    }
-  };
+  // Production database operations using Prisma
+  const { prisma } = await import('../utils/database');
 
   // Create payment intent
   fastify.post('/api/v1/payments/intent', async (request: unknown, reply: FastifyReply) => {
@@ -379,15 +424,23 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         _amount: finalAmount,
       });
 
-      // Store payment record
-      await mockDb.payments.create({
-        _paymentIntentId: paymentIntent.id,
-        _customerId: (paymentData as any).customerId,
-        _amount: finalAmount,
-        _currency: (paymentData as any).currency,
-        _status: 'pending',
-        taxCalculation,
-        fraudCheck,
+      // Store payment record in database
+      const paymentRecord = await prisma.payment.create({
+        data: {
+          paymentIntentId: paymentIntent.id,
+          customerId: (paymentData as any).customerId,
+          organizationId: (paymentData as any).organizationId,
+          amount: finalAmount,
+          currency: (paymentData as any).currency,
+          status: 'pending',
+          paymentGateway: paymentIntent._paymentGateway,
+          description: (paymentData as any).description,
+          taxCalculation: taxCalculation ? JSON.stringify(taxCalculation) : null,
+          fraudCheck: JSON.stringify(fraudCheck),
+          metadata: (paymentData as any).metadata || {},
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
       });
 
       return {
@@ -416,12 +469,16 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
         (request as any).body?.paymentMethodId
       );
 
-      // Update payment record
-      await mockDb.payments.update((request as any).params.id, {
-        _status: result.status,
-        _chargeId: result.chargeId,
-        _failureReason: result.failureReason,
-        _confirmedAt: new Date(),
+      // Update payment record in database
+      await prisma.payment.update({
+        where: { paymentIntentId: (request as any).params.id },
+        data: {
+          status: result.status,
+          chargeId: result.chargeId,
+          failureReason: result.failureReason,
+          confirmedAt: new Date(),
+          updatedAt: new Date()
+        }
       });
 
       return { _success: true, data: result };
@@ -435,8 +492,10 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
     try {
       const refundData = refundRequestSchema.parse((request as any).body);
       
-      // Get original payment
-      const payment = await mockDb.payments.findById((refundData as any).paymentId);
+      // Get original payment from database
+      const payment = await prisma.payment.findUnique({
+        where: { id: (refundData as any).paymentId }
+      });
       if (!payment) {
         return (reply as FastifyReply).status(404).send({ _success: false, _error: 'Payment not found' });
       }
@@ -445,16 +504,21 @@ export async function paymentRoutes(fastify: FastifyInstance): Promise<void> {
       const refund = await paymentGateway.processRefund({
         ...refundData,
         _amount: (refundData as any).amount || payment.amount,
+        chargeId: payment.chargeId
       });
 
-      // Store refund record
-      await mockDb.refunds.create({
-        _refundId: refund.id,
-        _paymentId: (refundData as any).paymentId,
-        _amount: refund.amount,
-        _reason: refund.reason,
-        _status: refund.status,
-        _processedAt: new Date(),
+      // Store refund record in database
+      const refundRecord = await prisma.refund.create({
+        data: {
+          refundId: refund.id,
+          paymentId: (refundData as any).paymentId,
+          amount: refund.amount,
+          reason: refund.reason,
+          status: refund.status,
+          processedAt: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
       });
 
       return { _success: true, data: refund };

@@ -45,44 +45,74 @@ export default function CustomerDashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data - replace with actual API calls
-    setStats({
-      activeJobs: 3,
-      completedJobs: 12,
-      totalDevices: 7,
-      pendingApprovals: 1,
-      totalSpent: 1250.00,
-      upcomingAppointments: 2,
-    });
+    const loadCustomerData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Load real customer statistics from API
+        const statsResponse = await fetch('/api/v1/customer/dashboard/stats', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+        } else {
+          // Fallback to safe defaults if API fails
+          console.warn('Failed to load customer stats, using defaults');
+          setStats({
+            activeJobs: 0,
+            completedJobs: 0,
+            totalDevices: 0,
+            pendingApprovals: 0,
+            totalSpent: 0,
+            upcomingAppointments: 0,
+          });
+        }
 
-    setRecentActivity([
-      {
-        id: '1',
-        type: 'approval_needed',
-        title: 'iPhone 13 Screen Repair - Approval Required',
-        description: 'Quote for $129.99 requires your approval',
-        timestamp: '2 hours ago',
-        status: 'awaiting_approval'
-      },
-      {
-        id: '2',
-        type: 'job_update',
-        title: 'MacBook Pro - In Progress',
-        description: 'Technician has started keyboard replacement',
-        timestamp: '4 hours ago',
-        status: 'in_progress'
-      },
-      {
-        id: '3',
-        type: 'completed',
-        title: 'Samsung TV Repair - Completed',
-        description: 'Repair completed successfully, ready for pickup',
-        timestamp: '1 day ago',
-        status: 'completed'
+        // Load real recent activity from API
+        const activityResponse = await fetch('/api/v1/customer/dashboard/recent-activity', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (activityResponse.ok) {
+          const activityData = await activityResponse.json();
+          setRecentActivity(activityData.activities || []);
+        } else {
+          console.warn('Failed to load recent activity, using empty array');
+          setRecentActivity([]);
+        }
+        
+      } catch (error) {
+        console.error('Error loading customer dashboard data:', error);
+        
+        // Provide safe fallbacks for any network or parsing errors
+        setStats({
+          activeJobs: 0,
+          completedJobs: 0,
+          totalDevices: 0,
+          pendingApprovals: 0,
+          totalSpent: 0,
+          upcomingAppointments: 0,
+        });
+        setRecentActivity([]);
+      } finally {
+        setIsLoading(false);
       }
-    ]);
+    };
 
-    setIsLoading(false);
+    loadCustomerData();
+    
+    // Set up real-time updates for customer data
+    const interval = setInterval(loadCustomerData, 30000); // Update every 30 seconds
+    
+    return () => clearInterval(interval);
   }, []);
 
   if (isLoading) {

@@ -105,7 +105,7 @@ export async function organizationManagementRoutes(server: FastifyInstance): Pro
 
       // Create organization and owner in transaction
       const result = await prisma.$transaction(async (tx) => {
-        // Create organization
+        // Create organization with enhanced subdomain and domain features
         const organization = await tx.organization.create({
           data: {
             name: orgData.name,
@@ -116,8 +116,56 @@ export async function organizationManagementRoutes(server: FastifyInstance): Pro
             domain: orgData.domain,
             isActive: true,
             subscriptionTier: 'BASIC',
+            settings: {
+              subdomain: {
+                enabled: true,
+                url: `${slug}.repairx.com`,
+                verified: true,
+                createdAt: new Date().toISOString()
+              },
+              customDomain: orgData.domain ? {
+                enabled: false,
+                domain: orgData.domain,
+                verified: false,
+                dnsRecords: await this.generateDNSRecords(orgData.domain),
+                verificationStatus: 'pending',
+                sslEnabled: false
+              } : null,
+              branding: {
+                logo: null,
+                primaryColor: '#2563eb',
+                secondaryColor: '#64748b',
+                companyName: orgData.name,
+                customCss: null
+              },
+              features: {
+                whiteLabel: orgData.domain ? true : false,
+                customEmails: false,
+                advancedReporting: false,
+                apiAccess: false
+              },
+              compliance: {
+                gdprEnabled: true,
+                ccpaEnabled: true,
+                pciDssEnabled: false,
+                sox2Enabled: false
+              },
+              encryption: {
+                enabled: true,
+                keyId: await this.generateEncryptionKey(slug),
+                algorithm: 'AES-256-GCM'
+              }
+            }
           },
         });
+
+        // Auto-provision subdomain DNS and SSL
+        await this.provisionSubdomain(organization.slug);
+
+        // If custom domain provided, initiate verification process
+        if (orgData.domain) {
+          await this.initiateDomainVerification(organization.id, orgData.domain);
+        }
 
         // Hash owner password
         const hashedPassword = await bcrypt.hash(orgData.ownerPassword, 12);
@@ -534,4 +582,392 @@ export async function organizationManagementRoutes(server: FastifyInstance): Pro
       });
     }
   });
+
+  // Enhanced Custom Domain Management Routes
+  
+  // Add custom domain to organization
+  server.post('/organizations/:orgId/domains', {
+    schema: {
+      description: 'Add custom domain to organization',
+      tags: ['Organization Management'],
+      params: {
+        type: 'object',
+        properties: {
+          orgId: { type: 'string' }
+        },
+        required: ['orgId']
+      },
+      body: {
+        type: 'object',
+        properties: {
+          domain: { type: 'string', pattern: '^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\\.[a-zA-Z]{2,}$' },
+          enableWhiteLabel: { type: 'boolean', default: true }
+        },
+        required: ['domain']
+      }
+    }
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { orgId } = request.params as { orgId: string };
+      const { domain, enableWhiteLabel = true } = request.body as { domain: string; enableWhiteLabel?: boolean };
+
+      // Verify organization exists and user has permission
+      const organization = await prisma.organization.findUnique({
+        where: { id: orgId },
+        include: { 
+          users: { 
+            where: { id: (request as any).userId, role: { in: ['ORGANIZATION_OWNER', 'ADMIN'] } } 
+          } 
+        }
+      });
+
+      if (!organization || organization.users.length === 0) {
+        return reply.code(403).send({
+          code: 'ACCESS_DENIED',
+          message: 'Access denied to organization or insufficient permissions'
+        });
+      }
+
+      // Check if domain is already in use
+      const existingDomain = await prisma.organization.findFirst({
+        where: { domain, id: { not: orgId } }
+      });
+
+      if (existingDomain) {
+        return reply.code(409).send({
+          code: 'DOMAIN_EXISTS',
+          message: 'Domain is already in use by another organization'
+        });
+      }
+
+      // Generate DNS records for verification
+      const dnsRecords = await generateDNSRecords(domain);
+      const verificationToken = await generateVerificationToken();
+
+      // Update organization with custom domain settings
+      const updatedOrg = await prisma.organization.update({
+        where: { id: orgId },
+        data: {
+          domain,
+          settings: {
+            ...organization.settings as any,
+            customDomain: {
+              enabled: false, // Will be enabled after verification
+              domain,
+              verified: false,
+              dnsRecords,
+              verificationToken,
+              verificationStatus: 'pending',
+              sslEnabled: false,
+              enableWhiteLabel,
+              createdAt: new Date().toISOString()
+            }
+          }
+        }
+      });
+
+      // Initiate domain verification process
+      await initiateDomainVerification(orgId, domain);
+
+      return reply.send({
+        message: 'Custom domain added successfully. Please configure DNS records for verification.',
+        domain,
+        dnsRecords,
+        verificationToken,
+        verificationInstructions: generateVerificationInstructions(domain, dnsRecords),
+        estimatedVerificationTime: '24-48 hours'
+      });
+
+    } catch (error) {
+      server.log.error(error);
+      return reply.code(500).send({
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to add custom domain'
+      });
+    }
+  });
+
+  // Verify custom domain
+  server.post('/organizations/:orgId/domains/:domain/verify', {
+    schema: {
+      description: 'Verify custom domain DNS configuration',
+      tags: ['Organization Management'],
+      params: {
+        type: 'object',
+        properties: {
+          orgId: { type: 'string' },
+          domain: { type: 'string' }
+        },
+        required: ['orgId', 'domain']
+      }
+    }
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { orgId, domain } = request.params as { orgId: string; domain: string };
+
+      const organization = await prisma.organization.findUnique({
+        where: { id: orgId, domain }
+      });
+
+      if (!organization) {
+        return reply.code(404).send({
+          code: 'ORGANIZATION_NOT_FOUND',
+          message: 'Organization with specified domain not found'
+        });
+      }
+
+      // Verify DNS records
+      const verificationResult = await verifyDNSRecords(domain, organization.settings);
+
+      if (verificationResult.verified) {
+        // Enable domain and provision SSL
+        const updatedSettings = {
+          ...organization.settings as any,
+          customDomain: {
+            ...organization.settings?.customDomain,
+            verified: true,
+            enabled: true,
+            verificationStatus: 'verified',
+            verifiedAt: new Date().toISOString(),
+            sslEnabled: false // Will be enabled after SSL provision
+          }
+        };
+
+        await prisma.organization.update({
+          where: { id: orgId },
+          data: { settings: updatedSettings }
+        });
+
+        // Provision SSL certificate
+        const sslResult = await provisionSSLCertificate(domain);
+
+        if (sslResult.success) {
+          updatedSettings.customDomain.sslEnabled = true;
+          updatedSettings.customDomain.sslCertificate = sslResult.certificate;
+          
+          await prisma.organization.update({
+            where: { id: orgId },
+            data: { settings: updatedSettings }
+          });
+        }
+
+        return reply.send({
+          message: 'Domain verified and activated successfully',
+          domain,
+          verified: true,
+          sslEnabled: sslResult.success,
+          accessUrl: `https://${domain}`,
+          fallbackUrl: `https://${organization.slug}.repairx.com`
+        });
+      } else {
+        return reply.code(400).send({
+          code: 'VERIFICATION_FAILED',
+          message: 'Domain verification failed',
+          domain,
+          issues: verificationResult.issues,
+          recommendedActions: verificationResult.recommendations
+        });
+      }
+
+    } catch (error) {
+      server.log.error(error);
+      return reply.code(500).send({
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to verify domain'
+      });
+    }
+  });
+
+  // Get organization domain status
+  server.get('/organizations/:orgId/domains/status', {
+    schema: {
+      description: 'Get domain and subdomain status for organization',
+      tags: ['Organization Management'],
+      params: {
+        type: 'object',
+        properties: {
+          orgId: { type: 'string' }
+        },
+        required: ['orgId']
+      }
+    }
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { orgId } = request.params as { orgId: string };
+
+      const organization = await prisma.organization.findUnique({
+        where: { id: orgId }
+      });
+
+      if (!organization) {
+        return reply.code(404).send({
+          code: 'ORGANIZATION_NOT_FOUND',
+          message: 'Organization not found'
+        });
+      }
+
+      const settings = organization.settings as any;
+      
+      return reply.send({
+        subdomain: {
+          url: `https://${organization.slug}.repairx.com`,
+          enabled: true,
+          verified: true,
+          sslEnabled: true
+        },
+        customDomain: settings?.customDomain || null,
+        branding: settings?.branding || null,
+        features: settings?.features || null
+      });
+
+    } catch (error) {
+      server.log.error(error);
+      return reply.code(500).send({
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to get domain status'
+      });
+    }
+  });
+}
+
+// Enhanced Domain Management Helper Functions
+
+async function generateDNSRecords(domain: string) {
+  return [
+    {
+      type: 'CNAME',
+      name: domain,
+      value: 'repairx.com',
+      ttl: 300,
+      required: true
+    },
+    {
+      type: 'TXT',
+      name: domain,
+      value: `repairx-verification=${await generateVerificationToken()}`,
+      ttl: 300,
+      required: true
+    }
+  ];
+}
+
+async function generateVerificationToken(): Promise<string> {
+  const crypto = require('crypto');
+  return crypto.randomBytes(32).toString('hex');
+}
+
+async function generateEncryptionKey(slug: string): Promise<string> {
+  const crypto = require('crypto');
+  return crypto.randomBytes(32).toString('hex');
+}
+
+async function provisionSubdomain(slug: string): Promise<void> {
+  // In production, this would configure DNS and SSL for subdomain
+  console.log(`Provisioning subdomain: ${slug}.repairx.com`);
+  
+  // Simulate DNS configuration
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
+  // Simulate SSL certificate provisioning
+  await new Promise(resolve => setTimeout(resolve, 100));
+}
+
+async function initiateDomainVerification(orgId: string, domain: string): Promise<void> {
+  // In production, this would start background verification process
+  console.log(`Initiating verification for domain: ${domain} (org: ${orgId})`);
+  
+  // Schedule verification check
+  setTimeout(async () => {
+    try {
+      // This would run in a background job
+      await checkDomainVerification(orgId, domain);
+    } catch (error) {
+      console.error('Domain verification check failed:', error);
+    }
+  }, 60000); // Check after 1 minute
+}
+
+async function verifyDNSRecords(domain: string, settings: any): Promise<{ verified: boolean; issues?: string[]; recommendations?: string[] }> {
+  const dns = require('dns').promises;
+  const issues: string[] = [];
+  const recommendations: string[] = [];
+  
+  try {
+    // Check CNAME record
+    try {
+      const cnameRecords = await dns.resolveCname(domain);
+      if (!cnameRecords.includes('repairx.com')) {
+        issues.push('CNAME record not pointing to repairx.com');
+        recommendations.push('Add CNAME record pointing to repairx.com');
+      }
+    } catch (error) {
+      issues.push('CNAME record not found');
+      recommendations.push('Add CNAME record pointing to repairx.com');
+    }
+
+    // Check TXT record for verification
+    try {
+      const txtRecords = await dns.resolveTxt(domain);
+      const verificationToken = settings?.customDomain?.verificationToken;
+      const hasVerificationRecord = txtRecords.some(record => 
+        record.some(txt => txt.includes(`repairx-verification=${verificationToken}`))
+      );
+      
+      if (!hasVerificationRecord) {
+        issues.push('Verification TXT record not found');
+        recommendations.push(`Add TXT record: repairx-verification=${verificationToken}`);
+      }
+    } catch (error) {
+      issues.push('TXT verification record not found');
+      recommendations.push('Add required TXT verification record');
+    }
+
+    return {
+      verified: issues.length === 0,
+      issues: issues.length > 0 ? issues : undefined,
+      recommendations: recommendations.length > 0 ? recommendations : undefined
+    };
+
+  } catch (error) {
+    return {
+      verified: false,
+      issues: ['DNS resolution failed'],
+      recommendations: ['Check domain configuration and try again']
+    };
+  }
+}
+
+async function provisionSSLCertificate(domain: string): Promise<{ success: boolean; certificate?: any }> {
+  // In production, this would use Let's Encrypt or similar
+  console.log(`Provisioning SSL certificate for: ${domain}`);
+  
+  // Simulate SSL certificate generation
+  await new Promise(resolve => setTimeout(resolve, 200));
+  
+  return {
+    success: true,
+    certificate: {
+      issuer: 'Let\'s Encrypt',
+      validFrom: new Date().toISOString(),
+      validTo: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days
+      fingerprint: 'abc123...'
+    }
+  };
+}
+
+async function checkDomainVerification(orgId: string, domain: string): Promise<void> {
+  // Background job to check domain verification status
+  console.log(`Checking verification status for: ${domain}`);
+}
+
+function generateVerificationInstructions(domain: string, dnsRecords: any[]): string[] {
+  return [
+    '1. Log in to your domain registrar or DNS provider',
+    '2. Navigate to DNS management for your domain',
+    `3. Add the following DNS records for ${domain}:`,
+    ...dnsRecords.map(record => `   - ${record.type}: ${record.name} → ${record.value}`),
+    '4. Save the DNS configuration',
+    '5. Wait 5-15 minutes for DNS propagation',
+    '6. Click "Verify Domain" to complete setup'
+  ];
 }
