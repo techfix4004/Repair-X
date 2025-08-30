@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import axios from 'axios';
 import { format } from 'date-fns';
 
@@ -121,12 +121,12 @@ export interface SocialMediaCampaignResult {
 }
 
 class LaunchCampaignService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private emailService: any;
   private socialMediaApis: Map<string, any>;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Using shared instance
     this.initializeIntegrations();
   }
 

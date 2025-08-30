@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import { chromium, firefox, webkit, Browser, Page, BrowserContext } from 'playwright';
 import sharp from 'sharp';
 import * as fs from 'fs/promises';
@@ -106,12 +106,12 @@ export interface TestAction {
 }
 
 class VisualRegressionTestingService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private browsers: Map<string, Browser> = new Map();
   private screenshotStorage: string;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Using shared instance
     this.screenshotStorage = process.env.SCREENSHOT_STORAGE_PATH || './visual-testing-screenshots';
     this.initializeStorage();
   }

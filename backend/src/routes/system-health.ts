@@ -33,7 +33,7 @@ const startTime = Date.now();
 
  
 // eslint-disable-next-line max-lines-per-function
-export async function systemHealthRoutes(_fastify: FastifyInstance) {
+export async function systemHealthRoutes(fastify: FastifyInstance) {
   // Health check endpoint for load balancers/monitoring
   fastify.get('/api/v1/health', async (request, reply: unknown) => {
     const _healthCheck: HealthCheck = await generateHealthCheck();

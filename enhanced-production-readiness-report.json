@@ -1,10 +1,10 @@
 {
   "summary": {
     "totalTests": 41,
-    "passed": 1,
-    "failed": 38,
+    "passed": 14,
+    "failed": 25,
     "skipped": 2,
-    "successRate": "2.44"
+    "successRate": "34.15"
   },
   "userRoles": {},
   "businessWorkflows": {
@@ -14,17 +14,29 @@
         {
           "name": "List Customers",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/customers not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Create Customer",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route POST:/api/customers not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Get Customer Details",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/customers/cust_001 not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         }
       ],
       "overallStatus": "FAIL",
@@ -38,27 +50,47 @@
         {
           "name": "List Jobs",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/jobs not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Create Job",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route POST:/api/jobs not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Get Job Details",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/jobs/job_001 not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Assign Technician",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route POST:/api/jobs/job_001/assign not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Update Job Status",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route PATCH:/api/jobs/job_001/status not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         }
       ],
       "overallStatus": "FAIL",
@@ -72,17 +104,29 @@
         {
           "name": "List Technicians",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/technicians not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "List Available Technicians",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/technicians/available not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Create Technician",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route POST:/api/technicians not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         }
       ],
       "overallStatus": "FAIL",
@@ -96,12 +140,20 @@
         {
           "name": "Get Payment Methods",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/payments/methods not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Process Payment",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route POST:/api/payments/process not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         }
       ],
       "overallStatus": "FAIL",
@@ -115,12 +167,20 @@
         {
           "name": "Get Assigned Jobs",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/mobile/jobs/assigned not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Mobile Check-in",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route POST:/api/mobile/checkin not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         }
       ],
       "overallStatus": "FAIL",
@@ -134,12 +194,20 @@
         {
           "name": "Get Organization Settings",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/org/settings not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Get Organization Analytics",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/org/analytics not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         }
       ],
       "overallStatus": "FAIL",
@@ -153,12 +221,20 @@
         {
           "name": "List All Tenants",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/admin/tenants not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         },
         {
           "name": "Get Platform Analytics",
           "status": "FAIL",
-          "details": ""
+          "details": {
+            "message": "Route GET:/api/admin/analytics not found",
+            "error": "Not Found",
+            "statusCode": 404
+          }
         }
       ],
       "overallStatus": "FAIL",
@@ -171,54 +247,54 @@
       "steps": [
         {
           "name": "Get Marketplace Integrations",
-          "status": "FAIL",
-          "details": ""
+          "status": "PASS",
+          "details": "Success"
         },
         {
           "name": "Get Marketplace Categories",
-          "status": "FAIL",
-          "details": ""
+          "status": "PASS",
+          "details": "Success"
         }
       ],
-      "overallStatus": "FAIL",
-      "passedSteps": 0,
+      "overallStatus": "PASS",
+      "passedSteps": 2,
       "totalSteps": 2,
-      "successRate": "0.00"
+      "successRate": "100.00"
     }
   },
   "apiEndpoints": {
     "/health": {
-      "status": "FAIL",
-      "statusCode": "ERROR",
+      "status": "PASS",
+      "statusCode": 200,
       "description": "Health check endpoint",
-      "hasData": false,
+      "hasData": true,
       "mockDataPresent": false
     },
     "/": {
-      "status": "FAIL",
-      "statusCode": "ERROR",
+      "status": "PASS",
+      "statusCode": 200,
       "description": "Root API endpoint",
-      "hasData": false,
+      "hasData": true,
       "mockDataPresent": false
     },
     "/api/marketplace/integrations": {
-      "status": "FAIL",
-      "statusCode": "ERROR",
+      "status": "PASS",
+      "statusCode": 200,
       "description": "Marketplace integrations",
-      "hasData": false,
+      "hasData": true,
       "mockDataPresent": false
     },
     "/api/marketplace/categories": {
-      "status": "FAIL",
-      "statusCode": "ERROR",
+      "status": "PASS",
+      "statusCode": 200,
       "description": "Marketplace categories",
-      "hasData": false,
+      "hasData": true,
       "mockDataPresent": false
     }
   },
   "securityTests": {
     "CORS Configuration": {
-      "status": "FAIL",
+      "status": "PASS",
       "description": "CORS Configuration"
     },
     "Security Headers - Content Security Policy": {
@@ -234,7 +310,7 @@
       "description": "Rate Limiting Protection"
     },
     "JWT Token Validation": {
-      "status": "FAIL",
+      "status": "PASS",
       "description": "JWT Token Validation"
     },
     "Input Validation": {
@@ -244,209 +320,187 @@
   },
   "authenticationTests": {
     "totalTests": 6,
-    "passed": 0,
-    "failed": 6,
-    "successRate": "0.00"
+    "passed": 1,
+    "failed": 5,
+    "successRate": "16.67"
   },
   "rbacTests": {},
   "errors": [
     {
-      "endpoint": "/health",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.535Z"
-    },
-    {
-      "endpoint": "/",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.538Z"
-    },
-    {
-      "endpoint": "/api/marketplace/integrations",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.540Z"
-    },
-    {
-      "endpoint": "/api/marketplace/categories",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.542Z"
-    },
-    {
       "endpoint": "/auth/login",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.544Z"
-    },
-    {
-      "endpoint": "/auth/login",
-      "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.546Z"
-    },
-    {
-      "endpoint": "/auth/login",
-      "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.548Z"
-    },
-    {
-      "endpoint": "/auth/login",
-      "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.549Z"
+      "expectedStatus": 401,
+      "actualStatus": 200,
+      "error": "Unknown error",
+      "timestamp": "2025-08-30T15:19:31.702Z"
     },
     {
       "endpoint": "/auth/me",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.551Z"
-    },
-    {
-      "endpoint": "/auth/me",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.553Z"
+      "expectedStatus": 200,
+      "actualStatus": 401,
+      "error": "Authorization token required",
+      "timestamp": "2025-08-30T15:19:31.703Z"
     },
     {
       "endpoint": "/api/customers",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.554Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/customers not found",
+      "timestamp": "2025-08-30T15:19:31.707Z"
     },
     {
       "endpoint": "/api/customers",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.556Z"
+      "expectedStatus": 201,
+      "actualStatus": 404,
+      "error": "Route POST:/api/customers not found",
+      "timestamp": "2025-08-30T15:19:31.709Z"
     },
     {
       "endpoint": "/api/customers/cust_001",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.557Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/customers/cust_001 not found",
+      "timestamp": "2025-08-30T15:19:31.710Z"
     },
     {
       "endpoint": "/api/jobs",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.559Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/jobs not found",
+      "timestamp": "2025-08-30T15:19:31.712Z"
     },
     {
       "endpoint": "/api/jobs",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.560Z"
+      "expectedStatus": 201,
+      "actualStatus": 404,
+      "error": "Route POST:/api/jobs not found",
+      "timestamp": "2025-08-30T15:19:31.714Z"
     },
     {
       "endpoint": "/api/jobs/job_001",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.561Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/jobs/job_001 not found",
+      "timestamp": "2025-08-30T15:19:31.715Z"
     },
     {
       "endpoint": "/api/jobs/job_001/assign",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.563Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route POST:/api/jobs/job_001/assign not found",
+      "timestamp": "2025-08-30T15:19:31.717Z"
     },
     {
       "endpoint": "/api/jobs/job_001/status",
       "method": "PATCH",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.564Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route PATCH:/api/jobs/job_001/status not found",
+      "timestamp": "2025-08-30T15:19:31.718Z"
     },
     {
       "endpoint": "/api/technicians",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.566Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/technicians not found",
+      "timestamp": "2025-08-30T15:19:31.720Z"
     },
     {
       "endpoint": "/api/technicians/available",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.567Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/technicians/available not found",
+      "timestamp": "2025-08-30T15:19:31.721Z"
     },
     {
       "endpoint": "/api/technicians",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.568Z"
+      "expectedStatus": 201,
+      "actualStatus": 404,
+      "error": "Route POST:/api/technicians not found",
+      "timestamp": "2025-08-30T15:19:31.722Z"
     },
     {
       "endpoint": "/api/payments/methods",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.569Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/payments/methods not found",
+      "timestamp": "2025-08-30T15:19:31.724Z"
     },
     {
       "endpoint": "/api/payments/process",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.570Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route POST:/api/payments/process not found",
+      "timestamp": "2025-08-30T15:19:31.726Z"
     },
     {
       "endpoint": "/api/mobile/jobs/assigned",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.571Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/mobile/jobs/assigned not found",
+      "timestamp": "2025-08-30T15:19:31.727Z"
     },
     {
       "endpoint": "/api/mobile/checkin",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.572Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route POST:/api/mobile/checkin not found",
+      "timestamp": "2025-08-30T15:19:31.728Z"
     },
     {
       "endpoint": "/api/org/settings",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.573Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/org/settings not found",
+      "timestamp": "2025-08-30T15:19:31.729Z"
     },
     {
       "endpoint": "/api/org/analytics",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.574Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/org/analytics not found",
+      "timestamp": "2025-08-30T15:19:31.730Z"
     },
     {
       "endpoint": "/api/admin/tenants",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.575Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/admin/tenants not found",
+      "timestamp": "2025-08-30T15:19:31.731Z"
     },
     {
       "endpoint": "/api/admin/analytics",
       "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.576Z"
-    },
-    {
-      "endpoint": "/api/marketplace/integrations",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.577Z"
-    },
-    {
-      "endpoint": "/api/marketplace/categories",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.578Z"
-    },
-    {
-      "endpoint": "/auth/me",
-      "method": "GET",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.594Z"
+      "expectedStatus": 200,
+      "actualStatus": 404,
+      "error": "Route GET:/api/admin/analytics not found",
+      "timestamp": "2025-08-30T15:19:31.732Z"
     },
     {
       "endpoint": "/api/customers",
       "method": "POST",
-      "error": "",
-      "timestamp": "2025-08-30T15:08:28.595Z"
+      "expectedStatus": 400,
+      "actualStatus": 404,
+      "error": "Route POST:/api/customers not found",
+      "timestamp": "2025-08-30T15:19:31.758Z"
     }
   ],
   "coverage": {
@@ -458,18 +512,18 @@
     "totalUserRoles": 5
   },
   "metadata": {
-    "testDuration": "0.08",
+    "testDuration": "0.10",
     "productionReadiness": {
-      "overall": "2.50",
+      "overall": "29.58",
       "breakdown": {
-        "basicEndpoints": 0,
-        "authentication": 0,
+        "basicEndpoints": 100,
+        "authentication": 16.67,
         "rbac": 0,
-        "businessWorkflows": 0,
-        "security": 16.666666666666664
+        "businessWorkflows": 12.5,
+        "security": 50
       }
     },
-    "generatedAt": "2025-08-30T15:08:28.598Z",
+    "generatedAt": "2025-08-30T15:19:31.763Z",
     "frameworkVersion": "2.0",
     "environment": "development"
   }

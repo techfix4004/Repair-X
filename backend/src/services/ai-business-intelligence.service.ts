@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import * as natural from 'natural';
 import * as compromise from 'compromise';
 import DecisionTree from 'decision-tree';
@@ -47,14 +47,13 @@ export interface TechnicianOptimization {
 }
 
 export class AIBusinessIntelligenceService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private classifier: natural.LogisticRegressionClassifier;
   private sentimentAnalyzer: natural.SentimentAnalyzer;
   private stemmer: any;
   private tokenizer: natural.WordTokenizer;
 
   constructor() {
-    this.prisma = new PrismaClient();
     this.classifier = new natural.LogisticRegressionClassifier();
     this.sentimentAnalyzer = new natural.SentimentAnalyzer(
       'English',

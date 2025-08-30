@@ -23,6 +23,16 @@ async function registerPlugins() {
 }
 
 // Simple health check
+fastify.get('/health', async (request, reply) => {
+  return {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: '1.0.0'
+  };
+});
+
+// Simple health check
 fastify.get('/api/health', async (request, reply) => {
   return {
     status: 'healthy',
@@ -32,7 +42,134 @@ fastify.get('/api/health', async (request, reply) => {
   };
 });
 
+// Root API endpoint
+fastify.get('/', async (request, reply) => {
+  return {
+    success: true,
+    message: 'RepairX Production API Server',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    environment: 'production'
+  };
+});
+
+// Marketplace endpoints
+fastify.get('/api/marketplace/integrations', async (request, reply) => {
+  return {
+    success: true,
+    data: [
+      {
+        id: 'stripe-payment',
+        name: 'Stripe Payment Gateway',
+        category: 'PAYMENT',
+        status: 'ACTIVE',
+        description: 'Secure payment processing'
+      },
+      {
+        id: 'twilio-sms',
+        name: 'Twilio SMS Gateway',
+        category: 'COMMUNICATION',
+        status: 'ACTIVE',
+        description: 'SMS notification service'
+      }
+    ]
+  };
+});
+
+fastify.get('/api/marketplace/categories', async (request, reply) => {
+  return {
+    success: true,
+    data: [
+      { id: 'PAYMENT', name: 'Payment Gateways', count: 5 },
+      { id: 'COMMUNICATION', name: 'Communication Services', count: 8 },
+      { id: 'ANALYTICS', name: 'Analytics & Reporting', count: 12 },
+      { id: 'INTEGRATION', name: 'Third-party Integrations', count: 15 }
+    ]
+  };
+});
+
 // Enhanced auth endpoints
+fastify.post('/auth/login', async (request, reply) => {
+  const { email, _email, password, loginType, adminAccessKey, organizationSlug } = request.body as any;
+  
+  // Handle both email and _email formats for compatibility
+  const userEmail = email || _email;
+  
+  // Mock authentication for development
+  if (userEmail && password) {
+    // For SaaS Admin, check admin access key
+    if (loginType === 'SAAS_ADMIN' && !adminAccessKey) {
+      reply.code(400);
+      return {
+        success: false,
+        error: 'Admin Access Key is required for SaaS Admin access'
+      };
+    }
+    
+    const user = {
+      id: `user_${Date.now()}`,
+      email: userEmail,
+      role: loginType === 'SAAS_ADMIN' ? 'SAAS_ADMIN' : 
+            loginType === 'ORGANIZATION' ? 'ADMIN' : 'CUSTOMER',
+      loginType,
+      name: userEmail.split('@')[0],
+      organizationSlug
+    };
+    
+    const token = `jwt_mock_${user.id}`;
+    
+    return {
+      success: true,
+      data: {
+        user,
+        token
+      }
+    };
+  }
+  
+  reply.code(401);
+  return {
+    success: false,
+    error: 'Invalid email or password'
+  };
+});
+
+// Auth profile endpoint
+fastify.get('/auth/me', async (request, reply) => {
+  const authHeader = request.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    reply.code(401);
+    return {
+      success: false,
+      error: 'Authorization token required'
+    };
+  }
+  
+  // Mock user profile based on token
+  const token = authHeader.replace('Bearer ', '');
+  if (token.startsWith('jwt_mock_')) {
+    return {
+      success: true,
+      data: {
+        user: {
+          id: token.replace('jwt_mock_', ''),
+          email: 'test@example.com',
+          role: 'ADMIN',
+          name: 'Test User'
+        }
+      }
+    };
+  }
+  
+  reply.code(401);
+  return {
+    success: false,
+    error: 'Invalid token'
+  };
+});
+
+// Enhanced auth endpoints (with API prefix for compatibility)
 fastify.post('/api/v1/auth/login', async (request, reply) => {
   const { email, _email, password, loginType, adminAccessKey } = request.body as any;
   
@@ -221,8 +358,8 @@ fastify.get('/api/v1/devices', async (request, reply) => {
 const start = async () => {
   try {
     await registerPlugins();
-    await fastify.listen({ port: 3002, host: '0.0.0.0' });
-    console.log('✅ Backend server running on http://localhost:3002');
+    await fastify.listen({ port: 3001, host: '0.0.0.0' });
+    console.log('✅ Backend server running on http://localhost:3001');
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

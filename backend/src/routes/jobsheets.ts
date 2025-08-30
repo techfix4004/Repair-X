@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import { prisma } from '../utils/database';
 import '../types/auth'; // Import the type extensions
 

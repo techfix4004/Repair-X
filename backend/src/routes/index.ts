@@ -96,43 +96,41 @@ export async function registerRoutes(server: FastifyInstance): Promise<void> {
 
 
 
-    // ✅ NEW: Email Settings Management System (Category 4)
-    await server.register(emailSettingsRoutes, { prefix: '/email-settings' });
+    // ✅ NEW: Email Settings Management System (Category 4) - TEMPORARILY DISABLED
+    // await server.register(emailSettingsRoutes, { prefix: '/email-settings' });
 
-    // ✅ NEW: Employee Management System (Category 6)
-    await server.register(employeeManagementRoutes, { prefix: '/employees' });
+    // ✅ NEW: Employee Management System (Category 6) - TEMPORARILY DISABLED
+    // await server.register(employeeManagementRoutes, { prefix: '/employees' });
 
-    // ✅ NEW: Parts Inventory Management System (Category 16)
-    await server.register(partsInventoryRoutes, { prefix: '/inventory' });
+    // ✅ NEW: Parts Inventory Management System (Category 16) - TEMPORARILY DISABLED
+    // await server.register(partsInventoryRoutes, { prefix: '/inventory' });
 
-    // ✅ NEW: Multi-language Support System (Global Deployment)
-    await server.register(multiLanguageRoutes, { prefix: '/i18n' });
+    // ✅ NEW: Multi-language Support System (Global Deployment) - TEMPORARILY DISABLED
+    // await server.register(multiLanguageRoutes, { prefix: '/i18n' });
 
-    // ✅ NEW: IoT Device Integration System (Smart Device Connectivity)
-    await server.register(iotIntegrationRoutes, { prefix: '/iot' });
+    // ✅ NEW: IoT Device Integration System (Smart Device Connectivity) - TEMPORARILY DISABLED
+    // await server.register(iotIntegrationRoutes, { prefix: '/iot' });
 
-    // ✅ NEW: Enterprise Customer Portal System (Large Account Management)
-    await server.register(enterprisePortalRoutes, { prefix: '/enterprise' });
+    // ✅ NEW: Enterprise Customer Portal System (Large Account Management) - TEMPORARILY DISABLED
+    // await server.register(enterprisePortalRoutes, { prefix: '/enterprise' });
 
-    // ✅ NEW: Advanced Reporting & Analytics System (Executive Dashboards)
-    await server.register(advancedReportingRoutes);
+    // ✅ NEW: Advanced Reporting & Analytics System (Executive Dashboards) - TEMPORARILY DISABLED
+    // await server.register(advancedReportingRoutes);
 
-    // ✅ NEW: Franchise Management System (Multi-location Business Control)
-    await server.register(franchiseManagementRoutes);
+    // ✅ NEW: Franchise Management System (Multi-location Business Control) - TEMPORARILY DISABLED
+    // await server.register(franchiseManagementRoutes);
 
-    // ✅ NEW: Outsourcing Marketplace System (External Service Provider Network)
-    await server.register(outsourcingMarketplaceRoutes, { prefix: '/outsourcing' });
+    // ✅ NEW: Outsourcing Marketplace System (External Service Provider Network) - TEMPORARILY DISABLED
+    // await server.register(outsourcingMarketplaceRoutes, { prefix: '/outsourcing' });
 
-    // ✅ NEW: Terms & Conditions Management System (Dynamic Legal Documents)
-    await server.register(termsConditionsRoutes, { prefix: '/terms' });
+    // ✅ NEW: Terms & Conditions Management System (Dynamic Legal Documents) - TEMPORARILY DISABLED
+    // await server.register(termsConditionsRoutes, { prefix: '/terms' });
 
-    // ✅ NEW: API Marketplace System (Third-party Integrations & White-label Framework)
-    await server.register(apiMarketplaceRoutes, { prefix: '/api-marketplace' });
+    // ✅ NEW: API Marketplace System (Third-party Integrations & White-label Framework) - TEMPORARILY DISABLED
+    // await server.register(apiMarketplaceRoutes, { prefix: '/api-marketplace' });
 
-
-
-    // ✅ NEW: Mobile Field Operations System (Enhanced Field Service Management)
-    await server.register(mobileFieldOperationsRoutes, { prefix: '/field-operations' });
+    // ✅ NEW: Mobile Field Operations System (Enhanced Field Service Management) - TEMPORARILY DISABLED
+    // await server.register(mobileFieldOperationsRoutes, { prefix: '/field-operations' });
 
     // Job Sheet Lifecycle Management (12-state workflow)
     await server.register(jobSheetLifecycleRoutes, { prefix: '/job-lifecycle' });
