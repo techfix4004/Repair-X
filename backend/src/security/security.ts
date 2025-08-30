@@ -19,7 +19,7 @@ export class RateLimitService {
     _userApi: { requests: 180, _window: 60 * 1000 }, // 180 API calls per minute
   };
 
-  static createRateLimitMiddleware(_type: keyof typeof RateLimitService.LIMITS = 'global') {
+  static createRateLimitMiddleware(type: keyof typeof RateLimitService.LIMITS = '_global') {
     return async (request: FastifyRequest, reply: FastifyReply) => {
       const clientIP = request.ip;
       const userAgent = request.headers['user-agent'] || 'unknown';
@@ -29,9 +29,9 @@ export class RateLimitService {
         businessMetrics.suspiciousActivity.labels('blocked_ip_access', clientIP).inc();
         
         reply.status(429).send({
-          _error: 'Too Many Requests',
-          _message: 'Your IP address has been temporarily blocked due to suspicious activity',
-          _retryAfter: 3600 // 1 hour
+          error: 'Too Many Requests',
+          message: 'Your IP address has been temporarily blocked due to suspicious activity',
+          retryAfter: 3600 // 1 hour
         });
         return;
       }
@@ -39,7 +39,7 @@ export class RateLimitService {
       const limit = this.LIMITS[type];
       const key = `${type}_${clientIP}`;
       
-      const result = this.checkLimit(key, limit.requests, limit.window);
+      const result = this.checkLimit(key, limit.requests, limit._window);
       
       if (!result.allowed) {
         // Track rate limit violations
@@ -52,26 +52,23 @@ export class RateLimitService {
         }
         
         reply.status(429).send({
-          _error: 'Rate Limit Exceeded',
-          _message: `Too many requests. Limit: ${limit.requests} per ${limit.window / 1000}s`,
-          _retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
-          _remaining: 0
+          error: 'Rate Limit Exceeded',
+          message: `Too many requests. Limit: ${limit.requests} per ${limit._window / 1000}s`,
+          retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
+          remaining: 0
         });
         return;
       }
 
       // Add rate limit headers
-      // @ts-ignore - Reply method
-        (reply as any).header('X-RateLimit-Limit', limit.requests);
-      // @ts-ignore - Reply method
-        (reply as any).header('X-RateLimit-Remaining', result.remaining);
-      // @ts-ignore - Reply method
-        (reply as any).header('X-RateLimit-Reset', new Date(result.resetTime).toISOString());
+      reply.header('X-RateLimit-Limit', limit.requests);
+      reply.header('X-RateLimit-Remaining', result.remaining);
+      reply.header('X-RateLimit-Reset', new Date(result.resetTime).toISOString());
     };
   }
 
-  private static checkLimit(_key: string, _limit: number, _windowMs: number): {
-    _allowed: boolean;
+  private static checkLimit(key: string, limit: number, windowMs: number): {
+    allowed: boolean;
     remaining: number;
     resetTime: number;
     violationCount: number;
@@ -83,35 +80,35 @@ export class RateLimitService {
       // Reset window
       this.requestCounts.set(key, {
         _count: 1,
-        _resetTime: now + windowMs,
-        _blocked: false
+        resetTime: now + windowMs,
+        blocked: false
       });
       
       return {
-        _allowed: true,
-        _remaining: limit - 1,
-        _resetTime: now + windowMs,
-        _violationCount: 0
+        allowed: true,
+        remaining: limit - 1,
+        resetTime: now + windowMs,
+        violationCount: 0
       };
     }
     
-    current.count++;
+    current._count++;
     
-    if (current.count > limit) {
+    if (current._count > limit) {
       current.blocked = true;
       return {
-        _allowed: false,
-        _remaining: 0,
-        _resetTime: current.resetTime,
-        _violationCount: current.count - limit
+        allowed: false,
+        remaining: 0,
+        resetTime: current.resetTime,
+        violationCount: current._count - limit
       };
     }
     
     return {
       allowed: true,
-      _remaining: limit - current.count,
-      _resetTime: current.resetTime,
-      _violationCount: 0
+      remaining: limit - current._count,
+      resetTime: current.resetTime,
+      violationCount: 0
     };
   }
 }
@@ -142,7 +139,7 @@ export class ValidationService {
     /\b(rm|cat|ls|pwd|wget|curl|nc|netcat)\b/i
   ];
 
-  static sanitizeInput(_input: unknown): unknown {
+  static sanitizeInput(input: unknown): unknown {
     if (typeof input === 'string') {
       return this.sanitizeString(input);
     }
@@ -152,7 +149,7 @@ export class ValidationService {
     }
     
     if (typeof input === 'object' && input !== null) {
-      const _sanitized: unknown = {};
+      const sanitized: any = {};
       for (const [key, value] of Object.entries(input)) {
         sanitized[this.sanitizeString(key)] = this.sanitizeInput(value);
       }
@@ -162,7 +159,7 @@ export class ValidationService {
     return input;
   }
 
-  private static sanitizeString(_str: string): string {
+  private static sanitizeString(str: string): string {
     // Remove potential XSS
     str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     str = str.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
@@ -174,7 +171,7 @@ export class ValidationService {
     return str.trim();
   }
 
-  static validateInput(_input: unknown, request?: FastifyRequest): { _valid: boolean; threats: string[] } {
+  static validateInput(input: unknown, request?: FastifyRequest): { valid: boolean; threats: string[] } {
     const threats: string[] = [];
     const inputStr = typeof input === 'string' ? input : JSON.stringify(input);
     
@@ -210,7 +207,7 @@ export class ValidationService {
     }
     
     return {
-      _valid: threats.length === 0,
+      valid: threats.length === 0,
       threats
     };
   }
@@ -221,27 +218,21 @@ export const securityHeadersMiddleware = async (request: FastifyRequest, reply: 
   // Enforce HTTPS in production
   if (process.env.NODE_ENV === 'production' && request.headers['x-forwarded-proto'] !== 'https') {
     return reply.status(426).send({
-      _error: 'Upgrade Required',
-      _message: 'HTTPS is required for this service'
+      error: 'Upgrade Required',
+      message: 'HTTPS is required for this service'
     });
   }
 
   // Set security headers
-  // @ts-ignore - Reply method
-        (reply as any).header('X-Content-Type-Options', 'nosniff');
-  // @ts-ignore - Reply method
-        (reply as any).header('X-Frame-Options', 'DENY');
-  // @ts-ignore - Reply method
-        (reply as any).header('X-XSS-Protection', '1; mode=block');
-  // @ts-ignore - Reply method
-        (reply as any).header('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // @ts-ignore - Reply method
-        (reply as any).header('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  reply.header('X-Content-Type-Options', 'nosniff');
+  reply.header('X-Frame-Options', 'DENY');
+  reply.header('X-XSS-Protection', '1; mode=block');
+  reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  reply.header('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
   
   // HSTS (HTTP Strict Transport Security)
   if (process.env.NODE_ENV === 'production') {
-    // @ts-ignore - Reply method
-        (reply as any).header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
   
   // Content Security Policy
@@ -249,20 +240,19 @@ export const securityHeadersMiddleware = async (request: FastifyRequest, reply: 
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline'", // In production, avoid unsafe-inline
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' _data: https:",
+    "img-src 'self' data: https:",
     "font-src 'self'",
     "connect-src 'self'",
     "frame-ancestors 'none'",
     "base-uri 'self'"
   ].join('; ');
   
-  // @ts-ignore - Reply method
-        (reply as any).header('Content-Security-Policy', csp);
+  reply.header('Content-Security-Policy', csp);
 };
 
 // Audit logging for sensitive operations
 export class AuditService {
-  private static _auditLog: Array<{
+  private static auditLog: Array<{
     timestamp: Date;
     userId?: string;
     ip: string;
@@ -275,17 +265,17 @@ export class AuditService {
 
   static logSensitiveAction(
     action: string,
-    _resource: string,
-    _result: 'success' | 'failure',
+    resource: string,
+    result: 'success' | 'failure',
     request: FastifyRequest,
     userId?: string,
     details?: unknown
   ) {
     const entry = {
-      _timestamp: new Date(),
+      timestamp: new Date(),
       userId,
-      _ip: request.ip,
-      _userAgent: request.headers['user-agent'] || 'unknown',
+      ip: request.ip,
+      userAgent: request.headers['user-agent'] || 'unknown',
       action,
       resource,
       result,
@@ -295,7 +285,7 @@ export class AuditService {
     this.auditLog.push(entry);
     
     // In production, this should write to a secure, immutable audit log
-    console.log('_AUDIT:', JSON.stringify(entry));
+    console.log('AUDIT:', JSON.stringify(entry));
     
     // Keep only last 10000 entries in memory (in production, persist to database)
     if (this.auditLog.length > 10000) {

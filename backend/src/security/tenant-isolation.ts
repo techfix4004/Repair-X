@@ -18,6 +18,7 @@ export async function tenantIsolationMiddleware(server: FastifyInstance): Promis
       '/admin-backend/saas-admin/login',
       '/admin-backend/saas-admin/initialize',
       '/api/v1/health',
+      '/api/health',
       '/health'
     ];
 
