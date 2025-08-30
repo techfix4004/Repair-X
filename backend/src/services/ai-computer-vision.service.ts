@@ -13,6 +13,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import sharp from 'sharp';
+import { prisma } from '../utils/database';
+import { logger } from '../utils/logger';
 import { v4 as uuidv4 } from 'uuid';
 
 interface DamageDetectionResult {
@@ -43,6 +45,9 @@ interface DamageDetection {
   confidence: number;
   severity: 'MINOR' | 'MODERATE' | 'SEVERE' | 'CRITICAL';
   description: string;
+  metadata?: {
+    [key: string]: any;
+  };
 }
 
 interface RecommendedPart {

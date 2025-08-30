@@ -114,12 +114,6 @@ export default function CustomerDashboard() {
     
     return () => clearInterval(interval);
   }, []);
-        status: 'completed'
-      }
-    ]);
-
-    setIsLoading(false);
-  }, []);
 
   if (isLoading) {
     return (
