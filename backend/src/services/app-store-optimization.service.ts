@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import axios from 'axios';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -101,12 +101,12 @@ export interface ABTestResult {
 }
 
 class AppStoreOptimizationService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private appStoreConnectApiKey: string;
   private googlePlayApiKey: string;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Using shared instance
     this.appStoreConnectApiKey = process.env.APP_STORE_CONNECT_API_KEY || '';
     this.googlePlayApiKey = process.env.GOOGLE_PLAY_API_KEY || '';
   }

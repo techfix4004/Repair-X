@@ -603,7 +603,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
   const languageService = new MultiLanguageService();
 
   // Language management routes
-  server.get('/languages', async (request: FastifyRequest<{
+  _server.get('/languages', async (request: FastifyRequest<{
     Querystring: { enabled?: boolean }
   }>, reply: FastifyReply) => {
     try {
@@ -622,7 +622,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.post('/languages', async (request: FastifyRequest<{
+  _server.post('/languages', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -642,7 +642,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.put('/languages/:code', async (request: FastifyRequest<{
+  _server.put('/languages/:code', async (request: FastifyRequest<{
     Params: { code: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -666,7 +666,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.delete('/languages/:code', async (request: FastifyRequest<{
+  _server.delete('/languages/:code', async (request: FastifyRequest<{
     Params: { code: string }
   }>, reply: FastifyReply) => {
     try {
@@ -688,7 +688,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Translation management routes
-  server.get('/translations', async (request: FastifyRequest<{
+  _server.get('/translations', async (request: FastifyRequest<{
     Querystring: { namespace?: string; language?: string; search?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -708,7 +708,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.get('/translations/:language', async (request: FastifyRequest<{
+  _server.get('/translations/:language', async (request: FastifyRequest<{
     Params: { language: string }
     Querystring: { namespace?: string }
   }>, reply: FastifyReply) => {
@@ -732,7 +732,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.post('/translations', async (request: FastifyRequest<{
+  _server.post('/translations', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -752,7 +752,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.put('/translations/:id', async (request: FastifyRequest<{
+  _server.put('/translations/:id', async (request: FastifyRequest<{
     Params: { id: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -777,7 +777,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Translation import/export routes
-  server.post('/translations/import', async (request: FastifyRequest<{
+  _server.post('/translations/import', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -797,7 +797,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.get('/translations/:language/export', async (request: FastifyRequest<{
+  _server.get('/translations/:language/export', async (request: FastifyRequest<{
     Params: { language: string }
     Querystring: { namespace?: string; format?: string }
   }>, reply: FastifyReply) => {
@@ -829,7 +829,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Utility routes
-  server.get('/namespaces', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/namespaces', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const namespaces = await languageService.getNamespaces();
       
@@ -845,7 +845,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
     }
   });
 
-  server.get('/stats', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/stats', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const stats = await languageService.getTranslationStats();
       
@@ -862,7 +862,7 @@ export async function multiLanguageRoutes(_server: FastifyInstance): Promise<voi
   });
 
   // Translate API
-  server.post('/translate', async (request: FastifyRequest<{
+  _server.post('/translate', async (request: FastifyRequest<{
     Body: { key: string; language: string; namespace?: string }
   }>, reply: FastifyReply) => {
     try {

@@ -9,7 +9,7 @@
  * - Automated model optimization and hyperparameter tuning
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 // import * as tf from '@tensorflow/tfjs-node'; // Disabled for now due to installation issues
 import { v4 as uuidv4 } from 'uuid';
 import { format, parseISO, subDays, startOfDay, endOfDay } from 'date-fns';
@@ -98,13 +98,13 @@ interface ModelDriftDetection {
 }
 
 class AIModelManagementService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private models: Map<string, MLModel> = new Map();
   private trainingJobs: Map<string, ModelTrainingJob> = new Map();
   private abTests: Map<string, ABTestExperiment> = new Map();
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Using shared instance
     this.initializeService();
   }
 

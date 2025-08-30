@@ -2,7 +2,7 @@
 // Use this file as a template for future test corrections. Do not use mock or deprecated fields.
 
 /// <reference types="jest" />
-import { describe, test, expect, beforeEach, afterAll } from '@jest/globals';
+import { describe, test, expect, afterAll } from '@jest/globals';
 
 import LaunchCampaignService from '../services/launch-campaign.service';
 import AppStoreOptimizationService from '../services/app-store-optimization.service';

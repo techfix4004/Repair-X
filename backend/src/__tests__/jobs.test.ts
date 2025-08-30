@@ -2,13 +2,13 @@
 /// <reference types="jest" />
  
 /// <reference types="jest" />
-import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll,  } from '@jest/globals';
 
-import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import Fastify, { FastifyInstance } from 'fastify';
 import { registerPlugins } from '../plugins/index';
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('Job Management API Tests', () => {
   let app: FastifyInstance;
 

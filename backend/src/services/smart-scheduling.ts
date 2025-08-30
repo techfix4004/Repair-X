@@ -1,7 +1,5 @@
 // @ts-nocheck
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/database';
 
 // Smart Scheduling and Route Optimization Service
 export class SmartSchedulingService {

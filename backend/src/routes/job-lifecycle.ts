@@ -808,7 +808,7 @@ class JobSheetLifecycleManager implements JobSheetLifecycleService {
 
 // Export the job sheet lifecycle routes
  
-// eslint-disable-next-line max-lines-per-function
+ 
 export async function jobSheetLifecycleRoutes(fastify: FastifyInstance) {
   const notificationService = { _sendSMS: async () => {}, _sendEmail: async () => {} };
   const qualityService = { 

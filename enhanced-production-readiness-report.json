@@ -1,10 +1,10 @@
 {
   "summary": {
-    "totalTests": 46,
-    "passed": 44,
-    "failed": 0,
-    "skipped": 2,
-    "successRate": "95.65"
+    "totalTests": 41,
+    "passed": 39,
+    "failed": 2,
+    "skipped": 0,
+    "successRate": "95.12"
   },
   "userRoles": {},
   "businessWorkflows": {
@@ -206,7 +206,7 @@
       "statusCode": 200,
       "description": "Marketplace integrations",
       "hasData": true,
-      "mockDataPresent": true
+      "mockDataPresent": false
     },
     "/api/marketplace/categories": {
       "status": "PASS",
@@ -244,17 +244,29 @@
   },
   "authenticationTests": {
     "totalTests": 6,
-    "passed": 6,
-    "failed": 0,
-    "successRate": "100.00"
+    "passed": 1,
+    "failed": 5,
+    "successRate": "16.67"
   },
-  "rbacTests": {
-    "totalTests": 5,
-    "passed": 5,
-    "failed": 0,
-    "successRate": "100.00"
-  },
-  "errors": [],
+  "rbacTests": {},
+  "errors": [
+    {
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "expectedStatus": 401,
+      "actualStatus": 200,
+      "error": "Unknown error",
+      "timestamp": "2025-08-30T15:25:49.242Z"
+    },
+    {
+      "endpoint": "/auth/me",
+      "method": "GET",
+      "expectedStatus": 200,
+      "actualStatus": 401,
+      "error": "Authorization token required",
+      "timestamp": "2025-08-30T15:25:49.244Z"
+    }
+  ],
   "coverage": {
     "endpointsCovered": 4,
     "totalEndpoints": 30,
@@ -264,18 +276,18 @@
     "totalUserRoles": 5
   },
   "metadata": {
-    "testDuration": "0.38",
+    "testDuration": "0.12",
     "productionReadiness": {
-      "overall": "100.00",
+      "overall": "63.33",
       "breakdown": {
         "basicEndpoints": 100,
-        "authentication": 100,
-        "rbac": 100,
+        "authentication": 16.67,
+        "rbac": 0,
         "businessWorkflows": 100,
         "security": 100
       }
     },
-    "generatedAt": "2025-08-28T16:44:03.747Z",
+    "generatedAt": "2025-08-30T15:25:49.327Z",
     "frameworkVersion": "2.0",
     "environment": "development"
   }

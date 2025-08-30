@@ -197,7 +197,7 @@ async function getQuotations(request: FastifyRequest, reply: FastifyReply) {
 }
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 async function getQuotation(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { id  } = ((request as any).params as unknown);
@@ -670,7 +670,7 @@ async function customerResponseToQuotation(request: FastifyRequest, reply: Fasti
 }
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 async function convertQuotationToJob(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { id  } = ((request as any).params as unknown);
@@ -778,7 +778,7 @@ async function convertQuotationToJob(request: FastifyRequest, reply: FastifyRepl
 }
 
 // Export route registration function
-export async function quotationRoutes(_fastify: FastifyInstance) {
+export async function quotationRoutes(fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['Quotation System'],
     _security: [{ bearerAuth: [] }]

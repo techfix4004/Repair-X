@@ -1,7 +1,5 @@
 // @ts-nocheck
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/database';
 
 // Advanced Analytics and Business Intelligence Service
 export class BusinessIntelligenceService {

@@ -2,7 +2,7 @@
 import { FastifyInstance } from 'fastify';
 
 // eslint-disable-next-line max-lines-per-function
-export async function advancedReportingRoutes(_fastify: FastifyInstance) {
+export async function advancedReportingRoutes(fastify: FastifyInstance) {
   // Executive Dashboard - Real-time KPI Monitoring
   fastify.get('/dashboard/executive', async (request, reply: unknown) => {
     const executiveMetrics = {

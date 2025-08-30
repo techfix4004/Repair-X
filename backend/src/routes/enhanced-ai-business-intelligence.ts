@@ -255,7 +255,7 @@ class EnhancedAIService {
   private calculateOptimizationImpact(_optimizations: unknown[]): unknown { return { _timeReduction: 15, _costSavings: 5000, _qualityImprovement: 10 }; }
 }
 
-// eslint-disable-next-line max-lines-per-function
+ 
 export async function enhancedAIRoutes(fastify: FastifyInstance) {
   const aiService = new EnhancedAIService();
 

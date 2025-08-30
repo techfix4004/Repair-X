@@ -599,7 +599,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
   const iotService = new IoTIntegrationService();
 
   // Device management routes
-  server.get('/devices', async (request: FastifyRequest<{
+  _server.get('/devices', async (request: FastifyRequest<{
     Querystring: { status?: string; type?: string; location?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -619,7 +619,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
     }
   });
 
-  server.get('/devices/:deviceId', async (request: FastifyRequest<{
+  _server.get('/devices/:deviceId', async (request: FastifyRequest<{
     Params: { deviceId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -645,7 +645,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
     }
   });
 
-  server.post('/devices', async (request: FastifyRequest<{
+  _server.post('/devices', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -665,7 +665,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
     }
   });
 
-  server.put('/devices/:deviceId', async (request: FastifyRequest<{
+  _server.put('/devices/:deviceId', async (request: FastifyRequest<{
     Params: { deviceId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -690,7 +690,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Data recording and retrieval routes
-  server.post('/data', async (request: FastifyRequest<{
+  _server.post('/data', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -710,7 +710,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
     }
   });
 
-  server.get('/devices/:deviceId/data', async (request: FastifyRequest<{
+  _server.get('/devices/:deviceId/data', async (request: FastifyRequest<{
     Params: { deviceId: string }
     Querystring: { 
       startDate?: string; 
@@ -740,7 +740,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Alert management routes
-  server.get('/alerts', async (request: FastifyRequest<{
+  _server.get('/alerts', async (request: FastifyRequest<{
     Querystring: { deviceId?: string; severity?: string; acknowledged?: boolean }
   }>, reply: FastifyReply) => {
     try {
@@ -760,7 +760,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
     }
   });
 
-  server.post('/alerts/:alertId/acknowledge', async (request: FastifyRequest<{
+  _server.post('/alerts/:alertId/acknowledge', async (request: FastifyRequest<{
     Params: { alertId: string }
     Body: { acknowledgedBy: string }
   }>, reply: FastifyReply) => {
@@ -784,7 +784,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
     }
   });
 
-  server.post('/alerts/:alertId/resolve', async (request: FastifyRequest<{
+  _server.post('/alerts/:alertId/resolve', async (request: FastifyRequest<{
     Params: { alertId: string }
     Body: { resolution: string }
   }>, reply: FastifyReply) => {
@@ -809,7 +809,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Analytics routes
-  server.get('/analytics', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/analytics', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const analytics = await iotService.getDeviceAnalytics();
       
@@ -826,7 +826,7 @@ export async function iotIntegrationRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Device types reference
-  server.get('/device-types', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/device-types', async (request: FastifyRequest, reply: FastifyReply) => {
     const deviceTypes = [
       { _id: 'SMART_SCALE', _name: 'Smart Scale', _description: 'Digital scale for component weighing', _icon: '⚖️' },
       { _id: 'DIAGNOSTIC_TOOL', _name: 'Diagnostic Tool', _description: 'Automated device diagnostics', _icon: '🔍' },

@@ -461,7 +461,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   const inventoryService = new PartsInventoryService();
 
   // Get all parts
-  server.get('/', async (request: FastifyRequest<{
+  _server.get('/', async (request: FastifyRequest<{
     Querystring: { 
       tenantId?: string;
       category?: string;
@@ -489,7 +489,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Create new part
-  server.post('/', async (request: FastifyRequest<{
+  _server.post('/', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -510,7 +510,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Get part by ID
-  server.get('/:id', async (request: FastifyRequest<{
+  _server.get('/:id', async (request: FastifyRequest<{
     Params: { id: string }
   }>, reply: FastifyReply) => {
     try {
@@ -537,7 +537,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Update part
-  server.put('/:id', async (request: FastifyRequest<{
+  _server.put('/:id', async (request: FastifyRequest<{
     Params: { id: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -562,7 +562,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Record stock movement
-  server.post('/movements', async (request: FastifyRequest<{
+  _server.post('/movements', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -583,7 +583,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Get stock movements
-  server.get('/movements/:partId?', async (request: FastifyRequest<{
+  _server.get('/movements/:partId?', async (request: FastifyRequest<{
     Params: { partId?: string }
     Querystring: { startDate?: string; endDate?: string }
   }>, reply: FastifyReply) => {
@@ -606,7 +606,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Reserve stock for a job
-  server.post('/:id/reserve', async (request: FastifyRequest<{
+  _server.post('/:id/reserve', async (request: FastifyRequest<{
     Params: { id: string }
     Body: { quantity: number; reference: string }
   }>, reply: FastifyReply) => {
@@ -632,7 +632,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Get suppliers
-  server.get('/suppliers/all', async (request: FastifyRequest<{
+  _server.get('/suppliers/all', async (request: FastifyRequest<{
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -652,7 +652,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Create supplier
-  server.post('/suppliers', async (request: FastifyRequest<{
+  _server.post('/suppliers', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -673,7 +673,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Get inventory analytics
-  server.get('/analytics/overview', async (request: FastifyRequest<{
+  _server.get('/analytics/overview', async (request: FastifyRequest<{
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -693,7 +693,7 @@ export async function partsInventoryRoutes(_server: FastifyInstance): Promise<vo
   });
 
   // Get part categories
-  server.get('/categories/list', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/categories/list', async (request: FastifyRequest, reply: FastifyReply) => {
     const categories = [
       { _id: 'SCREEN_DISPLAY', _name: 'Screens & Displays', _icon: '📱' },
       { _id: 'BATTERY', _name: 'Batteries', _icon: '🔋' },

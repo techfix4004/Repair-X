@@ -2,13 +2,13 @@
 /// <reference types="jest" />
  
 /// <reference types="jest" />
-import { describe, test, it, expect, beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
 import fastify, { FastifyInstance } from 'fastify';
 import { geolocationRoutes } from '../routes/geolocation';
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('Geolocation Service', () => {
   let app: FastifyInstance;
 

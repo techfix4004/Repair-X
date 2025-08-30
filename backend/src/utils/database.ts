@@ -2,42 +2,43 @@
 /**
  * Production Database Configuration
  * 
- * Prisma database client configuration for RepairX production environment.
+ * Real database client configuration for RepairX production environment.
  * Provides database connection management and type-safe database operations.
  */
 
-// For this demo, use mock client since Prisma binaries can't be downloaded
-console.log('ℹ️ Using mock Prisma client for demo environment');
-const { PrismaClient } = require('./mock-prisma');
+import { DatabaseClient, createDatabaseClient } from './real-database-client';
 
-// Global Prisma instance for production use
+// Global database instance for production use
 declare global {
-  // eslint-disable-next-line no-var
-  var cachedPrisma: any;
+   
+  var cachedDatabase: DatabaseClient | undefined;
 }
 
-let prisma: any;
+let prisma: DatabaseClient;
 
-// Singleton pattern for Prisma client to prevent connection issues in serverless environments
+// Initialize real database client - production ready
+console.log('🚀 Initializing production-ready database client');
+
+// Singleton pattern for database client to prevent connection issues
 if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient({
-    log: ['error', 'warn'],
+  prisma = createDatabaseClient({
+    logLevel: ['error', 'warn'],
     errorFormat: 'pretty',
   });
 } else {
-  if (!global.cachedPrisma) {
-    global.cachedPrisma = new PrismaClient({
-      log: ['query', 'info', 'warn', 'error'],
+  if (!global.cachedDatabase) {
+    global.cachedDatabase = createDatabaseClient({
+      logLevel: ['query', 'info', 'warn', 'error'],
       errorFormat: 'pretty',
     });
   }
-  prisma = global.cachedPrisma;
+  prisma = global.cachedDatabase;
 }
 
 // Graceful shutdown handling
 const gracefulShutdown = async () => {
-  console.log('Shutting down Prisma connection...');
-  await prisma.$disconnect();
+  console.log('Shutting down database connection...');
+  await prisma.disconnect();
   process.exit(0);
 };
 
@@ -47,7 +48,7 @@ process.on('SIGTERM', gracefulShutdown);
 // Health check function for database connectivity
 export const checkDatabaseHealth = async (): Promise<boolean> => {
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await prisma.testConnection();
     return true;
   } catch (error) {
     console.error('Database health check failed:', error);
@@ -58,7 +59,7 @@ export const checkDatabaseHealth = async (): Promise<boolean> => {
 // Database connection test
 export const connectDatabase = async (): Promise<void> => {
   try {
-    await prisma.$connect();
+    await prisma.connect();
     console.log('✅ Database connected successfully');
   } catch (error) {
     console.error('❌ Database connection failed:', error);
@@ -66,4 +67,5 @@ export const connectDatabase = async (): Promise<void> => {
   }
 };
 
+// Export the database client
 export { prisma };

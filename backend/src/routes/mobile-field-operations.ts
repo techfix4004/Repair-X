@@ -801,7 +801,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   const fieldService = new MobileFieldOperationsService();
 
   // Get all field technicians
-  server.get('/technicians', async (request: FastifyRequest<{
+  _server.get('/technicians', async (request: FastifyRequest<{
     Querystring: { 
       tenantId?: string;
       status?: string;
@@ -827,7 +827,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Create field technician
-  server.post('/technicians', async (request: FastifyRequest<{
+  _server.post('/technicians', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -848,7 +848,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Update technician location
-  server.post('/technicians/:technicianId/location', async (request: FastifyRequest<{
+  _server.post('/technicians/:technicianId/location', async (request: FastifyRequest<{
     Params: { technicianId: string }
     Body: { latitude: number; longitude: number; accuracy?: number }
   }>, reply: FastifyReply) => {
@@ -872,7 +872,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Create job assignment
-  server.post('/assignments', async (request: FastifyRequest<{
+  _server.post('/assignments', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -893,7 +893,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Get job assignments
-  server.get('/assignments', async (request: FastifyRequest<{
+  _server.get('/assignments', async (request: FastifyRequest<{
     Querystring: { technicianId?: string; status?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -913,7 +913,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Update assignment status
-  server.put('/assignments/:assignmentId/status', async (request: FastifyRequest<{
+  _server.put('/assignments/:assignmentId/status', async (request: FastifyRequest<{
     Params: { assignmentId: string }
     Body: { status: string; additionalData?: unknown }
   }>, reply: FastifyReply) => {
@@ -937,7 +937,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Create field work record
-  server.post('/work-records', async (request: FastifyRequest<{
+  _server.post('/work-records', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -958,7 +958,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Update field work record
-  server.put('/work-records/:recordId', async (request: FastifyRequest<{
+  _server.put('/work-records/:recordId', async (request: FastifyRequest<{
     Params: { recordId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -982,7 +982,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Get field work records
-  server.get('/work-records', async (request: FastifyRequest<{
+  _server.get('/work-records', async (request: FastifyRequest<{
     Querystring: { technicianId?: string; _jobId?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -1002,7 +1002,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Register mobile device
-  server.post('/devices', async (request: FastifyRequest<{
+  _server.post('/devices', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -1023,7 +1023,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Update device status
-  server.put('/devices/:deviceId/status', async (request: FastifyRequest<{
+  _server.put('/devices/:deviceId/status', async (request: FastifyRequest<{
     Params: { deviceId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -1047,7 +1047,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Sync offline data
-  server.post('/sync/:technicianId', async (request: FastifyRequest<{
+  _server.post('/sync/:technicianId', async (request: FastifyRequest<{
     Params: { technicianId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -1071,7 +1071,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Optimize route
-  server.post('/route-optimization/:technicianId', async (request: FastifyRequest<{
+  _server.post('/route-optimization/:technicianId', async (request: FastifyRequest<{
     Params: { technicianId: string }
     Body: { assignmentIds: string[] }
   }>, reply: FastifyReply) => {
@@ -1095,7 +1095,7 @@ export async function mobileFieldOperationsRoutes(_server: FastifyInstance): Pro
   });
 
   // Get technician performance analytics
-  server.get('/analytics/performance/:technicianId', async (request: FastifyRequest<{
+  _server.get('/analytics/performance/:technicianId', async (request: FastifyRequest<{
     Params: { technicianId: string }
   }>, reply: FastifyReply) => {
     try {

@@ -10,7 +10,7 @@
  * - Integration marketplace
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import * as jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { format, parseISO, addDays, subDays } from 'date-fns';
@@ -132,14 +132,14 @@ interface WorkflowCondition {
 }
 
 class EnterpriseIntegrationService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private tenantConfigs: Map<string, TenantConfiguration> = new Map();
   private ssoConfigs: Map<string, SSOConfiguration> = new Map();
   private apiGatewayMetrics: APIGatewayMetrics[] = [];
   private workflowTemplates: Map<string, WorkflowTemplate> = new Map();
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Using shared instance
     this.initializeService();
   }
 

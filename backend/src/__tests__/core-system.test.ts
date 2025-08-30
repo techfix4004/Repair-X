@@ -1,10 +1,10 @@
  
 /// <reference types="jest" />
-import { jest, describe, test, expect, beforeAll, afterAll } from '@jest/globals';
+import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 
 import { fastify } from '../index';
 
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('RepairX Core System Tests', () => {
   beforeAll(async () => {
     // Setup test environment

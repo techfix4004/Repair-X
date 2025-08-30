@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import * as natural from 'natural';
 import * as ss from 'simple-statistics';
 import { ml } from 'ml-knn';
@@ -93,12 +93,12 @@ export interface HealthScoreFactors {
 }
 
 class CustomerSuccessAutomationService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private knnClassifier: any;
   private churnModel: any;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Using shared instance
     this.initializeMLModels();
   }
 

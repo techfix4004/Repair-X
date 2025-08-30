@@ -527,7 +527,7 @@ const marketplaceService = new APIMarketplaceService();
 // Route Handlers
 export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<void> {
   // Integration routes
-  server.get('/api/marketplace/integrations', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/api/marketplace/integrations', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { category, status, search } = request.query as any;
       const integrations = await marketplaceService.getAllIntegrations({
@@ -548,7 +548,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
     }
   });
 
-  server.get('/api/marketplace/integrations/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/api/marketplace/integrations/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = request.params as any;
       const integration = await marketplaceService.getIntegrationById(id);
@@ -572,7 +572,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
     }
   });
 
-  server.post('/api/marketplace/integrations', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.post('/api/marketplace/integrations', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const integration = await marketplaceService.createIntegration(request.body);
 
@@ -589,7 +589,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
   });
 
   // API Key routes
-  server.post('/api/marketplace/api-keys', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.post('/api/marketplace/api-keys', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const apiKey = await marketplaceService.generateAPIKey(request.body);
 
@@ -605,7 +605,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
     }
   });
 
-  server.get('/api/marketplace/api-keys/:tenantId', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/api/marketplace/api-keys/:tenantId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { tenantId } = request.params as any;
       const apiKeys = await marketplaceService.getAPIKeys(tenantId);
@@ -623,7 +623,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
   });
 
   // Webhook routes
-  server.post('/api/marketplace/webhooks', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.post('/api/marketplace/webhooks', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const webhook = await marketplaceService.createWebhook(request.body);
 
@@ -639,7 +639,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
     }
   });
 
-  server.get('/api/marketplace/webhooks/:tenantId', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/api/marketplace/webhooks/:tenantId', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { tenantId } = request.params as any;
       const webhooks = await marketplaceService.getWebhooks(tenantId);
@@ -657,7 +657,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
   });
 
   // White label routes
-  server.post('/api/marketplace/white-label', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.post('/api/marketplace/white-label', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const config = await marketplaceService.createWhiteLabelConfig(request.body);
 
@@ -674,7 +674,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
   });
 
   // Analytics routes
-  server.get('/api/marketplace/analytics', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/api/marketplace/analytics', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const analytics = await marketplaceService.getMarketplaceAnalytics();
 
@@ -691,7 +691,7 @@ export async function apiMarketplaceRoutes(server: FastifyInstance): Promise<voi
   });
 
   // Integration categories (for filtering)
-  server.get('/api/marketplace/categories', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/api/marketplace/categories', async (request: FastifyRequest, reply: FastifyReply) => {
     const categories = [
       { id: 'PAYMENT_GATEWAY', name: 'Payment Gateways', icon: '💳' },
       { id: 'SHIPPING_CARRIER', name: 'Shipping Carriers', icon: '📦' },

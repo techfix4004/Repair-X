@@ -7,7 +7,7 @@
 import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('Business Settings API Tests', () => {
   let app: FastifyInstance;
 

@@ -4,7 +4,7 @@ import { describe, test, expect, beforeAll, afterAll } from '@jest/globals';
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerPlugins } from '../plugins/index';
 
-// eslint-disable-next-line max-lines-per-function
+ 
 describe('Authentication API Tests', () => {
   let app: FastifyInstance;
 

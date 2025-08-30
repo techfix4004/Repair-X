@@ -1,0 +1,13 @@
+{
+  "org_default": {
+    "id": "org_default",
+    "name": "RepairX Main Organization",
+    "slug": "repairx-main",
+    "contactEmail": "admin@repairx.com",
+    "contactPhone": "(555) 123-4567",
+    "subscriptionTier": "ENTERPRISE",
+    "isActive": true,
+    "createdAt": "2025-08-30T16:16:08.724Z",
+    "updatedAt": "2025-08-30T16:16:08.724Z"
+  }
+}

@@ -42,7 +42,7 @@ class ReceiptOCRService {
       
       // Extract basic info from filename if it contains useful data
       let merchant = 'Unknown Merchant';
-      let amount = 0;
+      const amount = 0;
       const date = new Date().toISOString().split('T')[0];
       
       // Basic pattern matching for common receipt patterns
@@ -333,7 +333,7 @@ async function getExpenses(request: FastifyRequest, reply: FastifyReply) {
 }
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 async function createExpense(request: FastifyRequest, reply: FastifyReply) {
   try {
     const data = expenseSchema.parse((request as any).body);
@@ -543,7 +543,7 @@ async function approveExpense(request: FastifyRequest, reply: FastifyReply) {
 }
 
  
-// eslint-disable-next-line max-lines-per-function
+ 
 async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { period = '30d', categoryId  } = (request as any).query as any;
@@ -644,7 +644,7 @@ async function getExpenseStats(request: FastifyRequest, reply: FastifyReply) {
 }
 
 // Export route registration function
-export async function expenseRoutes(_fastify: FastifyInstance) {
+export async function expenseRoutes(fastify: FastifyInstance) {
   const commonSchema = {
     _tags: ['Expense Management'],
     _security: [{ bearerAuth: [] }]

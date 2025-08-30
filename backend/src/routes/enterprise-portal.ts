@@ -453,7 +453,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
   const enterpriseService = new EnterpriseCustomerService();
 
   // Enterprise customer management
-  server.get('/customers', async (request: FastifyRequest<{
+  _server.get('/customers', async (request: FastifyRequest<{
     Querystring: { status?: string; size?: string; industry?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -473,7 +473,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     }
   });
 
-  server.get('/customers/:customerId', async (request: FastifyRequest<{
+  _server.get('/customers/:customerId', async (request: FastifyRequest<{
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -499,7 +499,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     }
   });
 
-  server.post('/customers', async (request: FastifyRequest<{
+  _server.post('/customers', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -520,7 +520,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
   });
 
   // Branch management
-  server.get('/customers/:customerId/branches', async (request: FastifyRequest<{
+  _server.get('/customers/:customerId/branches', async (request: FastifyRequest<{
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -540,7 +540,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     }
   });
 
-  server.post('/customers/:customerId/branches', async (request: FastifyRequest<{
+  _server.post('/customers/:customerId/branches', async (request: FastifyRequest<{
     Params: { customerId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -563,7 +563,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
   });
 
   // Ticket management
-  server.get('/customers/:customerId/tickets', async (request: FastifyRequest<{
+  _server.get('/customers/:customerId/tickets', async (request: FastifyRequest<{
     Params: { customerId: string }
     Querystring: { status?: string; priority?: string; branchId?: string; category?: string }
   }>, reply: FastifyReply) => {
@@ -585,7 +585,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     }
   });
 
-  server.post('/customers/:customerId/tickets', async (request: FastifyRequest<{
+  _server.post('/customers/:customerId/tickets', async (request: FastifyRequest<{
     Params: { customerId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -607,7 +607,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     }
   });
 
-  server.put('/tickets/:ticketId', async (request: FastifyRequest<{
+  _server.put('/tickets/:ticketId', async (request: FastifyRequest<{
     Params: { ticketId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -632,7 +632,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
   });
 
   // Analytics and dashboard
-  server.get('/customers/:customerId/analytics', async (request: FastifyRequest<{
+  _server.get('/customers/:customerId/analytics', async (request: FastifyRequest<{
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -652,7 +652,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     }
   });
 
-  server.get('/customers/:customerId/dashboard', async (request: FastifyRequest<{
+  _server.get('/customers/:customerId/dashboard', async (request: FastifyRequest<{
     Params: { customerId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -672,7 +672,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
   });
 
   // Reference data
-  server.get('/reference/business-types', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/reference/business-types', async (request: FastifyRequest, reply: FastifyReply) => {
     const businessTypes = [
       { _id: 'CORPORATION', _name: 'Corporation', _description: 'Public or private corporation' },
       { _id: 'LLC', _name: 'Limited Liability Company', _description: 'LLC business structure' },
@@ -687,7 +687,7 @@ export async function enterprisePortalRoutes(_server: FastifyInstance): Promise<
     });
   });
 
-  server.get('/reference/sla-levels', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/reference/sla-levels', async (request: FastifyRequest, reply: FastifyReply) => {
     const slaLevels = [
       {
         _id: 'STANDARD',

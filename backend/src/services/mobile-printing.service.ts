@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/database';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import axios from 'axios';
@@ -88,13 +88,13 @@ export interface PrintStatistics {
 }
 
 class MobilePrintingService {
-  private prisma: PrismaClient;
+  private prisma = prisma;
   private printQueue: Map<string, any> = new Map();
   private printerDrivers: Map<string, any> = new Map();
   private documentRenderer: any;
 
   constructor() {
-    this.prisma = new PrismaClient();
+    // this.prisma = new PrismaClient(); // Using shared instance
     this.initializePrintingSystem();
   }
 

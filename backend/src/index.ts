@@ -89,8 +89,8 @@ async function start() {
   }
 }
 
-// Setup routes for testing
-if (process.env['NODE_ENV'] === 'test' || process.env['NODE_ENV'] === undefined) {
+// Setup routes for testing only when explicitly in test mode
+if (process.env['NODE_ENV'] === 'test') {
   setupRoutes();
 }
 

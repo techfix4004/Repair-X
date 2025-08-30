@@ -631,7 +631,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   const termsService = new TermsConditionsService();
 
   // Get all legal documents
-  server.get('/', async (request: FastifyRequest<{
+  _server.get('/', async (request: FastifyRequest<{
     Querystring: { 
       tenantId?: string;
       type?: string;
@@ -658,7 +658,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Create new legal document
-  server.post('/', async (request: FastifyRequest<{
+  _server.post('/', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -679,7 +679,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Get document by ID
-  server.get('/:documentId', async (request: FastifyRequest<{
+  _server.get('/:documentId', async (request: FastifyRequest<{
     Params: { documentId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -706,7 +706,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Update legal document
-  server.put('/:documentId', async (request: FastifyRequest<{
+  _server.put('/:documentId', async (request: FastifyRequest<{
     Params: { documentId: string }
     Body: unknown
   }>, reply: FastifyReply) => {
@@ -731,7 +731,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Publish document
-  server.post('/:documentId/publish', async (request: FastifyRequest<{
+  _server.post('/:documentId/publish', async (request: FastifyRequest<{
     Params: { documentId: string }
     Body: { approvedBy: string }
   }>, reply: FastifyReply) => {
@@ -755,7 +755,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Record user acceptance
-  server.post('/acceptances', async (request: FastifyRequest<{
+  _server.post('/acceptances', async (request: FastifyRequest<{
     Body: unknown
   }>, reply: FastifyReply) => {
     try {
@@ -776,7 +776,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Get user acceptances
-  server.get('/acceptances/:userId', async (request: FastifyRequest<{
+  _server.get('/acceptances/:userId', async (request: FastifyRequest<{
     Params: { userId: string }
     Querystring: { documentType?: string }
   }>, reply: FastifyReply) => {
@@ -799,7 +799,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Check user compliance
-  server.get('/compliance/:userId', async (request: FastifyRequest<{
+  _server.get('/compliance/:userId', async (request: FastifyRequest<{
     Params: { userId: string }
   }>, reply: FastifyReply) => {
     try {
@@ -819,7 +819,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Get document versions
-  server.get('/versions/:documentType', async (request: FastifyRequest<{
+  _server.get('/versions/:documentType', async (request: FastifyRequest<{
     Params: { documentType: string }
     Querystring: { tenantId?: string }
   }>, reply: FastifyReply) => {
@@ -842,7 +842,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Compare document versions
-  server.get('/compare/:documentId1/:documentId2', async (request: FastifyRequest<{
+  _server.get('/compare/:documentId1/:documentId2', async (request: FastifyRequest<{
     Params: { documentId1: string; documentId2: string }
   }>, reply: FastifyReply) => {
     try {
@@ -862,7 +862,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Generate compliance report
-  server.get('/reports/compliance', async (request: FastifyRequest<{
+  _server.get('/reports/compliance', async (request: FastifyRequest<{
     Querystring: { tenantId?: string; auditType?: string }
   }>, reply: FastifyReply) => {
     try {
@@ -882,7 +882,7 @@ export async function termsConditionsRoutes(_server: FastifyInstance): Promise<v
   });
 
   // Get document types
-  server.get('/types/list', async (request: FastifyRequest, reply: FastifyReply) => {
+  _server.get('/types/list', async (request: FastifyRequest, reply: FastifyReply) => {
     const types = [
       { _id: 'TERMS_OF_SERVICE', _name: 'Terms of Service', _icon: '📋' },
       { _id: 'PRIVACY_POLICY', _name: 'Privacy Policy', _icon: '🔒' },
