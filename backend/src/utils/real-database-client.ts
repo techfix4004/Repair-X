@@ -603,52 +603,64 @@ class ProductionPostgresDatabase {
         await this.service.create({ data: serviceData });
       }
 
-      // Create business settings with production values
-      const businessSettings = [
-        {
-          category: 'TAX_SETTINGS',
-          key: 'default_tax_rate',
-          value: 8.25,
-          dataType: 'NUMBER',
-          label: 'Default Tax Rate (%)',
-          description: 'Default tax rate applied to services',
-          isRequired: true,
-          isActive: true
-        },
-        {
-          category: 'EMAIL_SETTINGS',
-          key: 'smtp_host',
-          value: 'smtp.gmail.com',
-          dataType: 'STRING',
-          label: 'SMTP Host',
-          description: 'Email server hostname',
-          isRequired: true,
-          isActive: true
-        },
-        {
-          category: 'PAYMENT_SETTINGS',
-          key: 'stripe_public_key',
-          value: process.env.STRIPE_PUBLIC_KEY || '',
-          dataType: 'STRING',
-          label: 'Stripe Public Key',
-          description: 'Stripe payment processing public key',
-          isRequired: true,
-          isActive: true
+// Create business settings with production values
+import { BusinessSettingCategory, SettingDataType, PrismaClient } from '@prisma/client';
+
+// Define the array of business settings to seed
+const businessSettings = [
+  {
+    category: BusinessSettingCategory.TAX_SETTINGS,
+    key: 'default_tax_rate',
+    value: 8.25,
+    dataType: SettingDataType.NUMBER,
+    label: 'Default Tax Rate (%)',
+    description: 'Default tax rate applied to services',
+    isRequired: true,
+    isActive: true
+  },
+  {
+    category: BusinessSettingCategory.EMAIL_SETTINGS,
+    key: 'smtp_host',
+    value: 'smtp.gmail.com',
+    dataType: SettingDataType.STRING,
+    label: 'SMTP Host',
+    description: 'Email server hostname',
+    isRequired: true,
+    isActive: true
+  },
+  {
+    category: BusinessSettingCategory.PAYMENT_SETTINGS,
+    key: 'stripe_public_key',
+    value: process.env.STRIPE_PUBLIC_KEY || '',
+    dataType: SettingDataType.STRING,
+    label: 'Stripe Public Key',
+    description: 'Stripe payment processing public key',
+    isRequired: true,
+    isActive: true
+  }
+];
+
+// Seed function for business settings
+export async function seedBusinessSettings(
+  prismaClient: PrismaClient,
+  logger: { info: (msg: string) => void; error: (msg: string, err?: any) => void; }
+) {
+  try {
+    for (const setting of businessSettings) {
+      await prismaClient.businessSettings.create({
+        data: {
+          ...setting,
+          // No need to stringify, just pass the value as-is
         }
-      ];
-
-      for (const setting of businessSettings) {
-        await this.businessSettings.create({ data: setting });
-      }
-
-      logger.info('✅ Production data seeded successfully');
-    } catch (error) {
-      logger.error('❌ Failed to seed production data:', error);
-      throw error;
+      });
     }
+    logger.info('✅ Production data seeded successfully');
+  } catch (error) {
+    logger.error('❌ Failed to seed production data:', error);
+    throw error;
   }
 }
-
+      
 // Database client interface - PRODUCTION READY
 export interface DatabaseClient {
   connect(): Promise<void>;
