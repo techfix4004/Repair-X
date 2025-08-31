@@ -387,24 +387,58 @@ class RedisService {
     return await this.llen(`queue:${queueName}`);
   }
 
-  // Health check
-  getConnectionStatus(): boolean {
-    return this.isConnected;
+  // Pattern-based deletion
+  async deletePattern(pattern: string): Promise<number> {
+    try {
+      const keys = await this.client.keys(pattern);
+      if (keys.length === 0) return 0;
+      
+      return await this.client.del(...keys);
+    } catch (error) {
+      logger.error(`❌ Redis delete pattern failed for ${pattern}:`, error);
+      return 0;
+    }
   }
 
-  async healthCheck(): Promise<{ status: string; latency?: number }> {
+  // Health check with extended metrics
+  async healthCheck(): Promise<{ status: string; latency?: number; hitRate?: number }> {
     try {
       const start = Date.now();
       const pingResult = await this.ping();
       const latency = Date.now() - start;
       
+      // Get Redis info for hit rate calculation
+      let hitRate: number | undefined;
+      try {
+        const info = await this.client.info('stats');
+        const lines = info.split('\r\n');
+        const keyspaceHits = lines.find(line => line.startsWith('keyspace_hits:'));
+        const keyspaceMisses = lines.find(line => line.startsWith('keyspace_misses:'));
+        
+        if (keyspaceHits && keyspaceMisses) {
+          const hits = parseInt(keyspaceHits.split(':')[1]);
+          const misses = parseInt(keyspaceMisses.split(':')[1]);
+          if (hits + misses > 0) {
+            hitRate = (hits / (hits + misses)) * 100;
+          }
+        }
+      } catch (error) {
+        logger.warn('Could not calculate Redis hit rate:', error);
+      }
+      
       return {
         status: pingResult ? 'healthy' : 'unhealthy',
-        latency: pingResult ? latency : undefined
+        latency: pingResult ? latency : undefined,
+        hitRate
       };
     } catch (error) {
       return { status: 'error' };
     }
+  }
+
+  // Health check - maintain original method  
+  getConnectionStatus(): boolean {
+    return this.isConnected;
   }
 }
 
