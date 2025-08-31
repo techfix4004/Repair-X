@@ -93,12 +93,8 @@ class ProductionPrismaClient extends PrismaClient {
     }
     
     logger.info('🐘 Production PostgreSQL client initialized');
-    this.setupInterceptors();
-  }
-
-  private setupInterceptors(): void {
-    // Add Redis caching interceptor for read operations
-    this.$use(async (params, next) => {
+    // @ts-expect-error: $use is available on PrismaClient but not declared in subclass by default
+    (this as unknown as PrismaClient).$use(async (params, next) => {
       const cacheableOperations = ['findFirst', 'findUnique', 'findMany', 'count', 'aggregate'];
       
       if (cacheableOperations.includes(params.action)) {
