@@ -534,7 +534,7 @@ class MobilePrintingService {
         
         // Get real paper level from printer configuration database
         const printerConfig = await this.prisma.printerConfiguration.findUnique({
-          where: { ipAddress: printerIp }
+          where: { ipAddress: ipAddress }
         });
         
         const paperLevel = printerConfig?.paperLevel || 100; // Default to full if not tracked
