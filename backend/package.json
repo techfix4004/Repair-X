@@ -14,7 +14,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "ts-node prisma/seed.ts",
-    "quality:check": "npm run lint && echo 'Production quality check completed'"
+    "quality:check": "npm run lint && echo 'Production quality check completed'",
+    "postinstall": "prisma generate"
   },
   "keywords": [
     "repair",
