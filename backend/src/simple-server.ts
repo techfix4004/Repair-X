@@ -1,6 +1,6 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { registerPhase5Routes } from './routes/phase5-advanced-ai';
 
@@ -10,8 +10,12 @@ const fastify: FastifyInstance = Fastify({
   }
 });
 
-// JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'repairx-production-secret-key-2024';
+// JWT Configuration - Secure production configuration
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is required for production');
+  process.exit(1);
+}
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 // Register plugins
@@ -160,7 +164,7 @@ fastify.post('/auth/login', async (request, reply) => {
         iat: Math.floor(Date.now() / 1000)
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN } as SignOptions
     );
     
     return {
@@ -258,7 +262,7 @@ fastify.post('/api/v1/auth/login', async (request, reply) => {
         iat: Math.floor(Date.now() / 1000)
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN } as SignOptions
     );
     
     return {
@@ -304,7 +308,7 @@ fastify.post('/api/v1/auth/register', async (request, reply) => {
         iat: Math.floor(Date.now() / 1000)
       },
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
+      { expiresIn: JWT_EXPIRES_IN } as SignOptions
     );
     
     return {

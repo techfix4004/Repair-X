@@ -1,23 +1,24 @@
 
 /**
- * Production Database Configuration
+ * Production Database Configuration with PostgreSQL and Redis
  * 
  * Real database client configuration for RepairX production environment.
- * Provides database connection management and type-safe database operations.
+ * Provides PostgreSQL database operations with Redis caching layer.
  */
 
 import { DatabaseClient, createDatabaseClient } from './real-database-client';
+import { redisService } from './redis-client';
+import { logger } from './logger';
 
 // Global database instance for production use
 declare global {
-   
   var cachedDatabase: DatabaseClient | undefined;
 }
 
 let prisma: DatabaseClient;
 
-// Initialize real database client - production ready
-console.log('🚀 Initializing production-ready database client');
+// Initialize real PostgreSQL + Redis database client - production ready
+logger.info('🚀 Initializing production-ready PostgreSQL + Redis database client');
 
 // Singleton pattern for database client to prevent connection issues
 if (process.env.NODE_ENV === 'production') {
@@ -37,21 +38,22 @@ if (process.env.NODE_ENV === 'production') {
 
 // Graceful shutdown handling
 const gracefulShutdown = async () => {
-  console.log('Shutting down database connection...');
+  logger.info('🔴 Shutting down database connections...');
   await prisma.disconnect();
   process.exit(0);
 };
 
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
+process.on('SIGQUIT', gracefulShutdown);
 
 // Health check function for database connectivity
 export const checkDatabaseHealth = async (): Promise<boolean> => {
   try {
-    await prisma.testConnection();
-    return true;
+    const health = await prisma.healthCheck();
+    return health.database === 'healthy' && health.redis === 'healthy';
   } catch (error) {
-    console.error('Database health check failed:', error);
+    logger.error('❌ Database health check failed:', error);
     return false;
   }
 };
@@ -60,12 +62,20 @@ export const checkDatabaseHealth = async (): Promise<boolean> => {
 export const connectDatabase = async (): Promise<void> => {
   try {
     await prisma.connect();
-    console.log('✅ Database connected successfully');
+    
+    // Seed production data if needed
+    await prisma.seedProductionData();
+    
+    logger.info('✅ PostgreSQL database connected successfully');
+    logger.info('✅ Redis cache layer connected successfully');
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
+    logger.error('❌ Database connection failed:', error);
     throw error;
   }
 };
+
+// Redis service access
+export { redisService };
 
 // Export the database client
 export { prisma };

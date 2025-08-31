@@ -1,8 +1,8 @@
 {
   "summary": {
     "totalTests": 27,
-    "passed": 7,
-    "failed": 20,
+    "passed": 3,
+    "failed": 24,
     "skipped": 0
   },
   "userRoles": {
@@ -138,36 +138,32 @@
   },
   "apiEndpoints": {
     "/health": {
-      "status": "PASS",
-      "statusCode": 200,
-      "responseTime": "N/A",
-      "hasData": true,
-      "mockDataPresent": false
+      "status": "FAIL",
+      "statusCode": 404,
+      "expectedStatus": 200,
+      "error": "Status code mismatch"
     },
     "/": {
-      "status": "PASS",
-      "statusCode": 200,
-      "responseTime": "N/A",
-      "hasData": true,
-      "mockDataPresent": false
+      "status": "FAIL",
+      "statusCode": 401,
+      "expectedStatus": 200,
+      "error": "Status code mismatch"
     },
     "/api/marketplace/integrations": {
-      "status": "PASS",
-      "statusCode": 200,
-      "responseTime": "N/A",
-      "hasData": true,
-      "mockDataPresent": true
+      "status": "FAIL",
+      "statusCode": 401,
+      "expectedStatus": 200,
+      "error": "Status code mismatch"
     },
     "/api/marketplace/categories": {
-      "status": "PASS",
-      "statusCode": 200,
-      "responseTime": "N/A",
-      "hasData": true,
-      "mockDataPresent": false
+      "status": "FAIL",
+      "statusCode": 401,
+      "expectedStatus": 200,
+      "error": "Status code mismatch"
     },
     "/api/admin/tenants": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -176,7 +172,7 @@
     },
     "/api/admin/analytics": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -185,7 +181,7 @@
     },
     "/api/org/settings": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -194,7 +190,7 @@
     },
     "/api/org/users": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -203,7 +199,7 @@
     },
     "/api/jobs": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
@@ -213,7 +209,7 @@
     },
     "/api/technicians": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
@@ -223,7 +219,7 @@
     },
     "/api/jobs/assigned": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -232,7 +228,7 @@
     },
     "/api/mobile/checkin": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -241,7 +237,7 @@
     },
     "/api/customer/jobs": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -250,7 +246,7 @@
     },
     "/api/customer/profile": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         401,
         404
@@ -259,7 +255,7 @@
     },
     "/api/jobs/1": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
@@ -269,7 +265,7 @@
     },
     "/api/customers": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
@@ -279,7 +275,7 @@
     },
     "/api/customers/1": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
@@ -289,7 +285,7 @@
     },
     "/api/jobs/1/assign": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
@@ -299,7 +295,7 @@
     },
     "/api/payments/methods": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
@@ -309,7 +305,7 @@
     },
     "/api/payments/process": {
       "status": "FAIL",
-      "statusCode": 404,
+      "statusCode": 401,
       "expectedStatus": [
         200,
         401,
