@@ -606,7 +606,7 @@ class ProductionPostgresDatabase {
       // Create business settings with production values
       const businessSettings = [
         {
-          category: 'TAX_SETTINGS',
+          category: BusinessSettingCategory.TAX_SETTINGS,
           key: 'default_tax_rate',
           value: 8.25,
           dataType: 'NUMBER',
@@ -616,7 +616,7 @@ class ProductionPostgresDatabase {
           isActive: true
         },
         {
-          category: 'EMAIL_SETTINGS',
+          category: BusinessSettingCategory.EMAIL_SETTINGS,
           key: 'smtp_host',
           value: 'smtp.gmail.com',
           dataType: 'STRING',
@@ -626,7 +626,7 @@ class ProductionPostgresDatabase {
           isActive: true
         },
         {
-          category: 'PAYMENT_SETTINGS',
+          category: BusinessSettingCategory.PAYMENT_SETTINGS,
           key: 'stripe_public_key',
           value: process.env.STRIPE_PUBLIC_KEY || '',
           dataType: 'STRING',
