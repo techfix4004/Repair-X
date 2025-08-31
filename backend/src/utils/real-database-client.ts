@@ -7,7 +7,7 @@
  * ✅ PRODUCTION-READY: No mock implementations, real database integration
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, BusinessSettingCategory, SettingDataType } from '@prisma/client';
 import { redisService } from './redis-client';
 import { logger } from './logger';
 
@@ -15,6 +15,61 @@ import { logger } from './logger';
 interface DatabaseConfig {
   logLevel: string[];
   errorFormat: string;
+}
+
+// Define the array of business settings to seed
+const businessSettings = [
+  {
+    category: BusinessSettingCategory.TAX_SETTINGS,
+    key: 'default_tax_rate',
+    value: 8.25,
+    dataType: SettingDataType.NUMBER,
+    label: 'Default Tax Rate (%)',
+    description: 'Default tax rate applied to services',
+    isRequired: true,
+    isActive: true
+  },
+  {
+    category: BusinessSettingCategory.EMAIL_SETTINGS,
+    key: 'smtp_host',
+    value: 'smtp.gmail.com',
+    dataType: SettingDataType.STRING,
+    label: 'SMTP Host',
+    description: 'Email server hostname',
+    isRequired: true,
+    isActive: true
+  },
+  {
+    category: BusinessSettingCategory.PAYMENT_SETTINGS,
+    key: 'stripe_public_key',
+    value: process.env.STRIPE_PUBLIC_KEY || '',
+    dataType: SettingDataType.STRING,
+    label: 'Stripe Public Key',
+    description: 'Stripe payment processing public key',
+    isRequired: true,
+    isActive: true
+  }
+];
+
+// Seed function for business settings
+export async function seedBusinessSettings(
+  prismaClient: PrismaClient,
+  logger: { info: (msg: string) => void; error: (msg: string, err?: any) => void; }
+) {
+  try {
+    for (const setting of businessSettings) {
+      await prismaClient.businessSettings.create({
+        data: {
+          ...setting
+          // No need to stringify, just pass the value as-is
+        }
+      });
+    }
+    logger.info('✅ Production data seeded successfully');
+  } catch (error) {
+    logger.error('❌ Failed to seed production data:', error);
+    throw error;
+  }
 }
 
 // Production Prisma Client with advanced features
@@ -132,8 +187,6 @@ class ProductionPrismaClient extends PrismaClient {
       throw error;
     }
   }
-
-
 }
 
 // Production Database Client Class - UPGRADED TO REAL IMPLEMENTATION
@@ -603,64 +656,16 @@ class ProductionPostgresDatabase {
         await this.service.create({ data: serviceData });
       }
 
-// Create business settings with production values
-import { BusinessSettingCategory, SettingDataType, PrismaClient } from '@prisma/client';
+      // Seed business settings after other core data
+      await seedBusinessSettings(this.prisma, logger);
 
-// Define the array of business settings to seed
-const businessSettings = [
-  {
-    category: BusinessSettingCategory.TAX_SETTINGS,
-    key: 'default_tax_rate',
-    value: 8.25,
-    dataType: SettingDataType.NUMBER,
-    label: 'Default Tax Rate (%)',
-    description: 'Default tax rate applied to services',
-    isRequired: true,
-    isActive: true
-  },
-  {
-    category: BusinessSettingCategory.EMAIL_SETTINGS,
-    key: 'smtp_host',
-    value: 'smtp.gmail.com',
-    dataType: SettingDataType.STRING,
-    label: 'SMTP Host',
-    description: 'Email server hostname',
-    isRequired: true,
-    isActive: true
-  },
-  {
-    category: BusinessSettingCategory.PAYMENT_SETTINGS,
-    key: 'stripe_public_key',
-    value: process.env.STRIPE_PUBLIC_KEY || '',
-    dataType: SettingDataType.STRING,
-    label: 'Stripe Public Key',
-    description: 'Stripe payment processing public key',
-    isRequired: true,
-    isActive: true
-  }
-];
-
-// Seed function for business settings
-export async function seedBusinessSettings(
-  prismaClient: PrismaClient,
-  logger: { info: (msg: string) => void; error: (msg: string, err?: any) => void; }
-) {
-  try {
-    for (const setting of businessSettings) {
-      await prismaClient.businessSettings.create({
-        data: {
-          ...setting,
-          // No need to stringify, just pass the value as-is
-        }
-      });
+    } catch (error) {
+      logger.error('❌ Failed to seed production data:', error);
+      throw error;
     }
-    logger.info('✅ Production data seeded successfully');
-  } catch (error) {
-    logger.error('❌ Failed to seed production data:', error);
-    throw error;
   }
 }
-      
+
 // Database client interface - PRODUCTION READY
 export interface DatabaseClient {
   connect(): Promise<void>;
