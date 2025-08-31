@@ -55,13 +55,14 @@ RUN if [ -f package-lock.json ]; then npm ci --omit=dev --legacy-peer-deps && np
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nodejs:nodejs /app/uploads ./uploads
-
-# Copy data directory with correct ownership (optional if using volume, but safe)
 COPY --from=builder --chown=nodejs:nodejs /app/data ./data
 
-# --- CRITICAL: Copy generated Prisma client from builder ---
-COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma
+# --- CRITICAL: Generate Prisma client again after npm ci ---
+RUN npx prisma generate
+
+# Remove these two lines as they're now redundant:
+# COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
+# COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma
 
 # Change to non-root user
 USER nodejs
