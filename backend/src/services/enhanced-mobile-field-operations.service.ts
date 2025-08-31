@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { DatabaseClient } from '../utils/real-database-client';
 
 export interface MobileFieldOperations {
   _id: string;
@@ -162,6 +163,28 @@ export interface TimeEntry {
 }
 
 export class EnhancedMobileFieldOperationsService {
+  private databaseClient: any;
+
+  constructor() {
+    // Initialize database client
+    this.initializeDatabaseClient();
+  }
+
+  private async initializeDatabaseClient() {
+    const { createDatabaseClient } = await import('../utils/real-database-client');
+    this.databaseClient = createDatabaseClient({
+      logLevel: ['error'],
+      errorFormat: 'minimal'
+    });
+  }
+
+  private async getDatabaseClient() {
+    if (!this.databaseClient) {
+      await this.initializeDatabaseClient();
+    }
+    return this.databaseClient;
+  }
+
   // Enhanced offline capabilities and data synchronization
   async enableOfflineMode(technicianId: string, _deviceId: string): Promise<OfflineSyncManager> {
     console.log(`🔄 Enabling offline mode for technician ${technicianId} on device ${deviceId}`);
@@ -209,14 +232,46 @@ export class EnhancedMobileFieldOperationsService {
     }
   }
 
-  async getCriticalDataByType(_dataType: string): Promise<any> {
-    // Mock critical data fetching
-    return {
-      _type: dataType,
-      _data: [],
-      _timestamp: new Date(),
-      _version: '1.0'
-    };
+  async getCriticalDataByType(dataType: string): Promise<any> {
+    // Real production data fetching from database
+    const db = await this.getDatabaseClient();
+    
+    try {
+      let data: any[] = [];
+      
+      switch (dataType) {
+        case 'jobs':
+          data = await db.booking.findMany({
+            where: { status: { in: ['ASSIGNED', 'IN_PROGRESS'] } },
+            include: { service: true, customer: true, device: true }
+          });
+          break;
+        case 'customers':
+          data = await db.user.findMany({
+            where: { role: 'CUSTOMER' },
+            include: { customerProfile: true }
+          });
+          break;
+        case 'parts':
+          data = await db.jobSheetPart.findMany({
+            include: { jobSheet: true }
+          });
+          break;
+        default:
+          data = [];
+      }
+      
+      return {
+        type: dataType,
+        data,
+        timestamp: new Date(),
+        version: '2.0',
+        count: data.length
+      };
+    } catch (error) {
+      console.error(`Error fetching critical data for type ${dataType}:`, error);
+      throw new Error(`Failed to fetch ${dataType} data`);
+    }
   }
 
   // Mobile print _options for receipt printers

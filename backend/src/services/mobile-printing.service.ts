@@ -532,7 +532,14 @@ class MobilePrintingService {
         // Parse SNMP response to get toner level
         const tonerLevel = parseInt(stdout.match(/INTEGER: (\d+)/)?.[1] || '0');
         
-        return { tonerLevel, paperLevel: 50 }; // Mock paper level
+        // Get real paper level from printer configuration database
+        const printerConfig = await this.prisma.printerConfiguration.findUnique({
+          where: { ipAddress: printerIp }
+        });
+        
+        const paperLevel = printerConfig?.paperLevel || 100; // Default to full if not tracked
+        
+        return { tonerLevel, paperLevel };
       }
     } catch (error) {
       console.warn('Failed to get printer consumables:', error);

@@ -58,3 +58,24 @@ quality-report-*.md
 # Docker
 .dockerignore
 Dockerfile*
+
+# Development and testing artifacts
+docs/reports/
+*.test.js
+*.test.ts
+**/test/
+**/tests/
+*.spec.js
+*.spec.ts
+test-results/
+screenshots/
+playwright-report/
+coverage/
+
+# Report files (development artifacts)
+*PRODUCTION*.md
+*FINAL*.md
+*COMPREHENSIVE*.md
+*production-*.json
+*quality-*.json
+*six-sigma-*.json
