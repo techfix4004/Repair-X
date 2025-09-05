@@ -1,0 +1,539 @@
+{
+  "timestamp": "2025-09-05T14:13:34.903Z",
+  "summary": {
+    "totalFindings": 65,
+    "critical": 2,
+    "high": 63,
+    "medium": 0,
+    "riskLevel": "CRITICAL"
+  },
+  "findings": [
+    {
+      "title": "Missing Authentication Middleware",
+      "description": "No dedicated authentication middleware found",
+      "severity": "CRITICAL",
+      "evidence": "No auth*.ts or security*.ts files in middleware directory",
+      "recommendation": "Implement proper authentication middleware",
+      "timestamp": "2025-09-05T14:13:25.633Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in advanced-job-management.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "3 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in advanced-reporting-system.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in advanced-reporting-system.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in advanced-reporting.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "7 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in ai-integration.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "15 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in api-marketplace.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in app-store-optimization-fastify.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "8 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in business-clean.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "4 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.634Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in business-intelligence.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "7 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in business-intelligence.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in business-settings.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "6 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in compliance.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "6 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in customer-onboarding.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in customer-success-fastify.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in customer-success.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "2 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in devices.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "7 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in email-settings.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "10 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in email-settings.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in employee-management.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.635Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in enhanced-ai-business-intelligence.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in enhanced-ai-business-intelligence.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in enhanced-business-settings-v2.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "10 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in enhanced-business-settings-v2.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in enhanced-enterprise-saas.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in enhanced-index.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "1 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in enterprise-portal.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "20 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in enterprise-portal.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in expenses.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "6 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.636Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in franchise-management-system.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.637Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in franchise-management.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "7 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.637Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in geolocation.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "4 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.637Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in inventory.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "3 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.637Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in iot-integration.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "20 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.637Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in iot-integration.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.637Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in launch-campaigns.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "4 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in marketing-automation-system.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in marketing-automation.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "8 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in mobile-field-operations.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "23 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in mobile-field-operations.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in mobile-operations.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "3 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in multi-language.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "21 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in multi-language.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in outsourcing-marketplace.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "15 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.638Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in outsourcing-marketplace.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in parts-inventory.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "19 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in parts-inventory.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in payments.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "9 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in phase5-advanced-ai.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "20 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in phase5-advanced-ai.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in production-complete-integration.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "4 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in quality-assurance.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "3 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in ratings.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "4 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in service-booking.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "3 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in smart-scheduling.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "3 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.639Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in sms.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.640Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in system-health.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.640Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in terms-conditions.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "25 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.640Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in terms-conditions.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.640Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in users.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "5 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.640Z"
+    },
+    {
+      "title": "Missing Role-Based Protection",
+      "description": "Routes in visual-regression-testing.ts lack role-based access control",
+      "severity": "HIGH",
+      "evidence": "20 routes without role checks",
+      "recommendation": "Implement role-based access control for all routes",
+      "timestamp": "2025-09-05T14:13:25.640Z"
+    },
+    {
+      "title": "Potential SQL Injection",
+      "description": "Raw SQL queries found in visual-regression-testing.ts",
+      "severity": "HIGH",
+      "evidence": "Raw SQL with variable interpolation detected",
+      "recommendation": "Use ORM or parameterized queries",
+      "timestamp": "2025-09-05T14:13:25.640Z"
+    },
+    {
+      "title": "Potential Privilege Escalation",
+      "description": "Code that modifies user roles found",
+      "severity": "HIGH",
+      "evidence": "Role modification code detected",
+      "recommendation": "Ensure role modifications are properly protected and audited",
+      "timestamp": "2025-09-05T14:13:27.002Z"
+    },
+    {
+      "title": "Permission Bypass Detected",
+      "description": "Code that bypasses permission checks found",
+      "severity": "CRITICAL",
+      "evidence": "Permission bypass code detected",
+      "recommendation": "Remove or properly secure permission bypass mechanisms",
+      "timestamp": "2025-09-05T14:13:28.573Z"
+    },
+    {
+      "title": "Insecure Session Configuration",
+      "description": "Session cookies lack security flags",
+      "severity": "HIGH",
+      "evidence": "httpOnly or secure flags missing from session config",
+      "recommendation": "Add httpOnly and secure flags to session cookies",
+      "timestamp": "2025-09-05T14:13:30.215Z"
+    }
+  ],
+  "recommendations": [
+    "Implement comprehensive authentication middleware",
+    "Add role-based access control to all routes",
+    "Configure secure session management",
+    "Add comprehensive audit logging",
+    "Test for privilege escalation vulnerabilities"
+  ]
+}
